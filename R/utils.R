@@ -226,42 +226,58 @@ ebv_i_type_raster <- function(datanotation, byteorder){
   return(type.hdf)
 }
 
-
-
 #transform bb and ram check
+ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
+  #src epsg: epsg given for the bb
+  #dest epsg: epsg of the nc --> epsg of the returned bb
 
-# ebv_i_check_ram <- function(dims, timestep, type){
-#   #amount of pixels
-#   size <- dims[1]*dims[2]*length(timestep)
-#   if(!is.na(ebv_i_type_r(type))){
-#     if(ebv_i_type_r(type)=='integer'){
-#       ###integer: size*4 = bytes
-#       bytes <- size * 4 + 224
-#       ram.var.gb <- bytes/(1024^3)
-#     }else if(ebv_i_type_r(type)=='double'){
-#       ###float: size*8 = bytes
-#       bytes <- size * 8 + 224
-#       ram.var.gb <- bytes/(1024^3)
-#     }
-#     #get ram pc
-#     ram.pc <- ebv_i_ram()
-#     ram.pc.free <- ram.pc[2]
-#     #check if data too big
-#     if(ram.pc.free < ram.var.gb){
-#       stop(paste0('The RAM needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb,2)))
-#       #check that 1/2 GB RAM stay free
-#     }
-#     if(ram.pc.free - ram.var.gb < 0.5){
-#       stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore.RAM = TRUE.')
-#     }
-#     #check if reading huge dataset
-#     if((ram.pc.free/4) < ram.var.gb){
-#       stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore.RAM = TRUE.')
-#     }
-#   } else{
-#     message('Invalid type. RAM check ignored.')
-#   }
-# }
+  crs_src <- sp::CRS(paste0(SRS_string = "EPSG:", src_epsg))
+  crs_dest <- sp::CRS(paste0(SRS_string = "EPSG:", dest_epsg))
+
+  p1 <- matrix(data = c(bb[1],bb[3]), nrow = 1, ncol = 2)
+  sp1 <- sp::SpatialPoints(p1, proj4string=crs_src)
+
+  p2 <- matrix(data = c(bb[2],bb[4]), nrow = 1, ncol = 2)
+  sp2 <- sp::SpatialPoints(p2, proj4string=crs_src)
+
+  sp1_new <- sp::spTransform(sp1, crs_dest)
+  sp2_new <- sp::spTransform(sp2, crs_dest)
+  bb_new <- c(sp1_new@coords[1], sp2_new@coords[1], sp1_new@coords[2], sp2_new@coords[2])
+  return(bb_new)
+}
+
+ebv_i_check_ram <- function(dims, timestep, type){
+  #amount of pixels
+  size <- dims[1]*dims[2]*length(timestep)
+  if(!is.na(ebv_i_type_r(type))){
+    if(ebv_i_type_r(type)=='integer'){
+      ###integer: size*4 = bytes
+      bytes <- size * 4 + 224
+      ram.var.gb <- bytes/(1024^3)
+    }else if(ebv_i_type_r(type)=='double'){
+      ###float: size*8 = bytes
+      bytes <- size * 8 + 224
+      ram.var.gb <- bytes/(1024^3)
+    }
+    #get ram pc
+    ram.pc <- ebv_i_ram()
+    ram.pc.free <- ram.pc[2]
+    #check if data too big
+    if(ram.pc.free < ram.var.gb){
+      stop(paste0('The RAM needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb,2)))
+      #check that 1/2 GB RAM stay free
+    }
+    if(ram.pc.free - ram.var.gb < 0.5){
+      stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore.RAM = TRUE.')
+    }
+    #check if reading huge dataset
+    if((ram.pc.free/4) < ram.var.gb){
+      stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore.RAM = TRUE.')
+    }
+  } else{
+    message('Invalid type. RAM check ignored.')
+  }
+}
 
 
 #attribute functions
