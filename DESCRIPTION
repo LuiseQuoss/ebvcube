@@ -18,4 +18,8 @@ Imports:
     memuse,
     stringr,
     rhdf5,
-    sp
+    sp,
+    pkgcond,
+    rgdal,
+    methods,
+    utils
