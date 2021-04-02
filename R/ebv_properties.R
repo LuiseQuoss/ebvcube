@@ -1,3 +1,19 @@
+#' Read properties of EBV NetCDF
+#'
+#' @description Structured access to all attributes of the NetCDF file.
+#'
+#' @param filepath Path to the NetCDF file.
+#' @param datacubepath Optional. Path to the datacube (use ebv_datacubepaths()).
+#' @param verbose Set to True to obtain all warnings.
+#'
+#' @return S4 class containing information about file or file and datacube depending on input.
+#' @export
+#'
+#' @examples
+#' filepath <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+#' datacubepaths <- ebv_datacubepaths(filepath)
+#' #prop_file <- ebv_properties(filepath)
+#' #prop_dc <- ebv_properties(file, datacubepaths[1,1])
 ebv_properties <- function(filepath, datacubepath = NULL, verbose=FALSE){
   if(verbose){
     options(warn = 0)

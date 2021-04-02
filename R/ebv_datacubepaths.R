@@ -1,3 +1,14 @@
+#' Get datacubepaths
+#' @description Get the paths to the datacubes to access and read the data.
+#'
+#' @param filepath Path to the NetCDF file.
+#'
+#' @return Dataframe containing the paths to access the datacubes and descriptions of scenario, metric and entity if existing.
+#' @export
+#'
+#' @examples
+#' filepath <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+#' ebv_datacubepaths(filepath)
 ebv_datacubepaths <- function(filepath){
   ####initial tests start ----
   #are all arguments given?
