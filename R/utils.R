@@ -279,6 +279,81 @@ ebv_i_check_ram <- function(dims, timestep, type){
   }
 }
 
-
 #attribute functions
+ebv_i_uint_att <- function(h5obj, name, data){
+  if(!rhdf5::H5Aexists(h5obj, name)){
+    sid <- rhdf5::H5Screate_simple(c(1))
+    tid <- rhdf5::H5Tcopy("H5T_NATIVE_UINT")
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
+    rhdf5::H5Sclose(sid)
+  } else {
+    aid <- rhdf5::H5Aopen(h5obj, name)
+  }
+  rhdf5::H5Awrite(aid, as.numeric(data))
+  rhdf5::H5Aclose(aid)
+}
+
+ebv_i_int_att <- function(h5obj, name, data){
+  if(!rhdf5::H5Aexists(h5obj, name)){
+    sid <- rhdf5::H5Screate_simple(c(1))
+    tid <- rhdf5::H5Tcopy("H5T_NATIVE_INT")
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
+    rhdf5::H5Sclose(sid)
+  } else {
+    aid <- rhdf5::H5Aopen(h5obj, name)
+  }
+  rhdf5::H5Awrite(aid, as.numeric(data))
+  rhdf5::H5Aclose(aid)
+}
+
+ebv_i_num_att <- function(h5obj, name, data){
+  if(!rhdf5::H5Aexists(h5obj, name)){
+    sid <- rhdf5::H5Screate_simple(c(1))
+    tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid, sid)
+    rhdf5::H5Sclose(sid)
+  } else {
+    aid <- rhdf5::H5Aopen(h5obj, name)
+  }
+  rhdf5::H5Awrite(aid, as.numeric(data))
+  rhdf5::H5Aclose(aid)
+}
+
+ebv_i_char_att <- function(h5obj, name, data){
+  count <- 1
+  #data.split <- strsplit(data,'')[[1]]
+  for (u in c('\ufc', '\uf6', '\ue4', '\udf', '\udc', '\uc4', '\ud6')){ #c('ü', 'ö', 'ä', 'ß', 'Ü', 'Ä', 'Ö')
+    count <- count + stringr::str_count(data, u)
+  }
+  if(!rhdf5::H5Aexists(h5obj, name)){
+    sid <- rhdf5::H5Screate_simple(c(1))
+    tid <- rhdf5::H5Tcopy("H5T_C_S1")
+    rhdf5::H5Tset_size(tid, nchar(data)+count)
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
+    rhdf5::H5Sclose(sid)
+  } else {
+    rhdf5::H5Adelete(h5obj, name)
+    sid <- rhdf5::H5Screate_simple(c(1))
+    tid <- rhdf5::H5Tcopy("H5T_C_S1")
+    rhdf5::H5Tset_size(tid, nchar(data)+count)
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
+    rhdf5::H5Sclose(sid)
+  }
+  rhdf5::H5Awrite(aid, data)
+  rhdf5::H5Aclose(aid)
+}
+
+ebv_i_read_att <-  function(h5obj, name){
+  #check if attribute exists
+  if(!rhdf5::H5Aexists(h5obj, name)){
+    warning(paste0('The attribute ', name, ' does not exist. Or maybe wrong location in NetCDF?'))
+    return(NULL)
+  } else {
+    aid <- rhdf5::H5Aopen(h5obj, name)
+    attribute <- rhdf5::H5Aread(aid)
+    rhdf5::H5Aclose(aid)
+    return(attribute)
+  }
+}
+
 
