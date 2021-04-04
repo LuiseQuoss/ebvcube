@@ -1,0 +1,208 @@
+#' Read subset (shapefile) of the data from EBV NetCDF
+#'
+#' @description Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a shapefile.
+#'
+#' @param filepath Path to the NetCDF file.
+#' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
+#' @param shp Path to the shapefile defining the subset.
+#' @param outputpath Defaul: NULL, returns the data as a raster object in memory. Optional: set path to write subset as GeoTiff on disk, returns outputpath.
+#' @param timestep Choose one or several timesteps (vector).
+#' @param at Default: TRUE, all pixels touched by the polygon(s) will be updated. Set to FALSE to only include pixels that are on the line render path or have center points inside the polygon(s).
+#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.
+#' @param ignore.RAM Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).
+#'
+#' @return Returns a raster object if no outputpath is given. Otherwise the subset is written onto the disk and the ouputpath is returned.
+#' @export
+#' @seealso [ebvnetcdf::ebv_data_read_bb()] for more examples
+#'
+#' @examples
+#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+#' shp <- 'path/to/subset.shp'
+#' datacubes <- ebv_datacubepaths(file)
+#' out <- 'path/to/write/subset.tif'
+#' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
+#'
+ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, timestep = 1, at = TRUE, overwrite=FALSE, ignore.RAM=FALSE){
+  ####start initial checks####
+  #are all arguments given?
+  if(missing(filepath)){
+    stop('Filepath argument is missing.')
+  }
+  if(missing(datacubepath)){
+    stop('Datacubepath argument is missing.')
+  }
+  #are all arguments given?
+  if(missing(shp)){
+    stop('Shapefile (shp) argument for subsetting is missing.')
+  }
+
+  #nc filepath check
+  if (!file.exists(filepath)){
+    stop(paste0('File does not exist.\n', filepath))
+  }
+  if (!endsWith(filepath, '.nc')){
+    stop(paste0('File ending is wrong. File cannot be processed.'))
+  }
+
+  #shp filepath check
+  if (!file.exists(shp)){
+    stop(paste0('File does not exist.\n', shp))
+  }
+  if (!endsWith(shp, '.shp')){
+    stop(paste0('File ending is wrong. File cannot be processed.'))
+  }
+
+  #file closed?
+  ebv_i_file_opened(filepath)
+
+  #variable check
+  hdf <- rhdf5::H5Fopen(filepath)
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
+    rhdf5::H5Fclose(hdf)
+    stop(paste0('The given variable is not valid:\n', datacubepath))
+  } else {
+    rhdf5::H5Fclose(hdf)
+  }
+
+  #get properties
+  prop <- ebv_properties(filepath, datacubepath)
+
+  #timestep check
+  #check if timestep is valid type
+  if (class(timestep)=='numeric'){
+    for (t in timestep){
+      if (! as.integer(t)==t){
+        stop('Timestep has to be an integer or a list of integers.')
+      }
+    }
+  } else {
+    stop('Timestep has to be of class numeric.')
+  }
+
+  #check timestep range
+  for (t in timestep){
+    max_time <- prop@spatial_information@dimensions[3]
+    min_time <- 1
+    if (t>max_time | t<min_time){
+      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
+    }
+  }
+
+  #outputpath check
+  if (!is.null(outputpath)){
+    if(!dir.exists(dirname(outputpath))){
+      stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
+    }
+    #check if outpufile exists if overwrite is disabled
+    if(!overwrite){
+      if(file.exists(outputpath)){
+        stop('Output file already exists. Change name or enable overwrite.')
+      }
+    }
+  }
+
+  #get temp directory
+  temp_path <- getOption('temp_directory')[[1]]
+  if (is.null(temp_path)){
+    stop('This function creates a temporary file. Please specify a temporary directory via options.')
+  } else if (!dir.exists(temp_path)){
+    stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+  }
+
+  ####end initial checks####
+
+  #read shapefile
+  subset <- rgdal::readOGR(shp, verbose=FALSE)
+
+  #get_epsg of shp
+  temp_epsg <- pkgcond::suppress_warnings(rgdal::showEPSG(sp::proj4string(subset)))
+  if(pkgcond::suppress_warnings(is.na(as.integer(temp_epsg)))){
+    stop(paste0('The given srs of the shapefile is not supported.\n', temp_epsg))
+  } else {
+    epsg.shp <- as.integer(temp_epsg)
+  }
+
+  #get epsg of ncdf
+  epsg.nc <- prop@spatial_information@epsg
+
+  #original extent
+  extent.org <- raster::extent(subset)
+
+  #reproject shp if necessary to epsg of ncdf
+  if (epsg.shp != epsg.nc){
+    subset <- sp::spTransform(subset, pkgcond::suppress_warnings(sp::CRS(paste0('EPSG:',epsg.nc))))
+    tempshp <- paste0(temp_path,'/temp_EBV_shp_subset')
+    if (dir.exists(tempshp)){
+      unlink(tempshp, recursive = TRUE)
+    }
+    rgdal::writeOGR(subset, tempshp, layer = 'temp', driver='ESRI Shapefile')
+    shp <- paste0(tempshp, '/temp.shp')
+  }
+
+  #get extent of shp
+  extent.shp <- raster::extent(subset)
+
+  #get extent of ncdf file
+  ext <- prop@spatial_information@extent
+
+  #get subset of ncdf #checks for RAM
+  subset.nc <- ebv_data_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore.RAM = ignore.RAM)
+
+  #get extent of raster
+  extent.raster <- raster::extent(subset.nc)
+
+  #get resolution of ncdf
+  resolution.nc <- raster::res(subset.nc)
+
+  #rasterize shp - with resoultion of ncdf, burn value 1 (temp rasterlayer --> mask)
+  #check ram
+  dim.subset <- dim(subset.nc)
+  #check needed RAM
+  if (!ignore.RAM){
+    ebv_i_check_ram(dim.subset, timestep, 'H5T_STD_I8BE') #type=placeholder for integer
+  } else{
+    message('RAM capacities are ignored.')
+  }
+
+
+  #define output
+  tempraster <- paste0(temp_path,'/temp_EBV_shp_subset.tif')
+  #remove file in case it exists, as gdal_rasterize has no overwrite option
+  if(file.exists(tempraster)){
+    file.remove(tempraster)
+  }
+  temp.raster <- gdalUtils::gdal_rasterize(shp, tempraster, at = at, burn = 1,
+                                te = c(extent.raster@xmin, extent.raster@ymin,
+                                       extent.raster@xmax, extent.raster@ymax),
+                                tr = resolution.nc, ot ='Byte',
+                                output_Raster = TRUE)
+
+  #mask the subset
+  #check needed RAM
+  if (!ignore.RAM){
+    ebv_i_check_ram(dim.subset, timestep, 'H5T_NATIVE_FLOAT') #type=placeholder for double
+  } else{
+    message('RAM capacities are ignored.')
+  }
+  subset.raster <- raster::mask(subset.nc, temp.raster, maskvalue=0, overwrite=TRUE)
+
+  #set nodata value
+  subset.raster <- raster::reclassify(subset.raster, cbind(prop@entity_information@fillvalue, NA))
+
+  #remove temp.raster
+  file.remove(tempraster)
+
+  #remove temp shp
+  if (epsg.shp != epsg.nc){
+    unlink(tempshp, recursive = TRUE)
+  }
+
+  #return raster or tif
+  if(!is.null(outputpath)){
+    raster::writeRaster(subset.raster, outputpath, format = "GTiff", overwrite = overwrite)
+    return(outputpath)
+  } else {
+    return(subset.raster)
+  }
+
+}
