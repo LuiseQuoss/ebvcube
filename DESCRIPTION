@@ -22,4 +22,6 @@ Imports:
     pkgcond,
     rgdal,
     methods,
-    utils
+    utils,
+    HDF5Array,
+    raster
