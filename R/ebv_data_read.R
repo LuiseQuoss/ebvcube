@@ -6,9 +6,9 @@
 #' @param datacubepath Path to the datacube (use ebv_datacubepaths()).
 #' @param timestep Choose one or several timesteps (vector).
 #' @param delayed Default. Returns data as DelayedArray object. More timesteps are not returned as a 3D array but as a list of the DelayedArrays (one array per band).
-#' @param sparse Set to True if the data contains a lot emtpy raster cells. Only relevant for DelayedArray. No further implementation by now.
-#' @param raster Set to True and 'delayed' to False to get a raster. If both arguments are set to False the function returns an array.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the data. Can be switched off (set to True).
+#' @param sparse Set to TRUE if the data contains a lot emtpy raster cells. Only relevant for DelayedArray. No further implementation by now.
+#' @param raster Set to TRUE and 'delayed' to FALSE to get a raster. If both arguments are set to FALSE the function returns an array.
+#' @param ignore.RAM Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).
 #'
 #' @return Array, Raster or DelayedArray object containing the data of the corresponding datacube and timestep(s).
 #' @export

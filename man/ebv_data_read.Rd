@@ -23,11 +23,11 @@ ebv_data_read(
 
 \item{delayed}{Default. Returns data as DelayedArray object. More timesteps are not returned as a 3D array but as a list of the DelayedArrays (one array per band).}
 
-\item{sparse}{Set to True if the data contains a lot emtpy raster cells. Only relevant for DelayedArray. No further implementation by now.}
+\item{sparse}{Set to TRUE if the data contains a lot emtpy raster cells. Only relevant for DelayedArray. No further implementation by now.}
 
-\item{raster}{Set to True and 'delayed' to False to get a raster. If both arguments are set to False the function returns an array.}
+\item{raster}{Set to TRUE and 'delayed' to FALSE to get a raster. If both arguments are set to FALSE the function returns an array.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the data. Can be switched off (set to True).}
+\item{ignore.RAM}{Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).}
 }
 \value{
 Array, Raster or DelayedArray object containing the data of the corresponding datacube and timestep(s).
