@@ -20,8 +20,7 @@
 #' out <- 'path/to/write/subset.tif'
 #' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), timestep = c(1,4,12))
 #' # out.path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, c(2,3))
-#' # out.path <- ebv_data_read_bb(file, datacubes[1], c(271985, 941837, 5232640, 6101151),
-#'               out, 1, epsg=32632, overwrite=T)
+#' # out.path <- ebv_data_read_bb(file, datacubes[1], c(271985, 941837, 5232640, 6101151), out, 1, epsg=32632, overwrite=T)
 ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timestep = 1, epsg = 4326, overwrite=FALSE, ignore.RAM = FALSE){
   ####initial tests start
   #are all arguments given?
