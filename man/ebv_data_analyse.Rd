@@ -27,3 +27,6 @@ Title
 \examples{
 #pending
 }
+\seealso{
+\code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}} and \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}} for the usage of subsets
+}

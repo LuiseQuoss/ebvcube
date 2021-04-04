@@ -39,7 +39,7 @@ ebv_data_change_res(
 Default: returns the outputpath of the GeoTiff with the new resolution. Optional: return the raster object with the new resolution.
 }
 \description{
-Change the resolution of the data of one datacube of a EBV NetCDF based on another EBV NetCDF or a given resolution.
+Change the resolution of the data of one datacube of a EBV NetCDF based on another EBV NetCDF or a given resolution. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
 }
 \examples{
 file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")

@@ -1,0 +1,218 @@
+#This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
+ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE){
+  ####initial tests start
+  #are all arguments given?
+  if(missing(data)){
+    stop('Data argument is missing.')
+  }
+  if(missing(filepath)){
+    stop('Filepath argument is missing.')
+  }
+  if(missing(datacubepath)){
+    stop('Datacubepath argument is missing.')
+  }
+  #are all arguments given?
+  if(missing(outputpath)){
+    stop('Outputpath argument is missing.')
+  }
+
+  #filepath check
+  if (!file.exists(filepath)){
+    stop(paste0('File does not exist.\n', filepath))
+  }
+  if (!endsWith(filepath, '.nc')){
+    stop(paste0('File ending is wrong. File cannot be processed.'))
+  }
+
+  #file closed?
+  ebv_i_file_opened(filepath)
+
+  #variable check
+  hdf <- rhdf5::H5Fopen(filepath)
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
+    rhdf5::H5Fclose(hdf)
+    stop(paste0('The given variable is not valid:\n', datacubepath))
+  } else {
+    rhdf5::H5Fclose(hdf)
+  }
+  #outputpath check
+  if(!dir.exists(dirname(outputpath))){
+    stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
+  }
+  #check if outpufile exists if overwrite is disabled
+  if(!overwrite){
+    if(file.exists(outputpath)){
+      stop('Output file already exists. Change name or enable overwrite.')
+    }
+  }
+
+  #check temp directory
+  temp_path <- getOption('temp_directory')[[1]]
+  if (is.null(temp_path)){
+    stop('This function creates a temporary file. Please specify a temporary directory via options.')
+  } else if (!dir.exists(temp_path)){
+    stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+  }
+
+  #######initial test end
+
+  #get properties
+  prop <- ebv_properties(filepath, datacubepath)
+
+  if (class(data) == "DelayedMatrix"){ #class(data)=="DelayedArray" |
+    #data from H5Array - on disk
+    message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
+
+    #derive other variables
+    name <- stringr::str_remove(basename(outputpath),'.tif')
+    temp.tif <- paste0(temp_path, '/temp_EBV_write_data.tif')
+
+    #temp.tif must be new file, remove tempfile
+    if (file.exists(temp.tif)){
+      file.remove(temp.tif)
+    }
+
+    #turn data back
+    data <- t(data[nrow(data):1,])
+    data <- data[,ncol(data):1]
+
+    out <- HDF5Array::writeHDF5Array(
+      data,
+      filepath = temp.tif,
+      name = name
+    )
+
+    #get output type ot for gdal
+    type.long <- prop@entity_information@type
+    ot <- ebv_i_type_r(type.long)
+
+    #add CRS, shift to -180,90, add nodata value
+    if(!is.null(ot)){
+      gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
+                     a_ullr = c(prop@spatial_information@extent[1], prop@spatial_information@extent[4], prop@spatial_information@extent[2], prop@spatial_information@extent[3]),
+                     a_srs = paste0('EPSG:', prop@spatial_information@epsg),
+                     a_nodata=prop@entity_information@fillvalue,
+                     ot = ot)
+    } else{
+      gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
+                     a_ullr = c(prop@spatial_information@extent[1], prop@spatial_information@extent[4], prop@spatial_information@extent[2], prop@spatial_information@extent[3]),
+                     a_srs = paste0('EPSG:', prop@spatial_information@epsg),
+                     a_nodata=prop@entity_information@fillvalue)
+    }
+
+    #delete temp file
+    if (file.exists(temp.tif)){
+      file.remove(temp.tif)
+    }
+
+  } else if(class(data)=='list'){
+    #data from H5Array - on disk
+    message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
+
+    temps <- c()
+    #turn listed DelayedArrays into tif
+    for (i in 1:length(data)){
+      #derive other variables
+      name <- paste0(stringr::str_remove(basename(outputpath),'.tif'), '_', i)
+      #change tempname
+      temp.tif <- paste0(temp_path, '/temp_EBV_write_data_', i, '.tif')
+      #temp.tif must be new file, remove tempfile
+      if (file.exists(temp.tif)){
+        file.remove(temp.tif)
+      }
+
+      band <- data[[i]]
+      band <- t(band[nrow(band):1,])
+      band <- band[,ncol(band):1]
+
+      #write temp tif per timestep
+      out <- HDF5Array::writeHDF5Array(
+        band,
+        filepath = temp.tif,
+        name = name
+      )
+
+      temp.vrt <- paste0(temp_path, '/temp_EBV_write_data_', i, '.vrt')
+
+      #add filename to list
+      temps <- c(temps, temp.vrt)
+
+      #add georeference, shift to -180,-90,
+      gdalUtils::gdal_translate(temp.tif, temp.vrt, of='VRT', overwrite=TRUE,
+                     a_ullr = c(prop@spatial_information@extent[1], prop@spatial_information@extent[4], prop@spatial_information@extent[2], prop@spatial_information@extent[3]),
+                     a_srs = paste0('EPSG:', prop@spatial_information@epsg))#,
+      #a_nodata=prop@entity_information@fillvalue)
+    }
+
+    #merge all vrts to one vrt
+    temp.vrt <- paste0(temp_path, '/temp_EBV_write_data.vrt')
+    gdalUtils::gdalbuildvrt(temps, temp.vrt, separate=TRUE, overwrite=TRUE)
+
+    #get output type ot for gdal
+    type.long <- prop@entity_information@type
+    ot <- ebv_i_type_ot(type.long)
+
+    #gdal translate: add fillvalue, add ot if given, output final tif
+    if(!is.null(ot)){
+      gdalUtils::gdal_translate(temp.vrt, outputpath,
+                     a_nodata=prop@entity_information@fillvalue,
+                     overwrite=overwrite,
+                     ot=ot)
+    } else {
+      gdalUtils::gdal_translate(temp.vrt, outputpath,
+                     a_nodata=prop@entity_information@fillvalue,
+                     overwrite=overwrite)
+    }
+
+    #delete temp file
+    for (f in temps){
+      #delete tif
+      if (file.exists(paste0(stringr::str_remove(f, '.vrt'), '.tif'))){
+        file.remove(paste0(stringr::str_remove(f, '.vrt'), '.tif'))
+      }
+      #delete vrt
+      if (file.exists(f)){
+        file.remove(f)
+      }
+
+    }
+    #remove multilayer vrt
+    if (file.exists(temp.vrt)){
+      file.remove(temp.vrt)
+    }
+
+
+  }else if (class(data)=="array"| class(data)=="matrix"){
+    #data from array/matrix - in memory
+
+    if(length(dim(data))==2){
+      #convert to raster
+      r <- raster::raster(
+        data,
+        xmn=prop@spatial_information@extent[1], xmx=prop@spatial_information@extent[2],
+        ymn=prop@spatial_information@extent[3], ymx=prop@spatial_information@extent[4],
+        crs=prop@spatial_information@srs
+      )
+    } else {
+      #convert to raster
+      r <-raster::brick(
+        data,
+        xmn=prop@spatial_information@extent[1], xmx=prop@spatial_information@extent[2],
+        ymn=prop@spatial_information@extent[3], ymx=prop@spatial_information@extent[4],
+        crs=prop@spatial_information@srs
+      )
+    }
+
+    #NAvalue(r) <- prop@entity_information@fillvalue
+    r<- raster::mask(r, r, maskvalue=prop@entity_information@fillvalue)
+
+    #write raster to disk
+    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)
+    return(outputpath)
+
+  } else{
+    #not implemented, tell user
+    stop(paste0('Not implemented for class ', class(data), '.'))
+  }
+
+}
