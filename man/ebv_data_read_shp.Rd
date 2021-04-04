@@ -36,7 +36,7 @@ ebv_data_read_shp(
 Returns a raster object if no outputpath is given. Otherwise the subset is written onto the disk and the ouputpath is returned.
 }
 \description{
-Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a shapefile.
+Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a shapefile. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
 }
 \examples{
 file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")

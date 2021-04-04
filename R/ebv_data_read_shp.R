@@ -1,6 +1,7 @@
 #' Read subset (shapefile) of the data from EBV NetCDF
 #'
-#' @description Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a shapefile.
+#' @description Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a shapefile. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
+
 #'
 #' @param filepath Path to the NetCDF file.
 #' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
