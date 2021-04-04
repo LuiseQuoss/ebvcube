@@ -1,4 +1,10 @@
 #basics
+is.empty <- function(x){
+ if(length(x)==0){
+   return(TRUE)
+ }
+}
+
 ebv_i_os <- function(){
   temp <- Sys.info()
   return(as.character(temp[1]))
