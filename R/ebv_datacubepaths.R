@@ -7,8 +7,8 @@
 #' @export
 #'
 #' @examples
-#' filepath <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-#' ebv_datacubepaths(filepath)
+#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+#' datacubes <- ebv_datacubepaths(file)
 ebv_datacubepaths <- function(filepath){
   ####initial tests start ----
   #are all arguments given?

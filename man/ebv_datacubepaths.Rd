@@ -16,6 +16,6 @@ Dataframe containing the paths to access the datacubes and descriptions of scena
 Get the paths to the datacubes to access and read the data.
 }
 \examples{
-filepath <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-ebv_datacubepaths(filepath)
+file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+datacubes <- ebv_datacubepaths(file)
 }
