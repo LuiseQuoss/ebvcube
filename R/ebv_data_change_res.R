@@ -1,6 +1,6 @@
 #' Change the resoultion of the data from EBV NetCDF
 #'
-#' @description Change the resolution of the data of one datacube of a EBV NetCDF based on another EBV NetCDF or a given resolution.
+#' @description Change the resolution of the data of one datacube of a EBV NetCDF based on another EBV NetCDF or a given resolution. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
 #'
 #' @param filepath_src Path to the NetCDF file whose resolution should be changed.
 #' @param datacubepath_src Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]) whose resolution should be changed..
