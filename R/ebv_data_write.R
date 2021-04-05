@@ -1,4 +1,23 @@
-#This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
+#' Write the data on your disk as a GeoTiff
+#' @description After you extracted data from the EBV NetCDF and worked with it this funtion gives you the possibility to write it to disk as a GeoTiff. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
+#' @note Not yet implemented for subsets of the data (only whole spatial coverage of the corresponding EBV NetCDF).
+#'
+#' @param data Your data object. May be raster, array, DelayedMatrix or list of DelayedMatrix (see return values of [ebvnetcdf::ebv_data_read()])
+#' @param filepath Path to the NetCDF file you read the data from. Used for the detection of properties as spatial extent and epsg.
+#' @param datacubepath Path to the datacube you got the data from. Used for the detection of properties as data type and nodata value.
+#' @param outputpath Set the path where you want to write the data to disk as a GeoTiff.
+#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.
+#'
+#' @return Returns the outputpath.
+#' @export
+#'
+#' @examples
+#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+#' datacubes <- ebv_datacubepaths(file)
+#' # data <- ebv_data_read(file, datacubes[1,1], 1)
+#' # WORK WITH YOUR DATA
+#' # out <- 'path/to/write/the/data.tif'
+#' # ebv_data_write(data, file, datacubes[1,1], out)
 ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE){
   ####initial tests start
   #are all arguments given?
@@ -59,7 +78,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   #get properties
   prop <- ebv_properties(filepath, datacubepath)
 
-  if (class(data) == "DelayedMatrix"){ #class(data)=="DelayedArray" |
+  if (class(data) == "DelayedMatrix"){
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
 
