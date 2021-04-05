@@ -28,4 +28,5 @@ Imports:
     gdalUtils,
     colorspace,
     maptools,
-    lattice
+    lattice,
+    jsonlite
