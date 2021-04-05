@@ -1,4 +1,4 @@
-#' Add entity attributes to EBV NetCDF
+#' Add entity attributes to self-created EBV NetCDF
 #'
 #' @description Add long_name, label, units and fillvalue to an entitiy of a self-created EBV NetCDF. First use [ebvnetcdf::ebv_ncdf_create()] to create a NetCDF afterwards use this functiong to add attributes.
 #'

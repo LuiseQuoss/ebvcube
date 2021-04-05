@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_ncdf_entity_attributes.R
 \name{ebv_ncdf_entity_attributes}
 \alias{ebv_ncdf_entity_attributes}
-\title{Add entity attributes to EBV NetCDF}
+\title{Add entity attributes to self-created EBV NetCDF}
 \usage{
 ebv_ncdf_entity_attributes(
   filepath,
