@@ -1,21 +1,25 @@
-#' Title
+#' Get a simple explorative analysis of a EBV NetCDF
 #'
-#' @param filepath
-#' @param datacubepath
-#' @param subset
-#' @param timestep
-#' @param at
-#' @param epsg
-#' @param numerical
-#' @param na.rm
+#' @description Get basic measurements of the data, including min, max, mean, sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
+#' @param filepath Path to the NetCDF file.
+#' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
+#' @param subset Optional if you want measurements on a smaller subset. Possible via the path to a shapefile or the indication of a bounding box defining the subset. Else the whole area is analysed.
+#' @param timestep Choose one or several timesteps (vector).
+#' @param at Optional. Only relevant if the subset is indicated by a shapefile. See [ebvnetcdf::ebv_data_read_shp()].
+#' @param epsg Optional. Only relevant if the subset is indicated by a boudning box and the coordinate reference system differes from WGS84. See [ebvnetcdf::ebv_data_read_bb()].
+#' @param numerical Default: TRUE. Change to FALSE if the data covered by the NetCDF contains categorical data.
+#' @param na.rm Default: TRUE. NA values are removed in the analysis. Change to FALSE to include NAs.
 #'
-#' @return pending
+#' @return Returns a S4 object containing the basic measurements.
 #' @export
-#' @seealso [ebvnetcdf::ebv_data_read_bb()] and [ebvnetcdf::ebv_data_read_shp()] for the usage of subsets
+#' @seealso [ebvnetcdf::ebv_data_read_bb()] and [ebvnetcdf::ebv_data_read_shp()] for the usage of subsets.
 #'
 #' @importFrom stats quantile
 #' @examples
-#' #pending
+#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+#' datacubes <- ebv_datacubepaths(file)
+#' # data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
+#' # data.germany.jan <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at=TRUE, epsg = 4326, numerical=TRUE, na.rm=TRUE){
   ####initial tests start ----
   #are all arguments given?

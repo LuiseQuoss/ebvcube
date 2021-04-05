@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_data_analyse.R
 \name{ebv_data_analyse}
 \alias{ebv_data_analyse}
-\title{Title}
+\title{Get a simple explorative analysis of a EBV NetCDF}
 \usage{
 ebv_data_analyse(
   filepath,
@@ -16,17 +16,34 @@ ebv_data_analyse(
 )
 }
 \arguments{
-\item{na.rm}{}
+\item{filepath}{Path to the NetCDF file.}
+
+\item{datacubepath}{Path to the datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+
+\item{subset}{Optional if you want measurements on a smaller subset. Possible via the path to a shapefile or the indication of a bounding box defining the subset. Else the whole area is analysed.}
+
+\item{timestep}{Choose one or several timesteps (vector).}
+
+\item{at}{Optional. Only relevant if the subset is indicated by a shapefile. See \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}}.}
+
+\item{epsg}{Optional. Only relevant if the subset is indicated by a boudning box and the coordinate reference system differes from WGS84. See \code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}}.}
+
+\item{numerical}{Default: TRUE. Change to FALSE if the data covered by the NetCDF contains categorical data.}
+
+\item{na.rm}{Default: TRUE. NA values are removed in the analysis. Change to FALSE to include NAs.}
 }
 \value{
-pending
+Returns a S4 object containing the basic measurements.
 }
 \description{
-Title
+Get basic measurements of the data, including min, max, mean, sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 }
 \examples{
-#pending
+file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+datacubes <- ebv_datacubepaths(file)
+# data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
+# data.germany.jan <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 }
 \seealso{
-\code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}} and \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}} for the usage of subsets
+\code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}} and \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}} for the usage of subsets.
 }
