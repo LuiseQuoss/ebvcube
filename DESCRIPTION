@@ -25,4 +25,7 @@ Imports:
     utils,
     HDF5Array,
     raster,
-    gdalUtils
+    gdalUtils,
+    colorspace,
+    maptools,
+    lattice
