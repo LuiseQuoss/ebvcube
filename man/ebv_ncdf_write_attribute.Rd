@@ -11,7 +11,7 @@ ebv_ncdf_write_attribute(filepath, attribute_name, value, levelpath = NULL)
 
 \item{attribute_name}{Name of the attribute that should be changed.}
 
-\item{value}{New value of the attribute that should be assigned.}
+\item{value}{New value that should be assigned to the attribute.}
 
 \item{levelpath}{Default: NULL. Location of the attribute. The default means that the attribute is located at a global level. If the attribute is located at the datacubelevel just add the datacubepath. For the metric level the value may be 'metric00' or 'scenario00/metric00'. This path depends on whether the NetCDF hierarchy has scenarios or not.}
 }
@@ -20,6 +20,9 @@ Adds the new value to the attribute. Check your results using \code{\link[=ebv_p
 }
 \description{
 Write a new attribute value to an EBV NetCDF. Not all attributes can be changed. Some are always created automatically, e.g. the crs, time and var_entity datasets. In the worst case you have to re-create the NetCDF file.
+}
+\note{
+You can check out the attribute names using \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
 }
 \examples{
 # file <- 'path/to/created/netcdf/file.nc'

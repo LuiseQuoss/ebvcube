@@ -4,8 +4,10 @@
 #'
 #' @param filepath Path to the NetCDF file.
 #' @param attribute_name Name of the attribute that should be changed.
-#' @param value New value of the attribute that should be assigned.
+#' @param value New value that should be assigned to the attribute.
 #' @param levelpath Default: NULL. Location of the attribute. The default means that the attribute is located at a global level. If the attribute is located at the datacubelevel just add the datacubepath. For the metric level the value may be 'metric00' or 'scenario00/metric00'. This path depends on whether the NetCDF hierarchy has scenarios or not.
+#'
+#' @note You can check out the attribute names using \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
 #'
 #' @return Adds the new value to the attribute. Check your results using [ebvnetcdf::ebv_properties()].
 #' @export
