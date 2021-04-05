@@ -27,7 +27,7 @@ ebv_plot_map(
 Plots a map into the 'Plots' pane in RStudio.
 }
 \description{
-Map plot of the data of one timestep in one datacube of an EBV NetCDF.
+Map plot of the data of one timestep in one datacube of an EBV NetCDF. This functions sometimes writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
 }
 \examples{
 file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
