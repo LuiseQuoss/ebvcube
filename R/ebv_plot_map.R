@@ -8,6 +8,8 @@
 #' @param countries Default: TRUE. Simple country outlines will be plotted on top of the raster data. Disable by setting this option to FALSE.
 #' @param col.rev Default: TRUE. Set to FALSE if you want the color ramp to be the other way around.
 #'
+#' @note Uses the country outlines data from the \href{https://cran.r-project.org/package=maptools}{maptools package}.
+#'
 #' @return Plots a map into the 'Plots' pane in RStudio.
 #' @export
 #' @importFrom utils data
@@ -16,7 +18,7 @@
 #' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
 #' datacubes <- ebv_datacubepaths(file)
 #' #ebv_plot_map(file, datacubes[1,1], 9)
-ebv_plot_map <- function(filepath, datacubepath, timestep, countries =TRUE, col.rev=TRUE){
+ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, col.rev=TRUE){
   # start initial tests ----
   #are all arguments given?
   if(missing(filepath)){
@@ -24,9 +26,6 @@ ebv_plot_map <- function(filepath, datacubepath, timestep, countries =TRUE, col.
   }
   if(missing(datacubepath)){
     stop('Datacubepath argument is missing.')
-  }
-  if(missing(timestep)){
-    stop('Timestep argument is missing.')
   }
 
   #filepath check
@@ -153,8 +152,6 @@ ebv_plot_map <- function(filepath, datacubepath, timestep, countries =TRUE, col.
 
   #plot with country outlines ----
   if (countries){
-    utils::data(wrld_simpl, package='maptools')
-
     if(epsg != 4326){
       wrld_simpl <- pkgcond::suppress_warnings(sp::spTransform(wrld_simpl, sp::CRS(SRS_string = paste0('EPSG:', epsg))))
     }
