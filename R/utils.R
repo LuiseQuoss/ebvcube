@@ -1,4 +1,7 @@
-#basics
+#' Checks if a vector is empty
+#' @param x A vector.
+#' @return Logical.
+#' @noRd
 is.empty <- function(x){
  if(length(x)==0){
    return(TRUE)
@@ -7,11 +10,18 @@ is.empty <- function(x){
  }
 }
 
+#' Checks the OS of the PC
+#' @return Character. Name of OS.
+#' @noRd
 ebv_i_os <- function(){
   temp <- Sys.info()
   return(as.character(temp[1]))
 }
 
+#' Checks if the NetCDF file is opened somewhere else.
+#' @param filepath Path to NetCDF file.
+#' @return Logical.
+#' @noRd
 ebv_i_file_opened <- function(filepath){
   if (ebv_i_os() =='Linux'){
     stdout <- paste0('lsof -t ', filepath, ' | wc -w')
@@ -40,6 +50,9 @@ ebv_i_file_opened <- function(filepath){
   }
 }
 
+#' Checks current memory usage
+#' @return Vector. First value: total RAM, second value: free RAM.
+#' @noRd
 ebv_i_ram <- function(){
   temp <- as.character(memuse::Sys.meminfo())
   #total ram
@@ -51,7 +64,10 @@ ebv_i_ram <- function(){
   return(c(total, free))
 }
 
-#type functions
+#' Turns hdf5 type of NetCDF into R type
+#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from [ebvnetcdf::ebv_properties()].
+#' @return Character. Short type: double or integer.
+#' @noRd
 ebv_i_type_r <- function(type.long){
   parts <- stringr::str_split(type.long, '_')
   if(parts[[1]][3] == "LDOUBLE"){
@@ -82,6 +98,10 @@ ebv_i_type_r <- function(type.long){
   return(type.short)
 }
 
+#' Turns hdf5 type of NetCDF into gdal type
+#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from [ebvnetcdf::ebv_properties()].
+#' @return Character. Gdal type, specified with 'ot' argument.
+#' @noRd
 ebv_i_type_ot <- function(type.long){
   #####all types for gdal
   ot.list <-c('Byte', 'UInt16', 'Int16', 'UInt32', 'Int32', 'Float32', 'Float64', 'CInt16', 'CInt32', 'CFloat32', 'CFloat64')
@@ -187,6 +207,10 @@ ebv_i_type_ot <- function(type.long){
   return(ot)
 }
 
+#' Turns hdf5 type of NetCDF into raster type
+#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from [ebvnetcdf::ebv_properties()].
+#' @return Character. Raster type of raster package in R.
+#' @noRd
 ebv_i_type_raster <- function(datanotation, byteorder){
   types.raster <- c('LOG1S', 'INT1S', 'INT2S', 'INT4S', 'INT8S', 'INT1U', 'INT2U', 'FLT4S', 'FLT8S')
   type.hdf <- ''
@@ -234,7 +258,12 @@ ebv_i_type_raster <- function(datanotation, byteorder){
   return(type.hdf)
 }
 
-#transform bb and ram check
+#' Transforms the bounding boxs to another epsg. Used in [ebvnetcdf::ebv_data_read_bb()].
+#' @param bb Bounding box corresponding to src_epsg.
+#' @param src_epsg Current epsg of the bounding box.
+#' @param dest_epsg New epsg of the bounding box.
+#' @return Vector. Bounding box values with dest_epsg.
+#' @noRd
 ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
   #src epsg: epsg given for the bb
   #dest epsg: epsg of the nc --> epsg of the returned bb
@@ -254,6 +283,12 @@ ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
   return(bb_new)
 }
 
+#' Checks if there is enough memory to load the specified array.
+#' @param dims x and y dimensions.
+#' @param timestep Timesteps indicated by user - uses the length of it.
+#' @param type R type returned by [ebvnetcdf::ebv_i_type_r()].
+#' @return Throws an error if the RAM restrictions are surpassed.
+#' @noRd
 ebv_i_check_ram <- function(dims, timestep, type){
   #amount of pixels
   size <- dims[1]*dims[2]*length(timestep)
@@ -287,7 +322,11 @@ ebv_i_check_ram <- function(dims, timestep, type){
   }
 }
 
-#attribute functions
+#' Adds uint attribute to a specified h5object.
+#' @param h5obj H5object to write the attribute to, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param name Characer. Name of the attribute.
+#' @param data Numerical. Vaule to be written to Attribute.
+#' @noRd
 ebv_i_uint_att <- function(h5obj, name, data){
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
@@ -301,6 +340,11 @@ ebv_i_uint_att <- function(h5obj, name, data){
   rhdf5::H5Aclose(aid)
 }
 
+#' Adds int attribute to a specified h5object.
+#' @param h5obj H5object to write the attribute to, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param name Characer. Name of the attribute.
+#' @param data Numerical. Vaule to be written to Attribute.
+#' @noRd
 ebv_i_int_att <- function(h5obj, name, data){
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
@@ -314,6 +358,11 @@ ebv_i_int_att <- function(h5obj, name, data){
   rhdf5::H5Aclose(aid)
 }
 
+#' Adds numerical attribute to a specified h5object.
+#' @param h5obj H5object to write the attribute to, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param name Characer. Name of the attribute.
+#' @param data Numerical. Vaule to be written to Attribute.
+#' @noRd
 ebv_i_num_att <- function(h5obj, name, data){
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
@@ -327,6 +376,11 @@ ebv_i_num_att <- function(h5obj, name, data){
   rhdf5::H5Aclose(aid)
 }
 
+#' Adds character attribute to a specified h5object.
+#' @param h5obj H5object to write the attribute to, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param name Characer. Name of the attribute.
+#' @param data Characer. Vaule to be written to Attribute.
+#' @noRd
 ebv_i_char_att <- function(h5obj, name, data){
   count <- 1
   #data.split <- strsplit(data,'')[[1]]
@@ -351,6 +405,11 @@ ebv_i_char_att <- function(h5obj, name, data){
   rhdf5::H5Aclose(aid)
 }
 
+#' Reads the attribute value of specified h5object and attribute.
+#' @param h5obj H5object where the attribute is located, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param name Characer. Name of the attribute.
+#' @return Value of the attribute.
+#' @noRd
 ebv_i_read_att <-  function(h5obj, name){
   #check if attribute exists
   if(!rhdf5::H5Aexists(h5obj, name)){
