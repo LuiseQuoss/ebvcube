@@ -2,6 +2,8 @@
 is.empty <- function(x){
  if(length(x)==0){
    return(TRUE)
+ } else {
+   return(FALSE)
  }
 }
 
