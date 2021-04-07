@@ -8,9 +8,9 @@
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV NetCDFs
-which can be downloaded from the . It also provides some basic
-visualization. Advanced users can build their own NetCDFs with the EBV
-standard.
+which can be downloaded from the [Geobon Portal](portal.geobon.org). It
+also provides some basic visualization. Advanced users can build their
+own NetCDFs with the EBV standard.
 
 ## Installation
 
