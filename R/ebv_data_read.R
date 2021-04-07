@@ -1,6 +1,6 @@
 #' Read data from EBV NetCDF
 #'
-#' @description Read one or more layers from one datacube of the NetCDF file. Decide between in-memory array, in-memory raster or an array-like object (DelayedMatrix) pointing to the on-disk file. Latter is useful for data that exceeds your memory.
+#' @description Read one or more layers from one datacube of the NetCDF file. Decide between in-memory array, in-memory raster or an array-like object (DelayedMatrix) pointing to the on-disk NetCDF file. Latter is useful for data that exceeds your memory.
 #'
 #' @param filepath Path to the NetCDF file.
 #' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
@@ -9,6 +9,8 @@
 #' @param sparse Set to TRUE if the data contains a lot emtpy raster cells. Only relevant for DelayedMatrix. No further implementation by now.
 #' @param raster Set to TRUE and 'delayed' to FALSE to get a raster. If both arguments are set to FALSE the function returns an array.
 #' @param ignore.RAM Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).
+#'
+#' @note For working with the DelayedMatrix take a look at the \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-class}.
 #'
 #' @return Array, Raster or DelayedMatrix object containing the data of the corresponding datacube and timestep(s).
 #' @export
