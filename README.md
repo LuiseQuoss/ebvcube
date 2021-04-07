@@ -43,11 +43,28 @@ file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
 
 #get properties of one specific datacube - also holds the general file properties from above
 #this time you get the warning that the value_range does not exists. So don't take the displayed value_range seriously.
-#prop.non_forest_birds <- ebv_properties(file, datacubes[1,1], verbose=T)
+#prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
 ```
 
-### Plot some data to get a better impression
+### Plot the data to get a better impression
 
-### Get some data from the files to start working
+``` r
+# Plot a map of the datacube that we just looked at - it has 12 timesteps, mabe look at two different ones?
+# dc <- datacubes[1,1]
+# ebv_plot_map(file, dc, timestep = 1)
+# ebv_plot_map(file, dc, timestep = 6)
 
-### Take a peak on the creation of an EBV NetCDF
+# what was the data about again? Check the properties!
+# prop.dc@title
+# And the datacube?
+# prop.dc@entity_information@label
+
+# It's nice to see the global distribution, but how it the change of that datacube (non forest birds) over time? Let's take a look at the average. The function returns the values, catch them!
+# averages <- ebv_plot_indicator(file, dc)
+
+# It would be cool to have that for other indicators as well? Well you have to wait for an update of the package. Or maybe implement it yourself using the functions coming up next?
+```
+
+### Read the data from the files to start working
+
+### Take a peek on the creation of an EBV NetCDF
