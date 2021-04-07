@@ -39,9 +39,9 @@ Returns a raster object if no outputpath is given. Otherwise the subset is writt
 Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a bounding box.
 }
 \examples{
-file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-datacubes <- ebv_datacubepaths(file)
-out <- 'path/to/write/subset.tif'
+# file <- 'path/to/netcdf/file.nc'
+# datacubes <- ebv_datacubepaths(file)
+# out <- 'path/to/write/subset.tif'
 # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), timestep = c(1,4,12))
 # out.path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, c(2,3))
 # out.path <- ebv_data_read_bb(file, datacubes[1], c(271985, 941837, 5232640, 6101151), out, 1, epsg=32632, overwrite=T)

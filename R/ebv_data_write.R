@@ -12,8 +12,8 @@
 #' @export
 #'
 #' @examples
-#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-#' datacubes <- ebv_datacubepaths(file)
+#' # file <- 'path/to/netcdf/file.nc'
+#' # datacubes <- ebv_datacubepaths(file)
 #' # data <- ebv_data_read(file, datacubes[1,1], 1)
 #' # WORK WITH YOUR DATA
 #' # out <- 'path/to/write/the/data.tif'

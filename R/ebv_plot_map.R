@@ -15,9 +15,9 @@
 #' @importFrom utils data
 #'
 #' @examples
-#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-#' datacubes <- ebv_datacubepaths(file)
-#' #ebv_plot_map(file, datacubes[1,1], 9)
+#' # file <- 'path/to/netcdf/file.nc'
+#' # datacubes <- ebv_datacubepaths(file)
+#' # ebv_plot_map(file, datacubes[1,1], 9)
 ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, col.rev=TRUE){
   # start initial tests ----
   #are all arguments given?

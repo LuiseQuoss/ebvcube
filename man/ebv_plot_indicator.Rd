@@ -20,7 +20,7 @@ Displays a plot in 'Plots' pane in RStudio. Returns a vector of the averages.
 Plot the average (y-axis) of one datacube of a EBV NetCDF over time (x-axis).
 }
 \examples{
-file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-datacubes <- ebv_datacubepaths(file)
+# file <- 'path/to/netcdf/file.nc'
+# datacubes <- ebv_datacubepaths(file)
 #ebv_plot_indicator(file, datacubes[1,1])
 }

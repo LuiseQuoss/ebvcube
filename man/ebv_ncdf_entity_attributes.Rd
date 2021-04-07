@@ -35,5 +35,5 @@ Add long_name, label, units and fillvalue to an entitiy of a self-created EBV Ne
 \examples{
 # file <- 'path/to/self/created/netcdf.nc'
 # datacubes <- ebv_datacubepaths(file)
-#ebv_ncdf_entity_attributes(file, datacubes[1,1], 'European habitat suitability maps', 'Raised bog', 'Percentage', fillvalue=999)
+# ebv_ncdf_entity_attributes(file, datacubes[1,1], 'European habitat suitability maps', 'Raised bog', 'Percentage', fillvalue=999)
 }

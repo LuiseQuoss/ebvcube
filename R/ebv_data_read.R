@@ -14,8 +14,8 @@
 #' @export
 #'
 #' @examples
-#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-#' datacubes <- ebv_datacubepaths(file)
+#' # file <- 'path/to/netcdf/file.nc'
+#' # datacubes <- ebv_datacubepaths(file)
 #' # cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6))
 #' # cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
 #' # cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)

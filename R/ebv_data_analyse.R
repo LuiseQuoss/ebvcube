@@ -16,8 +16,8 @@
 #'
 #' @importFrom stats quantile
 #' @examples
-#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-#' datacubes <- ebv_datacubepaths(file)
+#' # file <- 'path/to/netcdf/file.nc'
+#' # datacubes <- ebv_datacubepaths(file)
 #' # data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
 #' # data.germany.jan <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at=TRUE, epsg = 4326, numerical=TRUE, na.rm=TRUE){

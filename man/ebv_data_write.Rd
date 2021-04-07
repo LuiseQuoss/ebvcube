@@ -27,8 +27,8 @@ After you extracted data from the EBV NetCDF and worked with it this funtion giv
 Not yet implemented for subsets of the data (only whole spatial coverage of the corresponding EBV NetCDF).
 }
 \examples{
-file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-datacubes <- ebv_datacubepaths(file)
+# file <- 'path/to/netcdf/file.nc'
+# datacubes <- ebv_datacubepaths(file)
 # data <- ebv_data_read(file, datacubes[1,1], 1)
 # WORK WITH YOUR DATA
 # out <- 'path/to/write/the/data.tif'

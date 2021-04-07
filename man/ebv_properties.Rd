@@ -9,7 +9,7 @@ ebv_properties(filepath, datacubepath = NULL, verbose = FALSE)
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
 
-\item{datacubepath}{Optional. Path to the datacube (use ebv_datacubepaths()).}
+\item{datacubepath}{Optional. Path to the datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{verbose}{Set to True to obtain all warnings.}
 }
@@ -20,8 +20,8 @@ S4 class containing information about file or file and datacube depending on inp
 Structured access to all attributes of the NetCDF file.
 }
 \examples{
-file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-datacubes <- ebv_datacubepaths(file)
-#prop_file <- ebv_properties(file)
-#prop_dc <- ebv_properties(file, datacubes[1,1])
+# file <- 'path/to/netcdf/file.nc'
+# datacubes <- ebv_datacubepaths(file)
+# prop_file <- ebv_properties(file)
+# prop_dc <- ebv_properties(file, datacubes[1,1])
 }

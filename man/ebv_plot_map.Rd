@@ -33,7 +33,7 @@ Map plot of the data of one timestep in one datacube of an EBV NetCDF. This func
 Uses the country outlines data from the \href{https://cran.r-project.org/package=maptools}{maptools package}.
 }
 \examples{
-file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-datacubes <- ebv_datacubepaths(file)
-#ebv_plot_map(file, datacubes[1,1], 9)
+# file <- 'path/to/netcdf/file.nc'
+# datacubes <- ebv_datacubepaths(file)
+# ebv_plot_map(file, datacubes[1,1], 9)
 }

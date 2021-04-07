@@ -39,8 +39,8 @@ Returns a S4 object containing the basic measurements.
 Get basic measurements of the data, including min, max, mean, sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 }
 \examples{
-file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-datacubes <- ebv_datacubepaths(file)
+# file <- 'path/to/netcdf/file.nc'
+# datacubes <- ebv_datacubepaths(file)
 # data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
 # data.germany.jan <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 }

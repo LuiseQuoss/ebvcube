@@ -15,7 +15,7 @@
 #' @examples
 #' # file <- 'path/to/self/created/netcdf.nc'
 #' # datacubes <- ebv_datacubepaths(file)
-#' #ebv_ncdf_entity_attributes(file, datacubes[1,1], 'European habitat suitability maps', 'Raised bog', 'Percentage', fillvalue=999)
+#' # ebv_ncdf_entity_attributes(file, datacubes[1,1], 'European habitat suitability maps', 'Raised bog', 'Percentage', fillvalue=999)
 ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label, units, fillvalue=NULL){
   ### start initial test ----
   #are all arguments given?

@@ -16,11 +16,11 @@
 #' @export
 #'
 #' @examples
-#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-#' datacubes <- ebv_datacubepaths(file)
-#' res1 <- 'path/to/NetCDF/with/different/resolution.nc'
-#' res2 <- c(1,1,4326)
-#' out <- 'path/to/save/tif/with/new/res.tif'
+#' # file <- 'path/to/netcdf/file.nc'
+#' # datacubes <- ebv_datacubepaths(file)
+#' # res1 <- 'path/to/NetCDF/with/different/resolution.nc'
+#' # res2 <- c(1,1,4326)
+#' # out <- 'path/to/save/tif/with/new/res.tif'
 #' # ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
 #' # data <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, overwrite=T)
 ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,

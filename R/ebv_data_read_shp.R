@@ -17,10 +17,10 @@
 #' @seealso [ebvnetcdf::ebv_data_read_bb()] for more examples
 #'
 #' @examples
-#' file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-#' shp <- 'path/to/subset.shp'
-#' datacubes <- ebv_datacubepaths(file)
-#' out <- 'path/to/write/subset.tif'
+#' # file <- 'path/to/netcdf/file.nc'
+#' # datacubes <- ebv_datacubepaths(file)
+#' # shp <- 'path/to/subset.shp'
+#' # out <- 'path/to/write/subset.tif'
 #' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
 #'
 ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, timestep = 1, at = TRUE, overwrite=FALSE, ignore.RAM=FALSE){
