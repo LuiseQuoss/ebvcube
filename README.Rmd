@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV NetCDFs which can be downloaded from the
-[Geobon Portal](portal.geobon.org). It also provides some basic visualization. Advanced users can build their own NetCDFs with the EBV standard.
+[Geobon Portal](https://portal.geobon.org/). It also provides some basic visualization. Advanced users can build their own NetCDFs with the EBV standard.
 
 
 ## Installation
