@@ -7,7 +7,8 @@ Authors@R:
            role = c("aut", "cre"),
            email = "luise.quoss@idiv.de",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: This package can be used to easily access the data of the EBV NetCDFs which can be downloaded here: portal.geobon.org. It also provides some basic visualization. Advanced users can build there own NetCDFs with the EBV standard.
+Description: This package can be used to easily access the data of the EBV NetCDFs which can be downloaded here: portal.geobon.org. 
+    It also provides some basic visualization. Advanced users can build their own NetCDFs with the EBV standard.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
 Encoding: UTF-8
