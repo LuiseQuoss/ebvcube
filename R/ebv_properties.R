@@ -3,7 +3,7 @@
 #' @description Structured access to all attributes of the NetCDF file.
 #'
 #' @param filepath Path to the NetCDF file.
-#' @param datacubepath Optional. Path to the datacube (use ebv_datacubepaths()).
+#' @param datacubepath Optional. Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
 #' @param verbose Set to True to obtain all warnings.
 #'
 #' @return S4 class containing information about file or file and datacube depending on input.
