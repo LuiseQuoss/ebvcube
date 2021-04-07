@@ -55,19 +55,19 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label,
     rhdf5::H5Fclose(hdf)
   }
 
-  #check if attribute arguments have right type
-  if(!HDF5Array::type(long_name)=='character'){
-    stop('Long_name argument has to be of type character.')
+  #check if attribute arguments have right class
+  if(!class(long_name)=='character'){
+    stop('Long_name argument has to be of class character.')
   }
-  if(!HDF5Array::type(label)=='character'){
-    stop('Label argument has to be of type character.')
+  if(!class(label)=='character'){
+    stop('Label argument has to be of class character.')
   }
-  if(!HDF5Array::type(units)=='character'){
-    stop('Units argument has to be of type character.')
+  if(!class(units)=='character'){
+    stop('Units argument has to be of class character.')
   }
   if(!is.null(fillvalue)){
-    if(!HDF5Array::type(fillvalue)=='double'){
-      stop('Fillvalue argument has to be of type double')
+    if(!class(fillvalue)=='numeric'){
+      stop('Fillvalue argument has to be of class numeric')
     }
   }
 
