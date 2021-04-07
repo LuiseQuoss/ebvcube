@@ -22,7 +22,9 @@ with:
 devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de') 
 ```
 
-## Take a very first look at the file
+## Working with the package - a quick intro
+
+### Take a very first look at the file
 
 With these two functions you get a basic impression what data you can
 get from the EBV NetCDF.
@@ -43,8 +45,8 @@ file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
 #prop.non_forest_birds <- ebv_properties(file, datacubes[1,1], verbose=T)
 ```
 
-## Plot some data to get a better impression
+### Plot some data to get a better impression
 
-## Get some data from the files to start working
+### Get some data from the files to start working
 
-## Take a peak on the creation of an EBV NetCDF
+### Take a peak on the creation of an EBV NetCDF
