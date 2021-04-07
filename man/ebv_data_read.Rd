@@ -33,7 +33,10 @@ ebv_data_read(
 Array, Raster or DelayedMatrix object containing the data of the corresponding datacube and timestep(s).
 }
 \description{
-Read one or more layers from one datacube of the NetCDF file. Decide between in-memory array, in-memory raster or an array-like object (DelayedMatrix) pointing to the on-disk file. Latter is useful for data that exceeds your memory.
+Read one or more layers from one datacube of the NetCDF file. Decide between in-memory array, in-memory raster or an array-like object (DelayedMatrix) pointing to the on-disk NetCDF file. Latter is useful for data that exceeds your memory.
+}
+\note{
+For working with the DelayedMatrix take a look at the \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-class}.
 }
 \examples{
 # file <- 'path/to/netcdf/file.nc'
