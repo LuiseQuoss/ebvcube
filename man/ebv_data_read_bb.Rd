@@ -42,7 +42,8 @@ Read a subset of one or more layers from one datacube of the NetCDF file. Subset
 # file <- 'path/to/netcdf/file.nc'
 # datacubes <- ebv_datacubepaths(file)
 # out <- 'path/to/write/subset.tif'
+# bb_utm32 <- c(271985, 941837, 5232640, 6101151)
 # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), timestep = c(1,4,12))
-# out.path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, c(2,3))
-# out.path <- ebv_data_read_bb(file, datacubes[1], c(271985, 941837, 5232640, 6101151), out, 1, epsg=32632, overwrite=T)
+# path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, timestep = c(2,3))
+# path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
 }

@@ -48,5 +48,5 @@ Change the resolution of the data of one datacube of a EBV NetCDF based on anoth
 # res2 <- c(1,1,4326)
 # out <- 'path/to/save/tif/with/new/res.tif'
 # ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
-# data <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, overwrite=T)
+# d <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, T)
 }
