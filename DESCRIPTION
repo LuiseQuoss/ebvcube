@@ -27,7 +27,6 @@ Imports:
     raster,
     gdalUtils,
     colorspace,
-    maptools,
     lattice,
     jsonlite
 Depends: 
