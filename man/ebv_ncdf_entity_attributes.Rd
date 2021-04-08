@@ -16,7 +16,7 @@ ebv_ncdf_entity_attributes(
 \arguments{
 \item{filepath}{Path to the self-created NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Path to the datacube (use \code{\link{ebv_datacubepaths}}).}
 
 \item{long_name}{Value of the long_name attribute (character).}
 

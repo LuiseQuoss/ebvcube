@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ebvnetcdf
+# ebvnetcdf package
 
 <!-- badges: start -->
 
@@ -15,8 +15,7 @@ standard.
 
 ## Installation
 
-The ebvnetcdf packages is not yet released on CRAN. You can install it
-with:
+You can install the ebvnetcdf packages with:
 
 ``` r
 #visibility needs to be set to public first! Does not work right now. 
@@ -27,22 +26,34 @@ devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
 
 ### Take a very first look at the file
 
-With these two functions you get a basic impression what data you can
-get from the EBV NetCDF.
+With the following two functions you get a basic impression what data
+you can get from the EBV NetCDF. First we take a look at some basic
+properties of that file.
 
 ``` r
 library(ebvnetcdf)
 
 file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+#file <- system.file("external/cSAR_idiv_v1.nc", package="raster")
 
-# Take a look at some basic properties of that file.
-# prop.file <- ebv_properties(file)
+#prop.file <- ebv_properties(file)
+```
 
-# Get all possible paths to the datacubes - dataframe including the paths and also descriptions of e.g. metric and or scenario - take a look!
-# datacubes <- ebv_datacubepaths(file)
+Now let’s get all possible paths to the datacubes. The resulting
+dataframe including the paths and also descriptions of e.g. metric and
+or scenario - take a look\!
 
-# Get the properties of one specific datacube - fyi: the result also holds the general file properties from above.
-# This time you get the warning that the value_range does not exists. So don't take the displayed value_range seriously.
+``` r
+#datacubes <- ebv_datacubepaths(file)
+```
+
+We will get the properties of one specific datacube - fyi: the result
+also holds the general file properties from above. This time you get the
+warning that the value\_range does not exists. So don’t take the
+displayed value\_range
+seriously.
+
+``` r
 #prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
 ```
 
