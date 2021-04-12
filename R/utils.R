@@ -15,7 +15,7 @@ is.empty <- function(x){
 #' @noRd
 ebv_i_os <- function(){
   temp <- Sys.info()
-  return(as.character(temp[1]))
+  return(as.character(temp['sysname']))
 }
 
 #' Checks if the NetCDF file is opened somewhere else.
