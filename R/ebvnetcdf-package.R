@@ -5,7 +5,7 @@
 #'   Portal}. It also provides some basic visualization of the data.  Advanced
 #'   users can build their own NetCDFs with the EBV standard using this package.
 #'
-#' @details This package contains three main usecases: reading the data and
+#' @details This package contains three main usecases: accessing the data and
 #'   visualising the data from the portal and creating your own data in the EBV
 #'   NetCDF standard. All function have a corresponding naming pattern:
 #'   ebv_data_ for data reading, ebv_plot_ for visualisation and ebv_netcdf_ for
