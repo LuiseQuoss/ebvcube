@@ -98,11 +98,10 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
       #data.all <- replace(data.all, c(which(data.all==fillvalue)), c(NA))
       #mask out fillvalue ----
       data.all <- replace(data.all, data.all==fillvalue, c(NA))
-      results <- c(data.raster, data.all)
+      results <- c(data.raster, data.all, 'NULL')
     },
     #change res ----
     error = function(cond){
-      print(cond)
       message(paste0('Data will be displayed in a lower resolution. May take up to a few minutes. Original resolution: ',
                      prop@spatial_information@resolution[1] , ', displayed resoultion: 1 degree.'))
       #check temp directory
@@ -121,13 +120,14 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
       #(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1, method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE)
       data.raster <- ebv_data_change_res(filepath, datacubepath, c(1,1, 4326), temp.map, timestep, return.raster = TRUE)
       data.raster <- data.raster[[1]] #get first layer of brick --> class = raster
-      data.all <- as.array(data.raster) #use only one layer for quantile analysis
-      results <- list(data.raster, data.all)
+      data.all <- raster::as.array(data.raster) #use only one layer for quantile analysis
+      results <- list(data.raster, data.all, temp.map)
       return(results)
     }
   )
   data.raster <- results[[1]]
   data.all <- results[[2]]
+  temp.map <- results[[3]]
 
   #get quantiles ----
   s <- stats::quantile(data.all, probs = seq(0, 1, 0.2), na.rm=TRUE)
@@ -189,7 +189,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   }
 
   #remove temporary file ----
-  if (exists('temp.map')){
+  if (temp.map!= 'NULL'){
     if (file.exists(temp.map)){
       file.remove(temp.map)
     }
