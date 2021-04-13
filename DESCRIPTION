@@ -19,19 +19,18 @@ Imports:
     colorspace,
     gdalUtils,
     graphics,
+    HDF5Array,
     jsonlite,
     lattice,
     memuse,
     methods,
     pkgcond,
     raster,
+    rhdf5,
     rgdal,
     sp,
     stats,
     stringr,
     utils
 Depends: 
-    R (>= 2.10)
-Remotes: 
-    bioc::HDF5Array, 
-    bioc::rhdf5
+    R (>= 2.10) 
