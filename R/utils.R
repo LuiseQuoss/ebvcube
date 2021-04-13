@@ -65,7 +65,8 @@ ebv_i_ram <- function(){
 }
 
 #' Turns hdf5 type of NetCDF into R type
-#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from [ebvnetcdf::ebv_properties()].
+#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from
+#'   [ebvnetcdf::ebv_properties()].
 #' @return Character. Short type: double or integer.
 #' @noRd
 ebv_i_type_r <- function(type.long){
@@ -99,7 +100,8 @@ ebv_i_type_r <- function(type.long){
 }
 
 #' Turns hdf5 type of NetCDF into gdal type
-#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from [ebvnetcdf::ebv_properties()].
+#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from
+#'   [ebvnetcdf::ebv_properties()].
 #' @return Character. Gdal type, specified with 'ot' argument.
 #' @noRd
 ebv_i_type_ot <- function(type.long){
@@ -208,7 +210,8 @@ ebv_i_type_ot <- function(type.long){
 }
 
 #' Turns hdf5 type of NetCDF into raster type
-#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from [ebvnetcdf::ebv_properties()].
+#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from
+#'   [ebvnetcdf::ebv_properties()].
 #' @return Character. Raster type of raster package in R.
 #' @noRd
 ebv_i_type_raster <- function(datanotation, byteorder){
@@ -258,7 +261,8 @@ ebv_i_type_raster <- function(datanotation, byteorder){
   return(type.hdf)
 }
 
-#' Transforms the bounding boxs to another epsg. Used in [ebvnetcdf::ebv_data_read_bb()].
+#' Transforms the bounding boxs to another epsg. Used in
+#' [ebvnetcdf::ebv_data_read_bb()].
 #' @param bb Bounding box corresponding to src_epsg.
 #' @param src_epsg Current epsg of the bounding box.
 #' @param dest_epsg New epsg of the bounding box.
@@ -323,7 +327,9 @@ ebv_i_check_ram <- function(dims, timestep, type){
 }
 
 #' Adds uint attribute to a specified h5object.
-#' @param h5obj H5object to write the attribute to, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param h5obj H5object to write the attribute to, see
+#'   \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5
+#'   package}.
 #' @param name Characer. Name of the attribute.
 #' @param data Numerical. Vaule to be written to Attribute.
 #' @noRd
@@ -341,7 +347,9 @@ ebv_i_uint_att <- function(h5obj, name, data){
 }
 
 #' Adds int attribute to a specified h5object.
-#' @param h5obj H5object to write the attribute to, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param h5obj H5object to write the attribute to, see
+#'   \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5
+#'   package}.
 #' @param name Characer. Name of the attribute.
 #' @param data Numerical. Vaule to be written to Attribute.
 #' @noRd
@@ -359,7 +367,9 @@ ebv_i_int_att <- function(h5obj, name, data){
 }
 
 #' Adds numerical attribute to a specified h5object.
-#' @param h5obj H5object to write the attribute to, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param h5obj H5object to write the attribute to, see
+#'   \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5
+#'   package}.
 #' @param name Characer. Name of the attribute.
 #' @param data Numerical. Vaule to be written to Attribute.
 #' @noRd
@@ -377,7 +387,9 @@ ebv_i_num_att <- function(h5obj, name, data){
 }
 
 #' Adds character attribute to a specified h5object.
-#' @param h5obj H5object to write the attribute to, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param h5obj H5object to write the attribute to, see
+#'   \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5
+#'   package}.
 #' @param name Characer. Name of the attribute.
 #' @param data Characer. Vaule to be written to Attribute.
 #' @noRd
@@ -406,7 +418,9 @@ ebv_i_char_att <- function(h5obj, name, data){
 }
 
 #' Reads the attribute value of specified h5object and attribute.
-#' @param h5obj H5object where the attribute is located, see \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5 package}.
+#' @param h5obj H5object where the attribute is located, see
+#'   \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5
+#'   package}.
 #' @param name Characer. Name of the attribute.
 #' @return Value of the attribute.
 #' @noRd

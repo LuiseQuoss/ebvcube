@@ -1,15 +1,25 @@
 #' Create an EBV NetCDF
 #'
-#' @description Create the core structure of the EBV NetCDF based on the json from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data and attributes will be added afterwards. See [ebvnetcdf::ebv_ncdf_add_data()] and [ebvnetcdf::ebv_ncdf_entity_attributes()] for the next steps.
+#' @description Create the core structure of the EBV NetCDF based on the json
+#'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
+#'   and attributes will be added afterwards. See
+#'   [ebvnetcdf::ebv_ncdf_add_data()] and
+#'   [ebvnetcdf::ebv_ncdf_entity_attributes()] for the next steps.
 #'
-#' @param jsonpath Path to the json file downloaded from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
+#' @param jsonpath Path to the json file downloaded from the
+#'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
 #' @param outputpath Set path where the NetCDF file should be created.
-#' @param entities.no Default: 0. Indicates how many entities there are be per metric.
-#' @param epsg Default: 4326 (WGS84). Defines the coordinate reference system via the corresponding epsg code.
-#' @param extent Default: c(-180,180,-90,90). Defines the extent of the data: c(xmin, xmax, ymin, ymax).
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.
+#' @param entities.no Default: 0. Indicates how many entities there are be per
+#'   metric.
+#' @param epsg Default: 4326 (WGS84). Defines the coordinate reference system
+#'   via the corresponding epsg code.
+#' @param extent Default: c(-180,180,-90,90). Defines the extent of the data:
+#'   c(xmin, xmax, ymin, ymax).
+#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
+#'   defined by 'outputpath'.
 #'
-#' @note To check out the results take a look at your NetCDF file with \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
+#' @note To check out the results take a look at your NetCDF file with
+#'   \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
 #'
 #' @return Creates the NetCDF at the 'outputpath' location.
 #' @export

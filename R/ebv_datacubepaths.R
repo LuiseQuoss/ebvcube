@@ -3,7 +3,8 @@
 #'
 #' @param filepath Path to the NetCDF file.
 #'
-#' @return Dataframe containing the paths to access the datacubes and descriptions of scenario, metric and entity if existing.
+#' @return Dataframe containing the paths to access the datacubes and
+#'   descriptions of scenario, metric and entity if existing.
 #' @export
 #'
 #' @examples

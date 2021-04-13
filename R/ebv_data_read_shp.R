@@ -4,15 +4,23 @@
 
 #'
 #' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
+#' @param datacubepath Path to the datacube (use
+#'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param shp Path to the shapefile defining the subset.
-#' @param outputpath Defaul: NULL, returns the data as a raster object in memory. Optional: set path to write subset as GeoTiff on disk, returns outputpath.
+#' @param outputpath Defaul: NULL, returns the data as a raster object in
+#'   memory. Optional: set path to write subset as GeoTiff on disk, returns
+#'   outputpath.
 #' @param timestep Choose one or several timesteps (vector).
-#' @param at Default: TRUE, all pixels touched by the polygon(s) will be updated. Set to FALSE to only include pixels that are on the line render path or have center points inside the polygon(s).
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).
+#' @param at Default: TRUE, all pixels touched by the polygon(s) will be
+#'   updated. Set to FALSE to only include pixels that are on the line render
+#'   path or have center points inside the polygon(s).
+#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
+#'   defined by 'outputpath'.
+#' @param ignore.RAM Checks if there is enough space in your memory to read the
+#'   data. Can be switched off (set to TRUE).
 #'
-#' @return Returns a raster object if no outputpath is given. Otherwise the subset is written onto the disk and the ouputpath is returned.
+#' @return Returns a raster object if no outputpath is given. Otherwise the
+#'   subset is written onto the disk and the ouputpath is returned.
 #' @export
 #' @seealso [ebvnetcdf::ebv_data_read_bb()] for more examples
 #'

@@ -18,25 +18,33 @@ ebv_data_read_bb(
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Path to the datacube (use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{bb}{Definition of subsset by bounding box: c(xmin, xmax, ymin, ymax).}
 
-\item{outputpath}{Defaul: NULL, returns the data as a raster object in memory. Optional: set path to write subset as GeoTiff on disk, returns outputpath.}
+\item{outputpath}{Defaul: NULL, returns the data as a raster object in
+memory. Optional: set path to write subset as GeoTiff on disk, returns
+outputpath.}
 
 \item{timestep}{Choose one or several timesteps (vector).}
 
-\item{epsg}{Default: 4326 (WGS84). Change accordingly if your bounding box coordinates are based on a different coordinate reference system.}
+\item{epsg}{Default: 4326 (WGS84). Change accordingly if your bounding box
+coordinates are based on a different coordinate reference system.}
 
-\item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.}
+\item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile
+defined by 'outputpath'.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Checks if there is enough space in your memory to read the
+data. Can be switched off (set to TRUE).}
 }
 \value{
-Returns a raster object if no outputpath is given. Otherwise the subset is written onto the disk and the ouputpath is returned.
+Returns a raster object if no outputpath is given. Otherwise the
+subset is written onto the disk and the ouputpath is returned.
 }
 \description{
-Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a bounding box.
+Read a subset of one or more layers from one datacube of the
+NetCDF file. Subset definition by a bounding box.
 }
 \examples{
 # file <- 'path/to/netcdf/file.nc'

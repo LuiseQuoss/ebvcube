@@ -1,18 +1,33 @@
 #' Change the resoultion of the data from EBV NetCDF
 #'
-#' @description Change the resolution of the data of one datacube of a EBV NetCDF based on another EBV NetCDF or a given resolution. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
+#' @description Change the resolution of the data of one datacube of a EBV
+#'   NetCDF based on another EBV NetCDF or a given resolution. This functions
+#'   writes temporary files on your disk. Speficy a directory for these setting
+#'   via options('temp_directory'='/path/to/temp/directory').
 #'
-#' @param filepath_src Path to the NetCDF file whose resolution should be changed.
-#' @param datacubepath_src Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]) whose resolution should be changed..
-#' @param resolution Either the path to a NetCDF file that determines the resolution or the resultion defined directly. The vector defining the resolution directly must contain three elements: the x-resoltion, the y-resolution and the corresponding epsg.
+#' @param filepath_src Path to the NetCDF file whose resolution should be
+#'   changed.
+#' @param datacubepath_src Path to the datacube (use
+#'   [ebvnetcdf::ebv_datacubepaths()]) whose resolution should be changed..
+#' @param resolution Either the path to a NetCDF file that determines the
+#'   resolution or the resultion defined directly. The vector defining the
+#'   resolution directly must contain three elements: the x-resoltion, the
+#'   y-resolution and the corresponding epsg.
 #' @param outputpath Set path to write subset as GeoTiff on disk.
 #' @param timestep Choose one or several timesteps (vector).
-#' @param method Resampling method, default: Average. Choose from: "near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1" and "q3". For detailed information see: \href{https://gdal.org/programs/gdalwarp.html}{gdalwarp}.
-#' @param return.raster Default: FALSE. Set to TRUE to directly get the corresponting raster object.
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).
+#' @param method Resampling method, default: Average. Choose from:
+#'   "near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1"
+#'   and "q3". For detailed information see:
+#'   \href{https://gdal.org/programs/gdalwarp.html}{gdalwarp}.
+#' @param return.raster Default: FALSE. Set to TRUE to directly get the
+#'   corresponting raster object.
+#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
+#'   defined by 'outputpath'.
+#' @param ignore.RAM Checks if there is enough space in your memory to read the
+#'   data. Can be switched off (set to TRUE).
 #'
-#' @return Default: returns the outputpath of the GeoTiff with the new resolution. Optional: return the raster object with the new resolution.
+#' @return Default: returns the outputpath of the GeoTiff with the new
+#'   resolution. Optional: return the raster object with the new resolution.
 #' @export
 #'
 #' @examples

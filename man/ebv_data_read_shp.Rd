@@ -18,22 +18,30 @@ ebv_data_read_shp(
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Path to the datacube (use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{shp}{Path to the shapefile defining the subset.}
 
-\item{outputpath}{Defaul: NULL, returns the data as a raster object in memory. Optional: set path to write subset as GeoTiff on disk, returns outputpath.}
+\item{outputpath}{Defaul: NULL, returns the data as a raster object in
+memory. Optional: set path to write subset as GeoTiff on disk, returns
+outputpath.}
 
 \item{timestep}{Choose one or several timesteps (vector).}
 
-\item{at}{Default: TRUE, all pixels touched by the polygon(s) will be updated. Set to FALSE to only include pixels that are on the line render path or have center points inside the polygon(s).}
+\item{at}{Default: TRUE, all pixels touched by the polygon(s) will be
+updated. Set to FALSE to only include pixels that are on the line render
+path or have center points inside the polygon(s).}
 
-\item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.}
+\item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile
+defined by 'outputpath'.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Checks if there is enough space in your memory to read the
+data. Can be switched off (set to TRUE).}
 }
 \value{
-Returns a raster object if no outputpath is given. Otherwise the subset is written onto the disk and the ouputpath is returned.
+Returns a raster object if no outputpath is given. Otherwise the
+subset is written onto the disk and the ouputpath is returned.
 }
 \description{
 Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a shapefile. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').

@@ -9,12 +9,14 @@ ebv_properties(filepath, datacubepath = NULL, verbose = FALSE)
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
 
-\item{datacubepath}{Optional. Path to the datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Optional. Path to the datacube (use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{verbose}{Set to True to obtain all warnings.}
 }
 \value{
-S4 class containing information about file or file and datacube depending on input.
+S4 class containing information about file or file and datacube
+depending on input.
 }
 \description{
 Structured access to all attributes of the NetCDF file.

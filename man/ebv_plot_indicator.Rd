@@ -9,15 +9,18 @@ ebv_plot_indicator(filepath, datacubepath, color = "dodgerblue4")
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Path to the datacube (use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{color}{Default: dodgerblue4. Change as you like.}
 }
 \value{
-Displays a plot in 'Plots' pane in RStudio. Returns a vector of the averages.
+Displays a plot in 'Plots' pane in RStudio. Returns a vector of the
+averages.
 }
 \description{
-Plot the average (y-axis) of one datacube of a EBV NetCDF over time (x-axis).
+Plot the average (y-axis) of one datacube of a EBV NetCDF over
+time (x-axis).
 }
 \examples{
 # file <- 'path/to/netcdf/file.nc'

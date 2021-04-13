@@ -14,26 +14,36 @@ ebv_ncdf_create(
 )
 }
 \arguments{
-\item{jsonpath}{Path to the json file downloaded from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.}
+\item{jsonpath}{Path to the json file downloaded from the
+\href{https://portal.geobon.org/api-docs}{Geobon Portal API}.}
 
 \item{outputpath}{Set path where the NetCDF file should be created.}
 
-\item{entities.no}{Default: 0. Indicates how many entities there are be per metric.}
+\item{entities.no}{Default: 0. Indicates how many entities there are be per
+metric.}
 
-\item{epsg}{Default: 4326 (WGS84). Defines the coordinate reference system via the corresponding epsg code.}
+\item{epsg}{Default: 4326 (WGS84). Defines the coordinate reference system
+via the corresponding epsg code.}
 
-\item{extent}{Default: c(-180,180,-90,90). Defines the extent of the data: c(xmin, xmax, ymin, ymax).}
+\item{extent}{Default: c(-180,180,-90,90). Defines the extent of the data:
+c(xmin, xmax, ymin, ymax).}
 
-\item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.}
+\item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile
+defined by 'outputpath'.}
 }
 \value{
 Creates the NetCDF at the 'outputpath' location.
 }
 \description{
-Create the core structure of the EBV NetCDF based on the json from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data and attributes will be added afterwards. See \code{\link[=ebv_ncdf_add_data]{ebv_ncdf_add_data()}} and \code{\link[=ebv_ncdf_entity_attributes]{ebv_ncdf_entity_attributes()}} for the next steps.
+Create the core structure of the EBV NetCDF based on the json
+from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
+and attributes will be added afterwards. See
+\code{\link[=ebv_ncdf_add_data]{ebv_ncdf_add_data()}} and
+\code{\link[=ebv_ncdf_entity_attributes]{ebv_ncdf_entity_attributes()}} for the next steps.
 }
 \note{
-To check out the results take a look at your NetCDF file with \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
+To check out the results take a look at your NetCDF file with
+\href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
 }
 \examples{
 # json <- 'path/to/json/file.json'

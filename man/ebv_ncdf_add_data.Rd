@@ -22,24 +22,34 @@ ebv_ncdf_add_data(
 
 \item{metric}{Default: 1. Indicates to which metric the data should be added.}
 
-\item{scenario}{Default: NULL. Indicates to which scenario the data should be added.}
+\item{scenario}{Default: NULL. Indicates to which scenario the data should be
+added.}
 
-\item{entity}{Default: NULL. Indicates to which entity the data should be added.}
+\item{entity}{Default: NULL. Indicates to which entity the data should be
+added.}
 
-\item{timestep}{Default: 1. Define to which timestep or timesteps the data should be added. If several timesteps are given they have to be in a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
+\item{timestep}{Default: 1. Define to which timestep or timesteps the data
+should be added. If several timesteps are given they have to be in a
+continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
 
-\item{band}{Default: 1. Define which band(s) to read from GeoTiff. Can be several. Don't have to be in order as the timesteps definition requires.}
+\item{band}{Default: 1. Define which band(s) to read from GeoTiff. Can be
+several. Don't have to be in order as the timesteps definition requires.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Checks if there is enough space in your memory to read the
+data. Can be switched off (set to TRUE).}
 }
 \value{
-Adds data to the EBV NetCDF. Check your results using \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}, [ebvnetcdf::ebv_data_read() and/or \code{\link[=ebv_data_analyse]{ebv_data_analyse()}}.
+Adds data to the EBV NetCDF. Check your results using
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}, [ebvnetcdf::ebv_data_read() and/or
+\code{\link[=ebv_data_analyse]{ebv_data_analyse()}}.
 }
 \description{
 Add data to the self-created EBV NetCDF from GeoTiffs.
 }
 \note{
-If the data exceeds your memory the RAM check will throw an error. No block-processing or other method implemented so far. Move to a machine with more capacities for the moment.
+If the data exceeds your memory the RAM check will throw an error. No
+block-processing or other method implemented so far. Move to a machine with
+more capacities for the moment.
 }
 \examples{
 # file <- 'path/to/created/netcdf/file.nc'

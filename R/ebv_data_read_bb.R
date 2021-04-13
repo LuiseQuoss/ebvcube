@@ -1,17 +1,25 @@
 #' Read subset (bounding box) of the data from EBV NetCDF
 #'
-#' @description Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a bounding box.
+#' @description Read a subset of one or more layers from one datacube of the
+#'   NetCDF file. Subset definition by a bounding box.
 #'
 #' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
+#' @param datacubepath Path to the datacube (use
+#'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param bb Definition of subsset by bounding box: c(xmin, xmax, ymin, ymax).
-#' @param outputpath Defaul: NULL, returns the data as a raster object in memory. Optional: set path to write subset as GeoTiff on disk, returns outputpath.
+#' @param outputpath Defaul: NULL, returns the data as a raster object in
+#'   memory. Optional: set path to write subset as GeoTiff on disk, returns
+#'   outputpath.
 #' @param timestep Choose one or several timesteps (vector).
-#' @param epsg Default: 4326 (WGS84). Change accordingly if your bounding box coordinates are based on a different coordinate reference system.
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).
+#' @param epsg Default: 4326 (WGS84). Change accordingly if your bounding box
+#'   coordinates are based on a different coordinate reference system.
+#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
+#'   defined by 'outputpath'.
+#' @param ignore.RAM Checks if there is enough space in your memory to read the
+#'   data. Can be switched off (set to TRUE).
 #'
-#' @return Returns a raster object if no outputpath is given. Otherwise the subset is written onto the disk and the ouputpath is returned.
+#' @return Returns a raster object if no outputpath is given. Otherwise the
+#'   subset is written onto the disk and the ouputpath is returned.
 #' @export
 #'
 #' @examples

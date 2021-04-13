@@ -5,15 +5,25 @@
 #' @param filepath_nc Path to the self-created NetCDF file.
 #' @param filepath_tif Path to the GeoTiff file containing the data.
 #' @param metric Default: 1. Indicates to which metric the data should be added.
-#' @param scenario Default: NULL. Indicates to which scenario the data should be added.
-#' @param entity Default: NULL. Indicates to which entity the data should be added.
-#' @param timestep Default: 1. Define to which timestep or timesteps the data should be added. If several timesteps are given they have to be in a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
-#' @param band Default: 1. Define which band(s) to read from GeoTiff. Can be several. Don't have to be in order as the timesteps definition requires.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).
+#' @param scenario Default: NULL. Indicates to which scenario the data should be
+#'   added.
+#' @param entity Default: NULL. Indicates to which entity the data should be
+#'   added.
+#' @param timestep Default: 1. Define to which timestep or timesteps the data
+#'   should be added. If several timesteps are given they have to be in a
+#'   continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
+#' @param band Default: 1. Define which band(s) to read from GeoTiff. Can be
+#'   several. Don't have to be in order as the timesteps definition requires.
+#' @param ignore.RAM Checks if there is enough space in your memory to read the
+#'   data. Can be switched off (set to TRUE).
 #'
-#' @note If the data exceeds your memory the RAM check will throw an error. No block-processing or other method implemented so far. Move to a machine with more capacities for the moment.
+#' @note If the data exceeds your memory the RAM check will throw an error. No
+#'   block-processing or other method implemented so far. Move to a machine with
+#'   more capacities for the moment.
 #'
-#' @return Adds data to the EBV NetCDF. Check your results using [ebvnetcdf::ebv_datacubepaths()], [ebvnetcdf::ebv_data_read() and/or [ebvnetcdf::ebv_data_analyse()].
+#' @return Adds data to the EBV NetCDF. Check your results using
+#'   [ebvnetcdf::ebv_datacubepaths()], [ebvnetcdf::ebv_data_read() and/or
+#'   [ebvnetcdf::ebv_data_analyse()].
 #' @export
 #'
 #' @examples

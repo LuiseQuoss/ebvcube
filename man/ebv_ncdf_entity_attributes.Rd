@@ -16,7 +16,8 @@ ebv_ncdf_entity_attributes(
 \arguments{
 \item{filepath}{Path to the self-created NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use \code{\link{ebv_datacubepaths}}).}
+\item{datacubepath}{Path to the datacube (use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{long_name}{Value of the long_name attribute (character).}
 
@@ -27,10 +28,13 @@ ebv_ncdf_entity_attributes(
 \item{fillvalue}{Value of the fillvalue attribute (double).}
 }
 \value{
-Adds attributes to NetCDF. Check results using \code{\link[=ebv_properties]{ebv_properties()}}
+Adds attributes to NetCDF. Check results using
+\code{\link[=ebv_properties]{ebv_properties()}}
 }
 \description{
-Add long_name, label, units and fillvalue to an entitiy of a self-created EBV NetCDF. First use \code{\link[=ebv_ncdf_create]{ebv_ncdf_create()}} to create a NetCDF afterwards use this functiong to add attributes.
+Add long_name, label, units and fillvalue to an entitiy of a
+self-created EBV NetCDF. First use \code{\link[=ebv_ncdf_create]{ebv_ncdf_create()}} to create
+a NetCDF afterwards use this functiong to add attributes.
 }
 \examples{
 # file <- 'path/to/self/created/netcdf.nc'

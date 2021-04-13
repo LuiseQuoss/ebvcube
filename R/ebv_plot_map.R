@@ -1,14 +1,21 @@
 #' Map plot of EBV NetCDF
 #'
-#' @description Map plot of the data of one timestep in one datacube of an EBV NetCDF. This functions sometimes writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
+#' @description Map plot of the data of one timestep in one datacube of an EBV
+#'   NetCDF. This functions sometimes writes temporary files on your disk.
+#'   Speficy a directory for these setting via
+#'   options('temp_directory'='/path/to/temp/directory').
 #'
 #' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
+#' @param datacubepath Path to the datacube (use
+#'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param timestep Choose one timestep.
-#' @param countries Default: TRUE. Simple country outlines will be plotted on top of the raster data. Disable by setting this option to FALSE.
-#' @param col.rev Default: TRUE. Set to FALSE if you want the color ramp to be the other way around.
+#' @param countries Default: TRUE. Simple country outlines will be plotted on
+#'   top of the raster data. Disable by setting this option to FALSE.
+#' @param col.rev Default: TRUE. Set to FALSE if you want the color ramp to be
+#'   the other way around.
 #'
-#' @note Uses the country outlines data from the \href{https://cran.r-project.org/package=maptools}{maptools package}.
+#' @note Uses the country outlines data from the
+#'   \href{https://cran.r-project.org/package=maptools}{maptools package}.
 #'
 #' @return Plots a map into the 'Plots' pane in RStudio.
 #' @export

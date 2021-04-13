@@ -1,15 +1,19 @@
 #' Add entity attributes to self-created EBV NetCDF
 #'
-#' @description Add long_name, label, units and fillvalue to an entitiy of a self-created EBV NetCDF. First use [ebvnetcdf::ebv_ncdf_create()] to create a NetCDF afterwards use this functiong to add attributes.
+#' @description Add long_name, label, units and fillvalue to an entitiy of a
+#'   self-created EBV NetCDF. First use [ebvnetcdf::ebv_ncdf_create()] to create
+#'   a NetCDF afterwards use this functiong to add attributes.
 #'
 #' @param filepath Path to the self-created NetCDF file.
-#' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
+#' @param datacubepath Path to the datacube (use
+#'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param long_name Value of the long_name attribute (character).
 #' @param label Value of the label attribute (character).
 #' @param units Value of the units attribute (character).
 #' @param fillvalue Value of the fillvalue attribute (double).
 #'
-#' @return Adds attributes to NetCDF. Check results using [ebvnetcdf::ebv_properties()]
+#' @return Adds attributes to NetCDF. Check results using
+#'   [ebvnetcdf::ebv_properties()]
 #' @export
 #'
 #' @examples

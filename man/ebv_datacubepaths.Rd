@@ -10,7 +10,8 @@ ebv_datacubepaths(filepath)
 \item{filepath}{Path to the NetCDF file.}
 }
 \value{
-Dataframe containing the paths to access the datacubes and descriptions of scenario, metric and entity if existing.
+Dataframe containing the paths to access the datacubes and
+descriptions of scenario, metric and entity if existing.
 }
 \description{
 Get the paths to the datacubes to access and read the data.

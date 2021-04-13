@@ -1,12 +1,15 @@
 #' Plot the average over time of one datacube of a EBV NetCDF
 #'
-#' @description Plot the average (y-axis) of one datacube of a EBV NetCDF over time (x-axis).
+#' @description Plot the average (y-axis) of one datacube of a EBV NetCDF over
+#'   time (x-axis).
 #'
 #' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
+#' @param datacubepath Path to the datacube (use
+#'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param color Default: dodgerblue4. Change as you like.
 #'
-#' @return Displays a plot in 'Plots' pane in RStudio. Returns a vector of the averages.
+#' @return Displays a plot in 'Plots' pane in RStudio. Returns a vector of the
+#'   averages.
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom graphics par

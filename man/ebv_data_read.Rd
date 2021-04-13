@@ -17,26 +17,37 @@ ebv_data_read(
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Path to the datacube (use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{timestep}{Choose one or several timesteps (vector).}
 
-\item{delayed}{Default. Returns data as DelayedMatrix object. More timesteps are not returned as a 3D array but as a list of the DelayedMatrix (one matrix per band).}
+\item{delayed}{Default. Returns data as DelayedMatrix object. More timesteps
+are not returned as a 3D array but as a list of the DelayedMatrix (one
+matrix per band).}
 
-\item{sparse}{Set to TRUE if the data contains a lot emtpy raster cells. Only relevant for DelayedMatrix. No further implementation by now.}
+\item{sparse}{Set to TRUE if the data contains a lot emtpy raster cells. Only
+relevant for DelayedMatrix. No further implementation by now.}
 
-\item{raster}{Set to TRUE and 'delayed' to FALSE to get a raster. If both arguments are set to FALSE the function returns an array.}
+\item{raster}{Set to TRUE and 'delayed' to FALSE to get a raster. If both
+arguments are set to FALSE the function returns an array.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Checks if there is enough space in your memory to read the
+data. Can be switched off (set to TRUE).}
 }
 \value{
-Array, Raster or DelayedMatrix object containing the data of the corresponding datacube and timestep(s).
+Array, Raster or DelayedMatrix object containing the data of the
+corresponding datacube and timestep(s).
 }
 \description{
-Read one or more layers from one datacube of the NetCDF file. Decide between in-memory array, in-memory raster or an array-like object (DelayedMatrix) pointing to the on-disk NetCDF file. Latter is useful for data that exceeds your memory.
+Read one or more layers from one datacube of the NetCDF file.
+Decide between in-memory array, in-memory raster or an array-like object
+(DelayedMatrix) pointing to the on-disk NetCDF file. Latter is useful for
+data that exceeds your memory.
 }
 \note{
-For working with the DelayedMatrix take a look at the \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-class}.
+For working with the DelayedMatrix take a look at the
+\href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-class}.
 }
 \examples{
 # file <- 'path/to/netcdf/file.nc'

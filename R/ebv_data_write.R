@@ -1,12 +1,21 @@
 #' Write the data on your disk as a GeoTiff
-#' @description After you extracted data from the EBV NetCDF and worked with it this funtion gives you the possibility to write it to disk as a GeoTiff. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
-#' @note Not yet implemented for subsets of the data (only whole spatial coverage of the corresponding EBV NetCDF).
+#' @description After you extracted data from the EBV NetCDF and worked with it
+#'   this funtion gives you the possibility to write it to disk as a GeoTiff.
+#'   This functions writes temporary files on your disk. Speficy a directory for
+#'   these setting via options('temp_directory'='/path/to/temp/directory').
+#' @note Not yet implemented for subsets of the data (only whole spatial
+#'   coverage of the corresponding EBV NetCDF).
 #'
-#' @param data Your data object. May be raster, array, DelayedMatrix or list of DelayedMatrix (see return values of [ebvnetcdf::ebv_data_read()])
-#' @param filepath Path to the NetCDF file you read the data from. Used for the detection of properties as spatial extent and epsg.
-#' @param datacubepath Path to the datacube you got the data from. Used for the detection of properties as data type and nodata value.
-#' @param outputpath Set the path where you want to write the data to disk as a GeoTiff.
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile defined by 'outputpath'.
+#' @param data Your data object. May be raster, array, DelayedMatrix or list of
+#'   DelayedMatrix (see return values of [ebvnetcdf::ebv_data_read()])
+#' @param filepath Path to the NetCDF file you read the data from. Used for the
+#'   detection of properties as spatial extent and epsg.
+#' @param datacubepath Path to the datacube you got the data from. Used for the
+#'   detection of properties as data type and nodata value.
+#' @param outputpath Set the path where you want to write the data to disk as a
+#'   GeoTiff.
+#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
+#'   defined by 'outputpath'.
 #'
 #' @return Returns the outputpath.
 #' @export

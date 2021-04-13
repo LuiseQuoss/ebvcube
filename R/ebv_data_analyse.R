@@ -1,18 +1,28 @@
 #' Get a simple explorative analysis of a EBV NetCDF
 #'
-#' @description Get basic measurements of the data, including min, max, mean, sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
+#' @description Get basic measurements of the data, including min, max, mean,
+#'   sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 #' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use [ebvnetcdf::ebv_datacubepaths()]).
-#' @param subset Optional if you want measurements on a smaller subset. Possible via the path to a shapefile or the indication of a bounding box defining the subset. Else the whole area is analysed.
+#' @param datacubepath Path to the datacube (use
+#'   [ebvnetcdf::ebv_datacubepaths()]).
+#' @param subset Optional if you want measurements on a smaller subset. Possible
+#'   via the path to a shapefile or the indication of a bounding box defining
+#'   the subset. Else the whole area is analysed.
 #' @param timestep Choose one or several timesteps (vector).
-#' @param at Optional. Only relevant if the subset is indicated by a shapefile. See [ebvnetcdf::ebv_data_read_shp()].
-#' @param epsg Optional. Only relevant if the subset is indicated by a boudning box and the coordinate reference system differes from WGS84. See [ebvnetcdf::ebv_data_read_bb()].
-#' @param numerical Default: TRUE. Change to FALSE if the data covered by the NetCDF contains categorical data.
-#' @param na.rm Default: TRUE. NA values are removed in the analysis. Change to FALSE to include NAs.
+#' @param at Optional. Only relevant if the subset is indicated by a shapefile.
+#'   See [ebvnetcdf::ebv_data_read_shp()].
+#' @param epsg Optional. Only relevant if the subset is indicated by a boudning
+#'   box and the coordinate reference system differes from WGS84. See
+#'   [ebvnetcdf::ebv_data_read_bb()].
+#' @param numerical Default: TRUE. Change to FALSE if the data covered by the
+#'   NetCDF contains categorical data.
+#' @param na.rm Default: TRUE. NA values are removed in the analysis. Change to
+#'   FALSE to include NAs.
 #'
 #' @return Returns a S4 object containing the basic measurements.
 #' @export
-#' @seealso [ebvnetcdf::ebv_data_read_bb()] and [ebvnetcdf::ebv_data_read_shp()] for the usage of subsets.
+#' @seealso [ebvnetcdf::ebv_data_read_bb()] and [ebvnetcdf::ebv_data_read_shp()]
+#'   for the usage of subsets.
 #'
 #' @importFrom stats quantile
 #' @examples
