@@ -1,5 +1,5 @@
 Package: ebvnetcdf
-Title: Easy access of EVB NetCDFs (see: portal.geobon.org)
+Title: Easy access of EVB NetCDFs
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Quoß",
