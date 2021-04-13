@@ -16,19 +16,22 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    memuse,
-    stringr,
-    rhdf5,
-    sp,
-    pkgcond,
-    rgdal,
-    methods,
-    utils,
-    HDF5Array,
-    raster,
-    gdalUtils,
     colorspace,
+    gdalUtils,
+    graphics,
+    jsonlite,
     lattice,
-    jsonlite
+    memuse,
+    methods,
+    pkgcond,
+    raster,
+    rgdal,
+    sp,
+    stats,
+    stringr,
+    utils
 Depends: 
     R (>= 2.10)
+Remotes: 
+    bioc::HDF5Array, 
+    bioc::rhdf5
