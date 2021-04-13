@@ -184,7 +184,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
 
   #get output type ot for gdal
   #type.long <- prop_src@entity_information@type
-  ot <- ebv_i_type_r(type.long)
+  ot <- ebv_i_type_ot(type.long)
 
   #set path to variable in netcdf for gdal
   filepath <- paste0('NETCDF:', filepath_src,':',datacubepath_src)
