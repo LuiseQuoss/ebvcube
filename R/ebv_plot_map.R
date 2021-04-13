@@ -113,7 +113,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
       }
       #define temp file
       name <- 'temp_EBV_change_res_plot_map.tif'
-      temp.map <- paste0(temp_path, '/', name )
+      temp.map <- file.path(temp_path, name)
       if (file.exists(temp.map)){
         file.remove(temp.map)
       }

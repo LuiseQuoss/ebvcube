@@ -93,7 +93,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
 
     #derive other variables
     name <- stringr::str_remove(basename(outputpath),'.tif')
-    temp.tif <- paste0(temp_path, '/temp_EBV_write_data.tif')
+    temp.tif <- file.path(temp_path, '/temp_EBV_write_data.tif')
 
     #temp.tif must be new file, remove tempfile
     if (file.exists(temp.tif)){
@@ -143,7 +143,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
       #derive other variables
       name <- paste0(stringr::str_remove(basename(outputpath),'.tif'), '_', i)
       #change tempname
-      temp.tif <- paste0(temp_path, '/temp_EBV_write_data_', i, '.tif')
+      temp.tif <- file.path(temp_path, paste0('temp_EBV_write_data_', i, '.tif'))
       #temp.tif must be new file, remove tempfile
       if (file.exists(temp.tif)){
         file.remove(temp.tif)
@@ -160,7 +160,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
         name = name
       )
 
-      temp.vrt <- paste0(temp_path, '/temp_EBV_write_data_', i, '.vrt')
+      temp.vrt <- file.path(temp_path, paste0('/temp_EBV_write_data_', i, '.vrt'))
 
       #add filename to list
       temps <- c(temps, temp.vrt)
@@ -173,7 +173,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     }
 
     #merge all vrts to one vrt
-    temp.vrt <- paste0(temp_path, '/temp_EBV_write_data.vrt')
+    temp.vrt <- file.path(temp_path, '/temp_EBV_write_data.vrt')
     gdalUtils::gdalbuildvrt(temps, temp.vrt, separate=TRUE, overwrite=TRUE)
 
     #get output type ot for gdal

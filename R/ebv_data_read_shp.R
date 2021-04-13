@@ -140,12 +140,12 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   #reproject shp if necessary to epsg of ncdf
   if (epsg.shp != epsg.nc){
     subset <- sp::spTransform(subset, pkgcond::suppress_warnings(sp::CRS(paste0('EPSG:',epsg.nc))))
-    tempshp <- paste0(temp_path,'/temp_EBV_shp_subset')
+    tempshp <- file.path(temp_path, 'temp_EBV_shp_subset')
     if (dir.exists(tempshp)){
       unlink(tempshp, recursive = TRUE)
     }
     rgdal::writeOGR(subset, tempshp, layer = 'temp', driver='ESRI Shapefile')
-    shp <- paste0(tempshp, '/temp.shp')
+    shp <- file.path(tempshp, 'temp.shp')
   }
 
   #get extent of shp
@@ -175,7 +175,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
 
 
   #define output
-  tempraster <- paste0(temp_path,'/temp_EBV_shp_subset.tif')
+  tempraster <- file.path(temp_path, 'temp_EBV_shp_subset.tif')
   #remove file in case it exists, as gdal_rasterize has no overwrite option
   if(file.exists(tempraster)){
     file.remove(tempraster)

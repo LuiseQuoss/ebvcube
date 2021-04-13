@@ -193,7 +193,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   if (prop_src@spatial_information@dimensions[3] > 1){
     #define output parameters
     name <- 'temp_EBV_change_res_time.tif'
-    temp <- paste0(temp_path, '/', name)
+    temp <- file.path(temp_path, name)
     #select given timesteps, write tempfile
     if (!is.null(ot)){
       gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep, ot = ot, overwrite=TRUE)
@@ -208,7 +208,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   if(epsg_src != epsg_dest){
     #define output parameters
     name <- 'temp_EBV_change_res_epsg.tif'
-    temp_2 <- paste0(temp_path, '/', name)
+    temp_2 <- file.path(temp_path, name)
     if (!is.null(ot)){
       gw <- gdalUtils::gdalwarp(filepath, temp_2, ot = ot, t_srs=paste0('EPSG:',epsg_dest), overwrite=TRUE)
     } else {
