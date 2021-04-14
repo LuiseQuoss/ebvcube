@@ -109,7 +109,7 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4"){
     timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
 
     #plot ----
-    graphics::par(mar=c(7,5,3,1))
+    withr::local_par(mar=c(7,5,3,1))
     plot(timevalues, values, xlab = 'time', ylab='average', type = 'b',
          main = title, col.main = 'grey', cex.main = 1.2, font.main=2,
          sub =label, col.sub = 'grey', cex.sub=0.8, font.sub=2,
