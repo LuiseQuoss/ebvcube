@@ -20,20 +20,63 @@ Variables. This concept is further described
 [here](https://geobon.org/ebvs/what-are-ebvs/). An important core
 element of the EBV NetCDFs is their nested structure. All datacubes in
 the NetCDF are assigned to one metric. But this metric can have several
-entities. On top of this hierarchy there can be several scenarios. The
-following example of the [global habitat availability for mammals
+entities. On top of this hierarchy there can be several scenarios.
+
+``` bash
+├── scenario1
+│   └── metric1
+│       ├── entity1
+│       ├── entity2
+│       ├── ...
+│       └── entity999
+└── scenario2
+    └── metric2
+        ├── entity1
+        ├── entity2
+        ├── ...
+        └── entity999
+```
+
+The following example of the [global habitat availability for mammals
 dataset](https://portal.geobon.org/ebv-detail?id=5) will be displayed
 here as an example for an exhausted hierarchy.
 
 ``` bash
 ├── SSP1
 │   └── absolute
-│       └── e112
-└── SSP2
+│       ├── 10116
+│       ├── 10135
+│       ├── ...
+│       └── 9609
+│
+├── SSP2
+│   └── absolute
+│       ├── 10116
+│       ├── 10135
+│       ├── ...
+│       └── 9609
+├── SSP3
+│   └── absolute
+│       ├── 10116
+│       ├── 10135
+│       ├── ...
+│       └── 9609
+├── SSP4
+│   └── absolute
+│       ├── 10116
+│       ├── 10135
+│       ├── ...
+│       └── 9609
+└── SSP5
+    └── absolute
+        ├── 10116
+        ├── 10135
+        ├── ...
+        └── 9609    
 ```
 
-Keep in mind: All EBV NetCDF always have a metric. But they may or may
-not have a scenario and/or entity.
+Just keep in mind: All EBV NetCDF always have a metric. But they may or
+may not have a scenario and/or entity.
 
 ## Installation
 
@@ -55,8 +98,8 @@ properties of that file.
 ``` r
 library(ebvnetcdf)
 
-file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
-#file <- system.file("extdata/cSAR_idiv_v1.nc", package="raster")
+#file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
+file <- system.file("extdata/cSAR_idiv_v1.nc", package="ebvnetcdf")
 
 #prop.file <- ebv_properties(file)
 ```
@@ -66,7 +109,7 @@ dataframe includes the paths and also descriptions of e.g. metric and or
 scenario - take a look\!
 
 ``` r
-#datacubes <- ebv_datacubepaths(file)
+datacubes <- ebv_datacubepaths(file)
 ```
 
 We will get the properties of one specific datacube - fyi: the result
@@ -84,9 +127,9 @@ Plot a map of the datacube that we just looked at - it has 12 timesteps,
 mabe look at two different ones?
 
 ``` r
-# dc <- datacubes[1,1]
+dc <- datacubes[1,1]
 # ebv_plot_map(file, dc, timestep = 1)
-# ebv_plot_map(file, dc, timestep = 6)
+#ebv_plot_map(file, dc, timestep = 6)
 
 # What was the data about again? Check the properties!
 # prop.dc@title
