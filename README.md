@@ -44,20 +44,20 @@ dataset](https://portal.geobon.org/ebv-detail?id=5).
 
 ``` bash
 ├── SSP1-RCP2.6
-│   └── absolute values per 5 years and species - in km2
+│   └── absolute values per 5 years and species (km2)
 │       ├── Hipposideros calcaratus
 │       ├── Hipposideros fulvus
 │       ├── ...
 │       └── Habromys lepturus
 │
 ├── SSP2-RCP4.5
-│   └── absolute values per 5 years and species - in km2
+│   └── absolute values per 5 years and species (km2)
 │       ├── ...
 │       └── Habromys lepturus
 ├── ...
 │
 └── SSP5-RCP8.5
-    └── absolute values per 5 years and species - in km2
+    └── absolute values per 5 years and species (km2)
         ├── ...
         └── Habromys lepturus    
 ```
