@@ -25,8 +25,15 @@ following example of the [global habitat availability for mammals
 dataset](https://portal.geobon.org/ebv-detail?id=5) will be displayed
 here as an example for an exhausted hierarchy.
 
-Keep in mind: All EBV NetCDF have a metric. They may or may not have a
-scenario and/or entity.
+``` bash
+├── SSP1
+│   └── absolute
+│       └── e112
+└── SSP2
+```
+
+Keep in mind: All EBV NetCDF always have a metric. But they may or may
+not have a scenario and/or entity.
 
 ## Installation
 
