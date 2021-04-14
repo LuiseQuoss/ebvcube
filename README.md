@@ -13,6 +13,21 @@ Portal](https://portal.geobon.org/). It also provides some basic
 visualization. Advanced users can build their own NetCDFs with the EBV
 standard.
 
+## EBVs - Essential Biodiversity Variables
+
+The EBV NetCDF standard is designed to hold Essential Biodiversity
+Variables. This concept is further described
+[here](https://geobon.org/ebvs/what-are-ebvs/). An important core
+element of the EBV NetCDFs is their nested structure. All datacubes in
+the NetCDF are assigned to one metric. But this metric can have several
+entities. On top of this hierarchy there can be several scenarios. The
+following example of the [global habitat availability for mammals
+dataset](https://portal.geobon.org/ebv-detail?id=5) will be displayed
+here as an example for an exhausted hierarchy.
+
+Keep in mind: All EBV NetCDF have a metric. They may or may not have a
+scenario and/or entity.
+
 ## Installation
 
 You can install the ebvnetcdf packages with:
@@ -113,8 +128,9 @@ To access the data use the following
 
 This process is still work in progress. Right now you’ll have to insert
 all the metadata in the Geobon Portal and then use the resulting json
-file to start. Additionally to that json file the function needs the
-amount of entities you want to add.
+file to create an empty NetCDF file with the correct structure and the
+metadata. Additionally to that json file the function needs the amount
+of entities the NetCDF will encompass.
 
 ``` r
 #json <- 'path/to/json/file.json'
@@ -124,7 +140,7 @@ amount of entities you want to add.
 
 Afterwards you can add your data to the NetCDF from GeoTiff files. You
 need to indicate which scenario and/or metric and/or entity the data
-belongs to.
+belongs to. You can add your data timestep per timestep or all at once.
 
 ``` r
 #tif <- 'path/to/data.tif' 
@@ -147,5 +163,5 @@ problem:
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
-also alter attributes at the metric or scenario level. See the Vignette
+also alter attributes at the metric or scenario level. See the vignette
 for more info.
