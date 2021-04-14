@@ -150,12 +150,14 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   }
 
   #define display options ----
-  my.theme = lattice::trellis.par.get()
-  my.theme$par.sub.text$cex=0.8
-  my.theme$par.sub.text$col = 'grey'
-  my.theme$par.main.text$col = 'grey'
-  my.theme$par.main.text$cex = 1.2
+  old.par <- lattice::trellis.par.get()
+  my.theme <- lattice::trellis.par.get()
+  my.theme$par.sub.text$cex <- 0.8
+  my.theme$par.sub.text$col <- 'grey'
+  my.theme$par.main.text$col <- 'grey'
+  my.theme$par.main.text$cex <- 1.2
   lattice::trellis.par.set(my.theme)
+  withr::defer(lattice::trellis.par.set(old.par))
 
   #plot with country outlines ----
   if (countries){
