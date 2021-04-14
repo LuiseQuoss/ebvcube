@@ -22,7 +22,7 @@
 #'   more capacities for the moment.
 #'
 #' @return Adds data to the EBV NetCDF. Check your results using
-#'   [ebvnetcdf::ebv_datacubepaths()], [ebvnetcdf::ebv_data_read() and/or
+#'   [ebvnetcdf::ebv_datacubepaths()], [ebvnetcdf::ebv_data_read()] and/or
 #'   [ebvnetcdf::ebv_data_analyse()].
 #' @export
 #'
