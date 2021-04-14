@@ -42,37 +42,23 @@ dataset](https://portal.geobon.org/ebv-detail?id=5) will be displayed
 here as an example for an exhausted hierarchy.
 
 ``` bash
-├── SSP1
-│   └── absolute
-│       ├── 10116
-│       ├── 10135
+├── SSP1-RCP2.6
+│   └── absolute values per 5 years and species - in km2
+│       ├── Hipposideros calcaratus
+│       ├── Hipposideros fulvus
 │       ├── ...
-│       └── 9609
+│       └── Habromys lepturus
 │
-├── SSP2
-│   └── absolute
-│       ├── 10116
-│       ├── 10135
+├── SSP2-RCP4.5
+│   └── absolute values per 5 years and species - in km2
 │       ├── ...
-│       └── 9609
-├── SSP3
-│   └── absolute
-│       ├── 10116
-│       ├── 10135
-│       ├── ...
-│       └── 9609
-├── SSP4
-│   └── absolute
-│       ├── 10116
-│       ├── 10135
-│       ├── ...
-│       └── 9609
-└── SSP5
-    └── absolute
-        ├── 10116
-        ├── 10135
+│       └── Habromys lepturus
+├── ...
+│
+└── SSP5-RCP8.5
+    └── absolute values per 5 years and species - in km2
         ├── ...
-        └── 9609    
+        └── Habromys lepturus    
 ```
 
 Just keep in mind: All EBV NetCDF always have a metric. But they may or
