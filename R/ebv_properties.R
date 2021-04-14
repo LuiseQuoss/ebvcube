@@ -16,11 +16,11 @@
 #' # datacubes <- ebv_datacubepaths(file)
 #' # prop_file <- ebv_properties(file)
 #' # prop_dc <- ebv_properties(file, datacubes[1,1])
-ebv_properties <- function(filepath, datacubepath = NULL, verbose=FALSE){
+ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   if(verbose){
-    options(warn = 0)
+    withr::local_options(list(warn = 0))
   }else{
-    options(warn = -1)
+    withr::local_options(list(warn = -1))
   }
 
   ####initial tests start ----
@@ -386,11 +386,6 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose=FALSE){
 
   #close file
   rhdf5::H5Fclose(hdf)
-
-  #reset global warnings
-  if(! verbose){
-    options(warn = 0)
-  }
 
   return(prop)
 }
