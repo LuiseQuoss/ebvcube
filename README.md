@@ -20,7 +20,8 @@ Variables. This concept is further described
 [here](https://geobon.org/ebvs/what-are-ebvs/). An important core
 element of the EBV NetCDFs is their nested structure. All datacubes in
 the NetCDF are assigned to one metric. But this metric can have several
-entities. On top of this hierarchy there can be several scenarios.
+entities. On top of this hierarchy there can be several scenarios. The
+following block displays an abstract exhausted hierarchy.
 
 ``` bash
 ├── scenario1
@@ -37,9 +38,9 @@ entities. On top of this hierarchy there can be several scenarios.
         └── entity999
 ```
 
-The following example of the [global habitat availability for mammals
-dataset](https://portal.geobon.org/ebv-detail?id=5) will be displayed
-here as an example for an exhausted hierarchy.
+The following is a practical example of the NetCDF structure. Basis is
+the [global habitat availability for mammals
+dataset](https://portal.geobon.org/ebv-detail?id=5).
 
 ``` bash
 ├── SSP1-RCP2.6
