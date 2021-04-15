@@ -111,21 +111,21 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     )
 
     #get output type ot for gdal
-    type.long <- prop@entity_information@type
+    type.long <- prop@entity$type
     ot <- ebv_i_type_r(type.long)
 
     #add CRS, shift to -180,90, add nodata value
     if(!is.null(ot)){
       gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
-                     a_ullr = c(prop@spatial_information@extent[1], prop@spatial_information@extent[4], prop@spatial_information@extent[2], prop@spatial_information@extent[3]),
-                     a_srs = paste0('EPSG:', prop@spatial_information@epsg),
-                     a_nodata=prop@entity_information@fillvalue,
+                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_srs = paste0('EPSG:', prop@spatial$epsg),
+                     a_nodata=prop@entity$fillvalue,
                      ot = ot)
     } else{
       gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
-                     a_ullr = c(prop@spatial_information@extent[1], prop@spatial_information@extent[4], prop@spatial_information@extent[2], prop@spatial_information@extent[3]),
-                     a_srs = paste0('EPSG:', prop@spatial_information@epsg),
-                     a_nodata=prop@entity_information@fillvalue)
+                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_srs = paste0('EPSG:', prop@spatial$epsg),
+                     a_nodata=prop@entity$fillvalue)
     }
 
     #delete temp file
@@ -167,8 +167,8 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
 
       #add georeference, shift to -180,-90,
       gdalUtils::gdal_translate(temp.tif, temp.vrt, of='VRT', overwrite=TRUE,
-                     a_ullr = c(prop@spatial_information@extent[1], prop@spatial_information@extent[4], prop@spatial_information@extent[2], prop@spatial_information@extent[3]),
-                     a_srs = paste0('EPSG:', prop@spatial_information@epsg))#,
+                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_srs = paste0('EPSG:', prop@spatial$epsg))#,
       #a_nodata=prop@entity_information@fillvalue)
     }
 
@@ -177,18 +177,18 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     gdalUtils::gdalbuildvrt(temps, temp.vrt, separate=TRUE, overwrite=TRUE)
 
     #get output type ot for gdal
-    type.long <- prop@entity_information@type
+    type.long <- prop@entity$type
     ot <- ebv_i_type_ot(type.long)
 
     #gdal translate: add fillvalue, add ot if given, output final tif
     if(!is.null(ot)){
       gdalUtils::gdal_translate(temp.vrt, outputpath,
-                     a_nodata=prop@entity_information@fillvalue,
+                     a_nodata=prop@entity$fillvalue,
                      overwrite=overwrite,
                      ot=ot)
     } else {
       gdalUtils::gdal_translate(temp.vrt, outputpath,
-                     a_nodata=prop@entity_information@fillvalue,
+                     a_nodata=prop@entity$fillvalue,
                      overwrite=overwrite)
     }
 
@@ -217,22 +217,22 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
       #convert to raster
       r <- raster::raster(
         data,
-        xmn=prop@spatial_information@extent[1], xmx=prop@spatial_information@extent[2],
-        ymn=prop@spatial_information@extent[3], ymx=prop@spatial_information@extent[4],
-        crs=prop@spatial_information@srs
+        xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],
+        ymn=prop@spatial$extent[3], ymx=prop@spatial$extent[4],
+        crs=prop@spatial$srs
       )
     } else {
       #convert to raster
       r <-raster::brick(
         data,
-        xmn=prop@spatial_information@extent[1], xmx=prop@spatial_information@extent[2],
-        ymn=prop@spatial_information@extent[3], ymx=prop@spatial_information@extent[4],
-        crs=prop@spatial_information@srs
+        xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],
+        ymn=prop@spatial$extent[3], ymx=prop@spatial$extent[4],
+        crs=prop@spatial$srs
       )
     }
 
     #NAvalue(r) <- prop@entity_information@fillvalue
-    r<- raster::mask(r, r, maskvalue=prop@entity_information@fillvalue)
+    r<- raster::mask(r, r, maskvalue=prop@entity$fillvalue)
 
     #write raster to disk
     raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)

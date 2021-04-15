@@ -53,13 +53,13 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4"){
 
   # basic attributes ----
   prop <- ebv_properties(filepath, datacubepath)
-  time <- prop@spatial_information@dimensions[3]
-  timevalues <- prop@time_information@timesteps.natural
-  title <- prop@title
-  label <- prop@entity_information@label
-  fillvalue <- prop@entity_information@fillvalue
-  type.short <- ebv_i_type_r(prop@entity_information@type)
-  dims <- prop@spatial_information@dimensions
+  time <- prop@spatial$dimensions[3]
+  timevalues <- prop@temporal$timesteps.natural
+  title <- prop@general$title
+  label <- prop@entity$label
+  fillvalue <- prop@entity$fillvalue
+  type.short <- ebv_i_type_r(prop@entity$type)
+  dims <- prop@spatial$dimensions
 
   #check if only one timestep
   if (dims[3]==1){

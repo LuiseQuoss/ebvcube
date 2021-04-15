@@ -81,7 +81,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
 
   #check timestep range
   for (t in timestep){
-    max_time <- prop@spatial_information@dimensions[3]
+    max_time <- prop@spatial$dimensions[3]
     min_time <- 1
     if (t>max_time | t<min_time){
       stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
@@ -110,10 +110,10 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   #######initial test end
 
   #get basic information of file
-  crs <- prop@spatial_information@srs@projargs
-  epsg_file <- prop@spatial_information@epsg
-  resolution <- prop@spatial_information@resolution
-  ext <- prop@spatial_information@extent
+  crs <- prop@spatial$srs@projargs
+  epsg_file <- prop@spatial$epsg
+  resolution <- prop@spatial$resolution
+  ext <- prop@spatial$extent
 
   #transform bb if necessary
   if (epsg_file != epsg){
@@ -176,7 +176,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
 
   #check needed RAM
   if (!ignore.RAM){
-    ebv_i_check_ram(c(ncol, nrow), timestep, prop@entity_information@type)
+    ebv_i_check_ram(c(ncol, nrow), timestep, prop@entity$type)
   } else{
     message('RAM capacities are ignored.')
   }
@@ -222,7 +222,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   }
 
   #set nodata value
-  r <- raster::reclassify(r, cbind(prop@entity_information@fillvalue, NA))
+  r <- raster::reclassify(r, cbind(prop@entity$fillvalue, NA))
 
   if (!is.null(outputpath)){
     #write raster

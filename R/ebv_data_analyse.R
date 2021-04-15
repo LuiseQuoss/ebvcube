@@ -77,7 +77,7 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
 
   #check timestep range
   for (t in timestep){
-    max_time <- prop@spatial_information@dimensions[3]
+    max_time <- prop@spatial$dimensions[3]
     min_time <- 1
     if (t>max_time | t<min_time){
       stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
@@ -91,16 +91,16 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
   #process shp subset
   if (is.null(subset)){
     #process whole file + variable+ timestep
-    type.short <- ebv_i_type_r(prop@entity_information@type)
+    type.short <- ebv_i_type_r(prop@entity$type)
     all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath, as.sparse = T, type = type.short)
     subset.array <- all[,,timestep]
     #give fillvalue as nodata value
-    subset.array <- replace(subset.array, subset.array==prop@entity_information@fillvalue[1], c(NA))
+    subset.array <- replace(subset.array, subset.array==prop@entity$fillvalue[1], c(NA))
   }  else if(class(subset) == "numeric"){
     #process bb subset
     subset.raster <- ebv_data_read_bb(filepath, datacubepath, bb=subset, timestep=timestep, epsg=epsg)
     #raster to array
-    subset.array <- as.array(subset.raster)
+    subset.array <- raster::as.array(subset.raster)
     #less ram
     rm(subset.raster)
   } else if(endsWith(subset, '.shp')){
@@ -116,18 +116,16 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
 
   if(numerical){
     #numerical stats
-    methods::setClass("EBV NetCDF numerical statistics", slots=list(min="numeric", q25 = "numeric", q50="numeric", mean ="numeric", q75 ="numeric", max="numeric", std ="numeric", n ="numeric", NAs ="numeric"))
     n <- length(subset.array)
     temp <- as.numeric(summary(array(subset.array)))
     sd <- sd(subset.array, na.rm=na.rm)
-    stats <- methods::new("EBV NetCDF numerical statistics", min=temp[1], q25 = temp[2], q50=temp[3], mean =temp[4], q75 =temp[5], max=temp[6], std =sd, n =n, NAs =temp[7])
+    stats <- list(min=temp[1], q25 = temp[2], q50=temp[3], mean =temp[4], q75 =temp[5], max=temp[6], std =sd, n =n, NAs =temp[7])
   }else{
     #categorical stats
-    methods::setClass("EBV NetCDF categorical statistics", slots=list(min="numeric", q25 = "numeric", q50="numeric",q75 ="numeric", max="numeric", n ="numeric", NAs ="numeric"))
     n <- length(subset.array)
     temp <- as.numeric(stats::quantile(subset.array, na.rm=na.rm))
     NAs <- sum(is.na(subset.array))
-    stats <- methods::new("EBV NetCDF categorical statistics", min=temp[1], q25 = temp[2], q50=temp[3], q75 =temp[4], max=temp[5], n =n, NAs =NAs)
+    stats <- list(min=temp[1], q25 = temp[2], q50=temp[3], q75 =temp[4], max=temp[5], n =n, NAs =NAs)
   }
 
   return(stats)

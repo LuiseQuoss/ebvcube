@@ -90,7 +90,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
 
   #check timestep range
   for (t in timestep){
-    max_time <- prop@spatial_information@dimensions[3]
+    max_time <- prop@spatial$dimensions[3]
     min_time <- 1
     if (t>max_time | t<min_time){
       stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
@@ -132,7 +132,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   }
 
   #get epsg of ncdf
-  epsg.nc <- prop@spatial_information@epsg
+  epsg.nc <- prop@spatial$epsg
 
   #original extent
   extent.org <- raster::extent(subset)
@@ -152,7 +152,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   extent.shp <- raster::extent(subset)
 
   #get extent of ncdf file
-  ext <- prop@spatial_information@extent
+  ext <- prop@spatial$extent
 
   #get subset of ncdf #checks for RAM
   subset.nc <- ebv_data_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore.RAM = ignore.RAM)
@@ -196,7 +196,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   subset.raster <- raster::mask(subset.nc, temp.raster, maskvalue=0, overwrite=TRUE)
 
   #set nodata value
-  subset.raster <- raster::reclassify(subset.raster, cbind(prop@entity_information@fillvalue, NA))
+  subset.raster <- raster::reclassify(subset.raster, cbind(prop@entity$fillvalue, NA))
 
   #remove temp.raster
   file.remove(tempraster)

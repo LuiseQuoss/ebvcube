@@ -91,11 +91,11 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     prop_dest <- ebv_properties(filepath_dest)
 
     #get target resolution
-    res <- prop_dest@spatial_information@resolution
+    res <- prop_dest@spatial$resolution
     res <- c(res[1], res[2]) #c(res[1]*-1, res[2])
 
     #get target epsg
-    epsg_dest <- prop_dest@spatial_information@epsg
+    epsg_dest <- prop_dest@spatial$epsg
 
   }
 
@@ -110,7 +110,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
 
   #get properties source
   prop_src <- ebv_properties(filepath_src, datacubepath_src)
-  type.long <- prop_src@entity_information@type
+  type.long <- prop_src@entity$type
 
   #source timestep check
   #check if timestep is valid type
@@ -126,7 +126,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
 
   #check timestep range
   for (t in timestep){
-    max_time <- prop_src@spatial_information@dimensions[3]
+    max_time <- prop_src@spatial$dimensions[3]
     min_time <- 1
     if (t>max_time | t<min_time){
       stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
@@ -171,7 +171,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   #######initial test end
 
   #get epsg
-  epsg_src <- prop_src@spatial_information@epsg
+  epsg_src <- prop_src@spatial$epsg
 
   #check if both epsg are valid
   epsg_list <- rgdal::make_EPSG()
@@ -190,7 +190,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   filepath <- paste0('NETCDF:', filepath_src,':',datacubepath_src)
 
   #check if src dataset has several timesteps
-  if (prop_src@spatial_information@dimensions[3] > 1){
+  if (prop_src@spatial$dimensions[3] > 1){
     #define output parameters
     name <- 'temp_EBV_change_res_time.tif'
     temp <- file.path(temp_path, name)
@@ -236,25 +236,25 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   #write tif with new resolution
   if (!is.null(ot) & !is.null(te)){
     r <- gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@entity_information@fillvalue,
+                  tr=res,srcnodata=prop_src@entity$fillvalue,
                   ot=ot,r = method, te = te,
                   overwrite=overwrite,
                   output_Raster = return.raster)
   } else if (is.null(ot) & !is.null(te)) {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@entity_information@fillvalue,
+                  tr=res,srcnodata=prop_src@entity$fillvalue,
                   r = method, te = te,
                   overwrite=overwrite,
                   output_Raster = return.raster)
   } else if(!is.null(ot) & is.null(te)){
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@entity_information@fillvalue,
+                  tr=res,srcnodata=prop_src@entity$fillvalue,
                   r = method, ot = ot,
                   overwrite=overwrite,
                   output_Raster = return.raster)
   } else {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@entity_information@fillvalue,
+                  tr=res,srcnodata=prop_src@entity$fillvalue,
                   r = method,
                   overwrite=overwrite,
                   output_Raster = return.raster)
@@ -274,7 +274,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
 
   #return array
   if (return.raster){
-    r <- raster::reclassify(r, cbind(prop_src@entity_information@fillvalue, NA))
+    r <- raster::reclassify(r, cbind(prop_src@entity$fillvalue, NA))
     return(r)
   } else{
     return(outputpath)
