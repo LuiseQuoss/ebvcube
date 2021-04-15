@@ -40,7 +40,7 @@ data. Can be switched off (set to TRUE).}
 }
 \value{
 Adds data to the EBV NetCDF. Check your results using
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}, [ebvnetcdf::ebv_data_read() and/or
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}, \code{\link[=ebv_data_read]{ebv_data_read()}} and/or
 \code{\link[=ebv_data_analyse]{ebv_data_analyse()}}.
 }
 \description{
