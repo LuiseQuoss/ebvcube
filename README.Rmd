@@ -95,13 +95,15 @@ Now let's get the paths to all possible datacubes. The resulting dataframe inclu
 
 ```{r}
 datacubes <- ebv_datacubepaths(file)
+datacubes
 ```
 
 We will get the properties of one specific datacube - fyi: the result also holds the general file properties from above.
 This time you get the warning that the value_range does not exists. So don't take the displayed value_range seriously.
 
 ```{r}
-#prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
+prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
+prop.dc
 ```
 
 
@@ -109,9 +111,10 @@ This time you get the warning that the value_range does not exists. So don't tak
 Plot a map of the datacube that we just looked at - it has 12 timesteps, mabe look at two different ones?
 
 ```{r}
+options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 dc <- datacubes[1,1]
-# ebv_plot_map(file, dc, timestep = 1)
-#ebv_plot_map(file, dc, timestep = 6)
+ebv_plot_map(file, dc, timestep = 1)
+ebv_plot_map(file, dc, timestep = 6)
 
 # What was the data about again? Check the properties!
 # prop.dc@title
@@ -142,8 +145,9 @@ Before you actually load the data it may be nice to get an impression of the val
 
 To access the data use the following
 ```{r}
-#load whole data set for all timesteps
-#ebv_data_read(file, dc, c(1:12), delayed = F)
+#load whole data set for two timesteps
+data <- ebv_data_read(file, dc, c(1,2), delayed = F)
+dim(data)
 
 #load subset (shapefile)
 #shp <- 'path/to/subset/file/.shp'
