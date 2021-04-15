@@ -427,7 +427,7 @@ ebv_i_char_att <- function(h5obj, name, data){
 ebv_i_read_att <-  function(h5obj, name){
   #check if attribute exists
   if(!rhdf5::H5Aexists(h5obj, name)){
-    warning(paste0('The attribute ', name, ' does not exist. Or maybe wrong location in NetCDF?'))
+    warning(paste0('The attribute ', name, ' does not exist. Or maybe wrong location in NetCDF?\n'))
     return(NULL)
   } else {
     aid <- rhdf5::H5Aopen(h5obj, name)
