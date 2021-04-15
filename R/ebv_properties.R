@@ -1,3 +1,22 @@
+#' EBV NetCDF Properties class (S4)
+#'
+#' @slot general list.
+#' @slot spatial list.
+#' @slot temporal list.
+#' @slot metric list.
+#' @slot scenario list.
+#'
+#' @return S4 class
+#' @export
+#'
+#' @examples
+methods::setClass("EBV NetCDF properties", slots=list(general="list",
+                                                      spatial="list",
+                                                      temporal="list",
+                                                      metric="list",
+                                                      scenario="list",
+                                                      entity="list"))
+
 #' Read properties of EBV NetCDF
 #'
 #' @description Structured access to all attributes of the NetCDF file.
@@ -51,15 +70,6 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     }
   }
   ####initial tests end ----
-
-  #### define S4 subclasses ----
-  methods::setClass("temporal_info_EBV", slots=list(units="character", t_delta="character", timesteps="array", timesteps.natural = 'Date'))
-  methods::setClass("spatial_info_EBV", slots=list(srs="CRS", epsg="numeric", resolution="numeric", extent="numeric", dimensions="numeric"))
-  methods::setClass("entity_information", slots=list(longname="character", label="character", unit='character',
-                                            type="character",  fillvalue="array"))
-  methods::setClass("metric_information", slots=list(label="character" , description="character"))
-  methods::setClass("scenario_information", slots=list(label="character", description="character"))
-
 
   #get resolution ----
   lat.data <- rhdf5::h5read(filepath, 'lat', start=1, count = 2)
@@ -117,6 +127,21 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     value_range <- array(NA)
   }
 
+  #get more global attributes
+  ebv_name <- ebv_i_read_att(hdf, 'ebv_name')
+  ebv_class <- ebv_i_read_att(hdf, 'ebv_class')
+  ebv_subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
+  creator <- ebv_i_read_att(hdf, 'creator')
+  #institution <- ebv_i_read_att(hdf, 'institution')
+  #contactname <- ebv_i_read_att(hdf, 'contactname')
+  #contactemail <- ebv_i_read_att(hdf, 'contactemail')
+
+  #general
+  general <- list(title=title, description=description.file,
+                  ebv_class=ebv_class, ebv_name=ebv_name, ebv_subgroups=ebv_subgroups,
+                  creator=creator, institution='', contactname='', contactemail='',
+                  value_range=value_range)
+
   #get srs ----
   srs.ds <- rhdf5::H5Dopen(hdf, 'crs')
   srs.chr <- ebv_i_read_att(srs.ds, 'spatial_ref')
@@ -131,8 +156,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   #get dims
   dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time))
 
-  #create object of S4 class
-  srs.s4 <- methods::new('spatial_info_EBV', srs=srs, epsg=epsg, resolution=resolution, extent=extent, dimensions=dims)
+  #create spatial list for S4 class
+  spatial <- list(srs=srs, epsg=epsg, resolution=resolution, extent=extent, dimensions=dims)
 
   #get time info ----
   add <- 40177
@@ -149,9 +174,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   #close data handle
   rhdf5::H5Dclose(dh)
 
-  #create object of S4 class
-  time.s4 <- methods::new('temporal_info_EBV', units=time, t_delta=t_delta, timesteps=timesteps, timesteps.natural=time.natural)
-
+  #create temporal list for S4 class
+  temporal <- list(units=time, t_delta=t_delta, timesteps=timesteps, timesteps.natural=time.natural)
 
   ####variable specific properties ----
   if (!is.null(datacubepath)){
@@ -196,8 +220,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Dclose(dh)
 
       #create object of S4 class
-      entity.s4 <- methods::new('entity_information', longname=long_name, label=label, unit=unit,
-                       type=type, fillvalue=fillvalue)
+      entity <- list(long_name=long_name, label=label, unit=unit, type=type, fillvalue=fillvalue)
 
       ####get metric info ----
       #one level higher
@@ -215,7 +238,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Gclose(dh)
 
       #create object of S4 class
-      metric.s4 <- methods::new('metric_information', label=label, description=description)
+      metric <- list(label=label, description=description)
 
       ####get scenario info ----
       #two levels higher
@@ -236,23 +259,16 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Gclose(dh)
 
       #create object of S4 class
-      scenario.s4 <- methods::new('scenario_information', description=description, label=label)
+      scenario <- list(label=label, description=description)
 
-      #define new S4 class
-      methods::setClass("EBV NetCDF variable properties", slots=list(title="character", description="character",
-                                                            value_range="array",
-                                                            spatial_information='spatial_info_EBV',
-                                                            time_information='temporal_info_EBV',
-                                                            scenario_information='scenario_information',
-                                                            metric_information='metric_information',
-                                                            entity_information='entity_information'))
       #create object of S4 class ----
-      prop <- methods::new('EBV NetCDF variable properties', title=title, description=description.file, value_range=value_range,
-                  spatial_information=srs.s4,
-                  time_information=time.s4,
-                  scenario_information=scenario.s4,
-                  metric_information=metric.s4,
-                  entity_information=entity.s4)
+      prop <- methods::new('EBV NetCDF properties',
+                           general = general,
+                           spatial=spatial,
+                           temporal=temporal,
+                           metric=metric,
+                           scenario=scenario,
+                           entity=entity)
 
       # m(e) ----
     } else if (!scenario & metric){
@@ -290,8 +306,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Dclose(dh)
 
       #create object of S4 class
-      entity.s4 <- methods::new('entity_information', longname=long_name, label=label, unit=unit,
-                       type=type, fillvalue=fillvalue)
+      entity <- list(long_name=long_name, label=label, unit=unit, type=type, fillvalue=fillvalue)
 
       ####get metric info ----
       #one level higher
@@ -309,20 +324,16 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Gclose(dh)
 
       #create object of S4 class
-      metric.s4 <- methods::new('metric_information', label=label, description=description)
+      metric <- list(label=label, description=description)
 
       #define new S4 class
-      methods::setClass("EBV NetCDF variable properties", slots=list(title='character', description='character',
-                                                            value_range='array',
-                                                            spatial_information='spatial_info_EBV',
-                                                            time_information='temporal_info_EBV',
-                                                            metric_information='metric_information',
-                                                            entity_information='entity_information'))
-      #create object of S4 class ----
-      prop <- methods::new('EBV NetCDF variable properties', title=title, description=description.file, value_range=value_range,
-                  spatial_information=srs.s4,
-                  time_information=time.s4, metric_information=metric.s4,
-                  entity_information=entity.s4)
+      prop <- methods::new('EBV NetCDF properties',
+                           general = general,
+                           spatial=spatial,
+                           temporal=temporal,
+                           metric=metric,
+                           scenario=list(status='Datacube has no scenario.'),
+                           entity=entity)
 
     } else{
       # e ----
@@ -361,27 +372,28 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Dclose(dh)
 
       #create object of S4 class
-      entity.s4 <- methods::new('entity_information', longname=long_name, label=label, unit=unit,
-                       type=type, fillvalue=fillvalue)
+      entity <- list(long_name=long_name, label=label, unit=unit, type=type, fillvalue=fillvalue)
 
       #define new S4 class
-      methods::setClass("EBV NetCDF variable properties", slots=list(title='character', description='character',
-                                                            value_range = 'array',
-                                                            spatial_information='spatial_info_EBV',
-                                                            time_information='temporal_info_EBV',
-                                                            entity_information='entity_information'))
-      #create object of S4 class ----
-      prop <- methods::new('EBV NetCDF variable properties', title=title, description=description.file, value_range=value_range,
-                  spatial_information=srs.s4,
-                  time_information=time.s4, entity_information=entity.s4)
+      prop <- methods::new('EBV NetCDF properties',
+                           general = general,
+                           spatial=spatial,
+                           temporal=temporal,
+                           metric=list(status='Datacube has no metric. Error in standard - will be corrected soon.'),
+                           scenario=list(status='Datacube has no scenario.'),
+                           entity=entity)
 
     }
     # define S4 for filepath only ----
   } else {
-    #define new S4 class
-    methods::setClass("EBV NetCDF file properties", slots=list(title="character", description="character", value_range='array', spatial_information='spatial_info_EBV', time_information='temporal_info_EBV'))
-    #create object of S4 class
-    prop <- methods::new('EBV NetCDF file properties', title=title, description=description.file, value_range=value_range, spatial_information=srs.s4, time_information=time.s4)
+    prop <-  methods::new('EBV NetCDF properties',
+                          general = general,
+                          spatial=spatial,
+                          temporal=temporal,
+                          metric=list(status='Only available with datacube argument.'),
+                          scenario=list(status='Only available with datacube argument.'),
+                          entity=list(status='Only available with datacube argument.')
+                          )
   }
 
   #close file
