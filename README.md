@@ -85,12 +85,10 @@ properties of that file.
 ``` r
 library(ebvnetcdf)
 
-file <- system.file("extdata/cSAR_idiv_v1.nc", package="ebvnetcdf")
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 prop.file <- ebv_properties(file)
 
-prop.file
-#> An object of class "EBV NetCDF properties"
-#> Slot "general":
+prop.file@general
 #> $title
 #> [1] "Changes in local bird diversity (cSAR)"
 #> 
@@ -120,54 +118,6 @@ prop.file
 #> 
 #> $value_range
 #> [1] NA
-#> 
-#> 
-#> Slot "spatial":
-#> $srs
-#> CRS arguments: +proj=longlat +datum=WGS84 +no_defs 
-#> 
-#> $epsg
-#> [1] 4326
-#> 
-#> $resolution
-#> [1] 1 1
-#> 
-#> $extent
-#> [1] -180  180  -90   90
-#> 
-#> $dimensions
-#> [1] 180 360  12
-#> 
-#> 
-#> Slot "temporal":
-#> $units
-#> [1] "days since 1860-01-01 00:00:00.0"
-#> 
-#> $t_delta
-#> [1] "10 Years"
-#> 
-#> $timesteps
-#>  [1] 18262 21914 25567 29219 32872 36524 40177 43829 47482 51134 54787 56613
-#> 
-#> $timesteps.natural
-#>  [1] "1910-01-01" "1920-01-01" "1930-01-01" "1940-01-01" "1950-01-01"
-#>  [6] "1960-01-01" "1970-01-01" "1980-01-01" "1990-01-01" "2000-01-01"
-#> [11] "2010-01-01" "2015-01-01"
-#> 
-#> 
-#> Slot "metric":
-#> $status
-#> [1] "Only available with datacube argument."
-#> 
-#> 
-#> Slot "scenario":
-#> $status
-#> [1] "Only available with datacube argument."
-#> 
-#> 
-#> Slot "entity":
-#> $status
-#> [1] "Only available with datacube argument."
 ```
 
 Now let’s get the paths to all possible datacubes. The resulting
@@ -191,90 +141,7 @@ displayed value\_range seriously.
 ``` r
 prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
 #> Warning in ebv_i_read_att(hdf, "value_range"): The attribute value_range does not exist. Or maybe wrong location in NetCDF?
-prop.dc
-#> An object of class "EBV NetCDF properties"
-#> Slot "general":
-#> $title
-#> [1] "Changes in local bird diversity (cSAR)"
-#> 
-#> $description
-#> [1] "Changes in bird diversity at the grid cell level caused by land-use, estimated by the cSAR model (Martins & Pereira, 2017). It reports changes in species number (percentage and absolute), relative to 1900, for all bird species, forest bird species, and non-forest bird species in each cell. Uses the LUH 2.0 projections for land-use, and the PREDICTS coefficients for bird affinities to land-uses."
-#> 
-#> $ebv_class
-#> [1] "Community composition"
-#> 
-#> $ebv_name
-#> [1] "Species diversity"
-#> 
-#> $ebv_subgroups
-#> [1] "scenario" "metric"   "entity"  
-#> 
-#> $creator
-#> [1] "Ines Martins"
-#> 
-#> $institution
-#> [1] ""
-#> 
-#> $contactname
-#> [1] ""
-#> 
-#> $contactemail
-#> [1] ""
-#> 
-#> $value_range
-#> [1] NA
-#> 
-#> 
-#> Slot "spatial":
-#> $srs
-#> CRS arguments: +proj=longlat +datum=WGS84 +no_defs 
-#> 
-#> $epsg
-#> [1] 4326
-#> 
-#> $resolution
-#> [1] 1 1
-#> 
-#> $extent
-#> [1] -180  180  -90   90
-#> 
-#> $dimensions
-#> [1] 180 360  12
-#> 
-#> 
-#> Slot "temporal":
-#> $units
-#> [1] "days since 1860-01-01 00:00:00.0"
-#> 
-#> $t_delta
-#> [1] "10 Years"
-#> 
-#> $timesteps
-#>  [1] 18262 21914 25567 29219 32872 36524 40177 43829 47482 51134 54787 56613
-#> 
-#> $timesteps.natural
-#>  [1] "1910-01-01" "1920-01-01" "1930-01-01" "1940-01-01" "1950-01-01"
-#>  [6] "1960-01-01" "1970-01-01" "1980-01-01" "1990-01-01" "2000-01-01"
-#> [11] "2010-01-01" "2015-01-01"
-#> 
-#> 
-#> Slot "metric":
-#> $label
-#> [1] "mean"
-#> 
-#> $description
-#> [1] "mean values per decade"
-#> 
-#> 
-#> Slot "scenario":
-#> $label
-#> [1] "past: 1900 - 2015"
-#> 
-#> $description
-#> [1] "calculations where done per decade betrween 1900 and 2015"
-#> 
-#> 
-#> Slot "entity":
+prop.dc@entity
 #> $long_name
 #> [1] "Changes in local bird diversity (cSAR)"
 #> 
@@ -294,28 +161,27 @@ prop.dc
 ### Plot the data to get a better impression
 
 Plot a map of the datacube that we just looked at - it has 12 timesteps,
-mabe look at two different ones?
+mabe look at the sixth one?
 
 ``` r
 options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 dc <- datacubes[1,1]
-ebv_plot_map(file, dc, timestep = 1)
+ebv_plot_map(file, dc, timestep = 6)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ``` r
-ebv_plot_map(file, dc, timestep = 6)
-```
-
-<img src="man/figures/README-unnamed-chunk-4-2.png" width="100%" />
-
-``` r
 
 # What was the data about again? Check the properties!
-# prop.dc@title
+prop.dc@general$title
+#> [1] "Changes in local bird diversity (cSAR)"
 # And the datacube?
-# prop.dc@entity_information@label
+prop.dc@entity$label
+#> [1] "non forest birds species"
+#What time is the sixth timestep representing?
+prop.dc@temporal$timesteps.natural[6]
+#> [1] "1960-01-01"
 ```
 
 It’s nice to see the global distribution, but how is the change of that
@@ -323,8 +189,12 @@ datacube (non forest birds) over time? Let’s take a look at the average.
 The function returns the values, catch them\!
 
 ``` r
-# averages <- ebv_plot_indicator(file, dc)
+averages <- ebv_plot_indicator(file, dc)
+#> [1] "calculating timesteps..."
+#> ================================================================================
 ```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 It would be cool to have that for other indicators as well? Well you
 have to wait for an update of the package. Or maybe implement it
@@ -337,11 +207,15 @@ the value range and other basic measurements.
 
 ``` r
 #info for whole dataset
-#ebv_data_analyse(file, dc)
+measurements <- ebv_data_analyse(file, dc)
+measurements$n
+#> [1] 64800
 
 #info for a subset (bounding box)
-#bb <- c(5,15,47,55)
-#ebv_data_analyse(file, dc, bb)
+bb <- c(5,15,47,55)
+measurements.bb <- ebv_data_analyse(file, dc, bb)
+measurements.bb$n
+#> [1] 80
 ```
 
 To access the data use the following
@@ -353,9 +227,14 @@ dim(data)
 #> [1] 180 360   2
 
 #load subset (shapefile)
-#shp <- 'path/to/subset/file/.shp'
-#ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
+shp <- system.file(file.path('extdata','ne_10m_admin_0_countries_subset_germany.shp'), package="ebvnetcdf")
+data.shp <- ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
+dim(data.shp)
+#> [1]  9 11  3
+raster::spplot(data.shp[[1]], sp.layout = list(wrld_simpl, first=FALSE))
 ```
+
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ### Take a peek on the creation of an EBV NetCDF
 

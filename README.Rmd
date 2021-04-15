@@ -84,10 +84,10 @@ First we take a look at some basic properties of that file.
 ```{r example}
 library(ebvnetcdf)
 
-file <- system.file("extdata/cSAR_idiv_v1.nc", package="ebvnetcdf")
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 prop.file <- ebv_properties(file)
 
-prop.file
+prop.file@general
 
 ```
 
@@ -103,30 +103,31 @@ This time you get the warning that the value_range does not exists. So don't tak
 
 ```{r}
 prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
-prop.dc
+prop.dc@entity
 ```
 
 
 ### Plot the data to get a better impression
-Plot a map of the datacube that we just looked at - it has 12 timesteps, mabe look at two different ones?
+Plot a map of the datacube that we just looked at - it has 12 timesteps, mabe look at the sixth one?
 
 ```{r}
 options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 dc <- datacubes[1,1]
-ebv_plot_map(file, dc, timestep = 1)
 ebv_plot_map(file, dc, timestep = 6)
 
 # What was the data about again? Check the properties!
-# prop.dc@title
+prop.dc@general$title
 # And the datacube?
-# prop.dc@entity_information@label
+prop.dc@entity$label
+#What time is the sixth timestep representing?
+prop.dc@temporal$timesteps.natural[6]
 
 ```
 
 It's nice to see the global distribution, but how is the change of that datacube (non forest birds) over time? Let's take a look at the average. The function returns the values, catch them!
 
 ```{r}
-# averages <- ebv_plot_indicator(file, dc)
+averages <- ebv_plot_indicator(file, dc)
 ```
 
 It would be cool to have that for other indicators as well? Well you have to wait for an update of the package. Or maybe implement it yourself using the functions coming up next?
@@ -136,11 +137,13 @@ Before you actually load the data it may be nice to get an impression of the val
 
 ```{r}
 #info for whole dataset
-#ebv_data_analyse(file, dc)
+measurements <- ebv_data_analyse(file, dc)
+measurements$n
 
 #info for a subset (bounding box)
-#bb <- c(5,15,47,55)
-#ebv_data_analyse(file, dc, bb)
+bb <- c(5,15,47,55)
+measurements.bb <- ebv_data_analyse(file, dc, bb)
+measurements.bb$n
 ```
 
 To access the data use the following
@@ -150,8 +153,10 @@ data <- ebv_data_read(file, dc, c(1,2), delayed = F)
 dim(data)
 
 #load subset (shapefile)
-#shp <- 'path/to/subset/file/.shp'
-#ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
+shp <- system.file(file.path('extdata','ne_10m_admin_0_countries_subset_germany.shp'), package="ebvnetcdf")
+data.shp <- ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
+dim(data.shp)
+raster::spplot(data.shp[[1]], sp.layout = list(wrld_simpl, first=FALSE))
 ```
 
 
