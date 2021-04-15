@@ -85,10 +85,89 @@ properties of that file.
 ``` r
 library(ebvnetcdf)
 
-#file <- paste0(path.package("ebvnetcdf"),"/extdata/cSAR_idiv_v1.nc")
 file <- system.file("extdata/cSAR_idiv_v1.nc", package="ebvnetcdf")
+prop.file <- ebv_properties(file)
 
-#prop.file <- ebv_properties(file)
+prop.file
+#> An object of class "EBV NetCDF properties"
+#> Slot "general":
+#> $title
+#> [1] "Changes in local bird diversity (cSAR)"
+#> 
+#> $description
+#> [1] "Changes in bird diversity at the grid cell level caused by land-use, estimated by the cSAR model (Martins & Pereira, 2017). It reports changes in species number (percentage and absolute), relative to 1900, for all bird species, forest bird species, and non-forest bird species in each cell. Uses the LUH 2.0 projections for land-use, and the PREDICTS coefficients for bird affinities to land-uses."
+#> 
+#> $ebv_class
+#> [1] "Community composition"
+#> 
+#> $ebv_name
+#> [1] "Species diversity"
+#> 
+#> $ebv_subgroups
+#> [1] "scenario" "metric"   "entity"  
+#> 
+#> $creator
+#> [1] "Ines Martins"
+#> 
+#> $institution
+#> [1] ""
+#> 
+#> $contactname
+#> [1] ""
+#> 
+#> $contactemail
+#> [1] ""
+#> 
+#> $value_range
+#> [1] NA
+#> 
+#> 
+#> Slot "spatial":
+#> $srs
+#> CRS arguments: +proj=longlat +datum=WGS84 +no_defs 
+#> 
+#> $epsg
+#> [1] 4326
+#> 
+#> $resolution
+#> [1] 1 1
+#> 
+#> $extent
+#> [1] -180  180  -90   90
+#> 
+#> $dimensions
+#> [1] 180 360  12
+#> 
+#> 
+#> Slot "temporal":
+#> $units
+#> [1] "days since 1860-01-01 00:00:00.0"
+#> 
+#> $t_delta
+#> [1] "10 Years"
+#> 
+#> $timesteps
+#>  [1] 18262 21914 25567 29219 32872 36524 40177 43829 47482 51134 54787 56613
+#> 
+#> $timesteps.natural
+#>  [1] "1910-01-01" "1920-01-01" "1930-01-01" "1940-01-01" "1950-01-01"
+#>  [6] "1960-01-01" "1970-01-01" "1980-01-01" "1990-01-01" "2000-01-01"
+#> [11] "2010-01-01" "2015-01-01"
+#> 
+#> 
+#> Slot "metric":
+#> $status
+#> [1] "Only available with datacube argument."
+#> 
+#> 
+#> Slot "scenario":
+#> $status
+#> [1] "Only available with datacube argument."
+#> 
+#> 
+#> Slot "entity":
+#> $status
+#> [1] "Only available with datacube argument."
 ```
 
 Now let’s get the paths to all possible datacubes. The resulting
