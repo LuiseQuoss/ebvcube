@@ -1,4 +1,4 @@
-#' Plot the average over time of one datacube of a EBV NetCDF
+#' Plot the average over time of one datacube of an EBV NetCDF
 #'
 #' @description Plot the average (y-axis) of one datacube of a EBV NetCDF over
 #'   time (x-axis).
