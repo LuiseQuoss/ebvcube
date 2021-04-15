@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_plot_indicator.R
 \name{ebv_plot_indicator}
 \alias{ebv_plot_indicator}
-\title{Plot the average over time of one datacube of a EBV NetCDF}
+\title{Plot the average over time of one datacube of an EBV NetCDF}
 \usage{
 ebv_plot_indicator(filepath, datacubepath, color = "dodgerblue4")
 }
