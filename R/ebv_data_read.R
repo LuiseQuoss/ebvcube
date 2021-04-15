@@ -84,7 +84,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
 
   #check timestep range
   for (t in timestep){
-    max_time <- prop@spatial_information@dimensions[3]
+    max_time <- prop@spatial$dimensions[3]
     min_time <- 1
     if (t>max_time | t<min_time){
       stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
@@ -99,12 +99,12 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   #######initial test end
 
   #get fillvalue
-  fillvalue <- prop@entity_information@fillvalue
+  fillvalue <- prop@entity$fillvalue
 
   if (delayed==TRUE){
     #return delayed array
     #get type
-    type.long <- prop@entity_information@type
+    type.long <- prop@entity$type
     #get numeric type
     type.short <- ebv_i_type_r(type.long)
 
@@ -134,19 +134,19 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   } else{
     #check needed RAM
     if (!ignore.RAM){
-      type.long <- prop@entity_information@type
-      ebv_i_check_ram(prop@spatial_information@dimensions,timestep,type.long)
+      type.long <- prop@entity$type
+      ebv_i_check_ram(prop@spatial$dimensions,timestep,type.long)
     } else{
       message('RAM capacities are ignored.')
     }
 
     #return in memory array
-    h5array <- array(dim=c(prop@spatial_information@dimensions[1],prop@spatial_information@dimensions[2], length(timestep)))
+    h5array <- array(dim=c(prop@spatial$dimensions[1],prop@spatial$dimensions[2], length(timestep)))
     for (i in 1:length(timestep)){
       part <- rhdf5::h5read(filepath, datacubepath, start=c(1,1,timestep[i]),
-                     count=c(prop@spatial_information@dimensions[2],prop@spatial_information@dimensions[1],1))
+                     count=c(prop@spatial$dimensions[2],prop@spatial$dimensions[1],1))
       #rotate matrix
-      mat <- matrix(part, c(prop@spatial_information@dimensions[2], prop@spatial_information@dimensions[1]))
+      mat <- matrix(part, c(prop@spatial$dimensions[2], prop@spatial$dimensions[1]))
       mat <- t(mat[nrow(mat):1,,drop=FALSE])
       mat <- mat[,ncol(mat):1,drop=FALSE]
       mat <- replace(mat, which(base::match(mat, fillvalue)==1), c(NA))
@@ -158,18 +158,18 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
       if(length(timestep)==1){
         #matrix to raster
         h5array <-raster::raster(
-          matrix(h5array, prop@spatial_information@dimensions[1], prop@spatial_information@dimensions[2]),
-          xmn=prop@spatial_information@extent[1], xmx=prop@spatial_information@extent[2],
-          ymn=prop@spatial_information@extent[3], ymx=prop@spatial_information@extent[4],
-          crs=prop@spatial_information@srs
+          matrix(h5array, prop@spatial$dimensions[1], prop@spatial$dimensions[2]),
+          xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],
+          ymn=prop@spatial$extent[3], ymx=prop@spatial$extent[4],
+          crs=prop@spatial$srs
         )
       }else{
         #array to raster
         h5array <-raster::brick(
           h5array,
-          xmn=prop@spatial_information@extent[1], xmx=prop@spatial_information@extent[2],
-          ymn=prop@spatial_information@extent[3], ymx=prop@spatial_information@extent[4],
-          crs=prop@spatial_information@srs
+          xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],
+          ymn=prop@spatial$extent[3], ymx=prop@spatial$extent[4],
+          crs=prop@spatial$srs
         )
       }
 

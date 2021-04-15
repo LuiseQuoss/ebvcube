@@ -72,7 +72,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
 
   #check timestep range
   for (t in timestep){
-    max_time <- prop@spatial_information@dimensions[3]
+    max_time <- prop@spatial$dimensions[3]
     min_time <- 1
     if (t>max_time | t<min_time){
       stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
@@ -82,12 +82,12 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   # end initial tests ----
 
   #get needed properties
-  fillvalue <- prop@entity_information@fillvalue
-  type.short <- ebv_i_type_r(prop@entity_information@type)
-  title <- prop@title
-  label <- prop@entity_information@label
+  fillvalue <- prop@entity$fillvalue
+  type.short <- ebv_i_type_r(prop@entity$type)
+  title <- prop@general$title
+  label <- prop@entity$label
   subtitle <- paste0(label, ' (timestep: ', timestep, ')')
-  epsg <- prop@spatial_information@epsg
+  epsg <- prop@spatial$epsg
 
   #get raster data - ram check included
   results <- tryCatch(
@@ -102,8 +102,9 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
     },
     #change res ----
     error = function(cond){
+      print(cond)
       message(paste0('Data will be displayed in a lower resolution. May take up to a few minutes. Original resolution: ',
-                     prop@spatial_information@resolution[1] , ', displayed resoultion: 1 degree.'))
+                     prop@spatial$resolution[1] , ', displayed resoultion: 1 degree.'))
       #check temp directory
       temp_path <- getOption('temp_directory')[[1]]
       if (is.null(temp_path)){
