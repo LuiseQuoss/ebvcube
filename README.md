@@ -63,7 +63,8 @@ dataset](https://portal.geobon.org/ebv-detail?id=5).
 ```
 
 Just keep in mind: All EBV NetCDF always have a metric. But they may or
-may not have a scenario and/or entity.
+may not have a scenario and/or entity. The resulting entities hold the
+datacubepaths we are going to access.
 
 ## Installation
 
@@ -247,7 +248,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "/tmp/RtmpQ1Ij9I/temp_libpath131727521a39/ebvnetcdf/extdata/ne_10m_admin_0_countries_subset_germany.shp", layer: "ne_10m_admin_0_countries_subset_germany"
+#> Source: "/tmp/Rtmp36IH2k/temp_libpath1e6279f4b0e5/ebvnetcdf/extdata/ne_10m_admin_0_countries_subset_germany.shp", layer: "ne_10m_admin_0_countries_subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -255,6 +256,8 @@ raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+
+### Add Delayed Data, write data?
 
 ### Take a peek on the creation of an EBV NetCDF
 
@@ -317,29 +320,86 @@ That’s very helpful to understand the structure.
 In the next step you can add your data to the NetCDF from GeoTiff files.
 You need to indicate which scenario and/or metric and/or entity the data
 belongs to. You can add your data timestep per timestep, in slices or
-all at once.
+all at once (see the vignette for detailed info).
+
+You can simply add more data to the same datacube by changing the
+timestep
+definition.
 
 ``` r
-#tif <- 'path/to/data.tif' 
-#ebv_ncdf_add_data(out, tif, metric=1, scenario=NULL, entity=1, timestep=c(1:6), band=c(1:6))
-#ebv_properties()@entity
-#ebv_datacubepaths()
-#dim data?
+tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
+ebv_ncdf_add_data(newNc, tif, metric=1, scenario=1, entity=1, timestep=c(1,2,3), band=c(1,2,3))
+#now we have a datacubepath we can access
+dc.new <- ebv_datacubepaths(newNc)
+dc.new
+#>                          paths scenario_longnames metric_longnames
+#> 1 scenario00/metric00/entity00        SSP1-RCP2.6              km2
+#>   entity_longnames
+#> 1          default
 ```
 
 Now there are still a few information missing about the data you just
-added. The following function makes it possible to add the information.
+added. The following function makes it possible to add the
+information.
 
 ``` r
-#dc.new <- ebv_datacubepaths(out)
-#ebv_ncdf_entity_attributes(out, dc.new[1,1], longname='habitat', label='bog', units='Percentage', fillvalue=-999)
+#taking a look at the properties first - uff it's mostely default values (also the fillvalue!)
+print(ebv_properties(newNc, dc.new[1,1])@entity)
+#> $long_name
+#> [1] "default"
+#> 
+#> $label
+#> [1] "default"
+#> 
+#> $unit
+#> [1] "default"
+#> 
+#> $type
+#> [1] "H5T_IEEE_F32LE"
+#> 
+#> $fillvalue
+#> [1] 999
+#adding the correct infos:
+ebv_ncdf_entity_attributes(newNc, dc.new[1,1], long_name='Data on Area Of Habitat (AOH)', label='Eumops auripendulu', units='land-use of mammals calculated in km2', fillvalue=-3.4e+38)
+#rechecking properties - now it looks good! but there is a typo for the label..
+print(ebv_properties(newNc, dc.new[1,1])@entity)
+#> $long_name
+#> [1] "Data on Area Of Habitat (AOH)"
+#> 
+#> $label
+#> [1] "Eumops auripendulu"
+#> 
+#> $unit
+#> [1] "land-use of mammals calculated in km2"
+#> 
+#> $type
+#> [1] "H5T_IEEE_F32LE"
+#> 
+#> $fillvalue
+#> [1] -3.4e+38
 ```
 
-Ups\! You did a mistake and want to change the attribute?\! No
+Ups\! So you did a mistake and want to change the attribute?\! No
 problem:
 
 ``` r
-#ebv_ncdf_write_attribute(out, attribute_name='longname', value='raised bog', levelpath='metric00/entity00')
+ebv_ncdf_write_attribute(newNc, attribute_name='label', value='Eumops auripendulus', levelpath=dc.new[1,1])
+#check the properties one more time - perfect!
+print(ebv_properties(newNc, dc.new[1,1])@entity)
+#> $long_name
+#> [1] "Data on Area Of Habitat (AOH)"
+#> 
+#> $label
+#> [1] "Eumops auripendulus"
+#> 
+#> $unit
+#> [1] "land-use of mammals calculated in km2"
+#> 
+#> $type
+#> [1] "H5T_IEEE_F32LE"
+#> 
+#> $fillvalue
+#> [1] -3.4e+38
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
