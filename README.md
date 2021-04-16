@@ -88,6 +88,7 @@ library(ebvnetcdf)
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 prop.file <- ebv_properties(file)
 
+#take a look at the general properties of the dataset - there are more properties to discover!
 prop.file@general
 #> $title
 #> [1] "Changes in local bird diversity (cSAR)"
@@ -118,6 +119,8 @@ prop.file@general
 #> 
 #> $value_range
 #> [1] NA
+slotNames(prop.file)
+#> [1] "general"  "spatial"  "temporal" "metric"   "scenario" "entity"
 ```
 
 Now let’s get the paths to all possible datacubes. The resulting
@@ -164,7 +167,7 @@ Plot a map of the datacube that we just looked at - it has 12 timesteps,
 mabe look at the sixth one?
 
 ``` r
-options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
+#plot the global map
 dc <- datacubes[1,1]
 ebv_plot_map(file, dc, timestep = 6)
 ```
@@ -189,6 +192,7 @@ datacube (non forest birds) over time? Let’s take a look at the average.
 The function returns the values, catch them\!
 
 ``` r
+#get the averages and plot
 averages <- ebv_plot_indicator(file, dc)
 #> [1] "calculating timesteps..."
 #> ================================================================================
@@ -208,17 +212,24 @@ the value range and other basic measurements.
 ``` r
 #info for whole dataset
 measurements <- ebv_data_analyse(file, dc)
+#see the included measurements
+names(measurements)
+#> [1] "min"  "q25"  "q50"  "mean" "q75"  "max"  "std"  "n"    "NAs"
+#how many pixels are included?
 measurements$n
 #> [1] 64800
 
-#info for a subset (bounding box)
+#info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
 measurements.bb <- ebv_data_analyse(file, dc, bb)
+#how many pixels are now included?
 measurements.bb$n
 #> [1] 80
 ```
 
-To access the data use the following
+To access the data ampoong other things you can use the following.
+Subsetting the data using a shapefile needs a directory for temporarly
+created files.
 
 ``` r
 #load whole data set for two timesteps
@@ -226,12 +237,21 @@ data <- ebv_data_read(file, dc, c(1,2), delayed = F)
 dim(data)
 #> [1] 180 360   2
 
-#load subset (shapefile)
+#load subset from shapefile (Germany)
 shp <- system.file(file.path('extdata','ne_10m_admin_0_countries_subset_germany.shp'), package="ebvnetcdf")
+#define directory for temporary files
+options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 data.shp <- ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
 dim(data.shp)
 #> [1]  9 11  3
-raster::spplot(data.shp[[1]], sp.layout = list(wrld_simpl, first=FALSE))
+#very quick plot of the resulting raster plus the shapefile
+shp.data <- rgdal::readOGR(shp)
+#> OGR data source with driver: ESRI Shapefile 
+#> Source: "/tmp/RtmpQ1Ij9I/temp_libpath131727521a39/ebvnetcdf/extdata/ne_10m_admin_0_countries_subset_germany.shp", layer: "ne_10m_admin_0_countries_subset_germany"
+#> with 1 features
+#> It has 94 fields
+#> Integer64 fields read as strings:  POP_EST NE_ID
+raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
@@ -240,23 +260,71 @@ raster::spplot(data.shp[[1]], sp.layout = list(wrld_simpl, first=FALSE))
 
 This process is still work in progress. Right now you’ll have to insert
 all the metadata in the Geobon Portal and then use the resulting json
-file to create an empty NetCDF file with the correct structure and the
-metadata. Additionally to that json file the function needs the amount
-of entities the NetCDF will encompass.
+file to create an empty NetCDF file which complies to the EBV NetCDF
+standard. It has the correct structure and holds the metadata.
+Additionally to that json file the function needs the amount of entities
+the NetCDF will encompass.
+
+The example is based on the [Global habitat availability for
+mammals](https://portal.geobon.org/ebv-detail?id=5). As its ID in the
+geoportal is 5 the json file is just called 5.
 
 ``` r
-#json <- 'path/to/json/file.json'
-#out <- 'path/to/new/netcdf/file.nc'
-#ebv_ncdf_create(json, out, 5)
+json <- system.file(file.path('extdata','5.json'), package="ebvnetcdf")
+newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','mammals.nc')
+#lets say it has 5 entities, which is not true in reality!
+ebv_ncdf_create(json, newNc, 5, overwrite=T)
+#check out the general propeties of our newly created file
+print(ebv_properties(newNc)@general)
+#> $title
+#> [1] "Global habitat availability for mammals from 2015-2055"
+#> 
+#> $description
+#> [1] "Global habitat availability for 5,090 mammals in 5 year intervals (subset from 2015 to 2055)."
+#> 
+#> $ebv_class
+#> [1] "Species populations"
+#> 
+#> $ebv_name
+#> [1] "Species distributions"
+#> 
+#> $ebv_subgroups
+#> [1] "scenario" "metric"   "entity"  
+#> 
+#> $creator
+#> [1] "Daniele Baisero"
+#> 
+#> $institution
+#> [1] ""
+#> 
+#> $contactname
+#> [1] ""
+#> 
+#> $contactemail
+#> [1] ""
+#> 
+#> $value_range
+#> [1] NA
+#it has no datacubepaths yet - makes sense. we haven't added any data yet...
+print(ebv_datacubepaths(newNc))
+#> data frame with 0 columns and 0 rows
 ```
 
-Afterwards you can add your data to the NetCDF from GeoTiff files. You
-need to indicate which scenario and/or metric and/or entity the data
-belongs to. You can add your data timestep per timestep or all at once.
+Tip: You can always take a look at your NetCDF in
+[Panoply](https://www.giss.nasa.gov/tools/panoply/) provided by NASA.
+That’s very helpful to understand the structure.
+
+In the next step you can add your data to the NetCDF from GeoTiff files.
+You need to indicate which scenario and/or metric and/or entity the data
+belongs to. You can add your data timestep per timestep, in slices or
+all at once.
 
 ``` r
 #tif <- 'path/to/data.tif' 
 #ebv_ncdf_add_data(out, tif, metric=1, scenario=NULL, entity=1, timestep=c(1:6), band=c(1:6))
+#ebv_properties()@entity
+#ebv_datacubepaths()
+#dim data?
 ```
 
 Now there are still a few information missing about the data you just
