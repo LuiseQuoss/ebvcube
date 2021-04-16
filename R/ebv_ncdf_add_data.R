@@ -222,7 +222,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   if (length(timestep) > 1){
     data <- array(NA, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
     for (i in 1:length(timestep)){
-      temp <- as.matrix(as.array(raster)[,,i])
+      temp <- as.matrix(raster::as.array(raster)[,,i])
       temp <- t(temp[nrow(temp):1,])
       temp <- temp[,ncol(temp):1]
       data[,,i] <- temp
