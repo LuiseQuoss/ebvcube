@@ -139,8 +139,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   #general
   general <- list(title=title, description=description.file,
                   ebv_class=ebv_class, ebv_name=ebv_name, ebv_subgroups=ebv_subgroups,
-                  creator=creator, institution='', contactname='', contactemail='',
-                  value_range=value_range)
+                  creator=creator, value_range=value_range) #institution='', contactname='', contactemail=''
 
   #get srs ----
   srs.ds <- rhdf5::H5Dopen(hdf, 'crs')
