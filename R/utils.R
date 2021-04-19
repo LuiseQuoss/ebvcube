@@ -44,9 +44,9 @@ ebv_i_file_opened <- function(filepath){
       }
     }
   } else if (ebv_i_os() == 'Windows') {
-    print('not yet implemented for windows')
+    #still needs to be done
   } else {
-    print('OS not supported.')
+    #still needs to be done
   }
 }
 
