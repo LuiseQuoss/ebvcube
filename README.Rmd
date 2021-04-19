@@ -91,6 +91,7 @@ prop.file <- ebv_properties(file)
 prop.file@general
 slotNames(prop.file)
 
+
 ```
 
 Now let's get the paths to all possible datacubes. The resulting dataframe includes the paths and also descriptions of e.g. metric and or scenario - take a look!

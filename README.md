@@ -85,6 +85,10 @@ properties of that file.
 
 ``` r
 library(ebvnetcdf)
+#> Warning: replacing previous import 'colorspace::RGB' by 'raster::RGB' when
+#> loading 'ebvnetcdf'
+#> Warning: replacing previous import 'raster::quantile' by 'stats::quantile' when
+#> loading 'ebvnetcdf'
 
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 prop.file <- ebv_properties(file)
@@ -108,15 +112,6 @@ prop.file@general
 #> 
 #> $creator
 #> [1] "Ines Martins"
-#> 
-#> $institution
-#> [1] ""
-#> 
-#> $contactname
-#> [1] ""
-#> 
-#> $contactemail
-#> [1] ""
 #> 
 #> $value_range
 #> [1] NA
@@ -248,7 +243,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "/tmp/Rtmp36IH2k/temp_libpath1e6279f4b0e5/ebvnetcdf/extdata/ne_10m_admin_0_countries_subset_germany.shp", layer: "ne_10m_admin_0_countries_subset_germany"
+#> Source: "/tmp/Rtmp227rMD/temp_libpath27b2276726b9/ebvnetcdf/extdata/ne_10m_admin_0_countries_subset_germany.shp", layer: "ne_10m_admin_0_countries_subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -296,15 +291,6 @@ print(ebv_properties(newNc)@general)
 #> 
 #> $creator
 #> [1] "Daniele Baisero"
-#> 
-#> $institution
-#> [1] ""
-#> 
-#> $contactname
-#> [1] ""
-#> 
-#> $contactemail
-#> [1] ""
 #> 
 #> $value_range
 #> [1] NA
