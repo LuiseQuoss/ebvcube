@@ -30,7 +30,8 @@
 #' # file <- 'path/to/netcdf/file.nc'
 #' # datacubes <- ebv_datacubepaths(file)
 #' # ebv_plot_map(file, datacubes[1,1], 9)
-ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, col.rev=TRUE, classes = 5, ignore.RAM=FALSE, verbose=FALSE){
+ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
+                         col.rev=TRUE, classes = 5, ignore.RAM=FALSE, verbose=FALSE){
   #turn off local warnings if verbose=TRUE
   if(verbose){
     withr::local_options(list(warn = 0))
@@ -80,7 +81,8 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
     max_time <- prop@spatial$dimensions[3]
     min_time <- 1
     if (t>max_time | t<min_time){
-      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
+      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ',
+                  min_time, ' to ', max_time, '.'))
     }
   }
 
@@ -103,8 +105,11 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   results <- tryCatch(
     #try ----
     {
-      data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep, delayed = FALSE, raster=TRUE, ignore.RAM=ignore.RAM, verbose=verbose) #if this throws an error the data is going to plotted in lower res
-      data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath, type = type.short)
+      data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep,
+                                   delayed = FALSE, raster=TRUE, ignore.RAM=ignore.RAM,
+                                   verbose=verbose) #if this throws an error the data is going to plotted in lower res
+      data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
+                                       type = type.short)
       #mask out fillvalue ----
       data.all <- replace(data.all, data.all==fillvalue, c(NA))
       results <- c(data.raster, data.all, 'NULL')
@@ -127,8 +132,8 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
       if (file.exists(temp.map)){
         file.remove(temp.map)
       }
-      #(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1, method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE)
-      data.raster <- ebv_data_change_res(filepath, datacubepath, c(1,1, 4326), temp.map, timestep, return.raster = TRUE, ignore.RAM=ignore.RAM, verbose=verbose)
+      data.raster <- ebv_data_change_res(filepath, datacubepath, c(1,1, 4326),
+                                         temp.map, timestep, return.raster = TRUE, ignore.RAM=ignore.RAM, verbose=verbose)
       data.raster <- data.raster[[1]] #get first layer of brick --> class = raster
       data.all <- raster::as.array(data.raster) #use only one layer for quantile analysis
       results <- list(data.raster, data.all, temp.map)
@@ -151,10 +156,12 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   #get correct colors
   if (min(s)<0 & max(s)>0){
     diverging <- 'Blue-Red'
-    col.regions <- colorspace::diverging_hcl(classes, palette = diverging, rev = col.rev) #"BluYl"
+    col.regions <- colorspace::diverging_hcl(classes, palette = diverging,
+                                             rev = col.rev)
   } else {
     single <- 'YlGn' # 'Greens'#
-    col.regions <- colorspace::sequential_hcl(classes, palette = single, rev = col.rev) #"BluYl"
+    col.regions <- colorspace::sequential_hcl(classes, palette = single,
+                                              rev = col.rev)
   }
 
   #define display options ----
@@ -170,7 +177,8 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   #plot with country outlines ----
   if (countries){
     if(epsg != 4326){
-      wrld_simpl <- sp::spTransform(wrld_simpl, sp::CRS(SRS_string = paste0('EPSG:', epsg)))
+      wrld_simpl <- sp::spTransform(wrld_simpl,
+                                    sp::CRS(SRS_string = paste0('EPSG:', epsg)))
     }
 
     print(
