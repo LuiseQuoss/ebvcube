@@ -20,7 +20,8 @@
 #' # file <- 'path/to/netcdf/file.nc'
 #' # datacubes <- ebv_datacubepaths(file)
 #' #ebv_plot_indicator(file, datacubes[1,1])
-ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4", verbose=FALSE){
+ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
+                               verbose=FALSE){
   #turn off local warnings if verbose=TRUE
   if(verbose){
     withr::local_options(list(warn = 0))
@@ -72,11 +73,13 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4", verb
   if (dims[3]==1){
     message('Dataset has only one timestep. Single mean will be returned.')
     #data.all
-    data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath, type = type.short)
+    data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
+                                     type = type.short)
     values <- mean(data.all)
   }else{
     #data.all
-    data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath, type = type.short)
+    data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
+                                     type = type.short)
 
     #mask out fillvalue
     data.all <- replace(data.all, data.all==fillvalue, c(NA))
