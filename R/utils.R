@@ -309,16 +309,17 @@ ebv_i_check_ram <- function(dims, timestep, type){
     #get ram pc
     ram.pc <- ebv_i_ram()
     ram.pc.free <- ram.pc[2]
+    ram.pc.total <- ram.pc[1]
     #check if data too big
     if(ram.pc.free < ram.var.gb){
       stop(paste0('The RAM needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb,2)))
-      #check that 1/2 GB RAM stay free
     }
-    if(ram.pc.free - ram.var.gb < 0.5){
+    #at least 1 GB stays free
+    if(ram.pc.free - ram.var.gb < 1){
       stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore.RAM = TRUE.')
     }
-    #check if reading huge dataset
-    if((ram.pc.free/4) < ram.var.gb){
+    #at least 15% stay free
+    if((ram.pc.total*0.15) > ram.var.gb){
       stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore.RAM = TRUE.')
     }
   } else{
