@@ -10,6 +10,8 @@ ebv_plot_map(
   timestep = 1,
   countries = TRUE,
   col.rev = TRUE,
+  classes = 5,
+  ignore.RAM = FALSE,
   verbose = FALSE
 )
 }
@@ -26,6 +28,12 @@ top of the raster data. Disable by setting this option to FALSE.}
 
 \item{col.rev}{Default: TRUE. Set to FALSE if you want the color ramp to be
 the other way around.}
+
+\item{classes}{Default: 5. Define the amount of classes (quantiles) of the
+symbology.}
+
+\item{ignore.RAM}{Checks if there is enough space in your memory to read the
+data. Can be switched off (set to TRUE).}
 
 \item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
