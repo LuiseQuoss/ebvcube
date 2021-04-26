@@ -10,7 +10,13 @@
 #' @examples
 #' # file <- 'path/to/netcdf/file.nc'
 #' # datacubes <- ebv_datacubepaths(file)
-ebv_datacubepaths <- function(filepath){
+ebv_datacubepaths <- function(filepath, verbose = FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
   ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
