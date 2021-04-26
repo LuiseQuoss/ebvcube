@@ -44,6 +44,28 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     withr::local_options(list(warn = -1))
   }
 
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+  defer(
+    if(exists('srs.ds')){
+      if(rhdf5::H5Iis_valid(srs.ds)==TRUE){rhdf5::H5Dclose(srs.ds)}
+    }
+  )
+  defer(
+    if(exists('time.ds')){
+      if(rhdf5::H5Iis_valid(time.ds)==TRUE){rhdf5::H5Dclose(time.ds)}
+    }
+  )
+  defer(
+    if(exists('dh')){
+      if(rhdf5::H5Iis_valid(dh)==TRUE){rhdf5::H5Gclose(dh)}
+    }
+  )
+
   ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
@@ -61,14 +83,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   #file closed?
   ebv_i_file_opened(filepath)
 
+  # open file
+  hdf <- rhdf5::H5Fopen(filepath)
+
+  #variable check
   if(!is.null(datacubepath)){
-    #variable check
-    hdf <- rhdf5::H5Fopen(filepath)
     if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-      rhdf5::H5Fclose(hdf)
       stop(paste0('The given variable is not valid:\n', datacubepath))
-    } else {
-      rhdf5::H5Fclose(hdf)
     }
   }
   ####initial tests end ----
@@ -94,9 +115,6 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   ymin <- min(lat.data) - resolution[2]/2
   ymax <- max(lat.data) + resolution[2]/2
   extent <- c(xmin, xmax, ymin, ymax)
-
-  #open file ----
-  hdf <- rhdf5::H5Fopen(filepath)
 
   ####general properties of file ----
   #get depth of nested structure
@@ -162,18 +180,18 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
   #get time info ----
   add <- 40177
-  dh <- rhdf5::H5Dopen(hdf, 'time')
+  time.ds <- rhdf5::H5Dopen(hdf, 'time')
   #time units
-  time <- ebv_i_read_att(dh, 'units')[1]
+  time <- ebv_i_read_att(time.ds, 'units')[1]
   #time delta
-  t_delta <- ebv_i_read_att(dh, 't_delta')[1]
+  t_delta <- ebv_i_read_att(time.ds, 't_delta')[1]
   #timesteps
   timesteps <- rhdf5::h5read(hdf, 'time')
   #timesteps natural language
   time.natural <- as.Date(timesteps-add, origin='1970-01-01')
 
   #close data handle
-  rhdf5::H5Dclose(dh)
+  rhdf5::H5Dclose(time.ds)
 
   #create temporal list for S4 class
   temporal <- list(units=time, t_delta=t_delta, timesteps=timesteps, timesteps.natural=time.natural)
