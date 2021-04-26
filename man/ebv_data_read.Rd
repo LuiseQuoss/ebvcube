@@ -49,8 +49,9 @@ Decide between in-memory array, in-memory raster or an array-like object
 data that exceeds your memory.
 }
 \note{
-For working with the DelayedMatrix take a look at the
-\href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-class}.
+For working with the DelayedMatrix take a look at
+\code{\link[DelayedArray:DelayedArray-class]{DelayedArray::DelayedArray()}} and the
+\href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-utils}.
 }
 \examples{
 # file <- 'path/to/netcdf/file.nc'

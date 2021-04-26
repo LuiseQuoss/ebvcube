@@ -20,10 +20,9 @@
 #'   data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
-#' @note For working with the DelayedMatrix take a look at the
-#'   \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-class}.
-#'
-#'
+#' @note For working with the DelayedMatrix take a look at
+#'   [DelayedArray::DelayedArray()] and the
+#'   \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-utils}.
 #'
 #' @return Array, Raster or DelayedMatrix object containing the data of the
 #'   corresponding datacube and timestep(s).
