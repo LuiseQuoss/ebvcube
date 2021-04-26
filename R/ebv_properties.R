@@ -36,6 +36,7 @@ methods::setClass("EBV NetCDF properties", slots=list(general="list",
 #' # prop_file <- ebv_properties(file)
 #' # prop_dc <- ebv_properties(file, datacubes[1,1])
 ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
+  #turn off local warnings if verbose=TRUE
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
