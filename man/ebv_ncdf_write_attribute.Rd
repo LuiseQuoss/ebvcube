@@ -4,7 +4,13 @@
 \alias{ebv_ncdf_write_attribute}
 \title{Write a new attribute value to an EBV NetCDF}
 \usage{
-ebv_ncdf_write_attribute(filepath, attribute_name, value, levelpath = NULL)
+ebv_ncdf_write_attribute(
+  filepath,
+  attribute_name,
+  value,
+  levelpath = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
@@ -18,6 +24,8 @@ that the attribute is located at a global level. If the attribute is
 located at the datacubelevel just add the datacubepath. For the metric
 level the value may be 'metric00' or 'scenario00/metric00'. This path
 depends on whether the NetCDF hierarchy has scenarios or not.}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Adds the new value to the attribute. Check your results using

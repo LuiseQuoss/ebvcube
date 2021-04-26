@@ -12,8 +12,8 @@
 #' data reading, ebv_plot_ for visualisation and ebv_netcdf_ for creating a
 #' NetCDF.
 #'
-#' @import colorspace gdalUtils graphics HDF5Array jsonlite lattice memuse
-#'   methods pkgcond raster rhdf5 rgdal sp stats stringr utils withr
+#' @import colorspace gdalUtils HDF5Array jsonlite lattice memuse
+#'   methods raster rhdf5 rgdal sp stringr withr
 #'
 #' @docType package
 #' @name ebvnetcdf

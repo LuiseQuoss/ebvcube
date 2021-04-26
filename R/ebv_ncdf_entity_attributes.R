@@ -11,6 +11,7 @@
 #' @param label Value of the label attribute (character).
 #' @param units Value of the units attribute (character).
 #' @param fillvalue Value of the fillvalue attribute (double).
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Adds attributes to NetCDF. Check results using
 #'   [ebvnetcdf::ebv_properties()]
@@ -20,7 +21,13 @@
 #' # file <- 'path/to/self/created/netcdf.nc'
 #' # datacubes <- ebv_datacubepaths(file)
 #' # ebv_ncdf_entity_attributes(file, datacubes[1,1], 'habitat', 'bog', 'Percentage', fillvalue=-1)
-ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label, units, fillvalue=NULL){
+ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label, units, fillvalue=NULL, verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
   ### start initial test ----
   #are all arguments given?
   if(missing(filepath)){

@@ -13,6 +13,7 @@
 #'   located at the datacubelevel just add the datacubepath. For the metric
 #'   level the value may be 'metric00' or 'scenario00/metric00'. This path
 #'   depends on whether the NetCDF hierarchy has scenarios or not.
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @note You can check out the attribute names using
 #'   \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
@@ -34,7 +35,13 @@
 #' # attribute3 <- 'creator'
 #' # value3 <- 'Jane Doe'
 #' # ebv_ncdf_write_attribute(file, attribute3, value3)
-ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=NULL){
+ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=NULL, verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
   tryCatch(
     {
       #start initial tests ----
@@ -202,7 +209,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
         stop(paste0('Value of ', attribute_name, ' already is set to "', value, '".'))
       } else {
         if(attribute_name %in% att.num){
-          if(! is.na(pkgcond::suppress_warnings(as.numeric(value)))){
+          if(! is.na(as.numeric(value))){
             ebv_i_num_att(h5obj, attribute_name, value)
           } else{
             stop(paste0('The attribute ', attribute_name, ' needs to be a double value.'))
@@ -210,7 +217,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
         } else if (attribute_name %in% att.chr){
           ebv_i_char_att(h5obj, attribute_name, value)
         } else if (attribute_name %in% att.int){
-          if(! is.na(pkgcond::suppress_warnings(as.numeric(value)))){
+          if(! is.na(as.numeric(value))){
             ebv_i_int_att(h5obj, attribute_name, value)
           } else{
             stop(paste0('The attribute ', attribute_name, ' needs to be an integer value.'))

@@ -18,6 +18,7 @@
 #'   arguments are set to FALSE the function returns an array.
 #' @param ignore.RAM Checks if there is enough space in your memory to read the
 #'   data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @note For working with the DelayedMatrix take a look at the
 #'   \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-class}.
@@ -34,7 +35,14 @@
 #' # cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6))
 #' # cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
 #' # cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
-ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse=TRUE, raster=FALSE, ignore.RAM = FALSE){
+ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse=TRUE, raster=FALSE, ignore.RAM = FALSE, verbose = FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   ####initial tests start
   #are all arguments given?
   if(missing(filepath)){
@@ -68,7 +76,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   }
 
   #get properties
-  prop <- ebv_properties(filepath, datacubepath)
+  prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
   #check if timestep is valid type

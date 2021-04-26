@@ -12,7 +12,7 @@ ebv_properties(filepath, datacubepath = NULL, verbose = FALSE)
 \item{datacubepath}{Optional. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{verbose}{Set to True to obtain all warnings.}
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 S4 class containing information about file or file and datacube

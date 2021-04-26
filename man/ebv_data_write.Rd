@@ -4,7 +4,14 @@
 \alias{ebv_data_write}
 \title{Write the data on your disk as a GeoTiff}
 \usage{
-ebv_data_write(data, filepath, datacubepath, outputpath, overwrite = FALSE)
+ebv_data_write(
+  data,
+  filepath,
+  datacubepath,
+  outputpath,
+  overwrite = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data}{Your data object. May be raster, array, DelayedMatrix or list of
@@ -21,6 +28,8 @@ GeoTiff.}
 
 \item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile
 defined by 'outputpath'.}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Returns the outputpath.

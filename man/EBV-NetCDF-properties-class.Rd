@@ -22,5 +22,7 @@ EBV NetCDF Properties class (S4)
 \item{\code{metric}}{list.}
 
 \item{\code{scenario}}{list.}
+
+\item{\code{entity}}{list.}
 }}
 

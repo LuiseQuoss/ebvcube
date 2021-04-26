@@ -7,6 +7,7 @@
 #' @param datacubepath Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param color Default: dodgerblue4. Change as you like.
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Displays a plot in 'Plots' pane in RStudio. Returns a vector of the
 #'   averages.
@@ -19,7 +20,13 @@
 #' # file <- 'path/to/netcdf/file.nc'
 #' # datacubes <- ebv_datacubepaths(file)
 #' #ebv_plot_indicator(file, datacubes[1,1])
-ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4"){
+ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4", verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
   # start initial tests ----
   #are all arguments given?
   if(missing(filepath)){
@@ -52,7 +59,7 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4"){
   # end initial tests ----
 
   # basic attributes ----
-  prop <- ebv_properties(filepath, datacubepath)
+  prop <- ebv_properties(filepath, datacubepath, verbose)
   time <- prop@spatial$dimensions[3]
   timevalues <- prop@temporal$timesteps.natural
   title <- prop@general$title

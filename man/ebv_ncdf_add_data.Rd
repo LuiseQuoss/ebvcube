@@ -12,7 +12,8 @@ ebv_ncdf_add_data(
   entity = NULL,
   timestep = 1,
   band = 1,
-  ignore.RAM = FALSE
+  ignore.RAM = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ several. Don't have to be in order as the timesteps definition requires.}
 
 \item{ignore.RAM}{Checks if there is enough space in your memory to read the
 data. Can be switched off (set to TRUE).}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Adds data to the EBV NetCDF. Check your results using

@@ -11,7 +11,8 @@ ebv_data_read(
   delayed = TRUE,
   sparse = TRUE,
   raster = FALSE,
-  ignore.RAM = FALSE
+  ignore.RAM = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ arguments are set to FALSE the function returns an array.}
 
 \item{ignore.RAM}{Checks if there is enough space in your memory to read the
 data. Can be switched off (set to TRUE).}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Array, Raster or DelayedMatrix object containing the data of the

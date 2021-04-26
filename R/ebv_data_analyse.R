@@ -18,6 +18,7 @@
 #'   NetCDF contains categorical data.
 #' @param na.rm Default: TRUE. NA values are removed in the analysis. Change to
 #'   FALSE to include NAs.
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Returns a S4 object containing the basic measurements.
 #' @export
@@ -30,7 +31,13 @@
 #' # datacubes <- ebv_datacubepaths(file)
 #' # data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
 #' # data.germany.jan <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
-ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at=TRUE, epsg = 4326, numerical=TRUE, na.rm=TRUE){
+ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at=TRUE, epsg = 4326, numerical=TRUE, na.rm=TRUE, verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
   ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
@@ -61,7 +68,7 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
   }
 
   #get properties
-  prop <- ebv_properties(filepath, datacubepath)
+  prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
   #check if timestep is valid type
@@ -98,14 +105,14 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
     subset.array <- replace(subset.array, subset.array==prop@entity$fillvalue[1], c(NA))
   }  else if(class(subset) == "numeric"){
     #process bb subset
-    subset.raster <- ebv_data_read_bb(filepath, datacubepath, bb=subset, timestep=timestep, epsg=epsg)
+    subset.raster <- ebv_data_read_bb(filepath, datacubepath, bb=subset, timestep=timestep, epsg=epsg, verbose=verbose)
     #raster to array
     subset.array <- raster::as.array(subset.raster)
     #less ram
     rm(subset.raster)
   } else if(endsWith(subset, '.shp')){
     #process shp subset
-    subset.raster <- ebv_data_read_shp(filepath, datacubepath, shp=subset, timestep=timestep, at=at)
+    subset.raster <- ebv_data_read_shp(filepath, datacubepath, shp=subset, timestep=timestep, at=at, verbose=verbose)
     #raster to array
     subset.array <- as.array(subset.raster)
     #less ram

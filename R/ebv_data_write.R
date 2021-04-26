@@ -16,6 +16,7 @@
 #'   GeoTiff.
 #' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
 #'   defined by 'outputpath'.
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Returns the outputpath.
 #' @export
@@ -27,8 +28,14 @@
 #' # WORK WITH YOUR DATA
 #' # out <- 'path/to/write/the/data.tif'
 #' # ebv_data_write(data, file, datacubes[1,1], out)
-ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE){
-  ####initial tests start
+ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE, verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+  ####initial tests start ----
   #are all arguments given?
   if(missing(data)){
     stop('Data argument is missing.')
@@ -82,10 +89,10 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
   }
 
-  #######initial test end
+  #######initial test end ----
 
   #get properties
-  prop <- ebv_properties(filepath, datacubepath)
+  prop <- ebv_properties(filepath, datacubepath, verbose)
 
   if (class(data) == "DelayedMatrix"){
     #data from H5Array - on disk

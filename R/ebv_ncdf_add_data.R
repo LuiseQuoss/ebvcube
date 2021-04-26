@@ -16,6 +16,7 @@
 #'   several. Don't have to be in order as the timesteps definition requires.
 #' @param ignore.RAM Checks if there is enough space in your memory to read the
 #'   data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @note If the data exceeds your memory the RAM check will throw an error. No
 #'   block-processing or other method implemented so far. Move to a machine with
@@ -35,7 +36,13 @@
 #' # ts <- c(1:6)
 #' # band <- c(1:6)
 #' # ebv_ncdf_add_data(file, tif, metric, scenario, entity, ts, band)
-ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL, entity=NULL, timestep=1, band=1, ignore.RAM=FALSE){
+ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL, entity=NULL, timestep=1, band=1, ignore.RAM=FALSE, verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
   ### start initial tests ----
   #are all arguments given?
   if(missing(filepath_nc)){
@@ -238,7 +245,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
 
   #get subgroup: scenario & metric
   #get n of metric zeros
-  ls <- pkgcond::suppress_warnings(rhdf5::h5ls(filepath_nc)) #warning because file is opened
+  ls <- rhdf5::h5ls(filepath_nc) #warning because file is opened
   metrics.len <- length(grep("^metric", ls[,2]))
   if (is.null(scenario)){
     #define path

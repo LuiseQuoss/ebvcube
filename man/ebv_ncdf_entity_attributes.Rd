@@ -10,7 +10,8 @@ ebv_ncdf_entity_attributes(
   long_name,
   label,
   units,
-  fillvalue = NULL
+  fillvalue = NULL,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ ebv_ncdf_entity_attributes(
 \item{units}{Value of the units attribute (character).}
 
 \item{fillvalue}{Value of the fillvalue attribute (double).}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Adds attributes to NetCDF. Check results using

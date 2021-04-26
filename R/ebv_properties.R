@@ -5,6 +5,7 @@
 #' @slot temporal list.
 #' @slot metric list.
 #' @slot scenario list.
+#' @slot entity list.
 #'
 #' @return S4 class
 #' @export
@@ -24,7 +25,7 @@ methods::setClass("EBV NetCDF properties", slots=list(general="list",
 #' @param filepath Path to the NetCDF file.
 #' @param datacubepath Optional. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param verbose Set to True to obtain all warnings.
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return S4 class containing information about file or file and datacube
 #'   depending on input.
@@ -145,7 +146,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   #get srs ----
   srs.ds <- rhdf5::H5Dopen(hdf, 'crs')
   srs.chr <- ebv_i_read_att(srs.ds, 'spatial_ref')
-  srs <- pkgcond::suppress_warnings(sp::CRS(srs.chr))
+  srs <- sp::CRS(srs.chr)
   rhdf5::H5Dclose(srs.ds)
 
   #get epsg

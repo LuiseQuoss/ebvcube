@@ -10,7 +10,8 @@ ebv_ncdf_create(
   entities.no = 0,
   epsg = 4326,
   extent = c(-180, 180, -90, 90),
-  overwrite = FALSE
+  overwrite = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ c(xmin, xmax, ymin, ymax).}
 
 \item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile
 defined by 'outputpath'.}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Creates the NetCDF at the 'outputpath' location.

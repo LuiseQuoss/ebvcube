@@ -4,7 +4,12 @@
 \alias{ebv_plot_indicator}
 \title{Plot the average over time of one datacube of an EBV NetCDF}
 \usage{
-ebv_plot_indicator(filepath, datacubepath, color = "dodgerblue4")
+ebv_plot_indicator(
+  filepath,
+  datacubepath,
+  color = "dodgerblue4",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
@@ -13,6 +18,8 @@ ebv_plot_indicator(filepath, datacubepath, color = "dodgerblue4")
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{color}{Default: dodgerblue4. Change as you like.}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Displays a plot in 'Plots' pane in RStudio. Returns a vector of the

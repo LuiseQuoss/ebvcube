@@ -25,6 +25,7 @@
 #'   defined by 'outputpath'.
 #' @param ignore.RAM Checks if there is enough space in your memory to read the
 #'   data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Default: returns the outputpath of the GeoTiff with the new
 #'   resolution. Optional: return the raster object with the new resolution.
@@ -39,8 +40,15 @@
 #' # ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
 #' # d <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, T)
 ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,
-                                method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE){
-  ####initial tests start
+                                method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE, verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
+  ####initial tests start ----
   #are all arguments given?
   if(missing(filepath_src)){
     stop('Filepath_src argument is missing.')
@@ -88,7 +96,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     ebv_i_file_opened(filepath_dest)
 
     #get properties
-    prop_dest <- ebv_properties(filepath_dest)
+    prop_dest <- ebv_properties(filepath_dest, verbose=verbose)
 
     #get target resolution
     res <- prop_dest@spatial$resolution
@@ -109,7 +117,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   }
 
   #get properties source
-  prop_src <- ebv_properties(filepath_src, datacubepath_src)
+  prop_src <- ebv_properties(filepath_src, datacubepath_src, verbose)
   type.long <- prop_src@entity$type
 
   #source timestep check
@@ -168,7 +176,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     }
   }
 
-  #######initial test end
+  #######initial test end ----
 
   #get epsg
   epsg_src <- prop_src@spatial$epsg

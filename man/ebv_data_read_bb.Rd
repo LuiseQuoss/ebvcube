@@ -12,7 +12,8 @@ ebv_data_read_bb(
   timestep = 1,
   epsg = 4326,
   overwrite = FALSE,
-  ignore.RAM = FALSE
+  ignore.RAM = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ defined by 'outputpath'.}
 
 \item{ignore.RAM}{Checks if there is enough space in your memory to read the
 data. Can be switched off (set to TRUE).}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Returns a raster object if no outputpath is given. Otherwise the

@@ -4,10 +4,12 @@
 \alias{ebv_datacubepaths}
 \title{Get datacubepaths}
 \usage{
-ebv_datacubepaths(filepath)
+ebv_datacubepaths(filepath, verbose = FALSE)
 }
 \arguments{
 \item{filepath}{Path to the NetCDF file.}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Dataframe containing the paths to access the datacubes and

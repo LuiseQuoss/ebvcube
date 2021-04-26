@@ -9,7 +9,8 @@ ebv_plot_map(
   datacubepath,
   timestep = 1,
   countries = TRUE,
-  col.rev = TRUE
+  col.rev = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ top of the raster data. Disable by setting this option to FALSE.}
 
 \item{col.rev}{Default: TRUE. Set to FALSE if you want the color ramp to be
 the other way around.}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Plots a map into the 'Plots' pane in RStudio.

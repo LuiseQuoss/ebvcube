@@ -13,6 +13,7 @@
 #'   top of the raster data. Disable by setting this option to FALSE.
 #' @param col.rev Default: TRUE. Set to FALSE if you want the color ramp to be
 #'   the other way around.
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @note Uses the country outlines data from the
 #'   \href{https://cran.r-project.org/package=maptools}{maptools package}.
@@ -25,7 +26,13 @@
 #' # file <- 'path/to/netcdf/file.nc'
 #' # datacubes <- ebv_datacubepaths(file)
 #' # ebv_plot_map(file, datacubes[1,1], 9)
-ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, col.rev=TRUE){
+ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, col.rev=TRUE, verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
   # start initial tests ----
   #are all arguments given?
   if(missing(filepath)){
@@ -56,7 +63,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   }
 
   #get properties
-  prop <- ebv_properties(filepath, datacubepath)
+  prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
   #check if timestep is valid type
@@ -93,9 +100,8 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   results <- tryCatch(
     #try ----
     {
-      data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep, delayed = FALSE, raster=TRUE) #if this throws an error the data is going to plotted in lower res
+      data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep, delayed = FALSE, raster=TRUE, verbose=verbose) #if this throws an error the data is going to plotted in lower res
       data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath, type = type.short)
-      #data.all <- replace(data.all, c(which(data.all==fillvalue)), c(NA))
       #mask out fillvalue ----
       data.all <- replace(data.all, data.all==fillvalue, c(NA))
       results <- c(data.raster, data.all, 'NULL')
@@ -119,7 +125,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
         file.remove(temp.map)
       }
       #(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1, method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE)
-      data.raster <- ebv_data_change_res(filepath, datacubepath, c(1,1, 4326), temp.map, timestep, return.raster = TRUE)
+      data.raster <- ebv_data_change_res(filepath, datacubepath, c(1,1, 4326), temp.map, timestep, return.raster = TRUE, verbose=verbose)
       data.raster <- data.raster[[1]] #get first layer of brick --> class = raster
       data.all <- raster::as.array(data.raster) #use only one layer for quantile analysis
       results <- list(data.raster, data.all, temp.map)
@@ -163,7 +169,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE, co
   #plot with country outlines ----
   if (countries){
     if(epsg != 4326){
-      wrld_simpl <- pkgcond::suppress_warnings(sp::spTransform(wrld_simpl, sp::CRS(SRS_string = paste0('EPSG:', epsg))))
+      wrld_simpl <- sp::spTransform(wrld_simpl, sp::CRS(SRS_string = paste0('EPSG:', epsg)))
     }
 
     print(

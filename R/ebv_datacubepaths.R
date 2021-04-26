@@ -2,6 +2,7 @@
 #' @description Get the paths to the datacubes to access and read the data.
 #'
 #' @param filepath Path to the NetCDF file.
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Dataframe containing the paths to access the datacubes and
 #'   descriptions of scenario, metric and entity if existing.

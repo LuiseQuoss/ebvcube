@@ -13,7 +13,8 @@ ebv_data_change_res(
   method = "average",
   return.raster = FALSE,
   overwrite = FALSE,
-  ignore.RAM = FALSE
+  ignore.RAM = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -45,6 +46,8 @@ defined by 'outputpath'.}
 
 \item{ignore.RAM}{Checks if there is enough space in your memory to read the
 data. Can be switched off (set to TRUE).}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Default: returns the outputpath of the GeoTiff with the new

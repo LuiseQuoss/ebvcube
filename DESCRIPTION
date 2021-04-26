@@ -26,7 +26,6 @@ Imports:
     lattice,
     memuse,
     methods,
-    pkgcond,
     raster,
     rhdf5,
     rgdal,

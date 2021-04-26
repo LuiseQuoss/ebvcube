@@ -17,6 +17,7 @@
 #'   c(xmin, xmax, ymin, ymax).
 #' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
 #'   defined by 'outputpath'.
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @note To check out the results take a look at your NetCDF file with
 #'   \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
@@ -28,8 +29,14 @@
 #' # json <- 'path/to/json/file.json'
 #' # out <- 'path/to/create/new/netcdf/file.nc'
 #' # ebv_ncdf_create(json, out, 5)
-ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), overwrite=FALSE){
-  # start initial tests -------------------------------------------------------
+ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), overwrite=FALSE,verbose=FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+  # start initial tests ----
   #are all arguments given?
   if(missing(jsonpath)){
     stop('Jsonpath argument is missing.')

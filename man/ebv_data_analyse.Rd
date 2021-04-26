@@ -12,7 +12,8 @@ ebv_data_analyse(
   at = TRUE,
   epsg = 4326,
   numerical = TRUE,
-  na.rm = TRUE
+  na.rm = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,8 @@ NetCDF contains categorical data.}
 
 \item{na.rm}{Default: TRUE. NA values are removed in the analysis. Change to
 FALSE to include NAs.}
+
+\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Returns a S4 object containing the basic measurements.

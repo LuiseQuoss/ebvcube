@@ -17,6 +17,7 @@
 #'   defined by 'outputpath'.
 #' @param ignore.RAM Checks if there is enough space in your memory to read the
 #'   data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Returns a raster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
@@ -30,7 +31,14 @@
 #' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), timestep = c(1,4,12))
 #' # path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, timestep = c(2,3))
 #' # path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
-ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timestep = 1, epsg = 4326, overwrite=FALSE, ignore.RAM = FALSE){
+ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timestep = 1, epsg = 4326, overwrite=FALSE, ignore.RAM = FALSE, verbose = FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   ####initial tests start
   #are all arguments given?
   if(missing(filepath)){
@@ -65,7 +73,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   }
 
   #get properties
-  prop <- ebv_properties(filepath, datacubepath)
+  prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
   #check if timestep is valid type

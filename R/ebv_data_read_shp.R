@@ -18,6 +18,7 @@
 #'   defined by 'outputpath'.
 #' @param ignore.RAM Checks if there is enough space in your memory to read the
 #'   data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Returns a raster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
@@ -31,7 +32,14 @@
 #' # out <- 'path/to/write/subset.tif'
 #' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
 #'
-ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, timestep = 1, at = TRUE, overwrite=FALSE, ignore.RAM=FALSE){
+ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, timestep = 1, at = TRUE, overwrite=FALSE, ignore.RAM=FALSE, verbose = FALSE){
+  #turn off local warnings if verbose=TRUE
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   ####start initial checks####
   #are all arguments given?
   if(missing(filepath)){
@@ -74,7 +82,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   }
 
   #get properties
-  prop <- ebv_properties(filepath, datacubepath)
+  prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
   #check if timestep is valid type
@@ -124,8 +132,8 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   subset <- rgdal::readOGR(shp, verbose=FALSE)
 
   #get_epsg of shp
-  temp_epsg <- pkgcond::suppress_warnings(rgdal::showEPSG(sp::proj4string(subset)))
-  if(pkgcond::suppress_warnings(is.na(as.integer(temp_epsg)))){
+  temp_epsg <- rgdal::showEPSG(sp::proj4string(subset))
+  if(is.na(as.integer(temp_epsg))){
     stop(paste0('The given srs of the shapefile is not supported.\n', temp_epsg))
   } else {
     epsg.shp <- as.integer(temp_epsg)
@@ -139,7 +147,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
 
   #reproject shp if necessary to epsg of ncdf
   if (epsg.shp != epsg.nc){
-    subset <- sp::spTransform(subset, pkgcond::suppress_warnings(sp::CRS(paste0('EPSG:',epsg.nc))))
+    subset <- sp::spTransform(subset, sp::CRS(paste0('EPSG:',epsg.nc)))
     tempshp <- file.path(temp_path, 'temp_EBV_shp_subset')
     if (dir.exists(tempshp)){
       unlink(tempshp, recursive = TRUE)
@@ -155,7 +163,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   ext <- prop@spatial$extent
 
   #get subset of ncdf #checks for RAM
-  subset.nc <- ebv_data_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore.RAM = ignore.RAM)
+  subset.nc <- ebv_data_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore.RAM = ignore.RAM, verbose=verbose)
 
   #get extent of raster
   extent.raster <- raster::extent(subset.nc)
