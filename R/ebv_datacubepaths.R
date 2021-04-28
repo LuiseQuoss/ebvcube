@@ -20,7 +20,7 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   }
 
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }

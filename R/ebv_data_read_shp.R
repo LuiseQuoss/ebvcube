@@ -41,11 +41,15 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   }
 
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
+
+  #ensure that all tempfiles are deleted in the end
+
+  unlink(tempshp, recursive = TRUE)
 
   ####start initial checks ----
   #are all arguments given?

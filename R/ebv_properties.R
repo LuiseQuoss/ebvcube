@@ -45,22 +45,22 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   }
 
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('srs.ds')){
       if(rhdf5::H5Iis_valid(srs.ds)==TRUE){rhdf5::H5Dclose(srs.ds)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('time.ds')){
       if(rhdf5::H5Iis_valid(time.ds)==TRUE){rhdf5::H5Dclose(time.ds)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('dh')){
       if(rhdf5::H5Iis_valid(dh)==TRUE){rhdf5::H5Gclose(dh)}
     }

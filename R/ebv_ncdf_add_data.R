@@ -45,27 +45,27 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   }
 
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('sid')){
       if(rhdf5::H5Iis_valid(sid)==TRUE){rhdf5::H5Sclose(sid)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('gid')){
       if(rhdf5::H5Iis_valid(gid)==TRUE){rhdf5::H5Gclose(gid)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('did')){
       if(rhdf5::H5Iis_valid(did)==TRUE){rhdf5::H5Dclose(did)}
     }

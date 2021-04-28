@@ -30,7 +30,7 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
   }
 
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }

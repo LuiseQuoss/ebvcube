@@ -38,13 +38,13 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   }
 
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
   gids <- c('mgid', 'sgid')
-  defer(
+  withr::defer(
     for (id in gids){
       if(exists(id)){
         id <- eval(parse(text = id))
@@ -53,7 +53,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     }
   )
   dids <- c('mcrs.id', 'crs.id', 'lat.id', 'lon.id', 'time.id', 'var_entity.id')
-  defer(
+  withr::defer(
     for (id in dids){
       if(exists(id)){
         id <- eval(parse(text = id))
@@ -61,12 +61,12 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       }
     }
   )
-  defer(
+  withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('sid')){
       if(rhdf5::H5Iis_valid(sid)==TRUE){rhdf5::H5Sclose(sid)}
     }

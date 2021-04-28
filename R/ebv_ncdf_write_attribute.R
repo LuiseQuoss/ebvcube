@@ -44,12 +44,12 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
   }
 
   #turn off local warnings if verbose=TRUE ----
-  defer(
+  withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::HFDclose(hdf)}
     }
   )
-  defer(
+  withr::defer(
     if (exists('h5obj')){
       if(rhdf5::H5Iis_valid(h5obj)==TRUE){
         tryCatch(

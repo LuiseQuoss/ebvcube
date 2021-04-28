@@ -30,12 +30,12 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label,
   }
 
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('did')){
       if(rhdf5::H5Iis_valid(did)==TRUE){rhdf5::H5Dclose(did)}
     }
