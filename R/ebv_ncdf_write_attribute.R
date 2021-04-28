@@ -94,9 +94,11 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
     #file closed?
     ebv_i_file_opened(filepath)
 
+    #open file
+    hdf <- rhdf5::H5Fopen(filepath)
+
     #check if levelpath exists
     if (!is.null(levelpath)){
-      hdf <- rhdf5::H5Fopen(filepath)
       if (rhdf5::H5Lexists(hdf, levelpath)==FALSE){
         stop(paste0('The given levelpath is not valid:\n', levelpath))
       }
