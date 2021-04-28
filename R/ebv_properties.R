@@ -82,7 +82,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
-  if (checkmate::checkFileExists(filepath, extention='nc') != TRUE){
+  if (!endsWith(filepath, '.nc')){
     stop(paste0('File ending is wrong. File cannot be processed.'))
   }
 
@@ -93,7 +93,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   hdf <- rhdf5::H5Fopen(filepath)
 
   #variable check
-  if (checkmate::checkCharacter(datacubepath) != TRUE){
+  if (checkmate::checkCharacter(datacubepath) != TRUE & !is.null(datacubepath)){
     stop('Datacubepath must be of type character.')
   }
   if(!is.null(datacubepath)){

@@ -32,21 +32,14 @@
 #' # path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, timestep = c(2,3))
 #' # path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
 ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timestep = 1, epsg = 4326, overwrite=FALSE, ignore.RAM = FALSE, verbose = FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  ####initial tests start ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
 
-  ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -59,8 +52,21 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
     stop('Bounding box (bb) argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #filepath check
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
@@ -71,43 +77,38 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   ebv_i_file_opened(filepath)
 
   #variable check
+  if (checkmate::checkCharacter(datacubepath) != TRUE){
+    stop('Datacubepath must be of type character.')
+  }
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }
-
+  rhdf5::H5Fclose(hdf)
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
   #check if timestep is valid type
-  if (class(timestep)=='numeric'){
-    for (t in timestep){
-      if (! as.integer(t)==t){
-        stop('Timestep has to be an integer or a list of integers.')
-      }
-    }
-  } else {
-    stop('Timestep has to be of class numeric.')
+  if(checkmate::checkIntegerish(timestep) != TRUE){
+    stop('Timestep has to be an integer or a list of integers.')
   }
 
   #check timestep range
-  for (t in timestep){
-    max_time <- prop@spatial$dimensions[3]
-    min_time <- 1
-    if (t>max_time | t<min_time){
-      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-    }
+  max_time <- prop@spatial$dimensions[3]
+  min_time <- 1
+  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
+    stop(paste0('Chosen timestep ', timestep, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
   #outputpath check
   if (!is.null(outputpath)){
-    if(!dir.exists(dirname(outputpath))){
+    if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
       stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
     }
     #check if outpufile exists if overwrite is disabled
     if(!overwrite){
-      if(file.exists(outputpath)){
+      if(checkmate::checkPathForOutput(outputpath) != TRUE){
         stop('Output file already exists. Change name or enable overwrite.')
       }
     }
@@ -121,18 +122,18 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
 
   #######initial test end ----
 
-  #get basic information of file
+  #get basic information of file ----
   crs <- prop@spatial$srs@projargs
   epsg_file <- prop@spatial$epsg
   resolution <- prop@spatial$resolution
   ext <- prop@spatial$extent
 
-  #transform bb if necessary
+  #transform bb if necessary ----
   if (epsg_file != epsg){
     bb <- ebv_i_transform_bb(bb, epsg, epsg_file)
   }
 
-  #get lon&lat data
+  #get lon&lat data ----
   lat.data <- rhdf5::h5read(filepath, 'lat')
   lon.data <- rhdf5::h5read(filepath, 'lon')
 
@@ -177,7 +178,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
     }
   }
 
-  #extent for raster creation
+  #extent for raster creation ----
   xmin <- min(lon.data[lon.indices])-resolution[1]/2
   xmax <- max(lon.data[lon.indices])+resolution[1]/2
   ymin <- min(lat.data[lat.indices])-resolution[2]/2
@@ -186,13 +187,14 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   ncol <- length(lat.indices)
   nrow <- length(lon.indices)
 
-  #check needed RAM
+  #check needed RAM ----
   if (!ignore.RAM){
     ebv_i_check_ram(c(ncol, nrow), timestep, prop@entity$type)
   } else{
     message('RAM capacities are ignored.')
   }
 
+  #get data ----
   #get multiple timesteps - 3D
   if (length(timestep)>1){
     array3d <- array(dim=c(ncol,nrow, length(timestep)))
@@ -236,6 +238,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   #set nodata value
   r <- raster::reclassify(r, cbind(prop@entity$fillvalue, NA))
 
+  #return data ----
   if (!is.null(outputpath)){
     #write raster
     raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)

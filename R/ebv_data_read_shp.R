@@ -33,21 +33,15 @@
 #' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
 #'
 ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, timestep = 1, at = TRUE, overwrite=FALSE, ignore.RAM=FALSE, verbose = FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  ####start initial checks ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
 
-  #ensure that all tempfiles are deleted on exit ----
+  #ensure that all tempfiles are deleted on exit
   withr::defer(
     if(exists('tempshp')){
       unlink(tempshp, recursive = TRUE)
@@ -61,8 +55,6 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
     }
   )
 
-
-  ####start initial checks ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -75,8 +67,21 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
     stop('Shapefile (shp) argument for subsetting is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #nc filepath check
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
@@ -84,8 +89,11 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   }
 
   #shp filepath check
-  if (!file.exists(shp)){
-    stop(paste0('File does not exist.\n', shp))
+  if (checkmate::checkCharacter(shp) != TRUE){
+    stop('Shapefilepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(shp) != TRUE){
+    stop(paste0('Shapefile does not exist.\n', shp))
   }
   if (!endsWith(shp, '.shp')){
     stop(paste0('File ending is wrong. File cannot be processed.'))
@@ -95,43 +103,39 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   ebv_i_file_opened(filepath)
 
   #variable check
+  if (checkmate::checkCharacter(datacubepath) != TRUE){
+    stop('Datacubepath must be of type character.')
+  }
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }
+  rhdf5::H5Fclose(hdf)
 
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
   #check if timestep is valid type
-  if (class(timestep)=='numeric'){
-    for (t in timestep){
-      if (! as.integer(t)==t){
-        stop('Timestep has to be an integer or a list of integers.')
-      }
-    }
-  } else {
-    stop('Timestep has to be of class numeric.')
+  if(checkmate::checkIntegerish(timestep) != TRUE){
+    stop('Timestep has to be an integer or a list of integers.')
   }
 
   #check timestep range
-  for (t in timestep){
-    max_time <- prop@spatial$dimensions[3]
-    min_time <- 1
-    if (t>max_time | t<min_time){
-      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-    }
+  max_time <- prop@spatial$dimensions[3]
+  min_time <- 1
+  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
+    stop(paste0('Chosen timestep ', timestep, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
   #outputpath check
   if (!is.null(outputpath)){
-    if(!dir.exists(dirname(outputpath))){
+    if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
       stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
     }
     #check if outpufile exists if overwrite is disabled
     if(!overwrite){
-      if(file.exists(outputpath)){
+      if(checkmate::checkPathForOutput(outputpath) != TRUE){
         stop('Output file already exists. Change name or enable overwrite.')
       }
     }
@@ -141,7 +145,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   temp_path <- getOption('temp_directory')[[1]]
   if (is.null(temp_path)){
     stop('This function creates a temporary file. Please specify a temporary directory via options.')
-  } else if (!dir.exists(temp_path)){
+  } else if (checkmate::checkDirectoryExists(temp_path) != TRUE){
     stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
   }
 
