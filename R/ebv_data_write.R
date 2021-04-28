@@ -29,21 +29,15 @@
 #' # out <- 'path/to/write/the/data.tif'
 #' # ebv_data_write(data, file, datacubes[1,1], out)
 ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  ####initial tests start ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
 
-  #ensure that all tempfiles are deleted on exit ----
+  #ensure that all tempfiles are deleted on exit
   withr::defer(
     if(exists('temps')){
       for (t in temps){
@@ -55,14 +49,12 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   )
   withr::defer(
     if(exists('temp.vrt')){
-        if(file.exists(temp.vrt)){
-          file.remove(temp.vrt)
-        }
+      if(file.exists(temp.vrt)){
+        file.remove(temp.vrt)
+      }
     }
   )
 
-
-  ####initial tests start ----
   #are all arguments given?
   if(missing(data)){
     stop('Data argument is missing.')
@@ -78,8 +70,21 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     stop('Outputpath argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #filepath check
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
@@ -90,18 +95,22 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   ebv_i_file_opened(filepath)
 
   #variable check
+  if (checkmate::checkCharacter(datacubepath) != TRUE){
+    stop('Datacubepath must be of type character.')
+  }
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }
+  rhdf5::H5Fclose(hdf)
 
   #outputpath check
-  if(!dir.exists(dirname(outputpath))){
+  if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
     stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
   }
   #check if outpufile exists if overwrite is disabled
   if(!overwrite){
-    if(file.exists(outputpath)){
+    if(checkmate::checkPathForOutput(outputpath) != TRUE){
       stop('Output file already exists. Change name or enable overwrite.')
     }
   }
@@ -110,7 +119,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   temp_path <- getOption('temp_directory')[[1]]
   if (is.null(temp_path)){
     stop('This function creates a temporary file. Please specify a temporary directory via options.')
-  } else if (!dir.exists(temp_path)){
+  } else if (checkmate::checkDirectoryExists(temp_path) != TRUE){
     stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
   }
 

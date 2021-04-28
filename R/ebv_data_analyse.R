@@ -32,20 +32,14 @@
 #' # data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
 #' # data.germany.jan <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at=TRUE, epsg = 4326, numerical=TRUE, na.rm=TRUE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-  # ensure file and all datahandles are closed on exit ----
+  ####initial tests start ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
 
-  ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -54,8 +48,21 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
     stop('Datacubepath argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #filepath check - nc
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
@@ -66,33 +73,29 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
   ebv_i_file_opened(filepath)
 
   #variable check
+  if (checkmate::checkCharacter(datacubepath) != TRUE){
+    stop('Datacubepath must be of type character.')
+  }
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }
+  rhdf5::H5Fclose(hdf)
 
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
   #check if timestep is valid type
-  if (class(timestep)=='numeric'){
-    for (t in timestep){
-      if (! as.integer(t)==t){
-        stop('Timestep has to be an integer or a list of integers.')
-      }
-    }
-  } else {
-    stop('Timestep has to be of class numeric.')
+  if(checkmate::checkIntegerish(timestep) != TRUE){
+    stop('Timestep has to be an integer or a list of integers.')
   }
 
   #check timestep range
-  for (t in timestep){
-    max_time <- prop@spatial$dimensions[3]
-    min_time <- 1
-    if (t>max_time | t<min_time){
-      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-    }
+  max_time <- prop@spatial$dimensions[3]
+  min_time <- 1
+  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
+    stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
   #more checks are included in subset bb and subset shp

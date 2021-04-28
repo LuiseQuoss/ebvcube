@@ -41,14 +41,8 @@
 #' # d <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, T)
 ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,
                                 method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  ####initial tests start ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
@@ -70,7 +64,6 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     }
   )
 
-  ####initial tests start ----
   #are all arguments given?
   if(missing(filepath_src)){
     stop('Filepath_src argument is missing.')
@@ -85,8 +78,21 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     stop('Outputpath argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #filepath src check
-  if (!file.exists(filepath_src)){
+  if (checkmate::checkCharacter(filepath_src) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath_src) != TRUE){
     stop(paste0('File does not exist.\n', filepath_src))
   }
   if (!endsWith(filepath_src, '.nc')){
@@ -96,19 +102,27 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   #file closed?
   ebv_i_file_opened(filepath_src)
 
+
   #check if res is given or filepath to destination
-  if(class(resolution)=='numeric'){
-    epsg_dest <- resolution[3]
-    res <- resolution[1:2]
-    filepath_dest = NULL
+  if(checkmate::checkNumeric(resolution)==TRUE){
+    if(checkmate::checkNumeric(resolution, len=3)==TRUE){
+      epsg_dest <- resolution[3]
+      res <- resolution[1:2]
+      filepath_dest <- NULL
+    } else {
+      stop('Resolution must be a vector of length 3 containing numerics.')
+    }
   } else {
     filepath_dest <- resolution
   }
 
   if(!is.null(filepath_dest)){
     #filepath dest check
-    if (!file.exists(filepath_dest)){
-      stop(paste0('File does not exist.\n', filepath_dest))
+    if (checkmate::checkCharacter(filepath_dest) != TRUE){
+      stop('Filepath_dest must be of type character.')
+    }
+    if (checkmate::checkFileExists(filepath_dest) != TRUE){
+      stop(paste0('Filepath_dest does not exist.\n', filepath_dest))
     }
     if (!endsWith(filepath_dest, '.nc')){
       stop(paste0('File ending is wrong. File cannot be processed.'))
@@ -130,10 +144,14 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   }
 
   #source variable check
+  if (checkmate::checkCharacter(datacubepath_src) != TRUE){
+    stop('Datacubepath must be of type character.')
+  }
   hdf <- rhdf5::H5Fopen(filepath_src)
   if (rhdf5::H5Lexists(hdf, datacubepath_src)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath_src))
   }
+  rhdf5::H5Fclose(hdf)
 
   #get properties source
   prop_src <- ebv_properties(filepath_src, datacubepath_src, verbose)
@@ -141,37 +159,34 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
 
   #source timestep check
   #check if timestep is valid type
-  if (class(timestep)=='numeric'){
-    for (t in timestep){
-      if (! as.integer(t)==t){
-        stop('Timestep has to be an integer or a list of integers.')
-      }
-    }
-  } else {
-    stop('Timestep has to be of class numeric.')
+  if(checkmate::checkIntegerish(timestep) != TRUE){
+    stop('Timestep has to be an integer or a list of integers.')
   }
 
   #check timestep range
-  for (t in timestep){
-    max_time <- prop_src@spatial$dimensions[3]
-    min_time <- 1
-    if (t>max_time | t<min_time){
-      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-    }
+  max_time <- prop_src@spatial$dimensions[3]
+  min_time <- 1
+  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
+    stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
   #outputpath check
-  if(!dir.exists(dirname(outputpath))){
-    stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
-  }
-  #check if outpufile exists if overwrite is disabled
-  if(!overwrite){
-    if(file.exists(outputpath)){
-      stop('Output file already exists. Change name or enable overwrite.')
+  if (!is.null(outputpath)){
+    if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
+      stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
+    }
+    #check if outpufile exists if overwrite is disabled
+    if(!overwrite){
+      if(checkmate::checkPathForOutput(outputpath) != TRUE){
+        stop('Output file already exists. Change name or enable overwrite.')
+      }
     }
   }
 
   #check if method is valid
+  if (checkmate::checkCharacter(method) != TRUE){
+    stop('Method must be of type character.')
+  }
   methods <- c("near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1","q3")
   if (! method %in% methods){
     stop('Given method is not valid.\n', method)

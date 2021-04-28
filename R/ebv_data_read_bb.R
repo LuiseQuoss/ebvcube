@@ -98,7 +98,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   max_time <- prop@spatial$dimensions[3]
   min_time <- 1
   if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
-    stop(paste0('Chosen timestep ', timestep, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
+    stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
   #outputpath check
