@@ -37,14 +37,8 @@ methods::setClass("EBV NetCDF properties", slots=list(general="list",
 #' # prop_file <- ebv_properties(file)
 #' # prop_dc <- ebv_properties(file, datacubes[1,1])
 ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  ####initial tests start ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
@@ -66,17 +60,32 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     }
   )
 
-  ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
   }
+  if(missing(verbose)){
+    stop('Verbose argument is missing.')
+  }
+
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
 
   #filepath check
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
-  if (!endsWith(filepath, '.nc')){
+  if (checkmate::checkFileExists(filepath, extention='nc') != TRUE){
     stop(paste0('File ending is wrong. File cannot be processed.'))
   }
 
@@ -87,6 +96,9 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   hdf <- rhdf5::H5Fopen(filepath)
 
   #variable check
+  if (checkmate::checkCharacter(datacubepath) != TRUE){
+    stop('Datacubepath must be of type character.')
+  }
   if(!is.null(datacubepath)){
     if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
       stop(paste0('The given variable is not valid:\n', datacubepath))
@@ -152,14 +164,11 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   ebv_class <- ebv_i_read_att(hdf, 'ebv_class')
   ebv_subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
   creator <- ebv_i_read_att(hdf, 'creator')
-  #institution <- ebv_i_read_att(hdf, 'institution')
-  #contactname <- ebv_i_read_att(hdf, 'contactname')
-  #contactemail <- ebv_i_read_att(hdf, 'contactemail')
 
   #general
   general <- list(title=title, description=description.file,
                   ebv_class=ebv_class, ebv_name=ebv_name, ebv_subgroups=ebv_subgroups,
-                  creator=creator, value_range=value_range) #institution='', contactname='', contactemail=''
+                  creator=creator, value_range=value_range)
 
   #get srs ----
   srs.ds <- rhdf5::H5Dopen(hdf, 'crs')
@@ -168,8 +177,6 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   rhdf5::H5Dclose(srs.ds)
 
   #get epsg
-  #index <- length(strsplit(srs.chr, '"')[[1]])-1
-  #epsg <- as.integer(strsplit(srs.chr, '"')[[1]][index])
   epsg <- as.integer(rgdal::showEPSG(srs.chr))
 
   #get dims
