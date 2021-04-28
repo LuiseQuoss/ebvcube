@@ -54,6 +54,21 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
+  #ensure that all tempfiles are deleted on exit ----
+  withr::defer(
+    if(exists('temp')){
+      if(file.exists(temp)){
+        file.remove(temp)
+      }
+    }
+  )
+  withr::defer(
+    if(exists('temp_2')){
+      if(file.exists(temp_2)){
+        file.remove(temp_2)
+      }
+    }
+  )
 
   ####initial tests start ----
   #are all arguments given?

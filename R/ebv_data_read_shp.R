@@ -47,9 +47,20 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
     }
   )
 
-  #ensure that all tempfiles are deleted in the end
+  #ensure that all tempfiles are deleted on exit ----
+  withr::defer(
+    if(exists('tempshp')){
+      unlink(tempshp, recursive = TRUE)
+    }
+  )
+  withr::defer(
+    if(exists('tempraster')){
+      if(file.exists(tempraster)){
+        file.remove(tempraster)
+      }
+    }
+  )
 
-  unlink(tempshp, recursive = TRUE)
 
   ####start initial checks ----
   #are all arguments given?

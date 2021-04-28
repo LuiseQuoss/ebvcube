@@ -46,6 +46,15 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
     }
   )
 
+  #ensure that all tempfiles are deleted on exit ----
+  withr::defer(
+    if(exists('temp.map')){
+      if(file.exists(temp.map)){
+        file.remove(temp.map)
+      }
+    }
+  )
+
   # start initial tests ----
   #are all arguments given?
   if(missing(filepath)){

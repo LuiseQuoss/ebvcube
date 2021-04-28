@@ -43,6 +43,25 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     }
   )
 
+  #ensure that all tempfiles are deleted on exit ----
+  withr::defer(
+    if(exists('temps')){
+      for (t in temps){
+        if(file.exists(t)){
+          file.remove(t)
+        }
+      }
+    }
+  )
+  withr::defer(
+    if(exists('temp.vrt')){
+        if(file.exists(temp.vrt)){
+          file.remove(temp.vrt)
+        }
+    }
+  )
+
+
   ####initial tests start ----
   #are all arguments given?
   if(missing(data)){
@@ -172,6 +191,8 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
         filepath = temp.tif,
         name = name
       )
+      #add filename to list
+      temps <- c(temps, temp.tif)
 
       temp.vrt <- file.path(temp_path, paste0('temp_EBV_write_data_', i, '.vrt'))
 
@@ -207,15 +228,9 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
 
     #delete temp file
     for (f in temps){
-      #delete tif
-      if (file.exists(paste0(stringr::str_remove(f, '.vrt'), '.tif'))){
-        file.remove(paste0(stringr::str_remove(f, '.vrt'), '.tif'))
-      }
-      #delete vrt
       if (file.exists(f)){
         file.remove(f)
       }
-
     }
     #remove multilayer vrt
     if (file.exists(temp.vrt)){
