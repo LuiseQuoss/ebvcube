@@ -35,21 +35,13 @@
 #' # cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
 #' # cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
 ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse=TRUE, raster=FALSE, ignore.RAM = FALSE, verbose = FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  ####initial tests start ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
-
-  ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -61,8 +53,21 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
     stop('Timestep argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #filepath check
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
@@ -73,6 +78,9 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   ebv_i_file_opened(filepath)
 
   #variable check
+  if (checkmate::checkCharacter(datacubepath) != TRUE){
+    stop('Datacubepath must be of type character.')
+  }
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath))
@@ -83,23 +91,15 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
 
   #timestep check
   #check if timestep is valid type
-  if (class(timestep)=='numeric'){
-    for (t in timestep){
-      if (! as.integer(t)==t){
-        stop('Timestep has to be an integer or a list of integers.')
-      }
-    }
-  } else {
-    stop('Timestep has to be of class numeric.')
+  if(checkmate::checkIntegerish(timestep) != TRUE){
+    stop('Timestep has to be an integer or a list of integers.')
   }
 
   #check timestep range
-  for (t in timestep){
-    max_time <- prop@spatial$dimensions[3]
-    min_time <- 1
-    if (t>max_time | t<min_time){
-      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-    }
+  max_time <- prop@spatial$dimensions[3]
+  min_time <- 1
+  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
+    stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
   #warning that raster output will be ignored
