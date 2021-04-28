@@ -12,28 +12,36 @@
 #' # file <- 'path/to/netcdf/file.nc'
 #' # datacubes <- ebv_datacubepaths(file)
 ebv_datacubepaths <- function(filepath, verbose = FALSE){
-  #turn off local warnings if verbose=TRUE ----
+  ####initial tests start ----
+  # ensure file and all datahandles are closed on exit
+  withr::defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+  #are all arguments given?
+  if(missing(filepath)){
+    stop('Filepath argument is missing.')
+  }
+  if(missing(verbose)){
+    stop('Verbose argument is missing.')
+  }
+
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
 
-  # ensure file and all datahandles are closed on exit ----
-  withr::defer(
-    if(exists('hdf')){
-      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
-    }
-  )
-
-  ####initial tests start ----
-  #are all arguments given?
-  if(missing(filepath)){
-    stop('Filepath argument is missing.')
-  }
-
   #filepath check
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
