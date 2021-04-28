@@ -32,21 +32,15 @@
 #' # ebv_plot_map(file, datacubes[1,1], 9)
 ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
                          col.rev=TRUE, classes = 5, ignore.RAM=FALSE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  # start initial tests ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
 
-  #ensure that all tempfiles are deleted on exit ----
+  #ensure that all tempfiles are deleted on exit
   withr::defer(
     if(exists('temp.map')){
       if(file.exists(temp.map)){
@@ -55,7 +49,6 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
     }
   )
 
-  # start initial tests ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -64,8 +57,21 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
     stop('Datacubepath argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #filepath check
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
@@ -92,18 +98,19 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   }
 
   #check timestep range
-  for (t in timestep){
-    max_time <- prop@spatial$dimensions[3]
-    min_time <- 1
-    if (t>max_time | t<min_time){
-      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ',
-                  min_time, ' to ', max_time, '.'))
-    }
+  min_time <- 1
+  max_time <- prop@spatial$dimensions[3]
+  if(checkmate::checkInt(timestep, lower=min_time, upper=max_time)!= TRUE){
+    stop(paste0('Chosen timestep ', timestep, ' is out of bounds. Timestep range is ',
+                min_time, ' to ', max_time, '.'))
   }
 
-  #check classes argument - single integer
+    #check classes argument - single integer
   if (checkmate::checkInt(classes)!=TRUE){
     stop('The argument classes must be of type "single integerish value"')
+  }
+  if (checkmate::checkInt(classes, upper=15)!=TRUE){
+    stop('The value of classes is too big. It is limitated to 15.')
   }
 
   # end initial tests ----
