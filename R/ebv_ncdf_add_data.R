@@ -37,14 +37,8 @@
 #' # band <- c(1:6)
 #' # ebv_ncdf_add_data(file, tif, metric, scenario, entity, ts, band)
 ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL, entity=NULL, timestep=1, band=1, ignore.RAM=FALSE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  ### start initial tests ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
@@ -71,8 +65,6 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
     }
   )
 
-
-  ### start initial tests ----
   #are all arguments given?
   if(missing(filepath_nc)){
     stop('Filepath_nc argument is missing.')
@@ -81,20 +73,36 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
     stop('Filepath_tif argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #check if nc file exists
-  if (!file.exists(filepath_nc)){
-    stop(paste0('NetCDF file does not exist.\n', filepath_nc))
+  if (checkmate::checkCharacter(filepath_nc) != TRUE){
+    stop('NetCDF Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath_nc) != TRUE){
+    stop(paste0('NetCDF File does not exist.\n', filepath_nc))
   }
   if (!endsWith(filepath_nc, '.nc')){
     stop(paste0('NetCDF file ending is wrong. File cannot be processed.'))
   }
 
   #check if tif file exists
-  if (!file.exists(filepath_tif)){
-    stop(paste0('Tif file does not exist.\n', filepath_tif))
+  if (checkmate::checkCharacter(filepath_tif) != TRUE){
+    stop('GeoTiff Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath_tif) != TRUE){
+    stop(paste0('GeoTiff does not exist.\n', filepath_nc))
   }
   if (!endsWith(filepath_tif, '.tif')){
-    stop(paste0('Tif file ending is wrong. File cannot be processed.'))
+    stop(paste0('GeoTiff file ending is wrong. File cannot be processed.'))
   }
 
   #file closed?
@@ -119,34 +127,20 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
 
   #check timesteps
   #check if timestep is valid type
-  if (class(timestep)=='numeric'){
-    for (t in timestep){
-      if (! as.integer(t)==t){
-        stop('Timestep has to be an integer or a list of integers.')
-      }
-    }
-  } else {
-    stop('Timestep has to be of class numeric.')
+  if(checkmate::checkIntegerish(timestep) != TRUE){
+    stop('Timestep has to be an integer or a list of integers.')
   }
 
   #check timestep range
-  max_time <- length(rhdf5::h5read(filepath_nc,'time'))
-  for (t in timestep){
-    min_time <- 1
-    if (t>max_time | t<min_time){
-      stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-    }
+  ax_time <- length(rhdf5::h5read(filepath_nc,'time'))
+  min_time <- 1
+  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
+    stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
   #check if band is valid type
-  if (class(band)=='numeric'){
-    for (b in band){
-      if (! as.integer(b)==b){
-        stop('Band has to be an integer or a list of integers.')
-      }
-    }
-  } else {
-    stop('Band has to be of class numeric.')
+  if(checkmate::checkIntegerish(band) != TRUE){
+    stop('Band has to be an integer or a list of integers.')
   }
 
   #check if timesteps and bands have the same length
@@ -162,7 +156,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   }
   #check if band available in Tif
   if (max(band) > b.sum){
-    stop('The highest band that should be used exceeds the amount of bands in Tiff.')
+    stop('The highest band that should be used exceeds the amount of bands in GeoTiff File.')
   }
 
   #check needed RAM to read tif info

@@ -22,14 +22,8 @@
 #' # datacubes <- ebv_datacubepaths(file)
 #' # ebv_ncdf_entity_attributes(file, datacubes[1,1], 'habitat', 'bog', 'Percentage', fillvalue=-1)
 ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label, units, fillvalue=NULL, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  ### start initial test ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
@@ -41,7 +35,6 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label,
     }
   )
 
-  ### start initial test ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath_nc argument is missing.')
@@ -59,9 +52,22 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label,
     stop('Units argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #check if nc file exists
-  if (!file.exists(filepath)){
-    stop(paste0('NetCDF file does not exist.\n', filepath))
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
+    stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
     stop(paste0('NetCDF file ending is wrong. File cannot be processed.'))
@@ -77,17 +83,18 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label,
   }
 
   #check if attribute arguments have right class
-  if(!class(long_name)=='character'){
+
+  if(checkmate::checkCharacter(long_name)!=TRUE){
     stop('Long_name argument has to be of class character.')
   }
-  if(!class(label)=='character'){
+  if(checkmate::checkCharacter(label)!=TRUE){
     stop('Label argument has to be of class character.')
   }
-  if(!class(units)=='character'){
+  if(checkmate::checkCharacter(units)!=TRUE){
     stop('Units argument has to be of class character.')
   }
   if(!is.null(fillvalue)){
-    if(!class(fillvalue)=='numeric'){
+    if(checkmate::checkNumber(fillvalue)!=TRUE){
       stop('Fillvalue argument has to be of class numeric')
     }
   }

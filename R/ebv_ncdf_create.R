@@ -30,14 +30,8 @@
 #' # out <- 'path/to/create/new/netcdf/file.nc'
 #' # ebv_ncdf_create(json, out, 5)
 ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), overwrite=FALSE,verbose=FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  # start initial tests ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
@@ -72,7 +66,6 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     }
   )
 
-  # start initial tests ----
   #are all arguments given?
   if(missing(jsonpath)){
     stop('Jsonpath argument is missing.')
@@ -81,8 +74,21 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     stop('Outputpath argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #check if json exists
-  if (!file.exists(jsonpath)){
+  if (checkmate::checkCharacter(jsonpath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(jsonpath) != TRUE){
     stop(paste0('Json file does not exist.\n', jsonpath))
   }
   if (!endsWith(jsonpath, '.json')){
@@ -90,15 +96,18 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   }
 
   #check if ouputpath exists
-  if(!dir.exists(dirname(outputpath))){
+  #outputpath check
+  if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
     stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
   }
-  if (file.exists(outputpath) & overwrite==FALSE){
-    stop('Output file already exists. Enable overwrite or delete file.')
+  #check if outpufile exists if overwrite is disabled
+  if(!overwrite){
+    if(checkmate::checkPathForOutput(outputpath) != TRUE){
+      stop('Output file already exists. Change name or enable overwrite.')
+    }
   }
 
   #check if epsg is valid
-  #valid epsg check
   epsg_list <- rgdal::make_EPSG()
   if (epsg != 4326){
     if (! epsg %in% epsg_list$code){
