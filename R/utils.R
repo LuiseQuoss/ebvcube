@@ -335,6 +335,18 @@ ebv_i_check_ram <- function(dims, timestep, type){
 #' @param data Numerical. Vaule to be written to Attribute.
 #' @noRd
 ebv_i_uint_att <- function(h5obj, name, data){
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('aid')){
+      if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
+    }
+  )
+  defer(
+    if(exists('(sid)')){
+      if(rhdf5::H5Iis_valid((sid))==TRUE){rhdf5::H5Sclose((sid))}
+    }
+  )
+  # add attribute ----
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_NATIVE_UINT")
@@ -355,6 +367,18 @@ ebv_i_uint_att <- function(h5obj, name, data){
 #' @param data Numerical. Vaule to be written to Attribute.
 #' @noRd
 ebv_i_int_att <- function(h5obj, name, data){
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('aid')){
+      if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
+    }
+  )
+  defer(
+    if(exists('(sid)')){
+      if(rhdf5::H5Iis_valid((sid))==TRUE){rhdf5::H5Sclose((sid))}
+    }
+  )
+  # add attribute ----
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_NATIVE_INT")
@@ -375,6 +399,18 @@ ebv_i_int_att <- function(h5obj, name, data){
 #' @param data Numerical. Vaule to be written to Attribute.
 #' @noRd
 ebv_i_num_att <- function(h5obj, name, data){
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('aid')){
+      if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
+    }
+  )
+  defer(
+    if(exists('(sid)')){
+      if(rhdf5::H5Iis_valid((sid))==TRUE){rhdf5::H5Sclose((sid))}
+    }
+  )
+  # add attribute ----
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
@@ -395,9 +431,20 @@ ebv_i_num_att <- function(h5obj, name, data){
 #' @param data Characer. Vaule to be written to Attribute.
 #' @noRd
 ebv_i_char_att <- function(h5obj, name, data){
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('aid')){
+      if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
+    }
+  )
+  defer(
+    if(exists('(sid)')){
+      if(rhdf5::H5Iis_valid((sid))==TRUE){rhdf5::H5Sclose((sid))}
+    }
+  )
+  # add attribute ----
   count <- 1
-  #data.split <- strsplit(data,'')[[1]]
-  for (u in c('\ufc', '\uf6', '\ue4', '\udf', '\udc', '\uc4', '\ud6')){ #c('ü', 'ö', 'ä', 'ß', 'Ü', 'Ä', 'Ö')
+  for (u in c('\ufc', '\uf6', '\ue4', '\udf', '\udc', '\uc4', '\ud6')){
     count <- count + stringr::str_count(data, u)
   }
   if(!rhdf5::H5Aexists(h5obj, name)){
@@ -426,6 +473,13 @@ ebv_i_char_att <- function(h5obj, name, data){
 #' @return Value of the attribute.
 #' @noRd
 ebv_i_read_att <-  function(h5obj, name){
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('aid')){
+      if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
+    }
+  )
+  # read attribute ----
   #check if attribute exists
   if(!rhdf5::H5Aexists(h5obj, name)){
     warning(paste0('The attribute ', name, ' does not exist. Or maybe wrong location in NetCDF?\n'))
