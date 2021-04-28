@@ -265,7 +265,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
     }
 
     if(exists('hdf')){
-      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::HFDclose(hdf)}
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
 
 }
