@@ -22,21 +22,14 @@
 #' #ebv_plot_indicator(file, datacubes[1,1])
 ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
                                verbose=FALSE){
-  #turn off local warnings if verbose=TRUE ----
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
-  }
-
-  # ensure file and all datahandles are closed on exit ----
+  # start initial tests ----
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
 
-  # start initial tests ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -45,8 +38,21 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
     stop('Datacubepath argument is missing.')
   }
 
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
+  }
+
   #filepath check
-  if (!file.exists(filepath)){
+  if (checkmate::checkCharacter(filepath) != TRUE){
+    stop('Filepath must be of type character.')
+  }
+  if (checkmate::checkFileExists(filepath) != TRUE){
     stop(paste0('File does not exist.\n', filepath))
   }
   if (!endsWith(filepath, '.nc')){
