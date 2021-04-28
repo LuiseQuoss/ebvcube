@@ -32,12 +32,20 @@
 #' # ebv_plot_map(file, datacubes[1,1], 9)
 ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
                          col.rev=TRUE, classes = 5, ignore.RAM=FALSE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
+
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+
   # start initial tests ----
   #are all arguments given?
   if(missing(filepath)){
@@ -61,11 +69,9 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   #datacubepath check
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-    rhdf5::H5Fclose(hdf)
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
-  } else {
-    rhdf5::H5Fclose(hdf)
   }
+  rhdf5::H5Fclose(hdf)
 
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)

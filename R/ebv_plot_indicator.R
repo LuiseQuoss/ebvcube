@@ -22,12 +22,20 @@
 #' #ebv_plot_indicator(file, datacubes[1,1])
 ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
                                verbose=FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
+
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+
   # start initial tests ----
   #are all arguments given?
   if(missing(filepath)){
@@ -51,11 +59,9 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
   #datacubepath check
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-    rhdf5::H5Fclose(hdf)
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
-  } else {
-    rhdf5::H5Fclose(hdf)
   }
+  rhdf5::H5Fclose(hdf)
 
   # end initial tests ----
 

@@ -33,14 +33,21 @@
 #' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
 #'
 ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, timestep = 1, at = TRUE, overwrite=FALSE, ignore.RAM=FALSE, verbose = FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
 
-  ####start initial checks####
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+
+  ####start initial checks ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -75,10 +82,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   #variable check
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-    rhdf5::H5Fclose(hdf)
     stop(paste0('The given variable is not valid:\n', datacubepath))
-  } else {
-    rhdf5::H5Fclose(hdf)
   }
 
   #get properties
@@ -126,7 +130,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
     stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
   }
 
-  ####end initial checks####
+  ####end initial checks ----
 
   #read shapefile
   subset <- rgdal::readOGR(shp, verbose=FALSE)

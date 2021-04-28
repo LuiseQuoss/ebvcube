@@ -32,14 +32,21 @@
 #' # path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, timestep = c(2,3))
 #' # path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
 ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timestep = 1, epsg = 4326, overwrite=FALSE, ignore.RAM = FALSE, verbose = FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
 
-  ####initial tests start
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+
+  ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -66,10 +73,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   #variable check
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-    rhdf5::H5Fclose(hdf)
     stop(paste0('The given variable is not valid:\n', datacubepath))
-  } else {
-    rhdf5::H5Fclose(hdf)
   }
 
   #get properties
@@ -115,7 +119,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
     stop(paste0('The given epsg is not valid or not supported by R.\n', epsg))
   }
 
-  #######initial test end
+  #######initial test end ----
 
   #get basic information of file
   crs <- prop@spatial$srs@projargs

@@ -30,12 +30,48 @@
 #' # out <- 'path/to/create/new/netcdf/file.nc'
 #' # ebv_ncdf_create(json, out, 5)
 ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), overwrite=FALSE,verbose=FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
+
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+  gids <- c('mgid', 'sgid')
+  defer(
+    for (id in gids){
+      if(exists(id)){
+        id <- eval(parse(text = id))
+        if(rhdf5::H5Iis_valid(id)==TRUE){rhdf5::H5Gclose(id)}
+      }
+    }
+  )
+  dids <- c('mcrs.id', 'crs.id', 'lat.id', 'lon.id', 'time.id', 'var_entity.id')
+  defer(
+    for (id in dids){
+      if(exists(id)){
+        id <- eval(parse(text = id))
+        if(rhdf5::H5Iis_valid(id)==TRUE){rhdf5::H5Gclose(id)}
+      }
+    }
+  )
+  defer(
+    if(exists('aid')){
+      if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
+    }
+  )
+  defer(
+    if(exists('sid')){
+      if(rhdf5::H5Iis_valid(sid)==TRUE){rhdf5::H5Sclose(sid)}
+    }
+  )
+
   # start initial tests ----
   #are all arguments given?
   if(missing(jsonpath)){
@@ -69,22 +105,6 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       stop(paste0('The given epsg is not valid or not supported by R.\n', epsg))
     }
   }
-
-  #check if extent is valid
-  # #check long
-  # if(extent[1]< -180){
-  #   stop('Minimum latitude extent (x axis) is out of bounds. Minimum: -180.')
-  # }
-  # if(extent[2]> 180){
-  #   stop('Maximum latitude extent (x axis) is out of bounds. Maximum: 180.')
-  # }
-  # #check lat
-  # if(extent[3]< -90){
-  #   stop('Minimum longitude extent (y axis) is out of bounds. Minimum: -90.')
-  # }
-  # if(extent[4]> 90){
-  #   stop('Maximum longitude extent (y axis) is out of bounds. Maximum: 90.')
-  # }
 
   # end initial tests -------------------------------------------------------
 

@@ -32,12 +32,19 @@
 #' # data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
 #' # data.germany.jan <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at=TRUE, epsg = 4326, numerical=TRUE, na.rm=TRUE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+
   ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
@@ -61,10 +68,7 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
   #variable check
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-    rhdf5::H5Fclose(hdf)
     stop(paste0('The given variable is not valid:\n', datacubepath))
-  } else {
-    rhdf5::H5Fclose(hdf)
   }
 
   #get properties

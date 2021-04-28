@@ -41,12 +41,19 @@
 #' # d <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, T)
 ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,
                                 method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
+
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
 
   ####initial tests start ----
   #are all arguments given?
@@ -110,10 +117,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   #source variable check
   hdf <- rhdf5::H5Fopen(filepath_src)
   if (rhdf5::H5Lexists(hdf, datacubepath_src)==FALSE){
-    rhdf5::H5Fclose(hdf)
     stop(paste0('The given variable is not valid:\n', datacubepath_src))
-  } else {
-    rhdf5::H5Fclose(hdf)
   }
 
   #get properties source

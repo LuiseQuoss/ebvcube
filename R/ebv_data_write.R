@@ -29,12 +29,20 @@
 #' # out <- 'path/to/write/the/data.tif'
 #' # ebv_data_write(data, file, datacubes[1,1], out)
 ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
+
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+
   ####initial tests start ----
   #are all arguments given?
   if(missing(data)){
@@ -65,11 +73,9 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   #variable check
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-    rhdf5::H5Fclose(hdf)
     stop(paste0('The given variable is not valid:\n', datacubepath))
-  } else {
-    rhdf5::H5Fclose(hdf)
   }
+
   #outputpath check
   if(!dir.exists(dirname(outputpath))){
     stop(paste0('Output directory does not exist.\n', dirname(outputpath)))

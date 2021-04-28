@@ -22,12 +22,25 @@
 #' # datacubes <- ebv_datacubepaths(file)
 #' # ebv_ncdf_entity_attributes(file, datacubes[1,1], 'habitat', 'bog', 'Percentage', fillvalue=-1)
 ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label, units, fillvalue=NULL, verbose=FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
+
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+  defer(
+    if(exists('did')){
+      if(rhdf5::H5Iis_valid(did)==TRUE){rhdf5::H5Dclose(did)}
+    }
+  )
+
   ### start initial test ----
   #are all arguments given?
   if(missing(filepath)){
@@ -60,10 +73,7 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label,
   #variable check
   hdf <- rhdf5::H5Fopen(filepath)
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-    rhdf5::H5Fclose(hdf)
     stop(paste0('The given variable is not valid:\n', datacubepath))
-  } else {
-    rhdf5::H5Fclose(hdf)
   }
 
   #check if attribute arguments have right class
@@ -85,7 +95,6 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label,
   ### end initial test ----
 
   #open variables
-  hdf <- rhdf5::H5Fopen(filepath)
   did <- rhdf5::H5Dopen(hdf, datacubepath)
 
   # :long_name = "Changes in local bird diversity (cSAR)";

@@ -12,12 +12,20 @@
 #' # file <- 'path/to/netcdf/file.nc'
 #' # datacubes <- ebv_datacubepaths(file)
 ebv_datacubepaths <- function(filepath, verbose = FALSE){
-  #turn off local warnings if verbose=TRUE
+  #turn off local warnings if verbose=TRUE ----
   if(verbose){
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
   }
+
+  # ensure file and all datahandles are closed on exit ----
+  defer(
+    if(exists('hdf')){
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    }
+  )
+
   ####initial tests start ----
   #are all arguments given?
   if(missing(filepath)){
