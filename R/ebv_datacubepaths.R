@@ -23,9 +23,6 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   if(missing(filepath)){
     stop('Filepath argument is missing.')
   }
-  if(missing(verbose)){
-    stop('Verbose argument is missing.')
-  }
 
   #turn off local warnings if verbose=TRUE
   if(checkmate::checkLogical(verbose) != TRUE){
