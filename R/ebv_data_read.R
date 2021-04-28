@@ -85,6 +85,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }
+  rhdf5::H5Fclose(hdf)
 
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)
@@ -99,7 +100,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   max_time <- prop@spatial$dimensions[3]
   min_time <- 1
   if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
-    stop(paste0('Chosen timestep ', t, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
+    stop(paste0('Chosen timestep ', timestep, ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
   #warning that raster output will be ignored
