@@ -336,12 +336,12 @@ ebv_i_check_ram <- function(dims, timestep, type){
 #' @noRd
 ebv_i_uint_att <- function(h5obj, name, data){
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('(sid)')){
       if(rhdf5::H5Iis_valid((sid))==TRUE){rhdf5::H5Sclose((sid))}
     }
@@ -368,12 +368,12 @@ ebv_i_uint_att <- function(h5obj, name, data){
 #' @noRd
 ebv_i_int_att <- function(h5obj, name, data){
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('(sid)')){
       if(rhdf5::H5Iis_valid((sid))==TRUE){rhdf5::H5Sclose((sid))}
     }
@@ -400,12 +400,12 @@ ebv_i_int_att <- function(h5obj, name, data){
 #' @noRd
 ebv_i_num_att <- function(h5obj, name, data){
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('(sid)')){
       if(rhdf5::H5Iis_valid((sid))==TRUE){rhdf5::H5Sclose((sid))}
     }
@@ -432,12 +432,12 @@ ebv_i_num_att <- function(h5obj, name, data){
 #' @noRd
 ebv_i_char_att <- function(h5obj, name, data){
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
   )
-  defer(
+  withr::defer(
     if(exists('(sid)')){
       if(rhdf5::H5Iis_valid((sid))==TRUE){rhdf5::H5Sclose((sid))}
     }
@@ -474,7 +474,7 @@ ebv_i_char_att <- function(h5obj, name, data){
 #' @noRd
 ebv_i_read_att <-  function(h5obj, name){
   # ensure file and all datahandles are closed on exit ----
-  defer(
+  withr::withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
