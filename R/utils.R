@@ -474,7 +474,7 @@ ebv_i_char_att <- function(h5obj, name, data){
 #' @noRd
 ebv_i_read_att <-  function(h5obj, name){
   # ensure file and all datahandles are closed on exit ----
-  withr::withr::defer(
+  withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
