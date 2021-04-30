@@ -31,7 +31,7 @@
 #' # json <- 'path/to/json/file.json'
 #' # out <- 'path/to/create/new/netcdf/file.nc'
 #' # ebv_ncdf_create(json, out, 5)
-ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), fillvalue = NULL, prec = 'douvle', overwrite=FALSE,verbose=FALSE){
+ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), fillvalue = NULL, prec = 'double', overwrite=FALSE,verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are cloed on exit
   withr::defer(
@@ -243,10 +243,10 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   }
 
   # create dimensions ----
-  lat.dim <- ncdim_def('lat', crs.unit , vals = lat.data)
-  lon.dim <- ncdim_def('lon', crs.unit, vals = lon.data)
-  time.dim <- ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)
-  entity.dim <- ncdim_def('dim_entity', 'name of entity', 1:length(entity.list))
+  lat.dim <- ncdf4::ncdim_def('lat', crs.unit , vals = lat.data)
+  lon.dim <- ncdf4::ncdim_def('lon', crs.unit, vals = lon.data)
+  time.dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)
+  entity.dim <- ncdf4::ncdim_def('dim_entity', 'name of entity', 1:length(entity.list))
 
   # create list of vars ----
   var.list <- c()
@@ -295,14 +295,14 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   if (!is.null(fillvalue)){
     for (var in var.list){
       name <- paste0('var', enum)
-      assign(name, ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), missval=fillvalue, compression=2))
+      assign(name, ncdf4::ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), missval=fillvalue, compression=2))
       var.list.nc[[enum]] <- eval(parse(text=name))
       enum = enum +1
     }
   } else {
     for (var in var.list){
       name <- paste0('var', enum)
-      assign(name, ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), compression=2))
+      assign(name, ncdf4::ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), compression=2))
       var.list.nc[[enum]] <- eval(parse(text=name))
       enum = enum +1
     }
@@ -310,14 +310,14 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
 
   # add all enity vars ----
   # also creates groups
-  nc <- nc_create(outputpath, var.list.nc, force_v4 = T, verbose = T)
+  nc <- ncdf4::nc_create(outputpath, var.list.nc, force_v4 = T, verbose = T)
 
   # add var_entity variable ----
-  var_entity <- ncvar_def('var_entity', 'variable entity', dim = list(entity.dim), compression=2, verbose = T, prec='char')
-  ncvar_add(nc, var_entity, verbose = T)
+  var_entity <- ncdf4::ncvar_def('var_entity', 'variable entity', dim = list(entity.dim), compression=2, verbose = T, prec='char')
+  ncdf4::ncvar_add(nc, var_entity, verbose = T)
 
   # close file
-  nc_close(nc)
+  ncdf4::nc_close(nc)
 
   # use hdf5 to add all attributes ----
   # open file
