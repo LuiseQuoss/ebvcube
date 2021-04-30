@@ -238,9 +238,14 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     temp <- file.path(temp_path, name)
     #select given timesteps, write tempfile
     if (!is.null(ot)){
-      gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep, ot = ot, overwrite=TRUE)
+      gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep,
+                                      ot = ot,
+                                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                                      overwrite=TRUE)
     } else {
-      gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep, overwrite=TRUE)
+      gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep,
+                                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                                      overwrite=TRUE)
     }
     #change filepath
     filepath <- temp
@@ -252,9 +257,15 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     name <- 'temp_EBV_change_res_epsg.tif'
     temp_2 <- file.path(temp_path, name)
     if (!is.null(ot)){
-      gw <- gdalUtils::gdalwarp(filepath, temp_2, ot = ot, t_srs=paste0('EPSG:',epsg_dest), overwrite=TRUE)
+      gw <- gdalUtils::gdalwarp(filepath, temp_2, ot = ot,
+                                t_srs=paste0('EPSG:',epsg_dest),
+                                co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                                overwrite=TRUE)
     } else {
-      gw <- gdalUtils::gdalwarp(filepath, temp_2, t_srs=paste0('EPSG:',epsg_dest), overwrite=TRUE)
+      gw <- gdalUtils::gdalwarp(filepath, temp_2,
+                                t_srs=paste0('EPSG:',epsg_dest),
+                                co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                                overwrite=TRUE)
     }
     filepath <- temp_2
   }
@@ -281,24 +292,32 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   tr=res,srcnodata=prop_src@entity$fillvalue,
                   ot=ot,r = method, te = te,
                   overwrite=overwrite,
+                  co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                  te_srs = paste0('EPSG:', epsg_dest),
                   output_Raster = return.raster)
   } else if (is.null(ot) & !is.null(te)) {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
                   tr=res,srcnodata=prop_src@entity$fillvalue,
                   r = method, te = te,
                   overwrite=overwrite,
+                  co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                  te_srs = paste0('EPSG:', epsg_dest),
                   output_Raster = return.raster)
   } else if(!is.null(ot) & is.null(te)){
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
                   tr=res,srcnodata=prop_src@entity$fillvalue,
                   r = method, ot = ot,
                   overwrite=overwrite,
+                  co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                  #s_srs = paste0('EPSG:', epsg_src),
                   output_Raster = return.raster)
   } else {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
                   tr=res,srcnodata=prop_src@entity$fillvalue,
                   r = method,
                   overwrite=overwrite,
+                  co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                  #t_srs = paste0('EPSG:', epsg_src),
                   output_Raster = return.raster)
   }
 

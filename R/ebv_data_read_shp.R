@@ -215,6 +215,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
                                 te = c(extent.raster@xmin, extent.raster@ymin,
                                        extent.raster@xmax, extent.raster@ymax),
                                 tr = resolution.nc, ot ='Byte',
+                                co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                                 output_Raster = TRUE)
 
   #mask the subset
