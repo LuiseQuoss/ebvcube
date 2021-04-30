@@ -11,7 +11,7 @@ ebv_ncdf_create(
   epsg = 4326,
   extent = c(-180, 180, -90, 90),
   fillvalue = NULL,
-  prec = "douvle",
+  prec = "double",
   overwrite = FALSE,
   verbose = FALSE
 )
