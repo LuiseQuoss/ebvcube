@@ -29,9 +29,9 @@
 #' # json <- 'path/to/json/file.json'
 #' # out <- 'path/to/create/new/netcdf/file.nc'
 #' # ebv_ncdf_create(json, out, 5)
-ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), overwrite=FALSE,verbose=FALSE){
+ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), fillvalue = NULL, overwrite=FALSE,verbose=FALSE){
   # start initial tests ----
-  # ensure file and all datahandles are closed on exit
+  # ensure file and all datahandles are cloed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
@@ -122,284 +122,49 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     file.remove(outputpath)
   }
 
-  # create empty hdf5 file -------------------------------------------------------
-  rhdf5::h5createFile(outputpath)
-  hdf <- rhdf5::H5Fopen(outputpath)
-
-  #read json
+  #read json ----
   file <- jsonlite::fromJSON(txt=jsonpath)
   #json root
   json <- file$data
 
-  # get basic collection info
+  # get basic collection info ----
   collection <- json$collections
   scenarios.no <- length(grep("^scenario", names(collection)))
   metrics.no <- length(grep("^metric", names(collection)))
 
-  # mandatory global attributes -------------------------------------------------------
-  #Conventions = "EBV";
-  ebv_i_char_att(hdf, 'Conventions', 'EBV')
-
-  {
-    global.att <- list()
-    global.att['title'] <- 'title'
-    global.att['creator'] <- 'creator$creatorName'
-    global.att['institution']<-'creator$creatorOrganisation'
-    global.att['description']<-'abstract'
-    global.att['contactname']<-'contact$contactName'
-    global.att['contactemail']<-'contact$contactEmail'
-    global.att['ebv_class']<-'ebv$ebvClass'
-    global.att['ebv_name']<-'ebv$ebvName'
-  }
-  #add global.att to netcdf
-  for (i in 1:length(global.att)){
-    att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
-    ebv_i_char_att(hdf, names(global.att[i]), att.txt)
-  }
-
-  if(!scenarios.no==0){
-    scenarios.list <- c()
-    scenarios.ebv <- c()
-    scenarios.name <- c()
-
-    for (i in 0:(scenarios.no-1)){
-      txt <- paste0('json$collections$scenario', i, '$description')
-      value <- eval(parse(text = txt))
-      scenarios.list <- c(scenarios.list, value)
-      value.ebv <- stringr::str_split(value, '-')[[1]][1]
-      scenarios.ebv = c(scenarios.ebv, value.ebv)
-      txt <- paste0('json$collections$scenario', i, '$name')
-      value.name <- eval(parse(text = txt))
-      scenarios.name <- c(scenarios.name, value.name)
-    }
-  }
-
-  # additional global attributes -------------------------------------------------------
-  # ebv var scenario
-  # ebv var scenatio desc
-  # ebv var estimate
-  # ebv var estimate desc
-  # ebv var metric
-  # ebv var metric desc
-  # ebv subgroups ----
-  if(scenarios.no>0 & entities.no>0){
-    sid <- rhdf5::H5Screate_simple(3)
-    tid <- rhdf5::H5Tcopy("H5T_C_S1")
-    rhdf5::H5Tset_size(tid, (nchar('scenario')+1))
-    aid <- rhdf5::H5Acreate(hdf, 'ebv_subgroups', tid, sid)
-    rhdf5::H5Awrite(aid, c('scenario', 'metric', 'entity'))
-    rhdf5::H5Aclose(aid)
-    rhdf5::H5Sclose(sid)
-    #ebv_i_char_att(hdf, 'ebv_subgroups', '"scenario", "metric", "entity"')
-  } else if (scenarios.no>0){
-    sid <- rhdf5::H5Screate_simple(2)
-    tid <- rhdf5::H5Tcopy("H5T_C_S1")
-    rhdf5::H5Tset_size(tid, (nchar('scenario')+1))
-    aid <- rhdf5::H5Acreate(hdf, 'ebv_subgroups', tid, sid)
-    rhdf5::H5Awrite(aid, c('scenario', 'metric'))
-    rhdf5::H5Aclose(aid)
-    rhdf5::H5Sclose(sid)
-  } else if (entities.no> 0){
-    sid <- rhdf5::H5Screate_simple(2)
-    tid <- rhdf5::H5Tcopy("H5T_C_S1")
-    rhdf5::H5Tset_size(tid, (nchar('entity')+1))
-    aid <- rhdf5::H5Acreate(hdf, 'ebv_subgroups', tid, sid)
-    rhdf5::H5Awrite(aid, c('metric', 'entity'))
-    rhdf5::H5Aclose(aid)
-    rhdf5::H5Sclose(sid)
-  } else {
-    sid <- rhdf5::H5Screate_simple(1)
-    tid <- rhdf5::H5Tcopy("H5T_C_S1")
-    rhdf5::H5Tset_size(tid, (nchar('metric')+1))
-    aid <- rhdf5::H5Acreate(hdf, 'ebv_subgroups', tid, sid)
-    rhdf5::H5Awrite(aid, 'metric')
-    rhdf5::H5Aclose(aid)
-    rhdf5::H5Sclose(sid)
-  }
-
-  # crs ---------------------------------------------------------------------
-  #add new ds
-  sid <- rhdf5::H5Screate_simple(1)
-  tid <- rhdf5::H5Tcopy("H5T_C_S1")
-  crs.id <- rhdf5::H5Dcreate(hdf, 'crs', tid, sid)
-  rhdf5::H5Sclose(sid)
-
-  # :standard_name
-  ebv_i_char_att(crs.id, 'standard_name', 'CRS definition')
-
-  # :standard_name
-  ebv_i_char_att(crs.id, 'description', 'CRS definition')
-
-  # :spatial_ref
-  crs <- sp::CRS(SRS_string = paste0("EPSG:", epsg))
-  ref <- sp::wkt(crs) #WKT2 --> GEOGCRS
-  #ref <- "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"EPSG\",\"4326\"]]"
-  ebv_i_char_att(crs.id, 'spatial_ref', ref)
-
+  # get crs information ----
   # :GeoTransform
   res <- json$spatialDomain$spatialResolution
   geo_trans <- paste0(extent[1], " ",res," 0.0 ", extent[4], " 0.0 -", res)
-  ebv_i_char_att(crs.id, 'GeoTransform', geo_trans)
 
-  # :grid_mapping_name
-  ebv_i_char_att(crs.id, 'grid_mapping_name', 'crs')
+  # :spatial_ref
+  crs <- sp::CRS(SRS_string = paste0("EPSG:", epsg))
+  ref <- sp::wkt(crs)
 
   # :longitude_of_prime_meridian
-  ebv_i_num_att(crs.id, 'longitude_of_prime_meridian', '0.0')
+  parts <- stringr::str_split(ref, "[^[:print:]]")[[1]]
+  row <- parts[stringr::str_detect(parts, 'PRIMEM')]
+  longitude_of_prime_meridian <- as.numeric(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]])
 
   # :semi_major_axis
-  ebv_i_num_att(crs.id, 'semi_major_axis', '6378137.0')
+  row <- parts[stringr::str_detect(parts, 'ELLIPSOID')]
+  index <- length(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]])-1
+  semi_major_axis <- as.numeric(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]][index])
 
   # :inverse_flattening
-  ebv_i_num_att(crs.id, 'inverse_flattening', '298.257223563')
+  index <- length(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]])
+  inverse_flattening <- as.numeric(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]][index])
 
-  #close ds
-  rhdf5::H5Dclose(crs.id)
-
-  # lat ---------------------------------------------------------------------
-  # create dataset
-  res <- as.numeric(res)
-  lat.min <- extent[3]
-  lat.max <- extent[4]
-  lat.data <- seq((lat.min+(res/2)), (lat.max-(res/2)), res)
-  sid <- rhdf5::H5Screate_simple(length(lat.data))
-  tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
-  lat.id <- rhdf5::H5Dcreate(hdf, 'lat', tid, sid)
-  rhdf5::H5Dwrite(lat.id, lat.data, h5spaceMem = sid, h5spaceFile = sid)
-  rhdf5::H5Sclose(sid)
-
-  # :standard_name = "latitude";
-  ebv_i_char_att(lat.id, 'standard_name', 'latitude')
-
-  # :description = "latitude coordinates";
-  ebv_i_char_att(lat.id, 'description', 'latitude coordinates')
-
-  # :units = "degrees_north";
-  ebv_i_char_att(lat.id, 'units', 'degrees_north')
-
-  # :axis = "Y";
-  ebv_i_char_att(lat.id, 'axis', 'Y')
-
-  # :long_name = "latitude";
-  # ebv_i_char_att(lat.id, 'long_name', 'latitude')
-
-  #close dataset
-  rhdf5::H5Dclose(lat.id)
-
-  # lon ---------------------------------------------------------------------
-  #create dataset
-  lon.min <- extent[1]
-  lon.max <- extent[2]
-  lon.data <- seq((lon.min+(res/2)),(lon.max-(res/2)), res)
-  sid <- rhdf5::H5Screate_simple(length(lon.data))
-  tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
-  lon.id <- rhdf5::H5Dcreate(hdf, 'lon', tid, sid)
-  rhdf5::H5Dwrite(lon.id, lon.data, h5spaceMem = sid, h5spaceFile = sid)
-  rhdf5::H5Sclose(sid)
-
-  # :standard_name = "longitude";
-  ebv_i_char_att(lon.id, 'standard_name', 'longitude')
-
-  # :description = "longitude coordinates";
-  ebv_i_char_att(lon.id, 'description', 'longitude coordinates')
-
-  # :units = "degrees_east";
-  ebv_i_char_att(lon.id, 'units', 'degrees_east')
-
-  # :axis = "X";
-  ebv_i_char_att(lon.id, 'axis', 'X')
-
-  # # :long_name = "longitude";
-  # ebv_i_char_att(lon.id, 'long_name', 'longitude')
-
-  #close dataset
-  rhdf5::H5Dclose(lon.id)
-
-  # create hierachy -------------------------------------------------------
-  # 1. metric, no scenario (entities are not relevant)
-  if(scenarios.no==0){
-    len.m <- nchar(as.character(metrics.no))+1
-    for (j in 0:(metrics.no-1)){
-      #create metric group
-      ending.m <- as.character(j)
-      while(nchar(ending.m)<len.m){
-        ending.m <- paste0('0',ending.m)
-      }
-      rhdf5::h5createGroup(hdf, paste0('metric', ending.m))
-      mgid <- rhdf5::H5Gopen(hdf, paste0('metric', ending.m))
-      #add metric attributes
-      label <- eval(parse(text=paste0('json$collections$metric',j,'$unit')))
-      description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
-      ebv_i_char_att(mgid, 'label', label)
-      ebv_i_char_att(mgid, 'description', description)
-      #add subgroup 'crs' to metric
-      sid <- rhdf5::H5Screate_simple(1)
-      tid <- rhdf5::H5Tcopy("H5T_C_S1")
-      mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
-      rhdf5::H5Sclose(sid)
-      # :spatial_ref
-      ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
-      # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
-      ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
-      #close datahandle
-      rhdf5::H5Gclose(mgid)
-      rhdf5::H5Dclose(mcrs.id)
-    }
-    #2. scenario and metric (entities are not relevant)
-  } else {
-    len.s <- nchar(as.character(scenarios.no))+1
-    len.m <- nchar(as.character(metrics.no))+1
-
-    for (i in 0:(scenarios.no-1)){
-      #create scenario group
-      ending.s <- as.character(i)
-      while(nchar(ending.s)<len.s){
-        ending.s <- paste0('0',ending.s)
-      }
-      rhdf5::h5createGroup(hdf, paste0('scenario', ending.s))
-      sgid <- rhdf5::H5Gopen(hdf, paste0('scenario', ending.s))
-      #add scenario attributes
-      label <- scenarios.list[i+1]
-      description <- scenarios.name[i+1]
-      ebv_i_char_att(sgid, 'label', label)
-      ebv_i_char_att(sgid, 'description', description)
-
-      for (j in 0:(metrics.no-1)){
-        #create metric group
-        ending.m <- as.character(j)
-        while(nchar(ending.m)<len.m){
-          ending.m <- paste0('0',ending.m)
-        }
-        rhdf5::h5createGroup(sgid, paste0('metric', ending.m))
-        mgid <- rhdf5::H5Gopen(sgid, paste0('metric', ending.m))
-        #add metric attributes
-        label <- eval(parse(text=paste0('json$collections$metric',j,'$unit')))
-        description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
-        ebv_i_char_att(mgid, 'label', label)
-        ebv_i_char_att(mgid, 'description', description)
-        #add subgroup 'crs' to metric
-        sid <- rhdf5::H5Screate_simple(1)
-        tid <- rhdf5::H5Tcopy("H5T_C_S1")
-        mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
-        rhdf5::H5Sclose(sid)
-        # :spatial_ref
-        ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
-        # :GeoTransform
-        ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
-        #close grouphandles
-        rhdf5::H5Gclose(mgid)
-        rhdf5::H5Dclose(mcrs.id)
-      }
-      rhdf5::H5Gclose(sgid)
-    }
-
+  # unit
+  row <- parts[stringr::str_detect(parts, 'CS')]
+  if (stringr::str_detect(row, 'Cartesian') | stringr::str_detect(row, 'cartesian')){
+    crs.unit <- 'meters'
+  } else{
+    crs.unit <- 'degrees'
   }
-  # something went wrong
-  # else{
-  #   stop('Cannot create inner EBV NetCDF hierarchy. Please contact the developer of the R package.')
-  # }
 
-  # time --------------------------------------------------------------------
+  # get dimensions ----
+  # time ----
   t_delta <- json$temporalDomain$temporalResolution
   t.units <- json$temporalDomain$temporalExtentStart
   t.end <- json$temporalDomain$temporalExtentEnd
@@ -440,45 +205,19 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     timesteps <- c(0)
   }
 
-  #create DS
-  sid <- rhdf5::H5Screate_simple(length(timesteps))
-  tid <- rhdf5::H5Tcopy("H5T_NATIVE_UINT")
-  time.id <- rhdf5::H5Dcreate(hdf, 'time', tid, sid)
-  rhdf5::H5Dwrite(time.id, timesteps, h5spaceMem = sid, h5spaceFile = sid)
-  rhdf5::H5Sclose(sid)
+  # lat ----
+  res <- as.numeric(res)
+  lat.min <- extent[3]
+  lat.max <- extent[4]
+  lat.data <- seq((lat.min+(res/2)), (lat.max-(res/2)), res)
 
-  # :standard_name = "time";
-  ebv_i_char_att(time.id, 'standard_name', 'time')
+  # lon ----
+  lon.min <- extent[1]
+  lon.max <- extent[2]
+  lon.data <- seq((lon.min+(res/2)),(lon.max-(res/2)), res)
 
-  # :description
-  ebv_i_char_att(time.id, 'description', 'time dimensions of the data')
-
-  # :units = "days since 1860-01-01 00:00:00.0";
-  ebv_i_char_att(time.id, 'units', "days since 1860-01-01 00:00:00.0")
-
-  # :t_delta = "5 Years";
-  ebv_i_char_att(time.id, 't_delta', t_delta)
-
-  # :axis = "T";
-  ebv_i_char_att(time.id, 'axis', 'T')
-
-  # :calendar = "standard";
-  ebv_i_char_att(time.id, 'calendar', 'standard')
-
-  # :_ChunkSizes = 1024U; // uint
-  ebv_i_uint_att(time.id, '_ChunkSizes', '1024')
-
-  # # :long_name = "time";
-  # ebv_i_char_att(time.id, 'long_name', 'time')
-
-  #close group
-  rhdf5::H5Dclose(time.id)
-
-  # var_entity --------------------------------------------------------------
-  #entity list if entites exist
+  # entities ----
   if(!entities.no==0){
-    sid <- rhdf5::H5Screate_simple(entities.no)
-    tid <- rhdf5::H5Tcopy("H5T_C_S1")
     if ((entities.no-1) < 10){
       zeros <- 1
     } else if ((entities.no-1) < 100){
@@ -490,26 +229,287 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     } else if ((entities.no-1) < 100000){
       zeros <- 5
     }
-    rhdf5::H5Tset_size(tid, (nchar('entity0')+zeros))
-    var_entity.id <- rhdf5::H5Dcreate(hdf, 'var_entity', tid, sid)
     #create entity list
     entity.list <- c()
-    for (e in 0:(entities.no-1)){
+    for (e in 1:(entities.no)){
       reps <- rep('0', (zeros - nchar(e)))
       ent <- paste0('entity0', paste(reps, collapse = ''), as.character(e))
       entity.list <- c(entity.list, ent)
     }
-    #write entity list
-    rhdf5::H5Dwrite(var_entity.id, entity.list, h5spaceMem = sid, h5spaceFile = sid)
+  } else {
+    entity.list <- c('data')
+  }
+
+  # create dimensions ----
+  lat.dim <- ncdim_def('lat', crs.unit , vals = lat.data)
+  lon.dim <- ncdim_def('lon', crs.unit, vals = lon.data)
+  time.dim <- ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)
+  entity.dim <- ncdim_def('dim_entity', 'name of entity', 1:length(entity.list))
+
+  # create list of vars ----
+  var.list <- c()
+  # 1. metric, no scenario
+  if(scenarios.no==0){
+    len.m <- nchar(as.character(metrics.no))+1
+    for (j in 1:(metrics.no)){
+      #create metric group
+      ending.m <- as.character(j)
+      while(nchar(ending.m)<len.m){
+        ending.m <- paste0('0',ending.m)
+      }
+      #add entities
+      for (ent in entity.list){
+        var.list <- c(var.list, paste0('metric', ending.m, '/', ent))
+      }
+    }
+    #2. scenario and metric (entities are not relevant)
+  } else {
+    len.s <- nchar(as.character(scenarios.no))+1
+    len.m <- nchar(as.character(metrics.no))+1
+
+    for (i in 1:(scenarios.no)){
+      #create scenario group
+      ending.s <- as.character(i)
+      while(nchar(ending.s)<len.s){
+        ending.s <- paste0('0',ending.s)
+      }
+      for (j in 1:(metrics.no)){
+        #create metric group
+        ending.m <- as.character(j)
+        while(nchar(ending.m)<len.m){
+          ending.m <- paste0('0',ending.m)
+        }
+        #add entities
+        for (ent in entity.list){
+          var.list <- c(var.list, paste0('scenario', ending.s, '/metric', ending.m, '/', ent))
+        }
+      }
+    }
+  }
+
+  var.list.nc <- list()
+  enum = 1
+  # create all vars ---
+  if (!is.null(fillvalue)){
+    for (var in var.list){
+      name <- paste0('var', enum)
+      assign(name, ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), missval=fillvalue, compression=2))
+      var.list.nc[[enum]] <- eval(parse(text=name))
+      enum = enum +1
+    }
+  } else {
+    for (var in var.list){
+      name <- paste0('var', enum)
+      assign(name, ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), compression=2))
+      var.list.nc[[enum]] <- eval(parse(text=name))
+      enum = enum +1
+    }
+  }
+
+  # add all enity vars ----
+  # also creates groups
+  nc <- nc_create(outputpath, var.list.nc, force_v4 = T, verbose = T)
+
+  # add var_entity variable ----
+  var_entity <- ncvar_def('var_entity', 'variable entity', dim = list(entity.dim), compression=2, verbose = T, prec='char')
+  ncvar_add(nc, var_entity, verbose = T)
+
+  # close file
+  nc_close(nc)
+
+  # use hdf5 to add all attributes ----
+  # open file
+  hdf <- rhdf5::H5Fopen(outputpath)
+
+  # global attributes ----
+  #Conventions = "EBV";
+  ebv_i_char_att(hdf, 'Conventions', 'EBV')
+
+  {
+    global.att <- list()
+    global.att['title'] <- 'title'
+    global.att['creator'] <- 'creator$creatorName'
+    global.att['institution']<-'creator$creatorOrganisation'
+    global.att['description']<-'abstract'
+    global.att['contactname']<-'contact$contactName'
+    global.att['contactemail']<-'contact$contactEmail'
+    global.att['ebv_class']<-'ebv$ebvClass'
+    global.att['ebv_name']<-'ebv$ebvName'
+  }
+  #add global.att to netcdf
+  for (i in 1:length(global.att)){
+    att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
+    ebv_i_char_att(hdf, names(global.att[i]), att.txt)
+  }
+
+  # if(!scenarios.no==0){
+  #   scenarios.list <- c()
+  #   scenarios.ebv <- c()
+  #   scenarios.name <- c()
+  #
+  #   for (i in 0:(scenarios.no-1)){
+  #     txt <- paste0('json$collections$scenario', i, '$description')
+  #     value <- eval(parse(text = txt))
+  #     scenarios.list <- c(scenarios.list, value)
+  #     value.ebv <- stringr::str_split(value, '-')[[1]][1]
+  #     scenarios.ebv = c(scenarios.ebv, value.ebv)
+  #     txt <- paste0('json$collections$scenario', i, '$name')
+  #     value.name <- eval(parse(text = txt))
+  #     scenarios.name <- c(scenarios.name, value.name)
+  #   }
+  # }
+
+  # ebv subgroups ----
+  if(scenarios.no>0 & entities.no>0){
+    sid <- rhdf5::H5Screate_simple(3)
+    tid <- rhdf5::H5Tcopy("H5T_C_S1")
+    rhdf5::H5Tset_size(tid, (nchar('scenario')+1))
+    aid <- rhdf5::H5Acreate(hdf, 'ebv_subgroups', tid, sid)
+    rhdf5::H5Awrite(aid, c('scenario', 'metric', 'entity'))
+    rhdf5::H5Aclose(aid)
     rhdf5::H5Sclose(sid)
-  } else{
+    #ebv_i_char_att(hdf, 'ebv_subgroups', '"scenario", "metric", "entity"')
+  } else if (scenarios.no>0){
+    sid <- rhdf5::H5Screate_simple(2)
+    tid <- rhdf5::H5Tcopy("H5T_C_S1")
+    rhdf5::H5Tset_size(tid, (nchar('scenario')+1))
+    aid <- rhdf5::H5Acreate(hdf, 'ebv_subgroups', tid, sid)
+    rhdf5::H5Awrite(aid, c('scenario', 'metric'))
+    rhdf5::H5Aclose(aid)
+    rhdf5::H5Sclose(sid)
+  } else if (entities.no> 0){
+    sid <- rhdf5::H5Screate_simple(2)
+    tid <- rhdf5::H5Tcopy("H5T_C_S1")
+    rhdf5::H5Tset_size(tid, (nchar('entity')+1))
+    aid <- rhdf5::H5Acreate(hdf, 'ebv_subgroups', tid, sid)
+    rhdf5::H5Awrite(aid, c('metric', 'entity'))
+    rhdf5::H5Aclose(aid)
+    rhdf5::H5Sclose(sid)
+  } else {
     sid <- rhdf5::H5Screate_simple(1)
     tid <- rhdf5::H5Tcopy("H5T_C_S1")
-    rhdf5::H5Tset_size(tid, (nchar('data')+1))
-    var_entity.id <- rhdf5::H5Dcreate(hdf, 'var_entity', tid, sid)
-    rhdf5::H5Dwrite(var_entity.id, 'data', h5spaceMem = sid, h5spaceFile = sid)
+    rhdf5::H5Tset_size(tid, (nchar('metric')+1))
+    aid <- rhdf5::H5Acreate(hdf, 'ebv_subgroups', tid, sid)
+    rhdf5::H5Awrite(aid, 'metric')
+    rhdf5::H5Aclose(aid)
     rhdf5::H5Sclose(sid)
   }
+
+  # add crs variable ----
+  #add new ds
+  sid <- rhdf5::H5Screate_simple(1)
+  tid <- rhdf5::H5Tcopy("H5T_C_S1")
+  crs.id <- rhdf5::H5Dcreate(hdf, 'crs', tid, sid)
+  rhdf5::H5Sclose(sid)
+
+  # :standard_name
+  ebv_i_char_att(crs.id, 'standard_name', 'CRS definition')
+
+  # :standard_name
+  ebv_i_char_att(crs.id, 'description', 'CRS definition')
+
+  # :spatial_ref
+  ebv_i_char_att(crs.id, 'spatial_ref', ref)
+
+  # :GeoTransform
+  ebv_i_char_att(crs.id, 'GeoTransform', geo_trans)
+
+  # :grid_mapping_name
+  ebv_i_char_att(crs.id, 'grid_mapping_name', 'crs')
+
+  # :longitude_of_prime_meridian
+  ebv_i_num_att(crs.id, 'longitude_of_prime_meridian', longitude_of_prime_meridian)
+
+  # :semi_major_axis
+  ebv_i_num_att(crs.id, 'semi_major_axis', semi_major_axis)
+
+  # :inverse_flattening
+  ebv_i_num_att(crs.id, 'inverse_flattening', inverse_flattening)
+
+  #close ds
+  rhdf5::H5Dclose(crs.id)
+
+  # change lat variable ----
+  # open dataset
+  lat.id <- rhdf5::H5Dopen(hdf, 'lat')
+
+  # remove long_name
+  rhdf5::H5Adelete(lat.id, 'long_name')
+
+  # :standard_name = "latitude";
+  ebv_i_char_att(lat.id, 'standard_name', 'latitude')
+
+  # :description = "latitude coordinates";
+  ebv_i_char_att(lat.id, 'description', 'latitude coordinates')
+
+  # :units = "degrees_north";
+  ebv_i_char_att(lat.id, 'units', paste0(crs.unit, '_north'))
+
+  # :axis = "Y";
+  ebv_i_char_att(lat.id, 'axis', 'Y')
+
+  # :long_name = "latitude";
+  # ebv_i_char_att(lat.id, 'long_name', 'latitude')
+
+  #close dataset
+  rhdf5::H5Dclose(lat.id)
+
+  # change lon variable ----
+  #open dataset
+  lon.id <- rhdf5::H5Dopen(hdf, 'lon')
+
+  # remove long_name
+  rhdf5::H5Adelete(lon.id, 'long_name')
+
+  # :standard_name = "longitude";
+  ebv_i_char_att(lon.id, 'standard_name', 'longitude')
+
+  # :description = "longitude coordinates";
+  ebv_i_char_att(lon.id, 'description', 'longitude coordinates')
+
+  # :units = "degrees_east";
+  ebv_i_char_att(lon.id, 'units', paste0(crs.unit, '_east'))
+
+  # :axis = "X";
+  ebv_i_char_att(lon.id, 'axis', 'X')
+
+  # # :long_name = "longitude";
+  # ebv_i_char_att(lon.id, 'long_name', 'longitude')
+
+  #close dataset
+  rhdf5::H5Dclose(lon.id)
+
+  # change time variable ----
+  # open dataset
+  time.id <- rhdf5::H5Dopen(hdf, 'time')
+
+  # remove long_name
+  rhdf5::H5Adelete(time.id, 'long_name')
+
+  # :standard_name = "time";
+  ebv_i_char_att(time.id, 'standard_name', 'time')
+
+  # :description
+  ebv_i_char_att(time.id, 'description', 'time dimensions of the data')
+
+  # :t_delta = "5 Years";
+  ebv_i_char_att(time.id, 't_delta', t_delta)
+
+  # :axis = "T";
+  ebv_i_char_att(time.id, 'axis', 'T')
+
+  # :calendar = "standard";
+  ebv_i_char_att(time.id, 'calendar', 'standard')
+
+  # # :long_name = "time";
+  # ebv_i_char_att(time.id, 'long_name', 'time')
+
+  #close group
+  rhdf5::H5Dclose(time.id)
+
+  # change var_entity variable ----
+  # open dataset
+  var_entity.id <- rhdf5::H5Dopen(hdf, 'var_entity')
 
   # :standard_name = "variable entity";
   ebv_i_char_att(var_entity.id, 'standard_name', 'variable entity')
@@ -517,19 +517,96 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   # :description = "list of all entities / species / species groups";
   ebv_i_char_att(var_entity.id, 'description', 'list of all entities / species / species groups')
 
-  # :unit = "name of entity";
-  ebv_i_char_att(var_entity.id, 'unit', 'name of entity')
-
-  # :_ChunkSizes = 512U; // uint
-  ebv_i_uint_att(var_entity.id, '_ChunkSizes', '512')
-
   # # :long_name = "variable entity";
   # ebv_i_char_att(var_entity.id, 'long_name', 'variable entity')
 
   #close group
   rhdf5::H5Dclose(var_entity.id)
 
-  # close file  ----------------------------------------------------------------
+  # add metric and scenario attributes ----
+
+  # 1. metric, no scenario (entities are not relevant)
+  if(scenarios.no==0){
+    j = 0
+    for (i in 1:(metrics.no)){
+      #create scenario group
+      ending.m <- as.character(i)
+      while(nchar(ending.m)<len.m){
+        ending.m <- paste0('0',ending.m)
+      }
+      mgid <- rhdf5::H5Gopen(hdf, paste0('metric', ending.m))
+      #add metric attributes
+      label <- eval(parse(text=paste0('json$collections$metric',j,'$unit')))
+      description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
+      ebv_i_char_att(mgid, 'label', label)
+      ebv_i_char_att(mgid, 'description', description)
+      #add subgroup 'crs' to metric
+      sid <- rhdf5::H5Screate_simple(1)
+      tid <- rhdf5::H5Tcopy("H5T_C_S1")
+      mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
+      rhdf5::H5Sclose(sid)
+      # :spatial_ref
+      ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
+      # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
+      ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
+      #close datahandle
+      rhdf5::H5Gclose(mgid)
+      rhdf5::H5Dclose(mcrs.id)
+      j = j +1
+    }
+    #2. scenario and metric (entities are not relevant)
+  }else{
+    j = 0
+    for (i in 1:(metrics.no)){
+      #create scenario group
+      ending.m <- as.character(i)
+      while(nchar(ending.m)<len.m){
+        ending.m <- paste0('0',ending.m)
+      }
+      #open metric group
+      mgid <- rhdf5::H5Gopen(hdf, paste0('metric', ending.m))
+      #add metric attributes
+      label <- eval(parse(text=paste0('json$collections$metric',j,'$unit')))
+      description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
+      ebv_i_char_att(mgid, 'label', label)
+      ebv_i_char_att(mgid, 'description', description)
+      #add subgroup 'crs' to metric
+      sid <- rhdf5::H5Screate_simple(1)
+      tid <- rhdf5::H5Tcopy("H5T_C_S1")
+      mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
+      rhdf5::H5Sclose(sid)
+      # :spatial_ref
+      ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
+      # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
+      ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
+      #close datahandle
+      rhdf5::H5Gclose(mgid)
+      rhdf5::H5Dclose(mcrs.id)
+      j = j +1
+    }
+    j = 0
+    for (i in 1:(scenarios.no)){
+      #create scenario group
+      ending.s <- as.character(i)
+      while(nchar(ending.s)<len.s){
+        ending.s <- paste0('0',ending.s)
+      }
+      #scenario path
+      sgid <- rhdf5::H5Gopen(hdf, paste0('scenario', ending.s))
+      #add attributes
+      label <- eval(parse(text=paste0('json$collections$scenario',j,'$unit')))
+      description <- eval(parse(text=paste0('json$collections$scenario',j,'$description')))
+      ebv_i_char_att(sgid, 'label', label)
+      ebv_i_char_att(sgid, 'description', description)
+      rhdf5::H5Gclose(sgid)
+      j=j+1
+    }
+  }
+
+  # remove dim_entity----
+  rhdf5::h5delete(hdf, 'dim_entity')
+
+  # close file  ----
   rhdf5::H5Fclose(hdf)
 
 }
