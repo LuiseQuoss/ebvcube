@@ -160,12 +160,14 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
       gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
                      a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
                      a_srs = paste0('EPSG:', prop@spatial$epsg),
+                     co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED'),
                      a_nodata=prop@entity$fillvalue,
                      ot = ot)
     } else{
       gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
                      a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
                      a_srs = paste0('EPSG:', prop@spatial$epsg),
+                     co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED'),
                      a_nodata=prop@entity$fillvalue)
     }
 
@@ -228,10 +230,12 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
       gdalUtils::gdal_translate(temp.vrt, outputpath,
                      a_nodata=prop@entity$fillvalue,
                      overwrite=overwrite,
+                     co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                      ot=ot)
     } else {
       gdalUtils::gdal_translate(temp.vrt, outputpath,
                      a_nodata=prop@entity$fillvalue,
+                     co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                      overwrite=overwrite)
     }
 
