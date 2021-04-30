@@ -295,14 +295,14 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   if (!is.null(fillvalue)){
     for (var in var.list){
       name <- paste0('var', enum)
-      assign(name, ncdf4::ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), missval=fillvalue, compression=2))
+      assign(name, ncdf4::ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), missval=fillvalue, compression=2, prec=prec, verbose=verbose))
       var.list.nc[[enum]] <- eval(parse(text=name))
       enum = enum +1
     }
   } else {
     for (var in var.list){
       name <- paste0('var', enum)
-      assign(name, ncdf4::ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), compression=2))
+      assign(name, ncdf4::ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), compression=2, prec=prec, verbose=verbose))
       var.list.nc[[enum]] <- eval(parse(text=name))
       enum = enum +1
     }
@@ -310,11 +310,11 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
 
   # add all enity vars ----
   # also creates groups
-  nc <- ncdf4::nc_create(outputpath, var.list.nc, force_v4 = T, verbose = T)
+  nc <- ncdf4::nc_create(outputpath, var.list.nc, force_v4 = T, verbose = verbose)
 
   # add var_entity variable ----
-  var_entity <- ncdf4::ncvar_def('var_entity', 'variable entity', dim = list(entity.dim), compression=2, verbose = T, prec='char')
-  ncdf4::ncvar_add(nc, var_entity, verbose = T)
+  var_entity <- ncdf4::ncvar_def('var_entity', 'variable entity', dim = list(entity.dim), compression=2, verbose = verbose, prec='char')
+  ncdf4::ncvar_add(nc, var_entity, verbose = verbose)
 
   # close file
   ncdf4::nc_close(nc)
