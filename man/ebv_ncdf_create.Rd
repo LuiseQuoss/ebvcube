@@ -10,6 +10,8 @@ ebv_ncdf_create(
   entities.no = 0,
   epsg = 4326,
   extent = c(-180, 180, -90, 90),
+  fillvalue = NULL,
+  prec = "douvle",
   overwrite = FALSE,
   verbose = FALSE
 )
@@ -28,6 +30,10 @@ via the corresponding epsg code.}
 
 \item{extent}{Default: c(-180,180,-90,90). Defines the extent of the data:
 c(xmin, xmax, ymin, ymax).}
+
+\item{fillvalue}{Numeric. Value of the missing data in the array. Not mandatory but should be defined!}
+
+\item{prec}{Character. Precision of the data set. Valid options: 'short' 'integer' 'float' 'double' 'char' 'byte'.}
 
 \item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile
 defined by 'outputpath'.}

@@ -15,6 +15,8 @@
 #'   via the corresponding epsg code.
 #' @param extent Default: c(-180,180,-90,90). Defines the extent of the data:
 #'   c(xmin, xmax, ymin, ymax).
+#' @param fillvalue Numeric. Value of the missing data in the array. Not mandatory but should be defined!
+#' @param prec Character. Precision of the data set. Valid options: 'short' 'integer' 'float' 'double' 'char' 'byte'.
 #' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
 #'   defined by 'outputpath'.
 #' @param verbose Logical. Turn on all warnings by setting it to TRUE.
@@ -29,7 +31,7 @@
 #' # json <- 'path/to/json/file.json'
 #' # out <- 'path/to/create/new/netcdf/file.nc'
 #' # ebv_ncdf_create(json, out, 5)
-ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), fillvalue = NULL, overwrite=FALSE,verbose=FALSE){
+ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), fillvalue = NULL, prec = 'douvle', overwrite=FALSE,verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are cloed on exit
   withr::defer(
