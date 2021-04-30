@@ -132,7 +132,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   }
 
   #check timestep range
-  ax_time <- length(rhdf5::h5read(filepath_nc,'time'))
+  max_time <- length(rhdf5::h5read(filepath_nc,'time'))
   min_time <- 1
   if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
     stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
