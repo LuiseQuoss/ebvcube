@@ -27,6 +27,7 @@ Imports:
     lattice,
     memuse,
     methods,
+    ncdf4,
     raster,
     rhdf5,
     rgdal,
