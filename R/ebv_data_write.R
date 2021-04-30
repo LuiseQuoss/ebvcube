@@ -153,7 +153,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
 
     #get output type ot for gdal
     type.long <- prop@entity$type
-    ot <- ebv_i_type_r(type.long)
+    ot <- ebv_i_type_ot(type.long)
 
     #add CRS, shift to -180,90, add nodata value
     if(!is.null(ot)){
