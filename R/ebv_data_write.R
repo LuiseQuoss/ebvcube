@@ -128,6 +128,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)
 
+  # write DelayedMatrix ----
   if (class(data) == "DelayedMatrix"){
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
@@ -176,6 +177,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
       file.remove(temp.tif)
     }
 
+    # write several DelayedMatrix (list) ----
   } else if(class(data)=='list'){
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
@@ -219,7 +221,10 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
 
     #merge all vrts to one vrt
     temp.vrt <- file.path(temp_path, 'temp_EBV_write_data.vrt')
-    gdalUtils::gdalbuildvrt(temps, temp.vrt, separate=TRUE, overwrite=TRUE)
+    gdalUtils::gdalbuildvrt(temps, temp.vrt, separate=TRUE, overwrite=TRUE,
+                            a_srs = paste0('EPSG:', prop@spatial$epsg),
+                            te = c(prop@spatial$extent[1], prop@spatial$extent[3],
+                                   prop@spatial$extent[2], prop@spatial$extent[4]))
 
     #get output type ot for gdal
     type.long <- prop@entity$type
@@ -231,11 +236,17 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
                      a_nodata=prop@entity$fillvalue,
                      overwrite=overwrite,
                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                     te = c(prop@spatial$extent[1], prop@spatial$extent[3],
+                            prop@spatial$extent[2], prop@spatial$extent[4]),
+                     a_srs = paste0('EPSG:', prop@spatial$epsg),
                      ot=ot)
     } else {
       gdalUtils::gdal_translate(temp.vrt, outputpath,
                      a_nodata=prop@entity$fillvalue,
                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                     te = c(prop@spatial$extent[1], prop@spatial$extent[3],
+                            prop@spatial$extent[2], prop@spatial$extent[4]),
+                     a_srs = paste0('EPSG:', prop@spatial$epsg),
                      overwrite=overwrite)
     }
 
@@ -250,7 +261,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
       file.remove(temp.vrt)
     }
 
-
+  # write array or matrix ----
   }else if (class(data)=="array"| class(data)=="matrix"){
     #data from array/matrix - in memory
 
