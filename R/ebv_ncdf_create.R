@@ -283,7 +283,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   lat.dim <- ncdf4::ncdim_def('lat', crs.unit , vals = lat.data)
   lon.dim <- ncdf4::ncdim_def('lon', crs.unit, vals = lon.data)
   time.dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)
-  entity.dim <- ncdf4::ncdim_def('dim_entity', 'name of entity', 1:length(entity.list))
+  entity.dim <- ncdf4::ncdim_def('dim_entity', units='',vals = c(1:entities.no), create_dimvar = F)
 
   # create list of vars ----
   var.list <- c()
@@ -642,8 +642,10 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     }
   }
 
-  # remove dim_entity----
-  rhdf5::h5delete(hdf, 'dim_entity')
+  # # remove dim_entity----
+  # if (rhdf5::H5Lexists(hdf, 'dim_entity')){
+  #   rhdf5::h5delete(hdf, 'dim_entity')
+  # }
 
   # close file  ----
   rhdf5::H5Fclose(hdf)
