@@ -17,7 +17,8 @@ ebv_plot_indicator(
 \item{datacubepath}{Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{color}{Default: dodgerblue4. Change as you like.}
+\item{color}{Character. Default: dodgerblue4. Change to any color known by R
+\code{\link[grDevices:colors]{grDevices::colors()}}}
 
 \item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
 }
