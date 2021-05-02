@@ -130,8 +130,14 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
 
   #outputpath check
   if (!is.null(outputpath)){
+    if (checkmate::checkCharacter(outputpath) != TRUE){
+      stop('Outputpath must be of type character.')
+    }
     if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
       stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
+    }
+    if(!endsWith(filepath, '.tif')){
+      stop('Outputpath needs to end with *.tif. Other datatypes are not yet implemented.')
     }
     #check if outpufile exists if overwrite is disabled
     if(!overwrite){
@@ -145,8 +151,25 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   temp_path <- getOption('temp_directory')[[1]]
   if (is.null(temp_path)){
     stop('This function creates a temporary file. Please specify a temporary directory via options.')
-  } else if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-    stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+  } else {
+    if (checkmate::checkCharacter(temp_path) != TRUE){
+      stop('The temporary directory must be of type character.')
+    }
+    if (checkmate::checkDirectoryExists(temp_path) != TRUE){
+      stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+    }
+  }
+
+
+  #check logical arguments
+  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+    stop('ignore.RAM must be of type logical.')
+  }
+  if(checkmate::checkLogical(overwrite) != TRUE){
+    stop('overwrite must be of type logical.')
+  }
+  if(checkmate::checkLogical(at) != TRUE){
+    stop('at must be of type logical.')
   }
 
   ####end initial checks ----

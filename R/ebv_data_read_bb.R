@@ -103,8 +103,14 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
 
   #outputpath check
   if (!is.null(outputpath)){
+    if (checkmate::checkCharacter(outputpath) != TRUE){
+      stop('Outputpath must be of type character.')
+    }
     if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
       stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
+    }
+    if(!endsWith(filepath, '.tif')){
+      stop('Outputpath needs to end with *.tif. Other datatypes are not yet implemented.')
     }
     #check if outpufile exists if overwrite is disabled
     if(!overwrite){
@@ -115,9 +121,20 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   }
 
   #valid epsg check
+  if(checkmate::checkIntegerish(epsg) != TRUE){
+    stop('epsg must be of type integer.')
+  }
   epsg_list <- rgdal::make_EPSG()
   if (! epsg %in% epsg_list$code){
     stop(paste0('The given epsg is not valid or not supported by R.\n', epsg))
+  }
+
+  #check logical arguments
+  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+    stop('ignore.RAM must be of type logical.')
+  }
+  if(checkmate::checkLogical(overwrite) != TRUE){
+    stop('overwrite must be of type logical.')
   }
 
   #######initial test end ----

@@ -98,6 +98,17 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
     stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
   }
 
+  #check logical arguments
+  if(checkmate::checkLogical(na.rm) != TRUE){
+    stop('na.rm must be of type logical.')
+  }
+  if(checkmate::checkLogical(numerical) != TRUE){
+    stop('numerical must be of type logical.')
+  }
+  if(checkmate::checkLogical(at) != TRUE){
+    stop('at must be of type logical.')
+  }
+
   #more checks are included in subset bb and subset shp
 
   ####initial tests end ----
