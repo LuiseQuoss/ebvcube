@@ -80,6 +80,11 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     withr::local_options(list(warn = -1))
   }
 
+  #check logical arguments
+  if(checkmate::checkLogical(overwrite) != TRUE){
+    stop('overwrite must be of type logical.')
+  }
+
   #filepath check
   if (checkmate::checkCharacter(filepath) != TRUE){
     stop('Filepath must be of type character.')
@@ -132,11 +137,6 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     if (checkmate::checkDirectoryExists(temp_path) != TRUE){
       stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
     }
-  }
-
-  #check logical arguments
-  if(checkmate::checkLogical(overwrite) != TRUE){
-    stop('overwrite must be of type logical.')
   }
 
   #######initial test end ----

@@ -77,6 +77,17 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
     withr::local_options(list(warn = -1))
   }
 
+  #check logical arguments
+  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+    stop('ignore.RAM must be of type logical.')
+  }
+  if(checkmate::checkLogical(overwrite) != TRUE){
+    stop('overwrite must be of type logical.')
+  }
+  if(checkmate::checkLogical(at) != TRUE){
+    stop('at must be of type logical.')
+  }
+
   #nc filepath check
   if (checkmate::checkCharacter(filepath) != TRUE){
     stop('Filepath must be of type character.')
@@ -158,18 +169,6 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
     if (checkmate::checkDirectoryExists(temp_path) != TRUE){
       stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
     }
-  }
-
-
-  #check logical arguments
-  if(checkmate::checkLogical(ignore.RAM) != TRUE){
-    stop('ignore.RAM must be of type logical.')
-  }
-  if(checkmate::checkLogical(overwrite) != TRUE){
-    stop('overwrite must be of type logical.')
-  }
-  if(checkmate::checkLogical(at) != TRUE){
-    stop('at must be of type logical.')
   }
 
   ####end initial checks ----

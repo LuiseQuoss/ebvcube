@@ -63,6 +63,20 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
     withr::local_options(list(warn = -1))
   }
 
+  #check logical arguments
+  if(checkmate::checkLogical(delayed) != TRUE){
+    stop('delayed must be of type logical.')
+  }
+  if(checkmate::checkLogical(sparse) != TRUE){
+    stop('sparse must be of type logical.')
+  }
+  if(checkmate::checkLogical(raster) != TRUE){
+    stop('raster must be of type logical.')
+  }
+  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+    stop('ignore.RAM must be of type logical.')
+  }
+
   #filepath check
   if (checkmate::checkCharacter(filepath) != TRUE){
     stop('Filepath must be of type character.')
@@ -106,20 +120,6 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   #warning that raster output will be ignored
   if(delayed==TRUE & raster==TRUE){
     message('raster=TRUE will be ignored as delayed = TRUE.')
-  }
-
-  #check logical arguments
-  if(checkmate::checkLogical(delayed) != TRUE){
-    stop('delayed must be of type logical.')
-  }
-  if(checkmate::checkLogical(sparse) != TRUE){
-    stop('sparse must be of type logical.')
-  }
-  if(checkmate::checkLogical(raster) != TRUE){
-    stop('raster must be of type logical.')
-  }
-  if(checkmate::checkLogical(ignore.RAM) != TRUE){
-    stop('ignore.RAM must be of type logical.')
   }
 
   #######initial test end ----

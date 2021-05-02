@@ -62,6 +62,14 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
     withr::local_options(list(warn = -1))
   }
 
+  #check logical arguments
+  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+    stop('ignore.RAM must be of type logical.')
+  }
+  if(checkmate::checkLogical(overwrite) != TRUE){
+    stop('overwrite must be of type logical.')
+  }
+
   #filepath check
   if (checkmate::checkCharacter(filepath) != TRUE){
     stop('Filepath must be of type character.')
@@ -127,14 +135,6 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timest
   epsg_list <- rgdal::make_EPSG()
   if (! epsg %in% epsg_list$code){
     stop(paste0('The given epsg is not valid or not supported by R.\n', epsg))
-  }
-
-  #check logical arguments
-  if(checkmate::checkLogical(ignore.RAM) != TRUE){
-    stop('ignore.RAM must be of type logical.')
-  }
-  if(checkmate::checkLogical(overwrite) != TRUE){
-    stop('overwrite must be of type logical.')
   }
 
   #######initial test end ----

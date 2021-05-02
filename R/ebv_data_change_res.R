@@ -88,6 +88,17 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     withr::local_options(list(warn = -1))
   }
 
+  #check logical arguments
+  if(checkmate::checkLogical(return.raster) != TRUE){
+    stop('return.raster must be of type logical.')
+  }
+  if(checkmate::checkLogical(overwrite) != TRUE){
+    stop('overwrite must be of type logical.')
+  }
+  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+    stop('ignore.RAM must be of type logical.')
+  }
+
   #filepath src check
   if (checkmate::checkCharacter(filepath_src) != TRUE){
     stop('Filepath must be of type character.')
@@ -101,7 +112,6 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
 
   #file closed?
   ebv_i_file_opened(filepath_src)
-
 
   #check if res is given or filepath to destination
   if(checkmate::checkNumeric(resolution)==TRUE){
@@ -219,17 +229,6 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     } else{
       message('RAM capacities are ignored.')
     }
-  }
-
-  #check logical arguments
-  if(checkmate::checkLogical(return.raster) != TRUE){
-    stop('return.raster must be of type logical.')
-  }
-  if(checkmate::checkLogical(overwrite) != TRUE){
-    stop('overwrite must be of type logical.')
-  }
-  if(checkmate::checkLogical(ignore.RAM) != TRUE){
-    stop('ignore.RAM must be of type logical.')
   }
 
   #######initial test end ----
