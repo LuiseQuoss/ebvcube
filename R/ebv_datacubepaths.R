@@ -82,17 +82,35 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
     for (p in paths){
       #entity longname
       dh <- hdf&p
-      e <- ebv_i_read_att(dh, 'label')
+      if (rhdf5::H5Aexists(dh, 'label')){
+        e <- ebv_i_read_att(dh, 'label')
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+        e <- ebv_i_read_att(dh, 'standard_name')
+      } else {
+        e <- 'not defined'
+      }
       rhdf5::H5Dclose(dh)
       #scenario longname
       scenario <- stringr::str_split(p, '/')[[1]][1]
       dh <- hdf&scenario
-      s <- ebv_i_read_att(dh, 'label')
+      if (rhdf5::H5Aexists(dh, 'label')){
+        s <- ebv_i_read_att(dh, 'label')
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+        s <- ebv_i_read_att(dh, 'standard_name')
+      } else {
+        s <- 'not defined'
+      }
       rhdf5::H5Gclose(dh)
       #metric longname
       metric <- paste0(scenario, '/', stringr::str_split(p, '/')[[1]][2])
       dh <- hdf&metric
-      m <- ebv_i_read_att(dh, 'label')
+      if (rhdf5::H5Aexists(dh, 'label')){
+        m <- ebv_i_read_att(dh, 'label')
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+        m <- ebv_i_read_att(dh, 'standard_name')
+      } else {
+        m <- 'not defined'
+      }
       rhdf5::H5Gclose(dh)
       #collect infos
       scenario_longnames <- c(scenario_longnames, s)
@@ -106,7 +124,13 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
     for (p in paths){
       #entity longname
       dh <- hdf&p
-      e <- ebv_i_read_att(dh, 'label')
+      if (rhdf5::H5Aexists(dh, 'label')){
+        e <- ebv_i_read_att(dh, 'label')
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+        e <- ebv_i_read_att(dh, 'standard_name')
+      } else {
+        e <- 'not defined'
+      }
       rhdf5::H5Dclose(dh)
       #metric longname
       metric <- stringr::str_split(p, '/')[[1]][1]
@@ -115,7 +139,13 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
         m <- 'none'
       }else{
         dh <- hdf&metric
-        m <- ebv_i_read_att(dh, 'label')
+        if (rhdf5::H5Aexists(dh, 'label')){
+          m <- ebv_i_read_att(dh, 'label')
+        } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+          m <- ebv_i_read_att(dh, 'standard_name')
+        } else {
+          m <- 'not defined'
+        }
         rhdf5::H5Gclose(dh)
       }
       entity_longnames <- c(entity_longnames, e)
