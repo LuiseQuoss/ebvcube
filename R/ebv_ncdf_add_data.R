@@ -36,7 +36,8 @@
 #' # ts <- c(1:6)
 #' # band <- c(1:6)
 #' # ebv_ncdf_add_data(file, tif, metric, scenario, entity, ts, band)
-ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL, entity=NULL, timestep=1, band=1, ignore.RAM=FALSE, verbose=FALSE){
+ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL,
+                              entity=NULL, timestep=1, band=1, ignore.RAM=FALSE, verbose=FALSE){
   ### start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -81,6 +82,11 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
     withr::local_options(list(warn = 0))
   }else{
     withr::local_options(list(warn = -1))
+  }
+
+  #check logical arguments
+  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+    stop('ignore.RAM must be of type logical.')
   }
 
   #check if nc file exists

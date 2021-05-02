@@ -111,7 +111,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
     stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
   }
-  if(!endsWith(filepath, '.tif')){
+  if(!endsWith(outputpath, '.tif')){
     stop('Outputpath needs to end with *.tif. Other datatypes are not yet implemented.')
   }
   #check if outpufile exists if overwrite is disabled

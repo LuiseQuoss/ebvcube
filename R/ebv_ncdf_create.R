@@ -86,6 +86,11 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     withr::local_options(list(warn = -1))
   }
 
+  #check logical arguments
+  if(checkmate::checkLogical(overwrite) != TRUE){
+    stop('overwrite must be of type logical.')
+  }
+
   #check if json exists
   if (checkmate::checkCharacter(jsonpath) != TRUE){
     stop('Filepath must be of type character.')
@@ -99,8 +104,14 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
 
   #check if ouputpath exists
   #outputpath check
+  if (checkmate::checkCharacter(outputpath) != TRUE){
+    stop('Outputpath must be of type character.')
+  }
   if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
     stop(paste0('Output directory does not exist.\n', dirname(outputpath)))
+  }
+  if(!endsWith(outputpath, '.nc')){
+    stop('Outputpath needs to end with *.nc ')
   }
   #check if outpufile exists if overwrite is disabled
   if(!overwrite){
@@ -110,12 +121,38 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   }
 
   #check if epsg is valid
+  if(checkmate::checkIntegerish(epsg) != TRUE){
+    stop('epsg must be of type integer.')
+  }
   epsg_list <- rgdal::make_EPSG()
   if (epsg != 4326){
     if (! epsg %in% epsg_list$code){
       stop(paste0('The given epsg is not valid or not supported by R.\n', epsg))
     }
   }
+
+  #check extent
+  if (checkmate::checkNumeric(extent, len = 4) != TRUE){
+    stop('extent needs to be a list of 4 numeric values.')
+  }
+
+  #check entities.no
+  if(checkmate::checkInt(entities.no) != TRUE){
+    stop('entities.no must be a single integer value.')
+  }
+
+  #check prec
+  if (! prec %in% c('short', 'integer', 'float', 'double', 'char', 'byte')){
+    stop('prec value not valid!')
+  }
+
+  #check fillvalue
+  if (! is.null(fillvalue)){
+    if(checkmate::checkNumber(fillvalue) != TRUE | !is.na(fillvalue)){
+      stop('The fillvalue needs to be a single numeric value or NA.')
+    }
+  }
+
 
   # end initial tests -------------------------------------------------------
 
