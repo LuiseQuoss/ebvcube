@@ -113,6 +113,17 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
     stop('The value of classes is too big. It is limitated to 15.')
   }
 
+  #check logical arguments
+  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+    stop('ignore.RAM must be of type logical.')
+  }
+  if(checkmate::checkLogical(countries) != TRUE){
+    stop('countries must be of type logical.')
+  }
+  if(checkmate::checkLogical(col.rev) != TRUE){
+    stop('col.rev must be of type logical.')
+  }
+
   # end initial tests ----
 
   #get needed properties
@@ -145,8 +156,13 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
       temp_path <- getOption('temp_directory')[[1]]
       if (is.null(temp_path)){
         stop('This function creates a temporary file. Please specify a temporary directory via options.')
-      } else if (!dir.exists(temp_path)){
-        stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+      } else {
+        if (checkmate::checkCharacter(temp_path) != TRUE){
+          stop('The temporary directory must be of type character.')
+        }
+        if (checkmate::checkDirectoryExists(temp_path) != TRUE){
+          stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+        }
       }
       #define temp file
       name <- 'temp_EBV_change_res_plot_map.tif'

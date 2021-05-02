@@ -6,7 +6,8 @@
 #' @param filepath Path to the NetCDF file.
 #' @param datacubepath Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param color Default: dodgerblue4. Change as you like.
+#' @param color Character. Default: dodgerblue4. Change to any color known by R
+#'   [grDevices::colors()]
 #' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Displays a plot in 'Plots' pane in RStudio. Returns a vector of the
@@ -14,6 +15,7 @@
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom graphics par
+#' @importFrom grDevices colors
 #'
 #'
 #' @examples
@@ -68,6 +70,11 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
+
+  #check color
+  if( ! color %in% grDevices::colors()){
+    stop('color not known. Choose a different one!')
+  }
 
   # end initial tests ----
 
