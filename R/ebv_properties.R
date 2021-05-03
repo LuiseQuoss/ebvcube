@@ -230,7 +230,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       long_name <- ebv_i_read_att(dh, 'long_name')[1]
 
       #label
-      label <- ebv_i_read_att(dh, 'label')[1]
+      if (rhdf5::H5Aexists(dh, 'label')){
+        label <- ebv_i_read_att(dh, 'label')[1]
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')){
+          label <- ebv_i_read_att(dh, 'standard_name')[1]
+      } else {
+        label <- 'not defined'
+      }
 
       #unit
       unit <- ebv_i_read_att(dh, 'units')[1]
@@ -252,7 +258,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       dh <- rhdf5::H5Gopen(hdf, group)
 
       #label
-      label <- ebv_i_read_att(dh, 'label')[1]
+      if (rhdf5::H5Aexists(dh, 'label')){
+        label <- ebv_i_read_att(dh, 'label')[1]
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')){
+        label <- ebv_i_read_att(dh, 'standard_name')[1]
+      } else {
+        label <- 'not defined'
+      }
 
       #description
       description <- ebv_i_read_att(dh, 'description')[1]
@@ -273,7 +285,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       dh <- rhdf5::H5Gopen(hdf, group)
 
       #label
-      label <- ebv_i_read_att(dh, 'label')
+      if (rhdf5::H5Aexists(dh, 'label')){
+        label <- ebv_i_read_att(dh, 'label')[1]
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')){
+        label <- ebv_i_read_att(dh, 'standard_name')[1]
+      } else {
+        label <- 'not defined'
+      }
 
       #description
       description <- ebv_i_read_att(dh, 'description')
@@ -320,7 +338,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       long_name <- ebv_i_read_att(dh, 'long_name')[1]
 
       #label
-      label <- ebv_i_read_att(dh, 'label')[1]
+      if (rhdf5::H5Aexists(dh, 'label')){
+        label <- ebv_i_read_att(dh, 'label')[1]
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')){
+        label <- ebv_i_read_att(dh, 'standard_name')[1]
+      } else {
+        label <- 'not defined'
+      }
 
       #unit
       unit <- ebv_i_read_att(dh, 'units')[1]
@@ -338,7 +362,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       dh <- rhdf5::H5Gopen(hdf, group)
 
       #label
-      label <- ebv_i_read_att(dh, 'label')[1]
+      if (rhdf5::H5Aexists(dh, 'label')){
+        label <- ebv_i_read_att(dh, 'label')[1]
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')){
+        label <- ebv_i_read_att(dh, 'standard_name')[1]
+      } else {
+        label <- 'not defined'
+      }
 
       #description
       description <- ebv_i_read_att(dh, 'description')[1]
@@ -386,7 +416,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       long_name <- ebv_i_read_att(dh, 'long_name')[1]
 
       #label
-      label <- ebv_i_read_att(dh, 'label')[1]
+      if (rhdf5::H5Aexists(dh, 'label')){
+        label <- ebv_i_read_att(dh, 'label')[1]
+      } else if (rhdf5::H5Aexists(dh, 'standard_name')){
+        label <- ebv_i_read_att(dh, 'standard_name')[1]
+      } else {
+        label <- 'not defined'
+      }
 
       #unit
       unit <- ebv_i_read_att(dh, 'units')[1]
