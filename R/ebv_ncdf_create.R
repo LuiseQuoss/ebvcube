@@ -182,7 +182,10 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
 
   # :longitude_of_prime_meridian
   parts <- stringr::str_split(ref, "[^[:print:]]")[[1]]
-  row <- parts[stringr::str_detect(parts, 'PRIMEM')]
+  row <- parts[stringr::str_detect(parts, 'Longitude of natural origin')]
+  if (is.empty(row)){
+    row <- parts[stringr::str_detect(parts, 'PRIMEM')]
+  }
   longitude_of_prime_meridian <- as.numeric(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]])
 
   # :semi_major_axis
@@ -287,6 +290,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
 
   # create list of vars ----
   var.list <- c()
+  units <- c()
   # 1. metric, no scenario
   if(scenarios.no==0){
     len.m <- nchar(as.character(metrics.no))+1
@@ -296,6 +300,8 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       while(nchar(ending.m)<len.m){
         ending.m <- paste0('0',ending.m)
       }
+      #metric units list
+      units <- c(units,eval(parse(text=paste0('json$collections$metric',j-1,'$unit'))))
       #add entities
       for (ent in entity.list){
         var.list <- c(var.list, paste0('metric', ending.m, '/', ent))
@@ -318,6 +324,8 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
         while(nchar(ending.m)<len.m){
           ending.m <- paste0('0',ending.m)
         }
+        #metric units list
+        units <- c(units,eval(parse(text=paste0('json$collections$metric',j-1,'$unit'))))
         #add entities
         for (ent in entity.list){
           var.list <- c(var.list, paste0('scenario', ending.s, '/metric', ending.m, '/', ent))
@@ -331,15 +339,19 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   # create all vars ---
   if (!is.null(fillvalue)){
     for (var in var.list){
+      metric.str <- stringr::str_split(var, '/')[[1]][stringr::str_detect(stringr::str_split(var, '/')[[1]], 'metric')]
+      metric.digit <- as.numeric(regmatches(metric.str, gregexpr("[[:digit:].]+", metric.str))[[1]])
       name <- paste0('var', enum)
-      assign(name, ncdf4::ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), missval=fillvalue, compression=2, prec=prec, verbose=verbose))
+      assign(name, ncdf4::ncvar_def(var, units[metric.digit], dim= list(lon.dim, lat.dim, time.dim), missval=fillvalue, compression=2, prec=prec, verbose=verbose))
       var.list.nc[[enum]] <- eval(parse(text=name))
       enum = enum +1
     }
   } else {
     for (var in var.list){
+      metric.str <- stringr::str_split(var, '/')[[1]][stringr::str_detect(stringr::str_split(var, '/')[[1]], 'metric')]
+      metric.digit <- as.numeric(regmatches(metric.str, gregexpr("[[:digit:].]+", metric.str))[[1]])
       name <- paste0('var', enum)
-      assign(name, ncdf4::ncvar_def(var, "default", dim= list(lon.dim, lat.dim, time.dim), compression=2, prec=prec, verbose=verbose))
+      assign(name, ncdf4::ncvar_def(var, units[metric.digit], dim= list(lon.dim, lat.dim, time.dim), compression=2, prec=prec, verbose=verbose))
       var.list.nc[[enum]] <- eval(parse(text=name))
       enum = enum +1
     }
