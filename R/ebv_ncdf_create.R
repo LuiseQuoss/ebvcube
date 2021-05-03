@@ -27,6 +27,8 @@
 #' @return Creates the NetCDF at the 'outputpath' location.
 #' @export
 #'
+#' @importFrom utils capture.output
+#'
 #' @examples
 #' # json <- 'path/to/json/file.json'
 #' # out <- 'path/to/create/new/netcdf/file.nc'
@@ -68,7 +70,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     }
   )
   withr::defer(
-    tryCatch(ncdf4::nc_close(nc), error=function(e) print('file closed'))
+    tryCatch(l <- utils::capture.output(ncdf4::nc_close(nc)))
   )
 
   #are all arguments given?

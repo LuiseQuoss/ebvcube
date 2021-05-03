@@ -27,6 +27,8 @@
 #'   [ebvnetcdf::ebv_data_analyse()].
 #' @export
 #'
+#' @importFrom utils capture.output
+#'
 #' @examples
 #' # file <- 'path/to/created/netcdf/file.nc'
 #' # tif <- 'path/to/geotiff/containing/data.tif'
@@ -66,7 +68,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     }
   )
   withr::defer(
-    tryCatch(ncdf4::nc_close(nc), error=function(e) print('file closed'))
+    tryCatch(utils::capture.output(ncdf4::nc_close(nc)))
   )
 
   #are all arguments given?
