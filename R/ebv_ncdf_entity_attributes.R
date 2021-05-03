@@ -94,7 +94,7 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, long_name, label,
     stop('Units argument has to be of class character.')
   }
   if(!is.null(fillvalue)){
-    if(checkmate::checkNumber(fillvalue)!=TRUE | !is.na(fillvalue)){
+    if(checkmate::checkNumber(fillvalue)!=TRUE & !is.na(fillvalue)){
       stop('The fillvalue needs to be a single numeric value or NA.')
     }
   }

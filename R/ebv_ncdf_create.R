@@ -148,7 +148,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
 
   #check fillvalue
   if (! is.null(fillvalue)){
-    if(checkmate::checkNumber(fillvalue) != TRUE | !is.na(fillvalue)){
+    if(checkmate::checkNumber(fillvalue) != TRUE & !is.na(fillvalue)){
       stop('The fillvalue needs to be a single numeric value or NA.')
     }
   }
