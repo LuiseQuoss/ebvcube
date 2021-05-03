@@ -67,6 +67,9 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       if(rhdf5::H5Iis_valid(sid)==TRUE){rhdf5::H5Sclose(sid)}
     }
   )
+  withr::defer(
+    tryCatch(ncdf4::nc_close(nc), error=function(e) print('file closed'))
+  )
 
   #are all arguments given?
   if(missing(jsonpath)){
@@ -286,7 +289,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   lat.dim <- ncdf4::ncdim_def('lat', crs.unit , vals = lat.data)
   lon.dim <- ncdf4::ncdim_def('lon', crs.unit, vals = lon.data)
   time.dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)
-  entity.dim <- ncdf4::ncdim_def('dim_entity', units='',vals = c(1:entities.no), create_dimvar = F)
+  #entity.dim <- ncdf4::ncdim_def('dim_entity', units='', vals = c(1:entities.no), create_dimvar = F)
 
   # create list of vars ----
   var.list <- c()
@@ -357,13 +360,13 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     }
   }
 
-  # add all enity vars ----
+  # add all entity vars ----
   # also creates groups
   nc <- ncdf4::nc_create(outputpath, var.list.nc, force_v4 = T, verbose = verbose)
 
   # add var_entity variable ----
-  var_entity <- ncdf4::ncvar_def('var_entity', 'variable entity', dim = list(entity.dim), compression=2, verbose = verbose, prec='char')
-  ncdf4::ncvar_add(nc, var_entity, verbose = verbose)
+  #var_entity <- ncdf4::ncvar_def('var_entity', 'variable entity', dim = list(nchar.dim, entity.dim), compression=2, verbose = verbose, prec='char')
+  #ncdf4::ncvar_add(nc, var_entity, verbose = verbose)
 
   # close file
   ncdf4::nc_close(nc)
@@ -558,15 +561,37 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   #close group
   rhdf5::H5Dclose(time.id)
 
-  # change var_entity variable ----
+  # add var_entity variable ----
+  if(!entities.no==0){
+    sid <- rhdf5::H5Screate_simple(entities.no)
+    tid <- rhdf5::H5Tcopy("H5T_C_S1")
+    rhdf5::H5Tset_size(tid, (nchar('entity0')+zeros))
+    var_entity.id <- rhdf5::H5Dcreate(hdf, 'var_entity', tid, sid)
+    rhdf5::H5Dwrite(var_entity.id, entity.list, h5spaceMem = sid, h5spaceFile = sid)
+    rhdf5::H5Sclose(sid)
+  } else {
+    sid <- rhdf5::H5Screate_simple(1)
+    tid <- rhdf5::H5Tcopy("H5T_C_S1")
+    rhdf5::H5Tset_size(tid, (nchar('data')+1))
+    var_entity.id <- rhdf5::H5Dcreate(hdf, 'var_entity', tid, sid)
+    rhdf5::H5Dwrite(var_entity.id, 'data', h5spaceMem = sid, h5spaceFile = sid)
+    rhdf5::H5Sclose(sid)
+  }
+
   # open dataset
-  var_entity.id <- rhdf5::H5Dopen(hdf, 'var_entity')
+  # var_entity.id <- rhdf5::H5Dopen(hdf, 'var_entity')
 
   # :standard_name = "variable entity";
   ebv_i_char_att(var_entity.id, 'standard_name', 'variable entity')
 
+  # :standard_name = "variable entity";
+  ebv_i_char_att(var_entity.id, 'units', 'name of entity')
+
   # :description = "list of all entities / species / species groups";
   ebv_i_char_att(var_entity.id, 'description', 'list of all entities / species / species groups')
+
+  # :description = "list of all entities / species / species groups";
+  ebv_i_uint_att(var_entity.id, '_ChunkSizes', 512)
 
   # # :long_name = "variable entity";
   # ebv_i_char_att(var_entity.id, 'long_name', 'variable entity')
@@ -654,7 +679,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     }
   }
 
-  # # remove dim_entity----
+  # remove dim_entity----
   # if (rhdf5::H5Lexists(hdf, 'dim_entity')){
   #   rhdf5::h5delete(hdf, 'dim_entity')
   # }
