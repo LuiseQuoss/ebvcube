@@ -257,15 +257,15 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
 
   # entities ----
   if(!entities.no==0){
-    if ((entities.no-1) < 10){
+    if ((entities.no) < 10){
       zeros <- 1
-    } else if ((entities.no-1) < 100){
+    } else if ((entities.no) < 100){
       zeros <- 2
-    } else if ((entities.no-1) < 1000){
+    } else if ((entities.no) < 1000){
       zeros <- 3
     } else if ((entities.no-1) < 10000){
       zeros <- 4
-    } else if ((entities.no-1) < 100000){
+    } else if ((entities.no) < 100000){
       zeros <- 5
     }
     #create entity list
@@ -575,7 +575,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       }
       mgid <- rhdf5::H5Gopen(hdf, paste0('metric', ending.m))
       #add metric attributes
-      label <- eval(parse(text=paste0('json$collections$metric',j,'$unit')))
+      label <- eval(parse(text=paste0('json$collections$metric',j,'$name')))
       description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
       ebv_i_char_att(mgid, 'label', label)
       ebv_i_char_att(mgid, 'description', description)
@@ -596,36 +596,8 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     #2. scenario and metric (entities are not relevant)
   }else{
     j = 0
-    for (i in 1:(metrics.no)){
-      #create scenario group
-      ending.m <- as.character(i)
-      while(nchar(ending.m)<len.m){
-        ending.m <- paste0('0',ending.m)
-      }
-      #open metric group
-      mgid <- rhdf5::H5Gopen(hdf, paste0('metric', ending.m))
-      #add metric attributes
-      label <- eval(parse(text=paste0('json$collections$metric',j,'$unit')))
-      description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
-      ebv_i_char_att(mgid, 'label', label)
-      ebv_i_char_att(mgid, 'description', description)
-      #add subgroup 'crs' to metric
-      sid <- rhdf5::H5Screate_simple(1)
-      tid <- rhdf5::H5Tcopy("H5T_C_S1")
-      mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
-      rhdf5::H5Sclose(sid)
-      # :spatial_ref
-      ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
-      # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
-      ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
-      #close datahandle
-      rhdf5::H5Gclose(mgid)
-      rhdf5::H5Dclose(mcrs.id)
-      j = j +1
-    }
-    j = 0
     for (i in 1:(scenarios.no)){
-      #create scenario group
+      #open scenario group
       ending.s <- as.character(i)
       while(nchar(ending.s)<len.s){
         ending.s <- paste0('0',ending.s)
@@ -633,12 +605,40 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       #scenario path
       sgid <- rhdf5::H5Gopen(hdf, paste0('scenario', ending.s))
       #add attributes
-      label <- eval(parse(text=paste0('json$collections$scenario',j,'$unit')))
+      label <- eval(parse(text=paste0('json$collections$scenario',j,'$name')))
       description <- eval(parse(text=paste0('json$collections$scenario',j,'$description')))
       ebv_i_char_att(sgid, 'label', label)
       ebv_i_char_att(sgid, 'description', description)
       rhdf5::H5Gclose(sgid)
       j=j+1
+      for (i in 1:(metrics.no)){
+        k = 0
+        #create scenario group
+        ending.m <- as.character(i)
+        while(nchar(ending.m)<len.m){
+          ending.m <- paste0('0',ending.m)
+        }
+        #open metric group
+        mgid <- rhdf5::H5Gopen(hdf, paste0('scenario', ending.s, '/metric', ending.m))
+        #add metric attributes
+        label <- eval(parse(text=paste0('json$collections$metric',k,'$name')))
+        description <- eval(parse(text=paste0('json$collections$metric',k,'$description')))
+        ebv_i_char_att(mgid, 'label', label)
+        ebv_i_char_att(mgid, 'description', description)
+        #add subgroup 'crs' to metric
+        sid <- rhdf5::H5Screate_simple(1)
+        tid <- rhdf5::H5Tcopy("H5T_C_S1")
+        mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
+        rhdf5::H5Sclose(sid)
+        # :spatial_ref
+        ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
+        # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
+        ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
+        #close datahandle
+        rhdf5::H5Gclose(mgid)
+        rhdf5::H5Dclose(mcrs.id)
+        k = k +1
+      }
     }
   }
 
