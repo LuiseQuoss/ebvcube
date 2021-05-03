@@ -36,8 +36,8 @@
 #' # ts <- c(1:6)
 #' # band <- c(1:6)
 #' # ebv_ncdf_add_data(file, tif, metric, scenario, entity, ts, band)
-ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL,
-                              entity=NULL, timestep=1, band=1, ignore.RAM=FALSE, verbose=FALSE){
+ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
+                                  timestep=1, band=1, ignore.RAM=FALSE, verbose=FALSE){
   ### start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -65,6 +65,9 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
       if(rhdf5::H5Iis_valid(did)==TRUE){rhdf5::H5Dclose(did)}
     }
   )
+  withr::defer(
+    tryCatch(ncdf4::nc_close(nc), error=function(e) print('file closed'))
+  )
 
   #are all arguments given?
   if(missing(filepath_nc)){
@@ -73,6 +76,10 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   if(missing(filepath_tif)){
     stop('Filepath_tif argument is missing.')
   }
+  if(missing(datacubepath)){
+    stop('Datacubepath argument is missing.')
+  }
+
 
   #turn off local warnings if verbose=TRUE
   if(checkmate::checkLogical(verbose) != TRUE){
@@ -114,22 +121,19 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   #file closed?
   ebv_i_file_opened(filepath_nc)
 
-  #check if a scenario is given, when nc has scenarios
-  ls <- rhdf5::h5ls(filepath_nc)
-  scenario.len <- length(grep("^scenario", ls[,2]))
-  if (scenario.len>0 & is.null(scenario)){
-    stop('The given NetCDF contains scenarios. You must define the scenario argument.')
-  }
+  # open file
+  hdf <- rhdf5::H5Fopen(filepath_nc)
 
-  #check if an entity is given, when nc has entities
-  entity.len <- length(rhdf5::h5read(filepath_nc, 'var_entity'))
-  if (entity.len>1 & is.null(entity)){
-    stop('The given NetCDF contains entities. You must define the entity argument.')
-  } else if (entity.len==1){
-    if (rhdf5::h5read(filepath_nc, 'var_entity')!= 'data'){
-      stop('The given NetCDF contains entities. You must define the entity argument.')
+  #check datacubepath
+  if (checkmate::checkCharacter(datacubepath) != TRUE & !is.null(datacubepath)){
+    stop('Datacubepath must be of type character.')
+  }
+  if(!is.null(datacubepath)){
+    if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
+      stop(paste0('The given variable is not valid:\n', datacubepath))
     }
   }
+  rhdf5::H5Fclose(hdf)
 
   #check timesteps
   #check if timestep is valid type
@@ -209,7 +213,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   ### end initial test ----
 
   #open hdf file ----
-  hdf <- rhdf5::H5Fopen(filepath_nc)
+  #hdf <- rhdf5::H5Fopen(filepath_nc)
 
   #get data from tif ----
   if (length(timestep) > 1){
@@ -237,22 +241,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   type.hdf<- ebv_i_type_raster(raster@file@datanotation, raster@file@byteorder)
 
   #read amount of entities from hdf file
-  len.e <- length(rhdf5::h5read(hdf, 'var_entity'))
-
-  #create entity name accordingly
-  if (entity.len>1){
-    len.e <- nchar(as.character(len.e))+1
-    #create metric group
-    ending <- as.character((entity-1))
-    while(nchar(ending)<len.e){
-      ending <- paste0('0',ending)
-    }
-    name <- paste0('entity', ending)
-  } else if (rhdf5::h5read(filepath_nc, 'var_entity')== 'data'){
-    name = 'data'
-  } else {
-    name = 'entity0'
-  }
+  #len.e <- length(rhdf5::h5read(hdf, 'var_entity'))
 
   #rotate data
   if (length(timestep) > 1){
@@ -264,86 +253,35 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
       data[,,i] <- temp
     }
   } else {
-    data <- as.matrix(raster)
+    data <- raster::as.matrix(raster)
     data <- t(data[nrow(data):1,])
     data <- data[,ncol(data):1]
   }
 
-  #dims
-  dims <- c(dim(data)[1], dim(data)[2], max_time)
-
-  #get subgroup: scenario & metric
-  #get n of metric zeros
-  ls <- rhdf5::h5ls(filepath_nc) #warning because file is opened
-  metrics.len <- length(grep("^metric", ls[,2]))
-  if (is.null(scenario)){
-    #define path
-    zeros.m <- ''
-    for (m in 1:nchar(metrics.len)){
-      zeros.m <- paste0(zeros.m, '0')
-    }
-    metric_path <- paste0('metric', zeros.m, metric-1)
-  } else {
-    #define scenario/metric path
-    #get n of scenario zeros
-    scenario.len <- length(grep("^scenario", ls[,2]))
-    metrics.len <- metrics.len/scenario.len
-    #define path
-    zeros.s <- ''
-    for (m in 1:nchar(scenario.len)){
-      zeros.s <- paste0(zeros.s, '0')
-    }
-    zeros.m <- ''
-    for (m in 1:nchar(metrics.len)){
-      zeros.m <- paste0(zeros.m, '0')
-    }
-    metric_path <- paste0('scenario',zeros.s, (scenario-1),'/metric', zeros.m, metric-1)
-  }
-
-  #open path
-  gid <- rhdf5::H5Gopen(hdf, metric_path)
-
-  #create DS if not already existent ----
-  if (rhdf5::H5Lexists(gid, name)) {
-    did <- rhdf5::H5Dopen(gid, name)
-  }else {
-    tid <- rhdf5::H5Tcopy(type.hdf)
-    sid <- rhdf5::H5Screate_simple(dims)
-    did <- rhdf5::H5Dcreate(gid, name, tid, sid)
-    rhdf5::H5Sclose(sid)
-  }
-
-  #add rotated data at specified timeslots
-  name.ds <- paste0(metric_path, '/', name)
-  rhdf5::h5write(obj=data, file=hdf, name=name.ds, start=c(1,1,min(timestep)), count=c(dims[1], dims[2], length(timestep)))
+  nc<- ncdf4::nc_open(outputpath, write=T)
+  ncdf4::ncvar_put(nc = nc, varid = datacubepath, vals = data, start=c(1,1,min(timestep)), count=c(dim(data)[1:2], length(timestep)), verbose=verbose)
+  ncdf4::nc_close(nc)
 
   #add entity attributes----
+  #open file
+  hdf <- rhdf5::H5Fopen(filepath_nc)
+  #open DS
+  did <- rhdf5::H5Dopen(hdf, datacubepath)
 
   #grid_mapping
   ebv_i_char_att(did, 'grid_mapping', 'crs')
 
-  # :_ChunkSizes = 1U, 180U, 360U; // uint
-  if (! rhdf5::H5Aexists(did, '_ChunkSizes')){
-    chunk <- c(1, dim(data)[2], dim(data)[1])
-    sid <- rhdf5::H5Screate_simple(length(chunk))
-    tid <- rhdf5::H5Tcopy("H5T_NATIVE_UINT")
-    aid <- rhdf5::H5Acreate(did, name = '_ChunkSizes', tid,sid)
-    rhdf5::H5Awrite(aid, chunk)
-    rhdf5::H5Aclose(aid)
-    rhdf5::H5Sclose(sid)
-  }
-
-  # :value_range
-  if (! rhdf5::H5Aexists(hdf, 'value_range')){
+  # :valid_range
+  if (! rhdf5::H5Aexists(did, 'valid_range')){
     sid <- rhdf5::H5Screate_simple(length(value_range))
     tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
     #H5Tset_size(tid, max(nchar(ebv_subgroups_desc))+1)
-    aid <- rhdf5::H5Acreate(hdf,'value_range', tid,sid)
+    aid <- rhdf5::H5Acreate(did,'valid_range', tid,sid)
     rhdf5::H5Awrite(aid, value_range)
     rhdf5::H5Aclose(aid)
     rhdf5::H5Sclose(sid)
   } else{
-    old.vr <- ebv_i_read_att(hdf, 'value_range')
+    old.vr <- ebv_i_read_att(did, 'valid_range')
     old.min <- old.vr[1]
     old.max <- old.vr[2]
     new.vr <- old.vr
@@ -355,47 +293,25 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
     }
     if ((old.min != new.vr[1])|(old.max != new.vr[2])){
       value_range <- new.vr
-      rhdf5::H5Adelete(hdf, 'value_range')
+      rhdf5::H5Adelete(did, 'valid_range')
       sid <- rhdf5::H5Screate_simple(length(value_range))
       tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
-      aid <- rhdf5::H5Acreate(hdf, name = 'value_range', tid,sid)
+      aid <- rhdf5::H5Acreate(did, name = 'valid_range', tid,sid)
       rhdf5::H5Awrite(aid, value_range)
       rhdf5::H5Aclose(aid)
       rhdf5::H5Sclose(sid)
     }
   }
 
-
-  # :units = "mean change of species diversity per area (pixel size) to baseline 1900";
-  ebv_i_char_att(did, 'units', 'default')
-  #name of metric?
-
-  # :long_name = "Changes in local bird diversity (cSAR)";
-  ebv_i_char_att(did, 'long_name', 'default')
-  #is long_name the title? what is it?
+  # :description
+  ebv_i_char_att(did, 'description', 'default')
 
   # :least_significant_digit = 4; // int
-  ebv_i_int_att(did, 'least_significant_digit', 999)
+  ebv_i_int_att(did, 'least_significant_digit', 4)
 
   #attributes that are filled by user - created empty
   # :label = "forest bird species";
-  ebv_i_char_att(did, 'label', 'default')
-
-  #enter json$biologicalEntity$taxonomicCoverage?
-
-  # :standard_name = "Changes in local bird diversity (cSAR): forest bird species";
   ebv_i_char_att(did, 'standard_name', 'default')
-  #fill standard name automatically when label is added (long_name needed)?
-
-  # :_FillValue = -3.4E38f; // float
-  if (nodata!='None'){
-    ebv_i_num_att(did, '_FillValue', nodata)
-  } else {
-    ebv_i_num_att(did, '_FillValue', 999)
-  }
-
-  # :description = "Changes in bird diversity at the grid cell level caused by land-use, estimated by the cSAR model (Martins & Pereira, 2017). It reports changes in species number (percentage and absolute), relative to 1900, for all bird species, forest bird species, and non-forest bird species in each cell. Uses the LUH 2.0 projections for land-use, and the PREDICTS coefficients for bird affinities to land-uses.";
-  ebv_i_char_att(did, 'description', 'default')
 
   #delete automatically created attribute: :rhdf5-NA.OK
   if(rhdf5::H5Aexists(did, 'rhdf5-NA.OK')){
@@ -403,7 +319,6 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, metric=1, scenario=NULL
   }
 
   #close
-  rhdf5::H5Gclose(gid)
   rhdf5::H5Dclose(did)
   rhdf5::H5Fclose(hdf)
 
