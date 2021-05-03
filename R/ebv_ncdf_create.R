@@ -589,7 +589,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       #add metric attributes
       label <- eval(parse(text=paste0('json$collections$metric',j,'$name')))
       description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
-      ebv_i_char_att(mgid, 'label', label)
+      ebv_i_char_att(mgid, 'standard_name', label)
       ebv_i_char_att(mgid, 'description', description)
       #add subgroup 'crs' to metric
       sid <- rhdf5::H5Screate_simple(1)
@@ -619,7 +619,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       #add attributes
       label <- eval(parse(text=paste0('json$collections$scenario',j,'$name')))
       description <- eval(parse(text=paste0('json$collections$scenario',j,'$description')))
-      ebv_i_char_att(sgid, 'label', label)
+      ebv_i_char_att(sgid, 'standard_name', label)
       ebv_i_char_att(sgid, 'description', description)
       rhdf5::H5Gclose(sgid)
       j=j+1
@@ -635,7 +635,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
         #add metric attributes
         label <- eval(parse(text=paste0('json$collections$metric',k,'$name')))
         description <- eval(parse(text=paste0('json$collections$metric',k,'$description')))
-        ebv_i_char_att(mgid, 'label', label)
+        ebv_i_char_att(mgid, 'standard_name', label)
         ebv_i_char_att(mgid, 'description', description)
         #add subgroup 'crs' to metric
         sid <- rhdf5::H5Screate_simple(1)
