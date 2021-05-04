@@ -235,6 +235,8 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
 
   #get epsg
   epsg_src <- prop_src@spatial$epsg
+  srs_src <- sp::CRS(SRS_string = paste0('EPSG:',epsg_src))
+  srs_dest <- sp::CRS(SRS_string = paste0('EPSG:',epsg_dest))
 
   #check if both epsg are valid
   epsg_list <- rgdal::make_EPSG()
@@ -262,36 +264,42 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
       gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep,
                                       ot = ot,
                                       co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                      overwrite=TRUE)
+                                      overwrite=TRUE,
+                                      a_srs = srs_src)
     } else {
       gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep,
                                       co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                      overwrite=TRUE)
+                                      overwrite=TRUE,
+                                      a_srs = srs_src)
     }
     #change filepath
     filepath <- temp
   }
 
-  #check if epsgs differ
+  #check if epsgs differ ----
   if(epsg_src != epsg_dest){
     #define output parameters
     name <- 'temp_EBV_change_res_epsg.tif'
     temp_2 <- file.path(temp_path, name)
     if (!is.null(ot)){
-      gw <- gdalUtils::gdalwarp(filepath, temp_2, ot = ot,
-                                t_srs=paste0('EPSG:',epsg_dest),
+      gw <- gdalUtils::gdalwarp(srcfile = filepath,
+                                dstfile = temp_2,
+                                ot = ot,
+                                s_srs=srs_src,
+                                t_srs=srs_dest,
                                 co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                                 overwrite=TRUE)
     } else {
       gw <- gdalUtils::gdalwarp(filepath, temp_2,
-                                t_srs=paste0('EPSG:',epsg_dest),
+                                s_srs=srs_src,
+                                t_srs=srs_dest,
                                 co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                                 overwrite=TRUE)
     }
     filepath <- temp_2
   }
 
-  #get extent to align pixels
+  #get extent to align pixels ----
   if(!is.null(filepath_dest) & (epsg_src != epsg_dest)){
     extent <- raster::extent(raster::raster(filepath))
     lat.data <- rhdf5::h5read(filepath_dest, 'lat')
@@ -307,14 +315,14 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     te <- NULL
   }
 
-  #write tif with new resolution
+  #write tif with new resolution ----
   if (!is.null(ot) & !is.null(te)){
     r <- gdalUtils::gdalwarp(filepath, outputpath,
                   tr=res,srcnodata=prop_src@entity$fillvalue,
                   ot=ot,r = method, te = te,
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                  te_srs = paste0('EPSG:', epsg_dest),
+                  t_srs = srs_dest,
                   output_Raster = return.raster)
   } else if (is.null(ot) & !is.null(te)) {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
@@ -322,7 +330,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   r = method, te = te,
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                  te_srs = paste0('EPSG:', epsg_dest),
+                  t_srs = srs_dest,
                   output_Raster = return.raster)
   } else if(!is.null(ot) & is.null(te)){
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
@@ -330,7 +338,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   r = method, ot = ot,
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                  #s_srs = paste0('EPSG:', epsg_src),
+                  t_srs = srs_dest,
                   output_Raster = return.raster)
   } else {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
@@ -338,7 +346,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   r = method,
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                  #t_srs = paste0('EPSG:', epsg_src),
+                  t_srs = srs_dest,
                   output_Raster = return.raster)
   }
 
