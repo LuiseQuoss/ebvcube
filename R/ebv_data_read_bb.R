@@ -3,25 +3,30 @@
 #' @description Read a subset of one or more layers from one datacube of the
 #'   NetCDF file. Subset definition by a bounding box.
 #'
-#' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use
+#' @param filepath Character. Path to the NetCDF file.
+#' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param bb Definition of subsset by bounding box: c(xmin, xmax, ymin, ymax).
-#' @param outputpath Defaul: NULL, returns the data as a raster object in
-#'   memory. Optional: set path to write subset as GeoTiff on disk, returns
-#'   outputpath.
-#' @param timestep Choose one or several timesteps (vector).
-#' @param epsg Default: 4326 (WGS84). Change accordingly if your bounding box
-#'   coordinates are based on a different coordinate reference system.
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
-#'   defined by 'outputpath'.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the
-#'   data. Can be switched off (set to TRUE).
+#' @param bb Integer Vector. Definition of subsset by bounding box: c(xmin,
+#'   xmax, ymin, ymax).
+#' @param outputpath Character. Default: NULL, returns the data as a raster
+#'   object in memory. Optional: set path to write subset as GeoTiff on disk,
+#'   returns outputpath.
+#' @param timestep Integer Vector. Choose one or several timesteps.
+#' @param epsg Integer. Default: 4326 (WGS84). Change accordingly if your
+#'   bounding box coordinates are based on a different coordinate reference
+#'   system.
+#' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
+#'   outputfile defined by 'outputpath'.
+#' @param ignore.RAM Logical. Checks if there is enough space in your memory to
+#'   read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Returns a raster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
 #' @export
+#'
+#' @note In case the epsg of the Bounding Box and the NetCDF differ the data is
+#'   returned based on the epsg of the NetCDF Dataset.
 #'
 #' @examples
 #' # file <- 'path/to/netcdf/file.nc'
