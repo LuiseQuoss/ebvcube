@@ -247,8 +247,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       }
 
       #get value_range
-      did <- rhdf5::H5Dopen(hdf, datacubepath)
-      if (rhdf5::H5Aexists(did, 'valid_range')){
+      if (rhdf5::H5Aexists(dh, 'valid_range')){
         value_range <- ebv_i_read_att(dh, 'valid_range')
       } else {
         value_range <- ebv_i_read_att(hdf, 'value_range')
