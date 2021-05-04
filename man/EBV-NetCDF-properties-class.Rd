@@ -13,7 +13,8 @@ EBV NetCDF Properties class (S4)
 \section{Slots}{
 
 \describe{
-\item{\code{general}}{list.}
+\item{\code{general}}{list. Elements: title, description, ebv_class, ebv_name, ebv_subgroups,
+creator}
 
 \item{\code{spatial}}{list.}
 
@@ -23,6 +24,6 @@ EBV NetCDF Properties class (S4)
 
 \item{\code{scenario}}{list.}
 
-\item{\code{entity}}{list.}
+\item{\code{entity}}{list. Elements: value_range}
 }}
 
