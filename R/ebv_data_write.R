@@ -246,23 +246,24 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     type.long <- prop@entity$type
     ot <- ebv_i_type_ot(type.long)
 
+    a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
     #gdal translate: add fillvalue, add ot if given, output final tif
     if(!is.null(ot)){
       gdalUtils::gdal_translate(temp.vrt, outputpath,
                      a_nodata=prop@entity$fillvalue,
                      overwrite=overwrite,
                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                     te = c(prop@spatial$extent[1], prop@spatial$extent[3],
-                            prop@spatial$extent[2], prop@spatial$extent[4]),
-                     a_srs = paste0('EPSG:', prop@spatial$epsg),
+                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4],
+                            prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_srs = a_srs,
                      ot=ot)
     } else {
       gdalUtils::gdal_translate(temp.vrt, outputpath,
                      a_nodata=prop@entity$fillvalue,
                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                     te = c(prop@spatial$extent[1], prop@spatial$extent[3],
-                            prop@spatial$extent[2], prop@spatial$extent[4]),
-                     a_srs = paste0('EPSG:', prop@spatial$epsg),
+                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4],
+                                prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_srs = a_srs,
                      overwrite=overwrite)
     }
 
