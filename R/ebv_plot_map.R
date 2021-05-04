@@ -149,7 +149,9 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
     },
     #change res ----
     error = function(cond){
-      print(cond)
+      if (!stringr::str_detect(cond, 'memory')){
+        stop(cond)
+      }
       message(paste0('Data will be displayed in a lower resolution. May take up to a few minutes. Original resolution: ',
                      prop@spatial$resolution[1] , ', displayed resoultion: 1 degree.'))
       #check temp directory
