@@ -176,7 +176,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   #read shapefile
   subset <- rgdal::readOGR(shp, verbose=FALSE)
 
-  #get_epsg of shp
+  #get_epsg of shp ----
   temp_epsg <- rgdal::showEPSG(sp::proj4string(subset))
   if(is.na(as.integer(temp_epsg))){
     stop(paste0('The given srs of the shapefile is not supported.\n', temp_epsg))
@@ -190,7 +190,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   #original extent
   extent.org <- raster::extent(subset)
 
-  #reproject shp if necessary to epsg of ncdf
+  #reproject shp if necessary to epsg of ncdf ----
   if (epsg.shp != epsg.nc){
     subset <- sp::spTransform(subset, sp::CRS(paste0('EPSG:',epsg.nc)))
     tempshp <- file.path(temp_path, 'temp_EBV_shp_subset')
@@ -216,7 +216,8 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
   #get resolution of ncdf
   resolution.nc <- raster::res(subset.nc)
 
-  #rasterize shp - with resoultion of ncdf, burn value 1 (temp rasterlayer --> mask)
+  #rasterize shp ----
+  #with resoultion of ncdf, burn value 1 (temp rasterlayer --> mask)
   #check ram
   dim.subset <- dim(subset.nc)
   #check needed RAM
@@ -240,7 +241,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
                                 co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                                 output_Raster = TRUE)
 
-  #mask the subset
+  #mask the subset ----
   #check needed RAM
   if (!ignore.RAM){
     ebv_i_check_ram(dim.subset, timestep, 'H5T_NATIVE_FLOAT') #type=placeholder for double
@@ -251,9 +252,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
 
   #set nodata value
   subset.raster <- raster::reclassify(subset.raster, cbind(prop@entity$fillvalue, NA))
-
-  #remove temp.raster
-  file.remove(tempraster)
+  raster::crs(subset.raster) <- sp::CRS(SRS_string = paste0('EPSG:', epsg.nc))
 
   #remove temp shp
   if (epsg.shp != epsg.nc){
@@ -262,7 +261,8 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, time
 
   #return raster or tif
   if(!is.null(outputpath)){
-    raster::writeRaster(subset.raster, outputpath, format = "GTiff", overwrite = overwrite)
+    raster::writeRaster(subset.raster, outputpath, format = "GTiff",
+                        overwrite = overwrite)
     return(outputpath)
   } else {
     return(subset.raster)
