@@ -5,7 +5,7 @@
 \alias{EBV NetCDF properties-class}
 \title{EBV NetCDF Properties class (S4)}
 \value{
-S4 class
+S4 class containing the EBV NetCDF Properties
 }
 \description{
 EBV NetCDF Properties class (S4)
@@ -13,17 +13,23 @@ EBV NetCDF Properties class (S4)
 \section{Slots}{
 
 \describe{
-\item{\code{general}}{list. Elements: title, description, ebv_class, ebv_name, ebv_subgroups,
-creator}
+\item{\code{general}}{Named list. Elements: title, description, ebv_class, ebv_name,
+ebv_subgroups, creator}
 
-\item{\code{spatial}}{list.}
+\item{\code{spatial}}{Named list. Elements: srs, epsg, resolution, extent, dimensions}
 
-\item{\code{temporal}}{list.}
+\item{\code{temporal}}{Named list. Elements: units, t_delta, timesteps,
+timesteps.natural}
 
-\item{\code{metric}}{list.}
+\item{\code{metric}}{Named list. Elements: standard_name, description}
 
-\item{\code{scenario}}{list.}
+\item{\code{scenario}}{Named list. Elements: standard_name, description}
 
-\item{\code{entity}}{list. Elements: value_range}
+\item{\code{entity}}{Named list. Elements: standard_name, description, unit, type,
+fillvalue, value_range}
 }}
 
+\note{
+If the properties class holds e.g. no scenario information this is
+indicated with an element called status in the list.
+}

@@ -7,9 +7,8 @@
 ebv_ncdf_entity_attributes(
   filepath,
   datacubepath,
-  long_name,
-  label,
-  units,
+  standard_name,
+  description,
   fillvalue = NULL,
   verbose = FALSE
 )
@@ -20,11 +19,9 @@ ebv_ncdf_entity_attributes(
 \item{datacubepath}{Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{long_name}{Value of the long_name attribute (character).}
+\item{standard_name}{Value of the standard_name attribute (character).}
 
-\item{label}{Value of the label attribute (character).}
-
-\item{units}{Value of the units attribute (character).}
+\item{description}{Value of the description attribute (character).}
 
 \item{fillvalue}{Value of the fillvalue attribute (double).}
 
@@ -35,12 +32,12 @@ Adds attributes to NetCDF. Check results using
 \code{\link[=ebv_properties]{ebv_properties()}}
 }
 \description{
-Add long_name, label, units and fillvalue to an entitiy of a
+Add standard_name, description and fillvalue to an entitiy of a
 self-created EBV NetCDF. First use \code{\link[=ebv_ncdf_create]{ebv_ncdf_create()}} to create
 a NetCDF afterwards use this functiong to add attributes.
 }
 \examples{
 # file <- 'path/to/self/created/netcdf.nc'
 # datacubes <- ebv_datacubepaths(file)
-# ebv_ncdf_entity_attributes(file, datacubes[1,1], 'habitat', 'bog', 'Percentage', fillvalue=-1)
+# ebv_ncdf_entity_attributes(file, datacubes[1,1], 'habitat', 'bog', fillvalue=-1)
 }

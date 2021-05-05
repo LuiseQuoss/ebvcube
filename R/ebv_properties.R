@@ -1,15 +1,20 @@
 #' EBV NetCDF Properties class (S4)
 #'
-#' @slot general list. Elements: title, description, ebv_class, ebv_name, ebv_subgroups,
-#'   creator
-#' @slot spatial list.
-#' @slot temporal list.
-#' @slot metric list.
-#' @slot scenario list.
-#' @slot entity list. Elements: value_range
+#' @slot general Named list. Elements: title, description, ebv_class, ebv_name,
+#'   ebv_subgroups, creator
+#' @slot spatial Named list. Elements: srs, epsg, resolution, extent, dimensions
+#' @slot temporal Named list. Elements: units, t_delta, timesteps,
+#'   timesteps.natural
+#' @slot metric Named list. Elements: standard_name, description
+#' @slot scenario Named list. Elements: standard_name, description
+#' @slot entity Named list. Elements: standard_name, description, unit, type,
+#'   fillvalue, value_range
 #'
-#' @return S4 class
+#' @return S4 class containing the EBV NetCDF Properties
 #' @export
+#'
+#' @note If the properties class holds e.g. no scenario information this is
+#'   indicated with an element called status in the list.
 #'
 #' @examples
 methods::setClass("EBV NetCDF properties", slots=list(general="list",
@@ -23,10 +28,10 @@ methods::setClass("EBV NetCDF properties", slots=list(general="list",
 #'
 #' @description Structured access to all attributes of the NetCDF file.
 #'
-#' @param filepath Path to the NetCDF file.
-#' @param datacubepath Optional. Path to the datacube (use
+#' @param filepath Character. Path to the NetCDF file.
+#' @param datacubepath Character. Optional. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.
 #'
 #' @return S4 class containing information about file or file and datacube
 #'   depending on input.
@@ -228,15 +233,19 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       }
 
       #long name
-      long_name <- ebv_i_read_att(dh, 'long_name')[1]
+      if (rhdf5::H5Aexists(dh, 'description')){
+        description <- ebv_i_read_att(dh, 'description')
+      }else if (rhdf5::H5Aexists(dh, 'long_name')){
+        description <- ebv_i_read_att(dh, 'long_name')[1]
+      }
 
-      #label
+      #standard_name
       if (rhdf5::H5Aexists(dh, 'label')){
-        label <- ebv_i_read_att(dh, 'label')[1]
+        standard_name <- ebv_i_read_att(dh, 'label')[1]
       } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-          label <- ebv_i_read_att(dh, 'standard_name')[1]
+          standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
       } else {
-        label <- 'not defined'
+        standard_name <- 'not defined'
       }
 
       #unit
@@ -261,7 +270,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Dclose(dh)
 
       #create object of S4 class
-      entity <- list(long_name=long_name, label=label, unit=unit, type=type, fillvalue=fillvalue, value_range=value_range)
+      entity <- list(description=description, standard_name=standard_name, unit=unit, type=type, fillvalue=fillvalue, value_range=value_range)
 
       ####get metric info ----
       #one level higher
@@ -269,13 +278,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       group <- stringr::str_remove(datacubepath, stringr::str_split(datacubepath, '/')[[1]][i])
       dh <- rhdf5::H5Gopen(hdf, group)
 
-      #label
+      #standard_name
       if (rhdf5::H5Aexists(dh, 'label')){
-        label <- ebv_i_read_att(dh, 'label')[1]
+        standard_name <- ebv_i_read_att(dh, 'label')[1]
       } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-        label <- ebv_i_read_att(dh, 'standard_name')[1]
+        standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
       } else {
-        label <- 'not defined'
+        standard_name <- 'not defined'
       }
 
       #description
@@ -285,7 +294,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Gclose(dh)
 
       #create object of S4 class
-      metric <- list(label=label, description=description)
+      metric <- list(standard_name=standard_name, description=description)
 
       ####get scenario info ----
       #two levels higher
@@ -298,11 +307,11 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
       #label
       if (rhdf5::H5Aexists(dh, 'label')){
-        label <- ebv_i_read_att(dh, 'label')[1]
+        standard_name <- ebv_i_read_att(dh, 'label')[1]
       } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-        label <- ebv_i_read_att(dh, 'standard_name')[1]
+        standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
       } else {
-        label <- 'not defined'
+        standard_name <- 'not defined'
       }
 
       #description
@@ -312,7 +321,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Gclose(dh)
 
       #create object of S4 class
-      scenario <- list(label=label, description=description)
+      scenario <- list(standard_name=standard_name, description=description)
 
       #create object of S4 class ----
       prop <- methods::new('EBV NetCDF properties',
@@ -347,15 +356,19 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       }
 
       #long name
-      long_name <- ebv_i_read_att(dh, 'long_name')[1]
+      if (rhdf5::H5Aexists(dh, 'description')){
+        long_name <- ebv_i_read_att(dh, 'description')
+      }else if (rhdf5::H5Aexists(dh, 'long_name')){
+        description <- ebv_i_read_att(dh, 'long_name')[1]
+      }
 
       #label
       if (rhdf5::H5Aexists(dh, 'label')){
-        label <- ebv_i_read_att(dh, 'label')[1]
+        standard_name <- ebv_i_read_att(dh, 'label')[1]
       } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-        label <- ebv_i_read_att(dh, 'standard_name')[1]
+        standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
       } else {
-        label <- 'not defined'
+        standard_name <- 'not defined'
       }
 
       #unit
@@ -376,7 +389,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Dclose(dh)
 
       #create object of S4 class
-      entity <- list(long_name=long_name, label=label, unit=unit, type=type, fillvalue=fillvalue, value_range=value_range)
+      entity <- list(description=description, standard_name=standard_name, unit=unit, type=type, fillvalue=fillvalue, value_range=value_range)
 
       ####get metric info ----
       #one level higher
@@ -384,13 +397,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       group <- stringr::str_remove(datacubepath, stringr::str_split(datacubepath, '/')[[1]][i])
       dh <- rhdf5::H5Gopen(hdf, group)
 
-      #label
+      #standard_name
       if (rhdf5::H5Aexists(dh, 'label')){
-        label <- ebv_i_read_att(dh, 'label')[1]
+        standard_name <- ebv_i_read_att(dh, 'label')[1]
       } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-        label <- ebv_i_read_att(dh, 'standard_name')[1]
+        standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
       } else {
-        label <- 'not defined'
+        standard_name <- 'not defined'
       }
 
       #description
@@ -400,7 +413,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       rhdf5::H5Gclose(dh)
 
       #create object of S4 class
-      metric <- list(label=label, description=description)
+      metric <- list(standard_name=standard_name, description=description)
 
       #define new S4 class
       prop <- methods::new('EBV NetCDF properties',
@@ -412,72 +425,6 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
                            entity=entity)
 
     }
-    #else{
-    #   # e ----
-    #   #only for hennekens! - delete when hennekens is deleted!
-    #   ####get entity info ----
-    #   dh <- hdf&datacubepath
-    #
-    #   #get type
-    #   info <- utils::capture.output(dh)
-    #   indices <- stringr::str_locate(info, ' type')
-    #   for (row in 1:dim(indices)[1]){
-    #     if (!is.na(indices[row,1])){
-    #       i <- c(row, indices[row,])
-    #     }
-    #   }
-    #   type <- as.vector(info)[i[1]]
-    #   type <- stringr::str_remove(type, 'type')
-    #   type <- stringr::str_replace_all(type, stringr::fixed(" "), "")
-    #
-    #   #get fillvalue
-    #   fillvalue <- ebv_i_read_att(dh, '_FillValue')
-    #   if(is.null(fillvalue)){
-    #     fillvalue <- array(NA)
-    #   }
-    #
-    #   #long name
-    #   long_name <- ebv_i_read_att(dh, 'long_name')[1]
-    #
-    #   #label
-    #   if (rhdf5::H5Aexists(dh, 'label')){
-    #     label <- ebv_i_read_att(dh, 'label')[1]
-    #   } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-    #     label <- ebv_i_read_att(dh, 'standard_name')[1]
-    #   } else {
-    #     label <- 'not defined'
-    #   }
-    #
-    #   #unit
-    #   unit <- ebv_i_read_att(dh, 'units')[1]
-    #
-    #   #get value_range
-    #   if (rhdf5::H5Aexists(dh, 'valid_range')){
-    #     value_range <- ebv_i_read_att(dh, 'valid_range')
-    #   } else {
-    #     value_range <- ebv_i_read_att(hdf, 'value_range')
-    #   }
-    #   # catch mistakes of old netcdfs
-    #   if(is.null(value_range)){
-    #     value_range <- array(NA)
-    #   }
-    #
-    #   #close data handle
-    #   rhdf5::H5Dclose(dh)
-    #
-    #   #create object of S4 class
-    #   entity <- list(long_name=long_name, label=label, unit=unit, type=type, fillvalue=fillvalue, value_range=value_range)
-    #
-    #   #define new S4 class
-    #   prop <- methods::new('EBV NetCDF properties',
-    #                        general = general,
-    #                        spatial=spatial,
-    #                        temporal=temporal,
-    #                        metric=list(status='Datacube has no metric. Error in standard - will be corrected soon.'),
-    #                        scenario=list(status='Datacube has no scenario.'),
-    #                        entity=entity)
-    #
-    # }
     # define S4 for filepath only ----
   } else {
     prop <-  methods::new('EBV NetCDF properties',
