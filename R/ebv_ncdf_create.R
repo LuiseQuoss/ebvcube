@@ -75,7 +75,9 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
     }
   )
   withr::defer(
-    tryCatch(l <- utils::capture.output(ncdf4::nc_close(nc)))
+    if(exists('nc')){
+      tryCatch(l <- utils::capture.output(ncdf4::nc_close(nc)))
+    }
   )
 
   #are all arguments given?
