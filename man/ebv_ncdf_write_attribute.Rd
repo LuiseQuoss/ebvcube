@@ -13,19 +13,22 @@ ebv_ncdf_write_attribute(
 )
 }
 \arguments{
-\item{filepath}{Path to the NetCDF file.}
+\item{filepath}{Character. Path to the NetCDF file.}
 
-\item{attribute_name}{Name of the attribute that should be changed.}
+\item{attribute_name}{Character. Name of the attribute that should be
+changed.}
 
 \item{value}{New value that should be assigned to the attribute.}
 
-\item{levelpath}{Default: NULL. Location of the attribute. The default means
-that the attribute is located at a global level. If the attribute is
-located at the datacubelevel just add the datacubepath. For the metric
-level the value may be 'metric00' or 'scenario00/metric00'. This path
-depends on whether the NetCDF hierarchy has scenarios or not.}
+\item{levelpath}{Character. Default: NULL. Indicates the location of the
+attribute. The default means that the attribute is located at a global
+level. If the attribute is located at the datacubelevel just add the
+datacubepath. For the metric level the value may be 'metric00' or
+'scenario00/metric00'. This path depends on whether the NetCDF hierarchy
+has scenarios or not.}
 
-\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
 Adds the new value to the attribute. Check your results using
@@ -34,24 +37,20 @@ Adds the new value to the attribute. Check your results using
 \description{
 Write a new attribute value to an EBV NetCDF. Not all attributes
 can be changed. Some are always created automatically, e.g. the crs, time
-and var_entity datasets. In the worst case you have to re-create the NetCDF
+and var_entity datasets. In this case you have to re-create the NetCDF
 file.
 }
-\note{
-You can check out the attribute names using
-\href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
-}
 \examples{
-# file <- 'path/to/created/netcdf/file.nc'
-# attribute1 <- 'label'
-# value1 <- 'mammals'
-# level1 <- 'metric00'
-# ebv_ncdf_write_attribute(file, attribute1, value1, level1)
-# attribute2 <- '_FillValue'
-# value2 <- -999
-# level2 <- 'metric00/entity00'
-# ebv_ncdf_write_attribute(file, attribute2, value2, level2)
-# attribute3 <- 'creator'
-# value3 <- 'Jane Doe'
-# ebv_ncdf_write_attribute(file, attribute3, value3)
+file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+attribute1 <- 'standard_name'
+value1 <- 'mammals'
+level1 <- 'metric00'
+ebv_ncdf_write_attribute(file, attribute1, value1, level1)
+attribute2 <- '_FillValue'
+value2 <- -999
+level2 <- 'metric00/entity00'
+ebv_ncdf_write_attribute(file, attribute2, value2, level2)
+attribute3 <- 'creator'
+value3 <- 'Jane Doe'
+ebv_ncdf_write_attribute(file, attribute3, value3)
 }

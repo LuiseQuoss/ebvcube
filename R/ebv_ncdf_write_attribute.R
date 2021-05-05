@@ -2,39 +2,39 @@
 #'
 #' @description Write a new attribute value to an EBV NetCDF. Not all attributes
 #'   can be changed. Some are always created automatically, e.g. the crs, time
-#'   and var_entity datasets. In the worst case you have to re-create the NetCDF
+#'   and var_entity datasets. In this case you have to re-create the NetCDF
 #'   file.
 #'
-#' @param filepath Path to the NetCDF file.
-#' @param attribute_name Name of the attribute that should be changed.
+#' @param filepath Character. Path to the NetCDF file.
+#' @param attribute_name Character. Name of the attribute that should be
+#'   changed.
 #' @param value New value that should be assigned to the attribute.
-#' @param levelpath Default: NULL. Location of the attribute. The default means
-#'   that the attribute is located at a global level. If the attribute is
-#'   located at the datacubelevel just add the datacubepath. For the metric
-#'   level the value may be 'metric00' or 'scenario00/metric00'. This path
-#'   depends on whether the NetCDF hierarchy has scenarios or not.
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
-#'
-#' @note You can check out the attribute names using
-#'   \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
+#' @param levelpath Character. Default: NULL. Indicates the location of the
+#'   attribute. The default means that the attribute is located at a global
+#'   level. If the attribute is located at the datacubelevel just add the
+#'   datacubepath. For the metric level the value may be 'metric00' or
+#'   'scenario00/metric00'. This path depends on whether the NetCDF hierarchy
+#'   has scenarios or not.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @return Adds the new value to the attribute. Check your results using
 #'   [ebvnetcdf::ebv_properties()].
 #' @export
 #'
 #' @examples
-#' # file <- 'path/to/created/netcdf/file.nc'
-#' # attribute1 <- 'label'
-#' # value1 <- 'mammals'
-#' # level1 <- 'metric00'
-#' # ebv_ncdf_write_attribute(file, attribute1, value1, level1)
-#' # attribute2 <- '_FillValue'
-#' # value2 <- -999
-#' # level2 <- 'metric00/entity00'
-#' # ebv_ncdf_write_attribute(file, attribute2, value2, level2)
-#' # attribute3 <- 'creator'
-#' # value3 <- 'Jane Doe'
-#' # ebv_ncdf_write_attribute(file, attribute3, value3)
+#' file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+#' attribute1 <- 'standard_name'
+#' value1 <- 'mammals'
+#' level1 <- 'metric00'
+#' ebv_ncdf_write_attribute(file, attribute1, value1, level1)
+#' attribute2 <- '_FillValue'
+#' value2 <- -999
+#' level2 <- 'metric00/entity00'
+#' ebv_ncdf_write_attribute(file, attribute2, value2, level2)
+#' attribute3 <- 'creator'
+#' value3 <- 'Jane Doe'
+#' ebv_ncdf_write_attribute(file, attribute3, value3)
 ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=NULL, verbose=FALSE){
   #start initial tests ----
   # ensure file and all datahandles are closed on exit
@@ -112,7 +112,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
 
   #end initial tests ----
 
-  #set (block) list
+  #set (block) list ----
   att.num <- c('_FillValue')
   att.int <- c('least_significant_digit')
   att.chr <- c('standard_name', 'description', 'units', 'long_name', 'label', 'title', 'creator',
@@ -120,7 +120,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
   att.blocked <- c('axis', 'calendar', 'grid_mapping', '_ChunkSizes', 'value_range',
                    'Conventions', 'ebv_subgroups', 't_delta', 'type')
 
-  #check block list
+  #check block list ----
   if(! is.null(levelpath)){
     if(mapply(grepl,'crs',levelpath,ignore.case=TRUE)){
       stop('Changes in CRS are blocked! Rebuild NetCDF if you want a different CRS definition.')
@@ -138,7 +138,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
     stop(paste0('Changes for the attribute ', attribute_name, ' are blocked! Always built automatically.' ))
   }
 
-  #extra check for ebv_class and ebv_name
+  #extra check for ebv_class and ebv_name ----
   #get current ebv_name and ebv_class
   ebv.class <- ebv_i_read_att(hdf, 'ebv_class')
   ebv.name <- ebv_i_read_att(hdf, 'ebv_name')
@@ -205,9 +205,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
     }
   }
 
-
-
-  #open h5object
+  #open h5object ----
   if (! is.null(levelpath)){
     hdf <- rhdf5::H5Fopen(filepath)
     h5obj <- tryCatch(
@@ -222,7 +220,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
     h5obj <- rhdf5::H5Fopen(filepath)
   }
 
-  #check if attribute exists - written correct?
+  #check if attribute exists - written correct? ----
   if (! rhdf5::H5Aexists(h5obj, attribute_name)){
     if (attribute_name %in% att.num | attribute_name %in% att.int | attribute_name %in% att.chr){
       stop('Attribute does not exist within given levelpath in NetCDF. Change your levelpath!')
@@ -231,7 +229,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
     }
   }
 
-  #read attribute, change if different
+  #read attribute, change if different ----
   att <- ebv_i_read_att(h5obj, attribute_name)
   if(att==value){
     stop(paste0('Value of ', attribute_name, ' already is set to "', value, '".'))
@@ -253,7 +251,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
     }
   }
 
-  #close handles
+  #close handles ----
   if (exists('h5obj')){
     tryCatch(
       {

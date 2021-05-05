@@ -1,26 +1,32 @@
-#' Add entity attributes to self-created EBV NetCDF
+#' Add datacube attributes to an EBV NetCDF
 #'
-#' @description Add standard_name, description and fillvalue to an entitiy of a
-#'   self-created EBV NetCDF. First use [ebvnetcdf::ebv_ncdf_create()] to create
-#'   a NetCDF afterwards use this functiong to add attributes.
+#' @description Add standard_name, description and fillvalue to an
+#'   entitiy/datacube of a self-created EBV NetCDF. First use
+#'   [ebvnetcdf::ebv_ncdf_create()] to create a NetCDF afterwards use this
+#'   function to add attributes.
 #'
-#' @param filepath Path to the self-created NetCDF file.
-#' @param datacubepath Path to the datacube (use
+#' @param filepath Character. Path to the self-created NetCDF file.
+#' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param description Value of the description attribute (character).
-#' @param standard_name Value of the standard_name attribute (character).
-#' @param fillvalue Value of the fillvalue attribute (double).
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param description Character. Value of the description attribute.
+#' @param standard_name Value of the standard_name attribute.
+#' @param fillvalue Numeric. Value of the fillvalue attribute.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
-#' @return Adds attributes to NetCDF. Check results using
+#' @return Adds attributes to NetCDF at datacube level. Check results using
 #'   [ebvnetcdf::ebv_properties()]
 #' @export
 #'
 #' @examples
-#' # file <- 'path/to/self/created/netcdf.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' # ebv_ncdf_entity_attributes(file, datacubes[1,1], 'habitat', 'bog', fillvalue=-1)
-ebv_ncdf_entity_attributes <- function(filepath, datacubepath, standard_name, description, fillvalue=NULL, verbose=FALSE){
+#' file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' sn <- 'non forest birds species'
+#' desc <- 'Changes in bird diversity at the grid cell level caused by land-use'
+#' fv <- -3.4E38
+#' ebv_ncdf_entity_attributes(file, datacubes[1,1], sn, desc, fv)
+ebv_ncdf_entity_attributes <- function(filepath, datacubepath, standard_name,
+                                       description, fillvalue=NULL, verbose=FALSE){
   ### start initial test ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -100,21 +106,20 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, standard_name, de
 
   ### end initial test ----
 
-  #open variables
+  #open variable  ----
   did <- rhdf5::H5Dopen(hdf, datacubepath)
 
-  # :description = "Changes in local bird diversity (cSAR)";
+  # :description ----
   ebv_i_char_att(did, 'description', description)
 
-  # :standard_name = "forest bird species";
+  # :standard_name ----
   ebv_i_char_att(did, 'standard_name', standard_name)
 
-  # :units = "mean change of species diversity per area (pixel size) to baseline 1900";
+  # :units ----
   ebv_i_char_att(did, 'units', units)
-  #name of metric?
 
   #optional
-  # :_FillValue = -3.4E38f; // float
+  # :_FillValue ----
   if(!is.null(fillvalue)) {
     ebv_i_num_att(did, '_FillValue', fillvalue)
   }
@@ -127,7 +132,7 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, standard_name, de
     rhdf5::H5Adelete(did, 'rhdf5-NA.OK')
   }
 
-  #close DS
+  #close DS ----
   rhdf5::H5Dclose(did)
   rhdf5::H5Fclose(hdf)
 

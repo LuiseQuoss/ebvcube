@@ -6,33 +6,38 @@
 #'   [ebvnetcdf::ebv_ncdf_add_data()] and
 #'   [ebvnetcdf::ebv_ncdf_entity_attributes()] for the next steps.
 #'
-#' @param jsonpath Path to the json file downloaded from the
+#' @param jsonpath Character. Path to the json file downloaded from the
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
-#' @param outputpath Set path where the NetCDF file should be created.
-#' @param entities.no Default: 0. Indicates how many entities there are be per
-#'   metric.
-#' @param epsg Default: 4326 (WGS84). Defines the coordinate reference system
-#'   via the corresponding epsg code.
-#' @param extent Default: c(-180,180,-90,90). Defines the extent of the data:
-#'   c(xmin, xmax, ymin, ymax).
-#' @param fillvalue Numeric. Value of the missing data in the array. Not mandatory but should be defined!
-#' @param prec Character. Precision of the data set. Valid options: 'short' 'integer' 'float' 'double' 'char' 'byte'.
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
-#'   defined by 'outputpath'.
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param outputpath Character. Set path where the NetCDF file should be
+#'   created.
+#' @param entities.no Integer. Default: 0. Indicates how many entities there are
+#'   per metric.
+#' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
+#'   system via the corresponding epsg code.
+#' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
+#'   data: c(xmin, xmax, ymin, ymax).
+#' @param fillvalue Numeric. Value of the missing data in the array. Not
+#'   mandatory but should be defined!
+#' @param prec Character. Default: 'double'. Precision of the data set. Valid
+#'   options: 'short' 'integer' 'float' 'double' 'char' 'byte'.
+#' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
+#'   outputfile defined by 'outputpath'.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @note To check out the results take a look at your NetCDF file with
-#'   \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply}.
+#'   \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided by the
+#'   NASA.
 #'
-#' @return Creates the NetCDF at the 'outputpath' location.
+#' @return Creates the NetCDF file at the 'outputpath' location.
 #' @export
 #'
 #' @importFrom utils capture.output
 #'
 #' @examples
-#' # json <- 'path/to/json/file.json'
-#' # out <- 'path/to/create/new/netcdf/file.nc'
-#' # ebv_ncdf_create(json, out, 5)
+#' json <- system.file(file.path("extdata","1.json"), package="ebvnetcdf")
+#' out <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+#' ebv_ncdf_create(json, out, 3, fillvalue=-3.4E38)
 ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), fillvalue = NULL, prec = 'double', overwrite=FALSE,verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are cloed on exit

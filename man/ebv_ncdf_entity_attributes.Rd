@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_ncdf_entity_attributes.R
 \name{ebv_ncdf_entity_attributes}
 \alias{ebv_ncdf_entity_attributes}
-\title{Add entity attributes to self-created EBV NetCDF}
+\title{Add datacube attributes to an EBV NetCDF}
 \usage{
 ebv_ncdf_entity_attributes(
   filepath,
@@ -14,30 +14,35 @@ ebv_ncdf_entity_attributes(
 )
 }
 \arguments{
-\item{filepath}{Path to the self-created NetCDF file.}
+\item{filepath}{Character. Path to the self-created NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use
+\item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{standard_name}{Value of the standard_name attribute (character).}
+\item{standard_name}{Value of the standard_name attribute.}
 
-\item{description}{Value of the description attribute (character).}
+\item{description}{Character. Value of the description attribute.}
 
-\item{fillvalue}{Value of the fillvalue attribute (double).}
+\item{fillvalue}{Numeric. Value of the fillvalue attribute.}
 
-\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
-Adds attributes to NetCDF. Check results using
+Adds attributes to NetCDF at datacube level. Check results using
 \code{\link[=ebv_properties]{ebv_properties()}}
 }
 \description{
-Add standard_name, description and fillvalue to an entitiy of a
-self-created EBV NetCDF. First use \code{\link[=ebv_ncdf_create]{ebv_ncdf_create()}} to create
-a NetCDF afterwards use this functiong to add attributes.
+Add standard_name, description and fillvalue to an
+entitiy/datacube of a self-created EBV NetCDF. First use
+\code{\link[=ebv_ncdf_create]{ebv_ncdf_create()}} to create a NetCDF afterwards use this
+function to add attributes.
 }
 \examples{
-# file <- 'path/to/self/created/netcdf.nc'
-# datacubes <- ebv_datacubepaths(file)
-# ebv_ncdf_entity_attributes(file, datacubes[1,1], 'habitat', 'bog', fillvalue=-1)
+file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+datacubes <- ebv_datacubepaths(file)
+sn <- 'non forest birds species'
+desc <- 'Changes in bird diversity at the grid cell level caused by land-use'
+fv <- -3.4E38
+ebv_ncdf_entity_attributes(file, datacubes[1,1], sn, desc, fv)
 }
