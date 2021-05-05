@@ -4,11 +4,8 @@
 #'
 #' @param filepath_nc Path to the self-created NetCDF file.
 #' @param filepath_tif Path to the GeoTiff file containing the data.
-#' @param metric Default: 1. Indicates to which metric the data should be added.
-#' @param scenario Default: NULL. Indicates to which scenario the data should be
-#'   added.
-#' @param entity Default: NULL. Indicates to which entity the data should be
-#'   added.
+#' @param datacubepath Character. Optional. Path to the datacube (use
+#'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param timestep Default: 1. Define to which timestep or timesteps the data
 #'   should be added. If several timesteps are given they have to be in a
 #'   continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
@@ -55,11 +52,6 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   withr::defer(
     if(exists('sid')){
       if(rhdf5::H5Iis_valid(sid)==TRUE){rhdf5::H5Sclose(sid)}
-    }
-  )
-  withr::defer(
-    if(exists('gid')){
-      if(rhdf5::H5Iis_valid(gid)==TRUE){rhdf5::H5Gclose(gid)}
     }
   )
   withr::defer(
@@ -260,7 +252,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     data <- data[,ncol(data):1]
   }
 
-  nc<- ncdf4::nc_open(outputpath, write=T)
+  nc<- ncdf4::nc_open(filepath_nc, write=T)
   ncdf4::ncvar_put(nc = nc, varid = datacubepath, vals = data, start=c(1,1,min(timestep)), count=c(dim(data)[1:2], length(timestep)), verbose=verbose)
   ncdf4::nc_close(nc)
 
