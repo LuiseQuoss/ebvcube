@@ -19,6 +19,9 @@ ebv_ncdf_add_data(
 
 \item{filepath_tif}{Path to the GeoTiff file containing the data.}
 
+\item{datacubepath}{Character. Optional. Path to the datacube (use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+
 \item{timestep}{Default: 1. Define to which timestep or timesteps the data
 should be added. If several timesteps are given they have to be in a
 continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
@@ -30,14 +33,6 @@ several. Don't have to be in order as the timesteps definition requires.}
 data. Can be switched off (set to TRUE).}
 
 \item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
-
-\item{metric}{Default: 1. Indicates to which metric the data should be added.}
-
-\item{scenario}{Default: NULL. Indicates to which scenario the data should be
-added.}
-
-\item{entity}{Default: NULL. Indicates to which entity the data should be
-added.}
 }
 \value{
 Adds data to the EBV NetCDF. Check your results using
