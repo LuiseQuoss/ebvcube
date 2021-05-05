@@ -1,38 +1,42 @@
-#' Read subset (shapefile) of the data from EBV NetCDF
+#' Read subset (shapefile) of one datacube of an EBV NetCDF
 #'
-#' @description Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a shapefile. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
+#' @description Read a subset of one or more layers from one datacube of the
+#'   NetCDF file. Subset definition by a shapefile. This functions writes
+#'   temporary files on your disk. Specify a directory for these setting via
+#'   options('temp_directory'='/path/to/temp/directory').
 
 #'
-#' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use
+#' @param filepath Character. Path to the NetCDF file.
+#' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param shp Path to the shapefile defining the subset.
-#' @param outputpath Defaul: NULL, returns the data as a raster object in
-#'   memory. Optional: set path to write subset as GeoTiff on disk, returns
-#'   outputpath.
-#' @param timestep Choose one or several timesteps (vector).
-#' @param at Default: TRUE, all pixels touched by the polygon(s) will be
-#'   updated. Set to FALSE to only include pixels that are on the line render
+#' @param shp Character. Path to the shapefile defining the subset.
+#' @param outputpath Character. Default: NULL, returns the data as a raster
+#'   object in memory. Optional: set path to write subset as GeoTiff on disk.
+#' @param timestep Integer. Choose one or several timesteps (vector).
+#' @param at Logical. Default: TRUE, all pixels touched by the polygon(s) will
+#'   be updated. Set to FALSE to only include pixels that are on the line render
 #'   path or have center points inside the polygon(s).
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
-#'   defined by 'outputpath'.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the
-#'   data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
+#'   outputfile defined by 'outputpath'.
+#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#'   your memory to read the data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @return Returns a raster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
 #' @export
-#' @seealso [ebvnetcdf::ebv_data_read_bb()] for more examples
+#' @seealso [ebvnetcdf::ebv_data_read_bb()] for subsetting via bounding box.
 #'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' # shp <- 'path/to/subset.shp'
-#' # out <- 'path/to/write/subset.tif'
-#' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
-#'
-ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL, timestep = 1, at = TRUE, overwrite=FALSE, ignore.RAM=FALSE, verbose = FALSE){
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' shp <- system.file(file.path("extdata","ne_10m_admin_0_countries_subset_germany.shp"), package="ebvnetcdf")
+#' out <- system.file(file.path("extdata","subset_shp.tif"), package="ebvnetcdf")
+#' cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
+ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
+                              timestep = 1, at = TRUE, overwrite=FALSE,
+                              ignore.RAM=FALSE, verbose = FALSE){
   ####start initial checks ----
   # ensure file and all datahandles are closed on exit
   withr::defer(

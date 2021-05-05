@@ -1,4 +1,4 @@
-#' Read subset (bounding box) of the data from EBV NetCDF
+#' Read subset (bounding box) of one datacube of an EBV NetCDF
 #'
 #' @description Read a subset of one or more layers from one datacube of the
 #'   NetCDF file. Subset definition by a bounding box.
@@ -9,34 +9,38 @@
 #' @param bb Integer Vector. Definition of subsset by bounding box: c(xmin,
 #'   xmax, ymin, ymax).
 #' @param outputpath Character. Default: NULL, returns the data as a raster
-#'   object in memory. Optional: set path to write subset as GeoTiff on disk,
-#'   returns outputpath.
-#' @param timestep Integer Vector. Choose one or several timesteps.
+#'   object in memory. Optional: set path to write subset as GeoTiff on disk.
+#' @param timestep Integer. Choose one or several timesteps.
 #' @param epsg Integer. Default: 4326 (WGS84). Change accordingly if your
 #'   bounding box coordinates are based on a different coordinate reference
 #'   system.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
 #'   outputfile defined by 'outputpath'.
-#' @param ignore.RAM Logical. Checks if there is enough space in your memory to
-#'   read the data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#'   your memory to read the data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @return Returns a raster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
 #' @export
 #'
-#' @note In case the epsg of the Bounding Box and the NetCDF differ the data is
+#' @note In case the epsg of the Bounding Box and the NetCDF differ, the data is
 #'   returned based on the epsg of the NetCDF Dataset.
+#' @seealso [ebvnetcdf::ebv_data_read_shp()] for subsetting via shapefile.
 #'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' # out <- 'path/to/write/subset.tif'
-#' # bb_utm32 <- c(271985, 941837, 5232640, 6101151)
-#' # cSAR.germany <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), timestep = c(1,4,12))
-#' # path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, timestep = c(2,3))
-#' # path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
-ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL, timestep = 1, epsg = 4326, overwrite=FALSE, ignore.RAM = FALSE, verbose = FALSE){
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' out <- system.file(file.path("extdata","subset_bb.tif"), package="ebvnetcdf")
+#' bb_wgs84 <- c(5,15,47,55)
+#' bb_utm32 <- c(271985, 941837, 5232640, 6101151)
+#' cSAR.germany <- ebv_data_read_bb(file, datacubes[1], bb_wgs84, timestep = c(1,4,12))
+#' path <- ebv_data_read_bb(file, datacubes[1], bb_wgs84, out, timestep = c(2,3))
+#' path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
+ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
+                             timestep = 1, epsg = 4326, overwrite=FALSE,
+                             ignore.RAM = FALSE, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(

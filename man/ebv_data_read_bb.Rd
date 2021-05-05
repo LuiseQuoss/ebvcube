@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_data_read_bb.R
 \name{ebv_data_read_bb}
 \alias{ebv_data_read_bb}
-\title{Read subset (bounding box) of the data from EBV NetCDF}
+\title{Read subset (bounding box) of one datacube of an EBV NetCDF}
 \usage{
 ebv_data_read_bb(
   filepath,
@@ -26,10 +26,9 @@ ebv_data_read_bb(
 xmax, ymin, ymax).}
 
 \item{outputpath}{Character. Default: NULL, returns the data as a raster
-object in memory. Optional: set path to write subset as GeoTiff on disk,
-returns outputpath.}
+object in memory. Optional: set path to write subset as GeoTiff on disk.}
 
-\item{timestep}{Integer Vector. Choose one or several timesteps.}
+\item{timestep}{Integer. Choose one or several timesteps.}
 
 \item{epsg}{Integer. Default: 4326 (WGS84). Change accordingly if your
 bounding box coordinates are based on a different coordinate reference
@@ -38,10 +37,11 @@ system.}
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
 outputfile defined by 'outputpath'.}
 
-\item{ignore.RAM}{Logical. Checks if there is enough space in your memory to
-read the data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+your memory to read the data. Can be switched off (set to TRUE).}
 
-\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
 Returns a raster object if no outputpath is given. Otherwise the
@@ -52,15 +52,19 @@ Read a subset of one or more layers from one datacube of the
 NetCDF file. Subset definition by a bounding box.
 }
 \note{
-In case the epsg of the Bounding Box and the NetCDF differ the data is
+In case the epsg of the Bounding Box and the NetCDF differ, the data is
 returned based on the epsg of the NetCDF Dataset.
 }
 \examples{
-# file <- 'path/to/netcdf/file.nc'
-# datacubes <- ebv_datacubepaths(file)
-# out <- 'path/to/write/subset.tif'
-# bb_utm32 <- c(271985, 941837, 5232640, 6101151)
-# cSAR.germany <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), timestep = c(1,4,12))
-# path <- ebv_data_read_bb(file, datacubes[1], c(5,15,47,55), out, timestep = c(2,3))
-# path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+datacubes <- ebv_datacubepaths(file)
+out <- system.file(file.path("extdata","subset_bb.tif"), package="ebvnetcdf")
+bb_wgs84 <- c(5,15,47,55)
+bb_utm32 <- c(271985, 941837, 5232640, 6101151)
+cSAR.germany <- ebv_data_read_bb(file, datacubes[1], bb_wgs84, timestep = c(1,4,12))
+path <- ebv_data_read_bb(file, datacubes[1], bb_wgs84, out, timestep = c(2,3))
+path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
+}
+\seealso{
+\code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}} for subsetting via shapefile.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_data_read_shp.R
 \name{ebv_data_read_shp}
 \alias{ebv_data_read_shp}
-\title{Read subset (shapefile) of the data from EBV NetCDF}
+\title{Read subset (shapefile) of one datacube of an EBV NetCDF}
 \usage{
 ebv_data_read_shp(
   filepath,
@@ -17,46 +17,48 @@ ebv_data_read_shp(
 )
 }
 \arguments{
-\item{filepath}{Path to the NetCDF file.}
+\item{filepath}{Character. Path to the NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use
+\item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{shp}{Path to the shapefile defining the subset.}
+\item{shp}{Character. Path to the shapefile defining the subset.}
 
-\item{outputpath}{Defaul: NULL, returns the data as a raster object in
-memory. Optional: set path to write subset as GeoTiff on disk, returns
-outputpath.}
+\item{outputpath}{Character. Default: NULL, returns the data as a raster
+object in memory. Optional: set path to write subset as GeoTiff on disk.}
 
-\item{timestep}{Choose one or several timesteps (vector).}
+\item{timestep}{Integer. Choose one or several timesteps (vector).}
 
-\item{at}{Default: TRUE, all pixels touched by the polygon(s) will be
-updated. Set to FALSE to only include pixels that are on the line render
+\item{at}{Logical. Default: TRUE, all pixels touched by the polygon(s) will
+be updated. Set to FALSE to only include pixels that are on the line render
 path or have center points inside the polygon(s).}
 
-\item{overwrite}{Default: FALSE. Set to TRUE to overwrite the outputfile
-defined by 'outputpath'.}
+\item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
+outputfile defined by 'outputpath'.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the
-data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+your memory to read the data. Can be switched off (set to TRUE).}
 
-\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
 Returns a raster object if no outputpath is given. Otherwise the
 subset is written onto the disk and the ouputpath is returned.
 }
 \description{
-Read a subset of one or more layers from one datacube of the NetCDF file. Subset definition by a shapefile. This functions writes temporary files on your disk. Speficy a directory for these setting via options('temp_directory'='/path/to/temp/directory').
+Read a subset of one or more layers from one datacube of the
+NetCDF file. Subset definition by a shapefile. This functions writes
+temporary files on your disk. Specify a directory for these setting via
+options('temp_directory'='/path/to/temp/directory').
 }
 \examples{
-# file <- 'path/to/netcdf/file.nc'
-# datacubes <- ebv_datacubepaths(file)
-# shp <- 'path/to/subset.shp'
-# out <- 'path/to/write/subset.tif'
-# cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
-
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+datacubes <- ebv_datacubepaths(file)
+shp <- system.file(file.path("extdata","ne_10m_admin_0_countries_subset_germany.shp"), package="ebvnetcdf")
+out <- system.file(file.path("extdata","subset_shp.tif"), package="ebvnetcdf")
+cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
 }
 \seealso{
-\code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}} for more examples
+\code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}} for subsetting via bounding box.
 }
