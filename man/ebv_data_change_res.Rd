@@ -31,7 +31,7 @@ x-resolution, the y-resolution and the corresponding epsg.}
 
 \item{outputpath}{Character. Set path to write data as GeoTiff on disk.}
 
-\item{timestep}{Numeric. Choose one or several timesteps (vector).}
+\item{timestep}{Integer. Choose one or several timesteps (vector).}
 
 \item{method}{Character. Default: Average. Define resampling method. Choose
 from:

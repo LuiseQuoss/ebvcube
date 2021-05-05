@@ -27,7 +27,7 @@ via the path to a shapefile (character) or the indication of a bounding box
 (vector of four numeric values) defining the subset. Else the whole area is
 analysed.}
 
-\item{timestep}{Numeric. Choose one or several timesteps (vector).}
+\item{timestep}{Integer. Choose one or several timesteps (vector).}
 
 \item{at}{Logical. Optional. Default: TRUE. Only relevant if the subset is
 indicated by a shapefile. See \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}}.}

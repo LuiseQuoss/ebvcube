@@ -9,7 +9,7 @@
 #'   via the path to a shapefile (character) or the indication of a bounding box
 #'   (vector of four numeric values) defining the subset. Else the whole area is
 #'   analysed.
-#' @param timestep Numeric. Choose one or several timesteps (vector).
+#' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param at Logical. Optional. Default: TRUE. Only relevant if the subset is
 #'   indicated by a shapefile. See [ebvnetcdf::ebv_data_read_shp()].
 #' @param epsg Numeric. Optional. Only relevant if the subset is indicated by a

@@ -1,24 +1,27 @@
-#' Read data from EBV NetCDF
+#' Read datasube from an EBV NetCDF
 #'
 #' @description Read one or more layers from one datacube of the NetCDF file.
 #'   Decide between in-memory array, in-memory raster or an array-like object
 #'   (DelayedMatrix) pointing to the on-disk NetCDF file. Latter is useful for
 #'   data that exceeds your memory.
 #'
-#' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use
+#' @param filepath Character. Path to the NetCDF file.
+#' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param timestep Choose one or several timesteps (vector).
-#' @param delayed Default. Returns data as DelayedMatrix object. More timesteps
-#'   are not returned as a 3D array but as a list of the DelayedMatrix (one
-#'   matrix per band).
-#' @param sparse Set to TRUE if the data contains a lot emtpy raster cells. Only
-#'   relevant for DelayedMatrix. No further implementation by now.
-#' @param raster Set to TRUE and 'delayed' to FALSE to get a raster. If both
-#'   arguments are set to FALSE the function returns an array.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the
-#'   data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param timestep Integer. Choose one or several timesteps (vector).
+#' @param delayed Logical. Default: TRUE. Returns data as DelayedMatrix object.
+#'   More timesteps are not returned as a 3D array but as a list of the
+#'   DelayedMatrix (one matrix per band).
+#' @param sparse Logical. Default: FALSE. Set to TRUE if the data contains a lot
+#'   empty raster cells. Only relevant for DelayedMatrix. No further
+#'   implementation by now.
+#' @param raster Logical. Default: FALSE. Set to TRUE and 'delayed' to FALSE to
+#'   get a raster. If both arguments are set to FALSE the function returns an
+#'   array.
+#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#'   your memory to read the data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @note For working with the DelayedMatrix take a look at
 #'   [DelayedArray::DelayedArray()] and the
@@ -29,12 +32,12 @@
 #' @export
 #'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' # cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6))
-#' # cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
-#' # cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
-ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse=TRUE, raster=FALSE, ignore.RAM = FALSE, verbose = FALSE){
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6), delayed=T, sparse=T)
+#' cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
+#' cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
+ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse=FALSE, raster=FALSE, ignore.RAM = FALSE, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -128,7 +131,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   fillvalue <- prop@entity$fillvalue
 
   if (delayed==TRUE){
-    #return delayed array
+    #return delayed array ----
     #get type
     type.long <- prop@entity$type
     #get numeric type
@@ -157,6 +160,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
       h5array <- replace(h5array, h5array==fillvalue, c(NA))
     }
 
+    # return any in-memory object ----
   } else{
     #check needed RAM
     if (!ignore.RAM){
@@ -166,7 +170,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
       message('RAM capacities are ignored.')
     }
 
-    #return in memory array
+    #return in memory array ----
     h5array <- array(dim=c(prop@spatial$dimensions[1],prop@spatial$dimensions[2], length(timestep)))
     for (i in 1:length(timestep)){
       part <- rhdf5::h5read(filepath, datacubepath, start=c(1,1,timestep[i]),
@@ -181,6 +185,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
     }
 
     if(delayed==FALSE & raster==TRUE){
+      # return raster object ----
       if(length(timestep)==1){
         #matrix to raster
         h5array <-raster::raster(
@@ -190,7 +195,6 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
           crs=prop@spatial$srs
         )
       }else{
-        #array to raster
         h5array <-raster::brick(
           h5array,
           xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],

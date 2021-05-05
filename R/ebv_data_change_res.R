@@ -14,7 +14,7 @@
 #'   vector defining the resolution directly must contain three elements: the
 #'   x-resolution, the y-resolution and the corresponding epsg.
 #' @param outputpath Character. Set path to write data as GeoTiff on disk.
-#' @param timestep Numeric. Choose one or several timesteps (vector).
+#' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param method Character. Default: Average. Define resampling method. Choose
 #'   from:
 #'   "near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1"

@@ -2,41 +2,44 @@
 % Please edit documentation in R/ebv_data_read.R
 \name{ebv_data_read}
 \alias{ebv_data_read}
-\title{Read data from EBV NetCDF}
+\title{Read datasube from an EBV NetCDF}
 \usage{
 ebv_data_read(
   filepath,
   datacubepath,
   timestep,
   delayed = TRUE,
-  sparse = TRUE,
+  sparse = FALSE,
   raster = FALSE,
   ignore.RAM = FALSE,
   verbose = FALSE
 )
 }
 \arguments{
-\item{filepath}{Path to the NetCDF file.}
+\item{filepath}{Character. Path to the NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use
+\item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{timestep}{Choose one or several timesteps (vector).}
+\item{timestep}{Integer. Choose one or several timesteps (vector).}
 
-\item{delayed}{Default. Returns data as DelayedMatrix object. More timesteps
-are not returned as a 3D array but as a list of the DelayedMatrix (one
-matrix per band).}
+\item{delayed}{Logical. Default: TRUE. Returns data as DelayedMatrix object.
+More timesteps are not returned as a 3D array but as a list of the
+DelayedMatrix (one matrix per band).}
 
-\item{sparse}{Set to TRUE if the data contains a lot emtpy raster cells. Only
-relevant for DelayedMatrix. No further implementation by now.}
+\item{sparse}{Logical. Default: FALSE. Set to TRUE if the data contains a lot
+empty raster cells. Only relevant for DelayedMatrix. No further
+implementation by now.}
 
-\item{raster}{Set to TRUE and 'delayed' to FALSE to get a raster. If both
-arguments are set to FALSE the function returns an array.}
+\item{raster}{Logical. Default: FALSE. Set to TRUE and 'delayed' to FALSE to
+get a raster. If both arguments are set to FALSE the function returns an
+array.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the
-data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+your memory to read the data. Can be switched off (set to TRUE).}
 
-\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
 Array, Raster or DelayedMatrix object containing the data of the
@@ -54,9 +57,9 @@ For working with the DelayedMatrix take a look at
 \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-utils}.
 }
 \examples{
-# file <- 'path/to/netcdf/file.nc'
-# datacubes <- ebv_datacubepaths(file)
-# cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6))
-# cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
-# cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+datacubes <- ebv_datacubepaths(file)
+cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6), delayed=T, sparse=T)
+cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
+cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
 }
