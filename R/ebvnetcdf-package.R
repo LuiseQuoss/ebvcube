@@ -1,4 +1,4 @@
-#' Easy access of EVB NetCDFs
+#' Working with EVB NetCDFs
 #'
 #'
 #' This package can be used to easily access the data of the EBV NetCDFs which
@@ -12,8 +12,8 @@
 #' data reading, ebv_plot_ for visualisation and ebv_netcdf_ for creating a
 #' NetCDF.
 #'
-#' @import colorspace gdalUtils HDF5Array jsonlite lattice memuse
-#'   methods raster rhdf5 rgdal sp stringr withr
+#' @import checkmate colorspace gdalUtils HDF5Array jsonlite lattice memuse
+#'   methods ncdf4 raster rhdf5 rgdal sp stringr withr
 #'
 #' @docType package
 #' @name ebvnetcdf
