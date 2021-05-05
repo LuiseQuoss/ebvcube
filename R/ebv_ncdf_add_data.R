@@ -1,42 +1,42 @@
-#' Add data to self-created EBV NetCDF
+#' Add data to a self-created EBV NetCDF
 #'
 #' @description Add data to the self-created EBV NetCDF from GeoTiffs.
 #'
-#' @param filepath_nc Path to the self-created NetCDF file.
-#' @param filepath_tif Path to the GeoTiff file containing the data.
-#' @param datacubepath Character. Optional. Path to the datacube (use
+#' @param filepath_nc Character. Path to the self-created NetCDF file.
+#' @param filepath_tif Character. Path to the GeoTiff file containing the data.
+#' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param timestep Default: 1. Define to which timestep or timesteps the data
-#'   should be added. If several timesteps are given they have to be in a
-#'   continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
-#' @param band Default: 1. Define which band(s) to read from GeoTiff. Can be
-#'   several. Don't have to be in order as the timesteps definition requires.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the
-#'   data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param timestep Integer. Default: 1. Define to which timestep or timesteps
+#'   the data should be added. If several timesteps are given they have to be in
+#'   a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
+#' @param band Integer. Default: 1. Define which band(s) to read from GeoTiff.
+#'   Can be several. Don't have to be in order as the timesteps definition
+#'   requires.
+#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#'   your memory to read the data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @note If the data exceeds your memory the RAM check will throw an error. No
 #'   block-processing or other method implemented so far. Move to a machine with
-#'   more capacities for the moment.
+#'   more capacities for the moment if needed.
 #'
 #' @return Adds data to the EBV NetCDF. Check your results using
-#'   [ebvnetcdf::ebv_datacubepaths()], [ebvnetcdf::ebv_data_read()] and/or
-#'   [ebvnetcdf::ebv_data_analyse()].
+#'   [ebvnetcdf::ebv_data_read()] and/or [ebvnetcdf::ebv_data_analyse()].
 #' @export
 #'
 #' @importFrom utils capture.output
 #'
 #' @examples
-#' # file <- 'path/to/created/netcdf/file.nc'
-#' # tif <- 'path/to/geotiff/containing/data.tif'
-#' # scenario <- 1
-#' # metric <- 1
-#' # entity <- 1
-#' # ts <- c(1:6)
-#' # band <- c(1:6)
-#' # ebv_ncdf_add_data(file, tif, metric, scenario, entity, ts, band)
+#' file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+#' tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' ts <- c(2:4)
+#' band <- c(1:3)
+#' ebv_ncdf_add_data(file, tif, datacubepaths[1,1], ts, band)
 ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
-                                  timestep=1, band=1, ignore.RAM=FALSE, verbose=FALSE){
+                              timestep=1, band=1, ignore.RAM=FALSE,
+                              verbose=FALSE){
   ### start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(

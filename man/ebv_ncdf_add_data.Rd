@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_ncdf_add_data.R
 \name{ebv_ncdf_add_data}
 \alias{ebv_ncdf_add_data}
-\title{Add data to self-created EBV NetCDF}
+\title{Add data to a self-created EBV NetCDF}
 \usage{
 ebv_ncdf_add_data(
   filepath_nc,
@@ -15,29 +15,30 @@ ebv_ncdf_add_data(
 )
 }
 \arguments{
-\item{filepath_nc}{Path to the self-created NetCDF file.}
+\item{filepath_nc}{Character. Path to the self-created NetCDF file.}
 
-\item{filepath_tif}{Path to the GeoTiff file containing the data.}
+\item{filepath_tif}{Character. Path to the GeoTiff file containing the data.}
 
-\item{datacubepath}{Character. Optional. Path to the datacube (use
+\item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{timestep}{Default: 1. Define to which timestep or timesteps the data
-should be added. If several timesteps are given they have to be in a
-continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
+\item{timestep}{Integer. Default: 1. Define to which timestep or timesteps
+the data should be added. If several timesteps are given they have to be in
+a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
 
-\item{band}{Default: 1. Define which band(s) to read from GeoTiff. Can be
-several. Don't have to be in order as the timesteps definition requires.}
+\item{band}{Integer. Default: 1. Define which band(s) to read from GeoTiff.
+Can be several. Don't have to be in order as the timesteps definition
+requires.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the
-data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+your memory to read the data. Can be switched off (set to TRUE).}
 
-\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
 Adds data to the EBV NetCDF. Check your results using
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}, \code{\link[=ebv_data_read]{ebv_data_read()}} and/or
-\code{\link[=ebv_data_analyse]{ebv_data_analyse()}}.
+\code{\link[=ebv_data_read]{ebv_data_read()}} and/or \code{\link[=ebv_data_analyse]{ebv_data_analyse()}}.
 }
 \description{
 Add data to the self-created EBV NetCDF from GeoTiffs.
@@ -45,15 +46,13 @@ Add data to the self-created EBV NetCDF from GeoTiffs.
 \note{
 If the data exceeds your memory the RAM check will throw an error. No
 block-processing or other method implemented so far. Move to a machine with
-more capacities for the moment.
+more capacities for the moment if needed.
 }
 \examples{
-# file <- 'path/to/created/netcdf/file.nc'
-# tif <- 'path/to/geotiff/containing/data.tif'
-# scenario <- 1
-# metric <- 1
-# entity <- 1
-# ts <- c(1:6)
-# band <- c(1:6)
-# ebv_ncdf_add_data(file, tif, metric, scenario, entity, ts, band)
+file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvnetcdf")
+datacubes <- ebv_datacubepaths(file)
+ts <- c(2:4)
+band <- c(1:3)
+ebv_ncdf_add_data(file, tif, datacubepaths[1,1], ts, band)
 }
