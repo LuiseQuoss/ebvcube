@@ -4,7 +4,6 @@
 #'   NetCDF file. Subset definition by a shapefile. This functions writes
 #'   temporary files on your disk. Specify a directory for these setting via
 #'   options('temp_directory'='/path/to/temp/directory').
-
 #'
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
