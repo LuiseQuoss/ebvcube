@@ -1,16 +1,18 @@
-#' Get datacubepaths
-#' @description Get the paths to the datacubes to access and read the data.
+#' Get datacubepaths of EBV NetCDF
+#' @description Get the paths to the datacubes of the EBV NetCDF to access the
+#'   data.
 #'
-#' @param filepath Path to the NetCDF file.
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param filepath Character. Path to the NetCDF file.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @return Dataframe containing the paths to access the datacubes and
 #'   descriptions of scenario, metric and entity if existing.
 #' @export
 #'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
 ebv_datacubepaths <- function(filepath, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit

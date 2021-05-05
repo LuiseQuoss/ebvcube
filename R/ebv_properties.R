@@ -38,10 +38,10 @@ methods::setClass("EBV NetCDF properties", slots=list(general="list",
 #' @export
 #'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' # prop_file <- ebv_properties(file)
-#' # prop_dc <- ebv_properties(file, datacubes[1,1])
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' prop_file <- ebv_properties(file)
+#' prop_dc <- ebv_properties(file, datacubes[1,1])
 ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
