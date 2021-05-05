@@ -36,8 +36,8 @@
 #'
 #' @examples
 #' json <- system.file(file.path("extdata","1.json"), package="ebvnetcdf")
-#' out <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
-#' ebv_ncdf_create(json, out, 3, fillvalue=-3.4E38)
+#' out <- file.path(system.file(package='ebvnetcdf'),"extdata","sCAR_new.nc")
+#' #ebv_ncdf_create(json, out, 3, fillvalue=-3.4E38)
 ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), fillvalue = NULL, prec = 'double', overwrite=FALSE,verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are cloed on exit

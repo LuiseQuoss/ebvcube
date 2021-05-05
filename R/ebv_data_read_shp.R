@@ -28,11 +28,12 @@
 #' @seealso [ebvnetcdf::ebv_data_read_bb()] for subsetting via bounding box.
 #'
 #' @examples
+#' #define temp directory
+#' options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
-#' shp <- system.file(file.path("extdata","ne_10m_admin_0_countries_subset_germany.shp"), package="ebvnetcdf")
-#' out <- system.file(file.path("extdata","subset_shp.tif"), package="ebvnetcdf")
-#' cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
+#' shp <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+#' #cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
 ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
                               timestep = 1, at = TRUE, overwrite=FALSE,
                               ignore.RAM=FALSE, verbose = FALSE){

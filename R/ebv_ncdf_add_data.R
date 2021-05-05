@@ -30,10 +30,10 @@
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
 #' tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvnetcdf")
-#' datacubes <- ebv_datacubepaths(file)
+#' # datacubes <- ebv_datacubepaths(file)
 #' ts <- c(2:4)
 #' band <- c(1:3)
-#' ebv_ncdf_add_data(file, tif, datacubepaths[1,1], ts, band)
+#' #ebv_ncdf_add_data(file, tif, datacubepaths[1,1], ts, band)
 ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
                               timestep=1, band=1, ignore.RAM=FALSE,
                               verbose=FALSE){

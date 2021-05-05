@@ -20,11 +20,11 @@
 #'
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
-#' datacubes <- ebv_datacubepaths(file)
+#' # datacubes <- ebv_datacubepaths(file)
 #' sn <- 'non forest birds species'
 #' desc <- 'Changes in bird diversity at the grid cell level caused by land-use'
 #' fv <- -3.4E38
-#' ebv_ncdf_entity_attributes(file, datacubes[1,1], sn, desc, fv)
+#' #ebv_ncdf_entity_attributes(file, datacubes[1,1], sn, desc, fv)
 ebv_ncdf_entity_attributes <- function(filepath, datacubepath, standard_name,
                                        description, fillvalue=NULL, verbose=FALSE){
   ### start initial test ----

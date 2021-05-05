@@ -22,12 +22,14 @@
 #' @export
 #'
 #' @examples
+#' #define temp directory
+#' options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
 #' data <- ebv_data_read(file, datacubes[1,1], 1)
 #' # WORK WITH YOUR DATA
 #' out <- system.file(file.path("extdata","write_data.tif"), package="ebvnetcdf")
-#' ebv_data_write(data, file, datacubes[1,1], out)
+#' #ebv_data_write(data, file, datacubes[1,1], out)
 ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit

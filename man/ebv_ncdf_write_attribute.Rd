@@ -45,12 +45,12 @@ file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
 attribute1 <- 'standard_name'
 value1 <- 'mammals'
 level1 <- 'metric00'
-ebv_ncdf_write_attribute(file, attribute1, value1, level1)
+#ebv_ncdf_write_attribute(file, attribute1, value1, level1)
 attribute2 <- '_FillValue'
 value2 <- -999
 level2 <- 'metric00/entity00'
-ebv_ncdf_write_attribute(file, attribute2, value2, level2)
+#ebv_ncdf_write_attribute(file, attribute2, value2, level2)
 attribute3 <- 'creator'
 value3 <- 'Jane Doe'
-ebv_ncdf_write_attribute(file, attribute3, value3)
+#ebv_ncdf_write_attribute(file, attribute3, value3)
 }

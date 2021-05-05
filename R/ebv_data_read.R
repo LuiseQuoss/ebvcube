@@ -34,9 +34,9 @@
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
-#' cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6), delayed=T, sparse=T)
-#' cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
-#' cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
+#' #cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6), delayed=T, sparse=T)
+#' #cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
+#' #cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
 ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse=FALSE, raster=FALSE, ignore.RAM = FALSE, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit

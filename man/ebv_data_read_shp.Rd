@@ -53,11 +53,12 @@ temporary files on your disk. Specify a directory for these setting via
 options('temp_directory'='/path/to/temp/directory').
 }
 \examples{
+#define temp directory
+options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 datacubes <- ebv_datacubepaths(file)
-shp <- system.file(file.path("extdata","ne_10m_admin_0_countries_subset_germany.shp"), package="ebvnetcdf")
-out <- system.file(file.path("extdata","subset_shp.tif"), package="ebvnetcdf")
-cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
+shp <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+#cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
 }
 \seealso{
 \code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}} for subsetting via bounding box.

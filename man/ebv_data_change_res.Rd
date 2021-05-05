@@ -62,11 +62,13 @@ files on your disk. Speficy a directory for these setting via
 options('temp_directory'='/path/to/temp/directory').
 }
 \examples{
+#define temp directory
+options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 datacubes <- ebv_datacubepaths(file)
 res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvnetcdf")
 res2 <- c(1,1,4326)
-out <- system.file(file.path("extdata","change_res.tif"), package="ebvnetcdf")
-ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
-d <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, T)
+out <- file.path(system.file(package='ebvnetcdf'),"extdata","changeRes.tif")
+#ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
+#d <- ebv_data_change_res(file, datacubes[1,1], res2, NULL, 3, method='max', return.raster=TRUE)
 }

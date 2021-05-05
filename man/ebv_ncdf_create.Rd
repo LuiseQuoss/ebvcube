@@ -61,6 +61,6 @@ NASA.
 }
 \examples{
 json <- system.file(file.path("extdata","1.json"), package="ebvnetcdf")
-out <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
-ebv_ncdf_create(json, out, 3, fillvalue=-3.4E38)
+out <- file.path(system.file(package='ebvnetcdf'),"extdata","sCAR_new.nc")
+#ebv_ncdf_create(json, out, 3, fillvalue=-3.4E38)
 }

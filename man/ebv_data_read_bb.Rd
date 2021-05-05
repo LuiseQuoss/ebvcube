@@ -58,12 +58,12 @@ returned based on the epsg of the NetCDF Dataset.
 \examples{
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 datacubes <- ebv_datacubepaths(file)
-out <- system.file(file.path("extdata","subset_bb.tif"), package="ebvnetcdf")
+out <- file.path(system.file(package='ebvnetcdf'),"extdata","subset_bb.tif")
 bb_wgs84 <- c(5,15,47,55)
 bb_utm32 <- c(271985, 941837, 5232640, 6101151)
-cSAR.germany <- ebv_data_read_bb(file, datacubes[1], bb_wgs84, timestep = c(1,4,12))
-path <- ebv_data_read_bb(file, datacubes[1], bb_wgs84, out, timestep = c(2,3))
-path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
+#cSAR.germany <- ebv_data_read_bb(file, datacubes[1], bb_wgs84, timestep = c(1,4,12))
+#path <- ebv_data_read_bb(file, datacubes[1], bb_wgs84, out, timestep = c(2,3))
+#path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
 }
 \seealso{
 \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}} for subsetting via shapefile.
