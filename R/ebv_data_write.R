@@ -1,33 +1,33 @@
-#' Write the data on your disk as a GeoTiff
+#' Write the extracted data on your disk as a GeoTiff
 #' @description After you extracted data from the EBV NetCDF and worked with it
-#'   this funtion gives you the possibility to write it to disk as a GeoTiff.
-#'   This functions writes temporary files on your disk. Speficy a directory for
+#'   this function gives you the possibility to write it to disk as a GeoTiff.
+#'   This functions writes temporary files on your disk. Specify a directory for
 #'   these setting via options('temp_directory'='/path/to/temp/directory').
 #' @note Not yet implemented for subsets of the data (only whole spatial
 #'   coverage of the corresponding EBV NetCDF).
 #'
 #' @param data Your data object. May be raster, array, DelayedMatrix or list of
 #'   DelayedMatrix (see return values of [ebvnetcdf::ebv_data_read()])
-#' @param filepath Path to the NetCDF file you read the data from. Used for the
+#' @param filepath Character. Path to the NetCDF file you read the data from. Used for the
 #'   detection of properties as spatial extent and epsg.
-#' @param datacubepath Path to the datacube you got the data from. Used for the
+#' @param datacubepath Character. Path to the datacube you got the data from. Used for the
 #'   detection of properties as data type and nodata value.
-#' @param outputpath Set the path where you want to write the data to disk as a
+#' @param outputpath Character. Set the path where you want to write the data to disk as a
 #'   GeoTiff.
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
+#' @param overwrite Locigal. Default: FALSE. Set to TRUE to overwrite the outputfile
 #'   defined by 'outputpath'.
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Returns the outputpath.
 #' @export
 #'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' # data <- ebv_data_read(file, datacubes[1,1], 1)
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' data <- ebv_data_read(file, datacubes[1,1], 1)
 #' # WORK WITH YOUR DATA
-#' # out <- 'path/to/write/the/data.tif'
-#' # ebv_data_write(data, file, datacubes[1,1], out)
+#' out <- system.file(file.path("extdata","write_data.tif"), package="ebvnetcdf")
+#' ebv_data_write(data, file, datacubes[1,1], out)
 ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit

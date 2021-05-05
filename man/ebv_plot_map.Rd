@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_plot_map.R
 \name{ebv_plot_map}
 \alias{ebv_plot_map}
-\title{Map plot of EBV NetCDF}
+\title{Map plot of an EBV NetCDF}
 \usage{
 ebv_plot_map(
   filepath,
@@ -16,29 +16,30 @@ ebv_plot_map(
 )
 }
 \arguments{
-\item{filepath}{Path to the NetCDF file.}
+\item{filepath}{Character. Path to the NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use
+\item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{timestep}{Choose one timestep.}
+\item{timestep}{Integer. Choose one timestep.}
 
-\item{countries}{Default: TRUE. Simple country outlines will be plotted on
-top of the raster data. Disable by setting this option to FALSE.}
+\item{countries}{Logical. Default: TRUE. Simple country outlines will be
+plotted on top of the raster data. Disable by setting this option to FALSE.}
 
-\item{col.rev}{Default: TRUE. Set to FALSE if you want the color ramp to be
-the other way around.}
+\item{col.rev}{Logical. Default: TRUE. Set to FALSE if you want the color
+ramp to be the other way around.}
 
-\item{classes}{Default: 5. Define the amount of classes (quantiles) of the
-symbology.}
+\item{classes}{Integer. Default: 5. Define the amount of classes (quantiles)
+for the symbology. Currently restricted to maximum 15 classes.}
 
-\item{ignore.RAM}{Checks if there is enough space in your memory to read the
-data. Can be switched off (set to TRUE).}
+\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+your memory to read the data. Can be switched off (set to TRUE).}
 
-\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
-Plots a map into the 'Plots' pane in RStudio.
+Plots a map.
 }
 \description{
 Map plot of the data of one timestep in one datacube of an EBV
@@ -51,7 +52,7 @@ Uses the country outlines data from the
 \href{https://cran.r-project.org/package=maptools}{maptools package}.
 }
 \examples{
-# file <- 'path/to/netcdf/file.nc'
-# datacubes <- ebv_datacubepaths(file)
-# ebv_plot_map(file, datacubes[1,1], 9)
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+datacubes <- ebv_datacubepaths(file)
+ebv_plot_map(file, datacubes[1,1], timestep=9, classes=7)
 }

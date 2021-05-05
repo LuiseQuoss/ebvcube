@@ -1,27 +1,28 @@
 #' Plot the average over time of one datacube of an EBV NetCDF
 #'
 #' @description Plot the average (y-axis) of one datacube of a EBV NetCDF over
-#'   time (x-axis).
+#'   time (x-axis). If the datacube has only one timestep a single mean value is
+#'   returned.
 #'
-#' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use
+#' @param filepath Character. Path to the NetCDF file.
+#' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
-#' @return Displays a plot in 'Plots' pane in RStudio. Returns a vector of the
-#'   averages.
+#' @return Plots a line plot and returns a vector of the average. If the data
+#'   encompasses only one timestep a single mean is returned.
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom graphics par
 #' @importFrom grDevices colors
 #'
-#'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' #ebv_plot_indicator(file, datacubes[1,1])
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' ebv_plot_indicator(file, datacubes[1,1])
 ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
                                verbose=FALSE){
   # start initial tests ----

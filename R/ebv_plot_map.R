@@ -1,35 +1,36 @@
-#' Map plot of EBV NetCDF
+#' Map plot of an EBV NetCDF
 #'
 #' @description Map plot of the data of one timestep in one datacube of an EBV
 #'   NetCDF. This functions sometimes writes temporary files on your disk.
 #'   Speficy a directory for these setting via
 #'   options('temp_directory'='/path/to/temp/directory').
 #'
-#' @param filepath Path to the NetCDF file.
-#' @param datacubepath Path to the datacube (use
+#' @param filepath Character. Path to the NetCDF file.
+#' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param timestep Choose one timestep.
-#' @param countries Default: TRUE. Simple country outlines will be plotted on
-#'   top of the raster data. Disable by setting this option to FALSE.
-#' @param col.rev Default: TRUE. Set to FALSE if you want the color ramp to be
-#'   the other way around.
-#' @param classes Default: 5. Define the amount of classes (quantiles) of the
-#'   symbology.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the
-#'   data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param timestep Integer. Choose one timestep.
+#' @param countries Logical. Default: TRUE. Simple country outlines will be
+#'   plotted on top of the raster data. Disable by setting this option to FALSE.
+#' @param col.rev Logical. Default: TRUE. Set to FALSE if you want the color
+#'   ramp to be the other way around.
+#' @param classes Integer. Default: 5. Define the amount of classes (quantiles)
+#'   for the symbology. Currently restricted to maximum 15 classes.
+#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#'   your memory to read the data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @note Uses the country outlines data from the
 #'   \href{https://cran.r-project.org/package=maptools}{maptools package}.
 #'
-#' @return Plots a map into the 'Plots' pane in RStudio.
+#' @return Plots a map.
 #' @export
 #' @importFrom utils data
 #'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' # ebv_plot_map(file, datacubes[1,1], 9)
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' ebv_plot_map(file, datacubes[1,1], timestep=9, classes=7)
 ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
                          col.rev=TRUE, classes = 5, ignore.RAM=FALSE, verbose=FALSE){
   # start initial tests ----
@@ -136,7 +137,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
 
   #get raster data - ram check included
   results <- tryCatch(
-    #try ----
+    #try reading whole data----
     {
       data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep,
                                    delayed = FALSE, raster=TRUE, ignore.RAM=ignore.RAM,
@@ -147,7 +148,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
       data.all <- replace(data.all, data.all==fillvalue, c(NA))
       results <- c(data.raster, data.all, 'NULL')
     },
-    #change res ----
+    #change res if data is too big----
     error = function(cond){
       if (!stringr::str_detect(cond, 'memory')){
         stop(cond)
@@ -193,7 +194,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
     s <- unique(s)
   }
 
-  #get correct colors
+  #get correct colors ----
   if (min(s)<0 & max(s)>0){
     diverging <- 'Blue-Red'
     col.regions <- colorspace::diverging_hcl(classes, palette = diverging,
