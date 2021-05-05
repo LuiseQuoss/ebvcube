@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_data_analyse.R
 \name{ebv_data_analyse}
 \alias{ebv_data_analyse}
-\title{Get a simple explorative analysis of a EBV NetCDF}
+\title{Get a simple explorative analysis of an EBV NetCDF datacube}
 \usage{
 ebv_data_analyse(
   filepath,
@@ -17,44 +17,46 @@ ebv_data_analyse(
 )
 }
 \arguments{
-\item{filepath}{Path to the NetCDF file.}
+\item{filepath}{Character. Path to the NetCDF file.}
 
-\item{datacubepath}{Path to the datacube (use
+\item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{subset}{Optional if you want measurements on a smaller subset. Possible
-via the path to a shapefile or the indication of a bounding box defining
-the subset. Else the whole area is analysed.}
+via the path to a shapefile (character) or the indication of a bounding box
+(vector of four numeric values) defining the subset. Else the whole area is
+analysed.}
 
-\item{timestep}{Choose one or several timesteps (vector).}
+\item{timestep}{Numeric. Choose one or several timesteps (vector).}
 
-\item{at}{Optional. Only relevant if the subset is indicated by a shapefile.
-See \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}}.}
+\item{at}{Logical. Optional. Default: TRUE. Only relevant if the subset is
+indicated by a shapefile. See \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}}.}
 
-\item{epsg}{Optional. Only relevant if the subset is indicated by a boudning
-box and the coordinate reference system differes from WGS84. See
+\item{epsg}{Numeric. Optional. Only relevant if the subset is indicated by a
+bounding box and the coordinate reference system differs from WGS84. See
 \code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}}.}
 
-\item{numerical}{Default: TRUE. Change to FALSE if the data covered by the
-NetCDF contains categorical data.}
+\item{numerical}{Logical. Default: TRUE. Change to FALSE if the data covered
+by the NetCDF contains categorical data.}
 
-\item{na.rm}{Default: TRUE. NA values are removed in the analysis. Change to
-FALSE to include NAs.}
+\item{na.rm}{Logical. Default: TRUE. NA values are removed in the analysis.
+Change to FALSE to include NAs.}
 
-\item{verbose}{Logical. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
-Returns a S4 object containing the basic measurements.
+Returns a named list containing the measurements.
 }
 \description{
 Get basic measurements of the data, including min, max, mean,
 sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 }
 \examples{
-# file <- 'path/to/netcdf/file.nc'
-# datacubes <- ebv_datacubepaths(file)
-# data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
-# data.germany.jan <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+datacubes <- ebv_datacubepaths(file)
+data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
+data.germany.1900 <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 }
 \seealso{
 \code{\link[=ebv_data_read_bb]{ebv_data_read_bb()}} and \code{\link[=ebv_data_read_shp]{ebv_data_read_shp()}}

@@ -1,44 +1,46 @@
-#' Change the resoultion of the data from EBV NetCDF
+#' Change the resolution of the data of an EBV NetCDF
 #'
-#' @description Change the resolution of the data of one datacube of a EBV
-#'   NetCDF based on another EBV NetCDF or a given resolution. This functions
-#'   writes temporary files on your disk. Speficy a directory for these setting
-#'   via options('temp_directory'='/path/to/temp/directory').
+#' @description Change the resolution of one datacube of a EBV NetCDF based on
+#'   another EBV NetCDF or a given resolution. This functions writes temporary
+#'   files on your disk. Speficy a directory for these setting via
+#'   options('temp_directory'='/path/to/temp/directory').
 #'
-#' @param filepath_src Path to the NetCDF file whose resolution should be
-#'   changed.
-#' @param datacubepath_src Path to the datacube (use
+#' @param filepath_src Character. Path to the NetCDF file whose resolution
+#'   should be changed.
+#' @param datacubepath_src Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]) whose resolution should be changed..
-#' @param resolution Either the path to a NetCDF file that determines the
-#'   resolution or the resultion defined directly. The vector defining the
-#'   resolution directly must contain three elements: the x-resoltion, the
-#'   y-resolution and the corresponding epsg.
-#' @param outputpath Set path to write subset as GeoTiff on disk.
-#' @param timestep Choose one or several timesteps (vector).
-#' @param method Resampling method, default: Average. Choose from:
+#' @param resolution Either the path to an EBV NetCDF file that determines the
+#'   resolution (character) or the resolution defined directly (numeric). The
+#'   vector defining the resolution directly must contain three elements: the
+#'   x-resolution, the y-resolution and the corresponding epsg.
+#' @param outputpath Character. Set path to write data as GeoTiff on disk.
+#' @param timestep Numeric. Choose one or several timesteps (vector).
+#' @param method Character. Default: Average. Define resampling method. Choose
+#'   from:
 #'   "near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1"
-#'   and "q3". For detailed information see:
+#'    and "q3". For detailed information see:
 #'   \href{https://gdal.org/programs/gdalwarp.html}{gdalwarp}.
-#' @param return.raster Default: FALSE. Set to TRUE to directly get the
-#'   corresponting raster object.
-#' @param overwrite Default: FALSE. Set to TRUE to overwrite the outputfile
-#'   defined by 'outputpath'.
-#' @param ignore.RAM Checks if there is enough space in your memory to read the
-#'   data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Turn on all warnings by setting it to TRUE.
+#' @param return.raster Logical. Default: FALSE. Set to TRUE to directly get the
+#'   corresponding raster object.
+#' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
+#'   outputfile defined by 'outputpath'.
+#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#'   your memory to read the data. Can be switched off (set to TRUE).
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
 #'
 #' @return Default: returns the outputpath of the GeoTiff with the new
 #'   resolution. Optional: return the raster object with the new resolution.
 #' @export
 #'
 #' @examples
-#' # file <- 'path/to/netcdf/file.nc'
-#' # datacubes <- ebv_datacubepaths(file)
-#' # res1 <- 'path/to/NetCDF/with/different/resolution.nc'
-#' # res2 <- c(1,1,4326)
-#' # out <- 'path/to/save/tif/with/new/res.tif'
-#' # ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
-#' # d <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, T)
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' datacubes <- ebv_datacubepaths(file)
+#' res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvnetcdf")
+#' res2 <- c(1,1,4326)
+#' out <- system.file(file.path("extdata","change_res.tif"), package="ebvnetcdf")
+#' ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
+#' d <- ebv_data_change_res(file, datacubes[1,1], res2,  out, 3, method='max', return.raster=T, T)
 ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,
                                 method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE, verbose=FALSE){
   ####initial tests start ----
@@ -254,7 +256,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   #set path to variable in netcdf for gdal
   filepath <- paste0('NETCDF:', filepath_src,':',datacubepath_src)
 
-  #check if src dataset has several timesteps
+  #check if src dataset has several timesteps ----
   if (prop_src@spatial$dimensions[3] > 1){
     #define output parameters
     name <- 'temp_EBV_change_res_time.tif'
@@ -350,7 +352,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   output_Raster = return.raster)
   }
 
-  #remove tempfiles
+  #remove tempfiles ----
   if (exists('temp')){
     if (file.exists(temp)){
       file.remove(temp)
@@ -362,7 +364,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
     }
   }
 
-  #return array
+  #return array ----
   if (return.raster){
     r <- raster::reclassify(r, cbind(prop_src@entity$fillvalue, NA))
     return(r)

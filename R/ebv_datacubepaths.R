@@ -54,13 +54,13 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
 
   #file overview
   ls <- rhdf5::h5ls(filepath)
-  #get all datasets
+  #get all datasets ----
   remove <- c('crs', 'dim_entity', 'lat', 'lon', 'crs', 'time', 'var_entity')
   for (r in remove){
     ls <- ls[ls[,2]!=r,]
   }
 
-  #paths
+  #paths ----
   paths = c()
   for (row in 1:nrow(ls)){
     if(ls[row,3] == 'H5I_DATASET'){
@@ -76,8 +76,9 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   #ebv_subgroups
   subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
 
-  #build result
+  #build result ----
   entity_longnames <- c()
+  #scenario and metric ----
   if('scenario' %in% subgroups & 'metric' %in% subgroups){
     scenario_longnames <- c()
     metric_longnames <- c()
@@ -122,6 +123,7 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
     #build result data.frame
     result = data.frame(paths, scenario_longnames, metric_longnames, entity_longnames)
   } else{
+    # only metric ----
     metric_longnames <- c()
     for (p in paths){
       #entity longname
