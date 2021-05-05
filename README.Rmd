@@ -70,9 +70,17 @@ Just keep in mind: All EBV NetCDF always have a metric. But they may or may not 
 You can install the ebvnetcdf packages with: 
 
 ``` r
-#visibility needs to be set to public first! Does not work right now. 
-devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de') 
+#currently:
+# 1. pull git repo
+# 2. open ebvnetcdf.RProj
+# 3. install(devtools)
+# 4. install(dependencies=T)
+
+#futur: when repo is public (Does not work right now.)
+devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
+
 ```
+This packages usey gdal tools. You need a gdal installation on your machine. 
 
 ## Working with the package - a quick intro
 
