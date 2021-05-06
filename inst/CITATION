@@ -1,0 +1,13 @@
+citHeader("To cite ebvnetcdf in publications use:")
+
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "{ebvnetcdf}: Working with EVB NetCDFs",
+         author = c(person(given = "Luise", family = "Quoß")),
+         year = "2021",
+         note = note,
+	 organization = "{German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig}",
+	 address = "{Leipzig, Germany}",
+	 url = "{https://git.idiv.de/lq39quba/ebvnetcdf}"
+)
