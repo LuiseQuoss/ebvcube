@@ -279,7 +279,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\Rtmp2NIjxC\temp_libpath251865fb2a0e\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\Rtmp2NIjxC\temp_libpath25186bca355f\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -287,8 +287,34 @@ raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+Imagine you have a very large dataset but only limited memory. A good
+example is the Global Forest Cover dataset.
 
-### Add Delayed Data, write data?
+``` r
+forest <- system.file(file.path('extdata','hansen_tree_canopy_cover_01.nc'), package="ebvnetcdf")
+datacube <- ebv_datacubepaths(forest)
+#trying to read the data to memory --> error!
+ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = F)
+#> Error in ebv_i_check_ram(prop@spatial$dimensions, timestep, type.long): The RAM needed to read the data into memory is larger than the free RAM.
+#> Free RAM: 1.6
+#> Needed RAM: 5.41
+```
+
+The package provides the possibility to use the data as a DelayedArray.
+A second function helps you to write that data back on disk properly.
+Look into the manual to obtain more information.
+
+``` r
+#reading the data as a DelayedArray
+data.da <- ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = T)
+dim(data.da)
+#> [1] 16800 43200
+#imagine you work with the data, then:
+#writing the data back to disk
+out <- file.path(system.file(package="ebvnetcdf"),'extdata','forest.tif')
+ebv_data_write(data.da, forest, datacube[1,1], out)
+#> Error in ebv_data_write(data.da, forest, datacube[1, 1], out): Output file already exists. Change name or enable overwrite.
+```
 
 ### Take a peek on the creation of an EBV NetCDF
 
