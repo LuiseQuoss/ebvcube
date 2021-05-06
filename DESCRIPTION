@@ -2,18 +2,19 @@ Package: ebvnetcdf
 Title: Working with EVB NetCDFs
 Version: 0.0.1
 Authors@R: 
-    person(given = "Luise",
+    c(person(given = "Luise",
            family = "Quoß",
            role = c("aut", "cre"),
            email = "luise.quoss@idiv.de"),
     person(given = "Henrique Miguel",
            family = "Pereira",
            role = c("aut"),
-           email = "henrique.pereira@idiv.de")),
+           email = "henrique.pereira@idiv.de"),
     person(given = "Néstor",
            family = "Fernández",
            role = c("aut"),
-           email = "nestor.fernandez@idiv.de"))
+           email = "nestor.fernandez@idiv.de")
+           )
 Description: This package can be used to easily access the data of the EBV NetCDFs which can be 
     downloaded here: portal.geobon.org. It also provides some basic visualization of the data. 
     Advanced users can build their own NetCDFs with the EBV standard using this package.
