@@ -257,4 +257,8 @@ print(ebv_properties(newNc, dc.new[1,1])@entity)
 ```
 In this case the levelpath corresponds to the datacube path. But you can also alter attributes at the metric or scenario level. See the manual for more info.
 
+```{r}
+citation('ebvnetcdf')
+```
+
 

@@ -279,7 +279,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\Rtmp2NIjxC\temp_libpath25182650b2e\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpInnWKx\temp_libpath321c19687e62\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -296,7 +296,7 @@ datacube <- ebv_datacubepaths(forest)
 #trying to read the data to memory --> error!
 ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = F)
 #> Error in ebv_i_check_ram(prop@spatial$dimensions, timestep, type.long): The RAM needed to read the data into memory is larger than the free RAM.
-#> Free RAM: 1.5
+#> Free RAM: 1.79
 #> Needed RAM: 5.41
 ```
 
@@ -450,3 +450,26 @@ print(ebv_properties(newNc, dc.new[1,1])@entity)
 In this case the levelpath corresponds to the datacube path. But you can
 also alter attributes at the metric or scenario level. See the manual
 for more info.
+
+``` r
+citation('ebvnetcdf')
+#> 
+#> To cite ebvnetcdf in publications use:
+#> 
+#> Quoß L, Pereira H, Fernández N (2021). _ebvnetcdf: Working with EVB
+#> NetCDFs_. German Centre for Integrative Biodiversity Research (iDiv)
+#> Halle-Jena-Leipzig, Leipzig, Germany. R package version 0.0.1, <URL:
+#> {https://git.idiv.de/lq39quba/ebvnetcdf}>.
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Manual{,
+#>     title = {{ebvnetcdf}: Working with EVB NetCDFs},
+#>     author = {Luise Quoß and Henrique Miguel Pereira and Néstor Fernández},
+#>     year = {2021},
+#>     note = {R package version 0.0.1},
+#>     organization = {{German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig}},
+#>     address = {{Leipzig, Germany}},
+#>     url = {{https://git.idiv.de/lq39quba/ebvnetcdf}},
+#>   }
+```
