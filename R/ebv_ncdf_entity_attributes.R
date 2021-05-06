@@ -53,9 +53,6 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, standard_name,
   if(missing(standard_name)){
     stop('standard_name argument is missing.')
   }
-  if(missing(units)){
-    stop('Units argument is missing.')
-  }
 
   #turn off local warnings if verbose=TRUE
   if(checkmate::checkLogical(verbose) != TRUE){
@@ -95,9 +92,6 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, standard_name,
   if(checkmate::checkCharacter(standard_name)!=TRUE){
     stop('standard_name argument has to be of class character.')
   }
-  if(checkmate::checkCharacter(units)!=TRUE){
-    stop('Units argument has to be of class character.')
-  }
   if(!is.null(fillvalue)){
     if(checkmate::checkNumber(fillvalue)!=TRUE & !is.na(fillvalue)){
       stop('The fillvalue needs to be a single numeric value or NA.')
@@ -114,9 +108,6 @@ ebv_ncdf_entity_attributes <- function(filepath, datacubepath, standard_name,
 
   # :standard_name ----
   ebv_i_char_att(did, 'standard_name', standard_name)
-
-  # :units ----
-  ebv_i_char_att(did, 'units', units)
 
   #optional
   # :_FillValue ----
