@@ -4,7 +4,6 @@
 # ebvnetcdf package
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV NetCDFs
@@ -71,17 +70,26 @@ datacubepaths we are going to access.
 You can install the ebvnetcdf packages with:
 
 ``` r
-#visibility needs to be set to public first! Does not work right now. 
-devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de') 
+#currently:
+# 1. pull git repo
+# 2. open ebvnetcdf.RProj
+# 3. install(devtools)
+# 4. install(dependencies=T)
+
+#futur: when repo is public (Does not work right now.)
+devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
 ```
+
+This packages usey GDAL tools. You need a GDAL installation on your
+machine. GDAL version: 3.1.4
 
 ## Working with the package - a quick intro
 
 ### Take a very first look at the file
 
-With the following two functions you get a basic impression what data
-you can get from the EBV NetCDF. First we take a look at some basic
-properties of that file.
+With the following two functions you get the core information about the
+data from a specific EBV NetCDF. First we take a look at some basic
+metadata of that file.
 
 ``` r
 library(ebvnetcdf)
@@ -112,16 +120,13 @@ prop.file@general
 #> 
 #> $creator
 #> [1] "Ines Martins"
-#> 
-#> $value_range
-#> [1] NA
 slotNames(prop.file)
 #> [1] "general"  "spatial"  "temporal" "metric"   "scenario" "entity"
 ```
 
 Now let’s get the paths to all possible datacubes. The resulting
-dataframe includes the paths and also descriptions of e.g. metric and or
-scenario - take a look\!
+dataframe includes the paths and also descriptions of the metric and/or
+scenario and/or entity.
 
 ``` r
 datacubes <- ebv_datacubepaths(file)
@@ -132,19 +137,38 @@ datacubes
 #> 3 past/mean/F  past: 1900 - 2015             mean      forest bird species
 ```
 
-We will get the properties of one specific datacube - fyi: the result
-also holds the general file properties from above. This time you get the
-warning that the value\_range does not exists. So don’t take the
-displayed value\_range seriously.
+In the next step we will get the properties of one specific datacube -
+fyi: the result also holds the general file properties from above. This
+time you get the warning that the value\_range does not exists. So don’t
+take the displayed value\_range seriously.
 
 ``` r
 prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
+#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
+#> = native): An open HDF5 file handle exists. If the file has changed on disk
+#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
+#> open HDF5 object handles.
+
+#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
+#> = native): An open HDF5 file handle exists. If the file has changed on disk
+#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
+#> open HDF5 object handles.
+
+#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
+#> = native): An open HDF5 file handle exists. If the file has changed on disk
+#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
+#> open HDF5 object handles.
+
+#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
+#> = native): An open HDF5 file handle exists. If the file has changed on disk
+#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
+#> open HDF5 object handles.
 #> Warning in ebv_i_read_att(hdf, "value_range"): The attribute value_range does not exist. Or maybe wrong location in NetCDF?
 prop.dc@entity
-#> $long_name
-#> [1] "Changes in local bird diversity (cSAR)"
+#> $description
+#> [1] "Changes in bird diversity at the grid cell level caused by land-use, estimated by the cSAR model (Martins & Pereira, 2017). It reports changes in species number (percentage and absolute), relative to 1900, for all bird species, forest bird species, and non-forest bird species in each cell. Uses the LUH 2.0 projections for land-use, and the PREDICTS coefficients for bird affinities to land-uses."
 #> 
-#> $label
+#> $standard_name
 #> [1] "non forest birds species"
 #> 
 #> $unit
@@ -155,12 +179,16 @@ prop.dc@entity
 #> 
 #> $fillvalue
 #> [1] -3.4e+38
+#> 
+#> $value_range
+#> [1] NA
 ```
 
 ### Plot the data to get a better impression
 
-Plot a map of the datacube that we just looked at - it has 12 timesteps,
-mabe look at the sixth one?
+To discover the spatial distribution of the data you can plot a map of
+the datacube that we just looked at. It has 12 timesteps. Here we look
+at the sixth one.
 
 ``` r
 #plot the global map
@@ -171,12 +199,11 @@ ebv_plot_map(file, dc, timestep = 6)
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 ``` r
-
 # What was the data about again? Check the properties!
 prop.dc@general$title
 #> [1] "Changes in local bird diversity (cSAR)"
 # And the datacube?
-prop.dc@entity$label
+prop.dc@entity$standard_name
 #> [1] "non forest birds species"
 #What time is the sixth timestep representing?
 prop.dc@temporal$timesteps.natural[6]
@@ -185,7 +212,7 @@ prop.dc@temporal$timesteps.natural[6]
 
 It’s nice to see the global distribution, but how is the change of that
 datacube (non forest birds) over time? Let’s take a look at the average.
-The function returns the values, catch them\!
+The function returns the values, catch them!
 
 ``` r
 #get the averages and plot
@@ -195,6 +222,12 @@ averages <- ebv_plot_indicator(file, dc)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+``` r
+averages
+#>  [1] 0.4363360 0.4363360 0.8548256 1.2845690 1.7785023 2.2481552 2.8426603
+#>  [8] 3.1457002 3.3955101 3.6569338 3.8845097 4.0115587
+```
 
 It would be cool to have that for other indicators as well? Well you
 have to wait for an update of the package. Or maybe implement it
@@ -212,29 +245,32 @@ measurements <- ebv_data_analyse(file, dc)
 names(measurements)
 #> [1] "min"  "q25"  "q50"  "mean" "q75"  "max"  "std"  "n"    "NAs"
 #how many pixels are included?
-measurements$n
-#> [1] 64800
+measurements$mean
+#> [1] 0.436336
 
 #info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
 measurements.bb <- ebv_data_analyse(file, dc, bb)
 #how many pixels are now included?
-measurements.bb$n
-#> [1] 80
+measurements.bb$mean
+#> [1] -0.5584893
 ```
 
-To access the data ampoong other things you can use the following.
-Subsetting the data using a shapefile needs a directory for temporarly
-created files.
+To access the data you can use the following:
 
 ``` r
-#load whole data set for two timesteps
+#load whole data as array for two timesteps
 data <- ebv_data_read(file, dc, c(1,2), delayed = F)
 dim(data)
 #> [1] 180 360   2
+```
 
+To subset the data using a shapefile you need to indicate a directory
+for temporarily created files.
+
+``` r
 #load subset from shapefile (Germany)
-shp <- system.file(file.path('extdata','ne_10m_admin_0_countries_subset_germany.shp'), package="ebvnetcdf")
+shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
 options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 data.shp <- ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
@@ -243,18 +279,20 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "/tmp/Rtmp227rMD/temp_libpath27b2276726b9/ebvnetcdf/extdata/ne_10m_admin_0_countries_subset_germany.shp", layer: "ne_10m_admin_0_countries_subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\Rtmp2NIjxC\temp_libpath251865fb2a0e\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
 raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 ### Add Delayed Data, write data?
 
 ### Take a peek on the creation of an EBV NetCDF
+
+#### 1. Create an empty EBV NetCDF (with metadata)
 
 This process is still work in progress. Right now you’ll have to insert
 all the metadata in the Geobon Portal and then use the resulting json
@@ -291,103 +329,97 @@ print(ebv_properties(newNc)@general)
 #> 
 #> $creator
 #> [1] "Daniele Baisero"
-#> 
-#> $value_range
-#> [1] NA
-#it has no datacubepaths yet - makes sense. we haven't added any data yet...
-print(ebv_datacubepaths(newNc))
-#> data frame with 0 columns and 0 rows
+#check out the (still empty) datacubes
+dc.new <- ebv_datacubepaths(newNc)
+print(dc.new[c(1,5,6),])
+#>                          paths  scenario_longnames     metric_longnames
+#> 1 scenario01/metric01/entity01      Sustainability Habitat availability
+#> 5 scenario01/metric01/entity05      Sustainability Habitat availability
+#> 6 scenario02/metric01/entity01 Middle of the Road  Habitat availability
+#>   entity_longnames
+#> 1      not defined
+#> 5      not defined
+#> 6      not defined
 ```
 
-Tip: You can always take a look at your NetCDF in
+Hint: You can always take a look at your NetCDF in
 [Panoply](https://www.giss.nasa.gov/tools/panoply/) provided by NASA.
 That’s very helpful to understand the structure.
 
+#### 2. Add your data to the EBV NetCDF
+
 In the next step you can add your data to the NetCDF from GeoTiff files.
-You need to indicate which scenario and/or metric and/or entity the data
-belongs to. You can add your data timestep per timestep, in slices or
-all at once (see the vignette for detailed info).
+You need to indicate the datacubepath the data belongs to. You can add
+your data timestep per timestep, in slices or all at once. Also keep in
+mind to define the extent and the coordinate reference system if your
+file doesn’t cover global extent using WGS84 (see the manual for
+detailed info).
 
 You can simply add more data to the same datacube by changing the
-timestep
-definition.
+timestep definition.
 
 ``` r
+#path to tif with data
 tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
-ebv_ncdf_add_data(newNc, tif, metric=1, scenario=1, entity=1, timestep=c(1,2,3), band=c(1,2,3))
-#now we have a datacubepath we can access
-dc.new <- ebv_datacubepaths(newNc)
-dc.new
-#>                          paths scenario_longnames metric_longnames
-#> 1 scenario00/metric00/entity00        SSP1-RCP2.6              km2
-#>   entity_longnames
-#> 1          default
+#defining the fillvalue
+fv <- -3.4e+38
+#ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3), fillvalue = fv, prec='float')
 ```
 
+#### 3. Add missing attributes to datacube
+
 Now there are still a few information missing about the data you just
-added. The following function makes it possible to add the
-information.
+added. The following function makes it possible to add the information.
 
 ``` r
-#taking a look at the properties first - uff it's mostely default values (also the fillvalue!)
-print(ebv_properties(newNc, dc.new[1,1])@entity)
-#> $long_name
-#> [1] "default"
-#> 
-#> $label
-#> [1] "default"
-#> 
-#> $unit
-#> [1] "default"
-#> 
-#> $type
-#> [1] "H5T_IEEE_F32LE"
-#> 
-#> $fillvalue
-#> [1] 999
-#adding the correct infos:
-ebv_ncdf_entity_attributes(newNc, dc.new[1,1], long_name='Data on Area Of Habitat (AOH)', label='Eumops auripendulu', units='land-use of mammals calculated in km2', fillvalue=-3.4e+38)
+#adding the correct info:
+ebv_ncdf_entity_attributes(newNc, dc.new[1,1], standard_name='Eumops auripendulu', description='Data on Area Of Habitat (AOH)')
 #rechecking properties - now it looks good! but there is a typo for the label..
 print(ebv_properties(newNc, dc.new[1,1])@entity)
-#> $long_name
+#> $description
 #> [1] "Data on Area Of Habitat (AOH)"
 #> 
-#> $label
+#> $standard_name
 #> [1] "Eumops auripendulu"
 #> 
 #> $unit
-#> [1] "land-use of mammals calculated in km2"
+#> [1] "km2"
 #> 
 #> $type
-#> [1] "H5T_IEEE_F32LE"
+#> [1] "H5T_IEEE_F64LE"
 #> 
 #> $fillvalue
-#> [1] -3.4e+38
+#> [1] NA
+#> 
+#> $value_range
+#> [1] NA
 ```
 
-Ups\! So you did a mistake and want to change the attribute?\! No
-problem:
+Ups! So you did a mistake and want to change the attribute?! No problem:
 
 ``` r
-ebv_ncdf_write_attribute(newNc, attribute_name='label', value='Eumops auripendulus', levelpath=dc.new[1,1])
+ebv_ncdf_write_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
 print(ebv_properties(newNc, dc.new[1,1])@entity)
-#> $long_name
+#> $description
 #> [1] "Data on Area Of Habitat (AOH)"
 #> 
-#> $label
+#> $standard_name
 #> [1] "Eumops auripendulus"
 #> 
 #> $unit
-#> [1] "land-use of mammals calculated in km2"
+#> [1] "km2"
 #> 
 #> $type
-#> [1] "H5T_IEEE_F32LE"
+#> [1] "H5T_IEEE_F64LE"
 #> 
 #> $fillvalue
-#> [1] -3.4e+38
+#> [1] NA
+#> 
+#> $value_range
+#> [1] NA
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
-also alter attributes at the metric or scenario level. See the vignette
+also alter attributes at the metric or scenario level. See the manual
 for more info.

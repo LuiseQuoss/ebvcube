@@ -80,14 +80,15 @@ You can install the ebvnetcdf packages with:
 devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
 
 ```
-This packages usey gdal tools. You need a gdal installation on your machine. 
+This packages usey GDAL tools. You need a GDAL installation on your machine. 
+GDAL version: 3.1.4
 
 ## Working with the package - a quick intro
 
 ### Take a very first look at the file
 
-With the following two functions you get a basic impression what data you can get from the EBV NetCDF.
-First we take a look at some basic properties of that file.
+With the following two functions you get the core information about the data from a specific EBV NetCDF.
+First we take a look at some basic metadata of that file.
 
 ```{r example}
 library(ebvnetcdf)
@@ -102,14 +103,14 @@ slotNames(prop.file)
 
 ```
 
-Now let's get the paths to all possible datacubes. The resulting dataframe includes the paths and also descriptions of e.g. metric and or scenario - take a look!
+Now let's get the paths to all possible datacubes. The resulting dataframe includes the paths and also descriptions of the metric and/or scenario and/or entity.
 
 ```{r}
 datacubes <- ebv_datacubepaths(file)
 datacubes
 ```
 
-We will get the properties of one specific datacube - fyi: the result also holds the general file properties from above.
+In the next step we will get the properties of one specific datacube - fyi: the result also holds the general file properties from above.
 This time you get the warning that the value_range does not exists. So don't take the displayed value_range seriously.
 
 ```{r}
@@ -119,7 +120,7 @@ prop.dc@entity
 
 
 ### Plot the data to get a better impression
-Plot a map of the datacube that we just looked at - it has 12 timesteps, mabe look at the sixth one?
+To discover the spatial distribution of the data you can plot a map of the datacube that we just looked at. It has 12 timesteps. Here we look at the sixth one.
 
 ```{r}
 #plot the global map
@@ -129,7 +130,7 @@ ebv_plot_map(file, dc, timestep = 6)
 # What was the data about again? Check the properties!
 prop.dc@general$title
 # And the datacube?
-prop.dc@entity$label
+prop.dc@entity$standard_name
 #What time is the sixth timestep representing?
 prop.dc@temporal$timesteps.natural[6]
 
@@ -140,6 +141,7 @@ It's nice to see the global distribution, but how is the change of that datacube
 ```{r}
 #get the averages and plot
 averages <- ebv_plot_indicator(file, dc)
+averages
 ```
 
 It would be cool to have that for other indicators as well? Well you have to wait for an update of the package. Or maybe implement it yourself using the functions coming up next?
@@ -153,23 +155,25 @@ measurements <- ebv_data_analyse(file, dc)
 #see the included measurements
 names(measurements)
 #how many pixels are included?
-measurements$n
+measurements$mean
 
 #info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
 measurements.bb <- ebv_data_analyse(file, dc, bb)
 #how many pixels are now included?
-measurements.bb$n
+measurements.bb$mean
 ```
 
-To access the data ampoong other things you can use the following. Subsetting the data using a shapefile needs a directory for temporarly created files.
+To access the data you can use the following: 
 ```{r}
-#load whole data set for two timesteps
+#load whole data as array for two timesteps
 data <- ebv_data_read(file, dc, c(1,2), delayed = F)
 dim(data)
-
+```
+To subset the data using a shapefile you need to indicate a directory for temporarily created files.
+```{r}
 #load subset from shapefile (Germany)
-shp <- system.file(file.path('extdata','ne_10m_admin_0_countries_subset_germany.shp'), package="ebvnetcdf")
+shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
 options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
 data.shp <- ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
@@ -183,6 +187,7 @@ raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
 
 
 ### Take a peek on the creation of an EBV NetCDF
+#### 1. Create an empty EBV NetCDF (with metadata)
 This process is still work in progress. Right now you'll have to insert all the metadata in the Geobon Portal and then use the resulting json file to create an empty NetCDF file which complies to the EBV NetCDF standard. It has the correct structure and holds the metadata. Additionally to that json file the function needs the amount of entities the NetCDF will encompass.
 
 The example is based on the [Global habitat availability for mammals ](https://portal.geobon.org/ebv-detail?id=5). As its ID in the geoportal is 5 the json file is just called 5.
@@ -194,42 +199,43 @@ newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','mammals.nc')
 ebv_ncdf_create(json, newNc, 5, overwrite=T)
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
-#it has no datacubepaths yet - makes sense. we haven't added any data yet...
-print(ebv_datacubepaths(newNc))
+#check out the (still empty) datacubes
+dc.new <- ebv_datacubepaths(newNc)
+print(dc.new[c(1,5,6),])
 ```
-Tip: You can always take a look at your NetCDF in [Panoply](https://www.giss.nasa.gov/tools/panoply/) provided by NASA. That's very helpful to understand the structure.
+Hint: You can always take a look at your NetCDF in [Panoply](https://www.giss.nasa.gov/tools/panoply/) provided by NASA. That's very helpful to understand the structure.
 
-In the next step you can add your data to the NetCDF from GeoTiff files. You need to indicate which scenario and/or metric and/or entity the data belongs to. You can add your data timestep per timestep, in slices or all at once (see the vignette for detailed info).
+#### 2. Add your data to the EBV NetCDF
+In the next step you can add your data to the NetCDF from GeoTiff files. You need to indicate the datacubepath the data belongs to. You can add your data timestep per timestep, in slices or all at once. Also keep in mind to define the extent and the coordinate reference system if your file doesn't cover global extent using WGS84 (see the manual for detailed info).
 
 You can simply add more data to the same datacube by changing the timestep definition.
 
 ```{r}
+#path to tif with data
 tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
-ebv_ncdf_add_data(newNc, tif, metric=1, scenario=1, entity=1, timestep=c(1,2,3), band=c(1,2,3))
-#now we have a datacubepath we can access
-dc.new <- ebv_datacubepaths(newNc)
-dc.new
+#defining the fillvalue
+fv <- -3.4e+38
+#ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3), fillvalue = fv, prec='float')
+
 ```
 
-
+#### 3. Add missing attributes to datacube
 Now there are still a few information missing about the data you just added. The following function makes it possible to add the information.
 
 ```{r}
-#taking a look at the properties first - uff it's mostely default values (also the fillvalue!)
-print(ebv_properties(newNc, dc.new[1,1])@entity)
-#adding the correct infos:
-ebv_ncdf_entity_attributes(newNc, dc.new[1,1], long_name='Data on Area Of Habitat (AOH)', label='Eumops auripendulu', units='land-use of mammals calculated in km2', fillvalue=-3.4e+38)
+#adding the correct info:
+ebv_ncdf_entity_attributes(newNc, dc.new[1,1], standard_name='Eumops auripendulu', description='Data on Area Of Habitat (AOH)')
 #rechecking properties - now it looks good! but there is a typo for the label..
 print(ebv_properties(newNc, dc.new[1,1])@entity)
 ```
 
 Ups! So you did a mistake and want to change the attribute?! No problem:
 ```{r}
-ebv_ncdf_write_attribute(newNc, attribute_name='label', value='Eumops auripendulus', levelpath=dc.new[1,1])
+ebv_ncdf_write_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
 print(ebv_properties(newNc, dc.new[1,1])@entity)
 
 ```
-In this case the levelpath corresponds to the datacube path. But you can also alter attributes at the metric or scenario level. See the vignette for more info.
+In this case the levelpath corresponds to the datacube path. But you can also alter attributes at the metric or scenario level. See the manual for more info.
 
 
