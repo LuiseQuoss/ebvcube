@@ -59,9 +59,6 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
       if(rhdf5::H5Iis_valid(did)==TRUE){rhdf5::H5Dclose(did)}
     }
   )
-  withr::defer(
-    tryCatch(utils::capture.output(ncdf4::nc_close(nc)))
-  )
 
   #are all arguments given?
   if(missing(filepath_nc)){
@@ -206,18 +203,19 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
   ### end initial test ----
 
-  #open hdf file
-  #hdf <- rhdf5::H5Fopen(filepath_nc)
+  # get properties ----
+  prop <- ebv_properties(filepath_nc, datacubepath)
+  fillvalue <- prop@entity$fillvalue
 
   #get data from tif ----
   if (length(timestep) > 1){
-    raster <- raster::brick(filepath_tif)[[band]] #RAM PROBLEM FOR HUGE DATA!!! read into delayed array?
+    raster <- raster::brick(filepath_tif)[[band]]
     raster <- raster::brick(raster) #convert raster stack to raster brick
   } else{
-    raster <- raster::raster(filepath_tif, band) #RAM PROBLEM FOR HUGE DATA!!! read into delayed array?
+    raster <- raster::raster(filepath_tif, band)
   }
 
-  #get value range from tif
+  #get value range from tif ----
   if (raster@data@haveminmax){
     min <- min(raster@data@min)
     max <- max(raster@data@max)
@@ -228,16 +226,15 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
   #get fill value from tif
   nodata <- raster@file@nodatavalue
-  if (nodata == '-Inf'){
-    nodata = 'None'
+  if (nodata != fillvalue){
+    message(paste0('The fillvalue of the GeoTiff (value: ',nodata,') differs from
+                   the fillvalue of the datacube: ', fillvalue, '.'))
   }
-  #get data type from tif
-  type.hdf<- ebv_i_type_raster(raster@file@datanotation, raster@file@byteorder)
 
-  #read amount of entities from hdf file
-  #len.e <- length(rhdf5::h5read(hdf, 'var_entity'))
+  # #get data type from tif
+  # type.hdf<- ebv_i_type_raster(raster@file@datanotation, raster@file@byteorder)
 
-  #rotate data
+  #rotate data ----
   if (length(timestep) > 1){
     data <- array(NA, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
     for (i in 1:length(timestep)){
@@ -247,15 +244,21 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
       data[,,i] <- temp
     }
   } else {
-    data <- raster::as.matrix(raster)
+    data <- matrix(raster, nrow=dim(raster)[1], ncol=dim(raster)[2])
     data <- t(data[nrow(data):1,])
     data <- data[,ncol(data):1]
   }
 
   # add data to nc ----
-  nc<- ncdf4::nc_open(filepath_nc, write=T)
-  ncdf4::ncvar_put(nc = nc, varid = datacubepath, vals = data, start=c(1,1,min(timestep)), count=c(dim(data)[1:2], length(timestep)), verbose=verbose)
-  ncdf4::nc_close(nc)
+  #set new dimension of dataset
+  hdf <- rhdf5::H5Fopen(filepath_nc)
+  did <- rhdf5::H5Dopen(hdf, datacubepath)
+  dims <- c(lon.len,lat.len,max_time)
+  rhdf5::H5Dset_extent(did, dims)
+  rhdf5::H5Dclose(did)
+  #write data
+  rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep)),
+                 count=c(lon.len,lat.len,length(timestep)))
 
   #add entity attributes----
   #open file
@@ -299,14 +302,18 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   }
 
   # :description
-  ebv_i_char_att(did, 'description', 'default')
+  if (! rhdf5::H5Aexists(did, 'description')){
+    ebv_i_char_att(did, 'description', 'default')
+  }
 
-  # :least_significant_digit = 4; // int
-  ebv_i_int_att(did, 'least_significant_digit', 4)
+  # # :least_significant_digit = 4; // int
+  # ebv_i_int_att(did, 'least_significant_digit', 4)
 
   #attributes that are filled by user - created empty
   # :label = "forest bird species";
-  ebv_i_char_att(did, 'standard_name', 'default')
+  if (! rhdf5::H5Aexists(did, 'standard_name')){
+    ebv_i_char_att(did, 'standard_name', 'default')
+  }
 
   #delete automatically created attribute: :rhdf5-NA.OK
   if(rhdf5::H5Aexists(did, 'rhdf5-NA.OK')){
