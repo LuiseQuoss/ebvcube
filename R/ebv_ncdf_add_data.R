@@ -76,7 +76,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){
@@ -86,7 +86,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
     stop('ignore.RAM must be of type logical.')
   }
 
@@ -206,7 +206,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
   ### end initial test ----
 
-  #open hdf file ----
+  #open hdf file
   #hdf <- rhdf5::H5Fopen(filepath_nc)
 
   #get data from tif ----
@@ -252,6 +252,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     data <- data[,ncol(data):1]
   }
 
+  # add data to nc ----
   nc<- ncdf4::nc_open(filepath_nc, write=T)
   ncdf4::ncvar_put(nc = nc, varid = datacubepath, vals = data, start=c(1,1,min(timestep)), count=c(dim(data)[1:2], length(timestep)), verbose=verbose)
   ncdf4::nc_close(nc)

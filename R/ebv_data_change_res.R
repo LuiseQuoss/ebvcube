@@ -83,7 +83,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){
@@ -93,13 +93,13 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(return.raster) != TRUE){
+  if(checkmate::checkLogical(return.raster, len=1, any.missing=F) != TRUE){
     stop('return.raster must be of type logical.')
   }
-  if(checkmate::checkLogical(overwrite) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
     stop('overwrite must be of type logical.')
   }
-  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
     stop('ignore.RAM must be of type logical.')
   }
 

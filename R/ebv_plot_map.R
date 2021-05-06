@@ -59,7 +59,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){
@@ -115,13 +115,13 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
     stop('ignore.RAM must be of type logical.')
   }
-  if(checkmate::checkLogical(countries) != TRUE){
+  if(checkmate::checkLogical(countries, len=1, any.missing=F) != TRUE){
     stop('countries must be of type logical.')
   }
-  if(checkmate::checkLogical(col.rev) != TRUE){
+  if(checkmate::checkLogical(col.rev, len=1, any.missing=F) != TRUE){
     stop('col.rev must be of type logical.')
   }
 

@@ -89,7 +89,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){
@@ -99,7 +99,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(overwrite) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
     stop('overwrite must be of type logical.')
   }
 

@@ -77,7 +77,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){

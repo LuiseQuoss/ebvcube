@@ -73,7 +73,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){
@@ -83,7 +83,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(overwrite) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
     stop('overwrite must be of type logical.')
   }
 

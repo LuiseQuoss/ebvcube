@@ -51,7 +51,7 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){
@@ -101,13 +101,13 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(na.rm) != TRUE){
+  if(checkmate::checkLogical(na.rm, len=1, any.missing=F) != TRUE){
     stop('na.rm must be of type logical.')
   }
-  if(checkmate::checkLogical(numerical) != TRUE){
+  if(checkmate::checkLogical(numerical, len=1, any.missing=F) != TRUE){
     stop('numerical must be of type logical.')
   }
-  if(checkmate::checkLogical(at) != TRUE){
+  if(checkmate::checkLogical(at, len=1, any.missing=F) != TRUE){
     stop('at must be of type logical.')
   }
 

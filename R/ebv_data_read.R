@@ -57,7 +57,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){
@@ -67,16 +67,16 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(delayed) != TRUE){
+  if(checkmate::checkLogical(delayed, len=1, any.missing=F) != TRUE){
     stop('delayed must be of type logical.')
   }
-  if(checkmate::checkLogical(sparse) != TRUE){
+  if(checkmate::checkLogical(sparse, len=1, any.missing=F) != TRUE){
     stop('sparse must be of type logical.')
   }
-  if(checkmate::checkLogical(raster) != TRUE){
+  if(checkmate::checkLogical(raste, len=1, any.missing=Fr) != TRUE){
     stop('raster must be of type logical.')
   }
-  if(checkmate::checkLogical(ignore.RAM) != TRUE){
+  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
     stop('ignore.RAM must be of type logical.')
   }
 

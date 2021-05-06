@@ -42,7 +42,7 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){

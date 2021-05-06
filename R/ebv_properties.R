@@ -72,7 +72,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }
   if(verbose){
