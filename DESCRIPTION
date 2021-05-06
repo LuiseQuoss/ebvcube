@@ -10,8 +10,7 @@ Authors@R:
 Description: This package can be used to easily access the data of the EBV NetCDFs which can be 
     downloaded here: portal.geobon.org. It also provides some basic visualization of the data. 
     Advanced users can build their own NetCDFs with the EBV standard using this package.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
