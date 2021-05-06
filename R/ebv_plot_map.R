@@ -26,6 +26,7 @@
 #' @return Plots a map.
 #' @export
 #' @importFrom utils data
+#' @importFrom colorspace diverging_hcl sequential_hcl
 #'
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
