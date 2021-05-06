@@ -73,7 +73,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   if(checkmate::checkLogical(sparse, len=1, any.missing=F) != TRUE){
     stop('sparse must be of type logical.')
   }
-  if(checkmate::checkLogical(raste, len=1, any.missing=Fr) != TRUE){
+  if(checkmate::checkLogical(raster, len=1, any.missing=F) != TRUE){
     stop('raster must be of type logical.')
   }
   if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
