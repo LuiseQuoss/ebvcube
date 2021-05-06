@@ -279,7 +279,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\Rtmp2NIjxC\temp_libpath25186bca355f\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\Rtmp2NIjxC\temp_libpath25182650b2e\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -296,7 +296,7 @@ datacube <- ebv_datacubepaths(forest)
 #trying to read the data to memory --> error!
 ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = F)
 #> Error in ebv_i_check_ram(prop@spatial$dimensions, timestep, type.long): The RAM needed to read the data into memory is larger than the free RAM.
-#> Free RAM: 1.6
+#> Free RAM: 1.5
 #> Needed RAM: 5.41
 ```
 
@@ -312,8 +312,9 @@ dim(data.da)
 #imagine you work with the data, then:
 #writing the data back to disk
 out <- file.path(system.file(package="ebvnetcdf"),'extdata','forest.tif')
-ebv_data_write(data.da, forest, datacube[1,1], out)
-#> Error in ebv_data_write(data.da, forest, datacube[1, 1], out): Output file already exists. Change name or enable overwrite.
+ebv_data_write(data.da, forest, datacube[1,1], out,  overwrite=T)
+#> Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.
+#> [1] TRUE
 ```
 
 ### Take a peek on the creation of an EBV NetCDF

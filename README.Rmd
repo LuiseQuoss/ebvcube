@@ -201,7 +201,7 @@ dim(data.da)
 #imagine you work with the data, then:
 #writing the data back to disk
 out <- file.path(system.file(package="ebvnetcdf"),'extdata','forest.tif')
-ebv_data_write(data.da, forest, datacube[1,1], out)
+ebv_data_write(data.da, forest, datacube[1,1], out,  overwrite=T)
 ```
 
 
