@@ -131,7 +131,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   fillvalue <- prop@entity$fillvalue
   type.short <- ebv_i_type_r(prop@entity$type)
   title <- prop@general$title
-  label <- prop@entity$label
+  label <- prop@entity$standard_name
   subtitle <- paste0(label, ' (timestep: ', timestep, ')')
   epsg <- prop@spatial$epsg
 
