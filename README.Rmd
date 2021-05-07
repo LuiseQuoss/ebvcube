@@ -133,7 +133,7 @@ prop.dc@general$title
 # And the datacube?
 prop.dc@entity$standard_name
 #What time is the sixth timestep representing?
-prop.dc@temporal$timesteps.natural[6]
+prop.dc@temporal$timesteps_natural[6]
 
 ```
 
