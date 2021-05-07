@@ -129,7 +129,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   # end initial tests ----
 
   #get needed properties
-  fillvalue <- prop@entity$fillvalue
+  fillvalue <- prop@entity$fillvalue[1]
   type.short <- ebv_i_type_r(prop@entity$type)
   title <- prop@general$title
   label <- prop@entity$standard_name
@@ -143,11 +143,20 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
       data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep,
                                    delayed = FALSE, raster=TRUE, ignore.RAM=ignore.RAM,
                                    verbose=verbose) #if this throws an error the data is going to plotted in lower res
-      data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
-                                       type = type.short)
+      hdf <- rhdf5::H5Fopen(filepath)
+      if (is.empty(ebv_i_check_data(hdf, datacubepath))){
+        message('Quantiles based on all layers.')
+        data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
+                                         type = type.short)
+      }else{
+        message('Quantiles only based on current layer because not all layers hold data.')
+        data.all <- raster::as.matrix(data.raster)
+      }
+      rhdf5::H5Fclose(hdf)
+
       #mask out fillvalue ----
       data.all <- replace(data.all, data.all==fillvalue, c(NA))
-      results <- c(data.raster, data.all, 'NULL')
+      results <- list(data.raster, data.all, 'NULL')
     },
     #change res if data is too big----
     error = function(cond){
@@ -156,6 +165,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
       }
       message(paste0('Data will be displayed in a lower resolution. May take up to a few minutes. Original resolution: ',
                      prop@spatial$resolution[1] , ', displayed resoultion: 1 degree.'))
+      message('Quantiles only based on current layer.')
       #check temp directory
       temp_path <- getOption('temp_directory')[[1]]
       if (is.null(temp_path)){
@@ -185,7 +195,6 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   data.raster <- results[[1]]
   data.all <- results[[2]]
   temp.map <- results[[3]]
-
   #get quantiles ----
   s <- stats::quantile(data.all, probs = seq(0, 1, (1/classes)), na.rm=TRUE)
 
