@@ -15,8 +15,6 @@
 #'
 #' @note If the properties class holds e.g. no scenario information this is
 #'   indicated with an element called status in the list.
-#'
-#' @examples
 methods::setClass("EBV NetCDF properties", slots=list(general="list",
                                                       spatial="list",
                                                       temporal="list",

@@ -36,9 +36,13 @@ Adds the new value to the attribute. Check your results using
 }
 \description{
 Write a new attribute value to an EBV NetCDF. Not all attributes
-can be changed. Some are always created automatically, e.g. the crs, time
-and var_entity datasets. In this case you have to re-create the NetCDF
-file.
+can be changed. Some are always created automatically, e.g. the attributes
+belonging to the crs, time and var_entity datasets. In this case you have
+to re-create the NetCDF file.
+}
+\note{
+You can change the ebv_class and the ebv_name. In this case you need to
+change the ebv_class first.
 }
 \examples{
 file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")

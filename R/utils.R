@@ -332,10 +332,8 @@ ebv_i_check_ram <- function(dims, timestep, type){
 #' @param hdf datahandle of file
 #' @param datacubepath character to datacube
 #' @param timestep vector of integers. optional.
-#'
 #' @return Returns vector of bands that are empty. Else returns empty vector.
-#'
-#' @examples
+#' @noRd
 ebv_i_check_data <- function(hdf, datacubepath, timestep=NULL){
   if (is.null(timestep)){
     did <- hdf&datacubepath

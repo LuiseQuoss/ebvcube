@@ -19,7 +19,7 @@ ebv_subgroups, creator}
 \item{\code{spatial}}{Named list. Elements: srs, epsg, resolution, extent, dimensions}
 
 \item{\code{temporal}}{Named list. Elements: units, t_delta, timesteps,
-timesteps.natural}
+timesteps_natural}
 
 \item{\code{metric}}{Named list. Elements: standard_name, description}
 
