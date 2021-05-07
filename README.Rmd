@@ -241,20 +241,23 @@ ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=
 ```
 
 #### 3. Add missing attributes to datacube
-Now there are still a few information missing about the data you just added. The following function makes it possible to add the information.
+Now there are still a two information missing about the data you just added. The following function makes it possible to add the information.
 
 ```{r}
-#adding the correct info:
-ebv_ncdf_entity_attributes(newNc, dc.new[1,1], standard_name='Eumops auripendulu', description='Data on Area Of Habitat (AOH)')
+#looking at the corrent entity information
+print(ebv_properties(newNc, dc.new[1,1])@entity)
+#adding standard_name
+ebv_ncdf_write_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulu', levelpath=dc.new[1,1])
+#adding description
+ebv_ncdf_write_attribute(newNc, attribute_name='description', value='Data on Area Of Habitat (AOH)', levelpath=dc.new[1,1])
 #rechecking properties - now it looks good! but there is a typo for the label..
 print(ebv_properties(newNc, dc.new[1,1])@entity)
 ```
-
 Ups! So you did a mistake and want to change the attribute?! No problem:
 ```{r}
 ebv_ncdf_write_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
-print(ebv_properties(newNc, dc.new[1,1])@entity)
+print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
 
 ```
 In this case the levelpath corresponds to the datacube path. But you can also alter attributes at the metric or scenario level. See the manual for more info.

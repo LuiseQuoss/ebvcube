@@ -192,6 +192,7 @@ at the sixth one.
 #plot the global map
 dc <- datacubes[1,1]
 ebv_plot_map(file, dc, timestep = 6)
+#> Quantiles based on all layers.
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
@@ -204,7 +205,7 @@ prop.dc@general$title
 prop.dc@entity$standard_name
 #> [1] "non forest birds species"
 #What time is the sixth timestep representing?
-prop.dc@temporal$timesteps.natural[6]
+prop.dc@temporal$timesteps_natural[6]
 #> [1] "1960-01-01"
 ```
 
@@ -277,7 +278,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpWI7exw\temp_libpath14a86de35144\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpCums7H\temp_libpath33e42bf56cdd\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -294,7 +295,7 @@ datacube <- ebv_datacubepaths(forest)
 #trying to read the data to memory --> error!
 ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = F)
 #> Error in ebv_i_check_ram(prop@spatial$dimensions, timestep, type.long): The space needed to read the data into memory is larger than the free RAM.
-#> Free RAM: 2.19
+#> Free RAM: 1.33
 #> Needed RAM: 5.41
 ```
 
@@ -397,12 +398,33 @@ ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=
 
 #### 3. Add missing attributes to datacube
 
-Now there are still a few information missing about the data you just
+Now there are still a two information missing about the data you just
 added. The following function makes it possible to add the information.
 
 ``` r
-#adding the correct info:
-ebv_ncdf_entity_attributes(newNc, dc.new[1,1], standard_name='Eumops auripendulu', description='Data on Area Of Habitat (AOH)')
+#looking at the corrent entity information
+print(ebv_properties(newNc, dc.new[1,1])@entity)
+#> $description
+#> [1] "default"
+#> 
+#> $standard_name
+#> [1] "default"
+#> 
+#> $unit
+#> [1] "km2"
+#> 
+#> $type
+#> [1] "H5T_IEEE_F32LE"
+#> 
+#> $fillvalue
+#> [1] -3.4e+38
+#> 
+#> $value_range
+#> [1]   0.0000 772.7673
+#adding standard_name
+ebv_ncdf_write_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulu', levelpath=dc.new[1,1])
+#adding description
+ebv_ncdf_write_attribute(newNc, attribute_name='description', value='Data on Area Of Habitat (AOH)', levelpath=dc.new[1,1])
 #rechecking properties - now it looks good! but there is a typo for the label..
 print(ebv_properties(newNc, dc.new[1,1])@entity)
 #> $description
@@ -429,24 +451,8 @@ Ups! So you did a mistake and want to change the attribute?! No problem:
 ``` r
 ebv_ncdf_write_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
-print(ebv_properties(newNc, dc.new[1,1])@entity)
-#> $description
-#> [1] "Data on Area Of Habitat (AOH)"
-#> 
-#> $standard_name
+print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
 #> [1] "Eumops auripendulus"
-#> 
-#> $unit
-#> [1] "km2"
-#> 
-#> $type
-#> [1] "H5T_IEEE_F32LE"
-#> 
-#> $fillvalue
-#> [1] -3.4e+38
-#> 
-#> $value_range
-#> [1]   0.0000 772.7673
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
