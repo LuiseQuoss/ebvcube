@@ -82,7 +82,7 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
   # basic attributes ----
   prop <- ebv_properties(filepath, datacubepath, verbose)
   time <- prop@spatial$dimensions[3]
-  timevalues <- prop@temporal$timesteps.natural
+  timevalues <- prop@temporal$timesteps_natural
   title <- prop@general$title
   label <- prop@entity$standard_name
   fillvalue <- prop@entity$fillvalue

@@ -4,7 +4,7 @@
 #'   ebv_subgroups, creator
 #' @slot spatial Named list. Elements: srs, epsg, resolution, extent, dimensions
 #' @slot temporal Named list. Elements: units, t_delta, timesteps,
-#'   timesteps.natural
+#'   timesteps_natural
 #' @slot metric Named list. Elements: standard_name, description
 #' @slot scenario Named list. Elements: standard_name, description
 #' @slot entity Named list. Elements: standard_name, description, unit, type,
@@ -198,13 +198,13 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   #timesteps
   timesteps <- rhdf5::h5read(hdf, 'time')
   #timesteps natural language
-  time.natural <- as.Date(timesteps-add, origin='1970-01-01')
+  time_natural <- as.Date(timesteps-add, origin='1970-01-01')
 
   #close data handle
   rhdf5::H5Dclose(time.ds)
 
   #create temporal list for S4 class
-  temporal <- list(units=time, t_delta=t_delta, timesteps=timesteps, timesteps.natural=time.natural)
+  temporal <- list(units=time, t_delta=t_delta, timesteps=timesteps, timesteps_natural=time_natural)
 
   ####variable specific properties ----
   if (!is.null(datacubepath)){
