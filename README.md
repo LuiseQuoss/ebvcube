@@ -93,8 +93,6 @@ metadata of that file.
 
 ``` r
 library(ebvnetcdf)
-#> Warning: replacing previous import 'colorspace::RGB' by 'raster::RGB' when
-#> loading 'ebvnetcdf'
 #> Warning: replacing previous import 'raster::quantile' by 'stats::quantile' when
 #> loading 'ebvnetcdf'
 
@@ -279,7 +277,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpInnWKx\temp_libpath321c19687e62\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpWI7exw\temp_libpath14a86de35144\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -295,8 +293,8 @@ forest <- system.file(file.path('extdata','hansen_tree_canopy_cover_01.nc'), pac
 datacube <- ebv_datacubepaths(forest)
 #trying to read the data to memory --> error!
 ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = F)
-#> Error in ebv_i_check_ram(prop@spatial$dimensions, timestep, type.long): The RAM needed to read the data into memory is larger than the free RAM.
-#> Free RAM: 1.79
+#> Error in ebv_i_check_ram(prop@spatial$dimensions, timestep, type.long): The space needed to read the data into memory is larger than the free RAM.
+#> Free RAM: 2.19
 #> Needed RAM: 5.41
 ```
 
@@ -333,10 +331,13 @@ mammals](https://portal.geobon.org/ebv-detail?id=5). As its ID in the
 geoportal is 5 the json file is just called 5.
 
 ``` r
+#paths
 json <- system.file(file.path('extdata','5.json'), package="ebvnetcdf")
 newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','mammals.nc')
+#defining the fillvalue
+fv <- -3.4e+38
 #lets say it has 5 entities, which is not true in reality!
-ebv_ncdf_create(json, newNc, 5, overwrite=T)
+ebv_ncdf_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
 #> $title
@@ -388,9 +389,10 @@ timestep definition.
 ``` r
 #path to tif with data
 tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
-#defining the fillvalue
-fv <- -3.4e+38
-#ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3), fillvalue = fv, prec='float')
+#adding the data
+ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
+#> The fillvalue of the GeoTiff (value: -Inf) differs from
+#>                    the fillvalue of the datacube: -3.39999995214436e+38.
 ```
 
 #### 3. Add missing attributes to datacube
@@ -413,13 +415,13 @@ print(ebv_properties(newNc, dc.new[1,1])@entity)
 #> [1] "km2"
 #> 
 #> $type
-#> [1] "H5T_IEEE_F64LE"
+#> [1] "H5T_IEEE_F32LE"
 #> 
 #> $fillvalue
-#> [1] NA
+#> [1] -3.4e+38
 #> 
 #> $value_range
-#> [1] NA
+#> [1]   0.0000 772.7673
 ```
 
 Ups! So you did a mistake and want to change the attribute?! No problem:
@@ -438,13 +440,13 @@ print(ebv_properties(newNc, dc.new[1,1])@entity)
 #> [1] "km2"
 #> 
 #> $type
-#> [1] "H5T_IEEE_F64LE"
+#> [1] "H5T_IEEE_F32LE"
 #> 
 #> $fillvalue
-#> [1] NA
+#> [1] -3.4e+38
 #> 
 #> $value_range
-#> [1] NA
+#> [1]   0.0000 772.7673
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
@@ -458,18 +460,18 @@ citation('ebvnetcdf')
 #> 
 #> Quoß L, Pereira H, Fernández N (2021). _ebvnetcdf: Working with EVB
 #> NetCDFs_. German Centre for Integrative Biodiversity Research (iDiv)
-#> Halle-Jena-Leipzig, Leipzig, Germany. R package version 0.0.1, <URL:
-#> {https://git.idiv.de/lq39quba/ebvnetcdf}>.
+#> Halle-Jena-Leipzig, Germany. R package version 0.0.1, <URL:
+#> https://git.idiv.de/lq39quba/ebvnetcdf>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {{ebvnetcdf}: Working with EVB NetCDFs},
+#>     title = {ebvnetcdf: Working with EVB NetCDFs},
 #>     author = {Luise Quoß and Henrique Miguel Pereira and Néstor Fernández},
 #>     year = {2021},
 #>     note = {R package version 0.0.1},
-#>     organization = {{German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig}},
-#>     address = {{Leipzig, Germany}},
-#>     url = {{https://git.idiv.de/lq39quba/ebvnetcdf}},
+#>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
+#>     address = {Germany},
+#>     url = {https://git.idiv.de/lq39quba/ebvnetcdf},
 #>   }
 ```

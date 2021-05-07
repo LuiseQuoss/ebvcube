@@ -212,10 +212,13 @@ This process is still work in progress. Right now you'll have to insert all the 
 The example is based on the [Global habitat availability for mammals ](https://portal.geobon.org/ebv-detail?id=5). As its ID in the geoportal is 5 the json file is just called 5.
 
 ```{r}
+#paths
 json <- system.file(file.path('extdata','5.json'), package="ebvnetcdf")
 newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','mammals.nc')
+#defining the fillvalue
+fv <- -3.4e+38
 #lets say it has 5 entities, which is not true in reality!
-ebv_ncdf_create(json, newNc, 5, overwrite=T)
+ebv_ncdf_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
 #check out the (still empty) datacubes
@@ -232,9 +235,8 @@ You can simply add more data to the same datacube by changing the timestep defin
 ```{r}
 #path to tif with data
 tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
-#defining the fillvalue
-fv <- -3.4e+38
-#ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3), fillvalue = fv, prec='float')
+#adding the data
+ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
 
 ```
 
