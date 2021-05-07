@@ -231,9 +231,6 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
                    the fillvalue of the datacube: ', fillvalue, '.'))
   }
 
-  # #get data type from tif
-  # type.hdf<- ebv_i_type_raster(raster@file@datanotation, raster@file@byteorder)
-
   #rotate data ----
   if (length(timestep) > 1){
     data <- array(NA, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
@@ -249,9 +246,11 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     data <- data[,ncol(data):1]
   }
 
+  #open file
+  hdf <- rhdf5::H5Fopen(filepath_nc)
+
   # add data to nc ----
   #get dim of dataset
-  hdf <- rhdf5::H5Fopen(filepath_nc)
   did <- rhdf5::H5Dopen(hdf, datacubepath)
   dims <- c(lon.len,lat.len,max_time)
   file_space <- rhdf5::H5Dget_space(did)
