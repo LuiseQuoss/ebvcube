@@ -250,12 +250,16 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   }
 
   # add data to nc ----
-  #set new dimension of dataset
+  #get dim of dataset
   hdf <- rhdf5::H5Fopen(filepath_nc)
   did <- rhdf5::H5Dopen(hdf, datacubepath)
   dims <- c(lon.len,lat.len,max_time)
-  rhdf5::H5Dset_extent(did, dims)
-  rhdf5::H5Dclose(did)
+  file_space <- rhdf5::H5Dget_space(did)
+  if (rhdf5::H5Sget_simple_extent_dims(file_space)$size[3] != dims[3]){
+    #set new dimension of dataset
+    rhdf5::H5Dset_extent(did, dims)
+    rhdf5::H5Dclose(did)
+  }
   #write data
   rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep)),
                  count=c(lon.len,lat.len,length(timestep)))
