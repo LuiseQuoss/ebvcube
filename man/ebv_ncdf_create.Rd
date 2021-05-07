@@ -50,9 +50,8 @@ Creates the NetCDF file at the 'outputpath' location.
 \description{
 Create the core structure of the EBV NetCDF based on the json
 from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
-and attributes will be added afterwards. See
-\code{\link[=ebv_ncdf_add_data]{ebv_ncdf_add_data()}} and
-\code{\link[=ebv_ncdf_entity_attributes]{ebv_ncdf_entity_attributes()}} for the next steps.
+and attributes will be added afterwards. Use
+\code{\link[=ebv_ncdf_add_data]{ebv_ncdf_add_data()}} to add the missing attributes.
 }
 \note{
 To check out the results take a look at your NetCDF file with

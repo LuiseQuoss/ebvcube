@@ -2,9 +2,8 @@
 #'
 #' @description Create the core structure of the EBV NetCDF based on the json
 #'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
-#'   and attributes will be added afterwards. See
-#'   [ebvnetcdf::ebv_ncdf_add_data()] and
-#'   [ebvnetcdf::ebv_ncdf_entity_attributes()] for the next steps.
+#'   and attributes will be added afterwards. Use
+#'   [ebvnetcdf::ebv_ncdf_add_data()] to add the missing attributes.
 #'
 #' @param jsonpath Character. Path to the json file downloaded from the
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
