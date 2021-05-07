@@ -327,6 +327,42 @@ ebv_i_check_ram <- function(dims, timestep, type){
   }
 }
 
+#' Check if data in datacube is missing
+#'
+#' @param hdf datahandle of file
+#' @param datacubepath character to datacube
+#' @param timestep vector of integers. optional.
+#'
+#' @return Returns vector of bands that are empty. Else returns empty vector.
+#'
+#' @examples
+ebv_i_check_data <- function(hdf, datacubepath, timestep=NULL){
+  if (is.null(timestep)){
+    did <- hdf&datacubepath
+    file_space <- rhdf5::H5Dget_space(did)
+    timestep <- 1:rhdf5::H5Sget_simple_extent_dims(file_space)$size[3]
+    rhdf5::H5Dclose(did)
+  }
+  result <- c()
+  for (t in timestep){
+    r <- tryCatch(
+      {
+        r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t), count=c(1,1,1))
+      },
+      error = function(e){
+        #print(e)
+        #message(paste0('Timestep ', t, ' holds no data.'));
+        r <- TRUE
+      }
+    )
+    if(r == TRUE){
+      result <- c(result, t)
+    }
+  }
+  return(result)
+}
+
+
 #' Adds uint attribute to a specified h5object.
 #' @param h5obj H5object to write the attribute to, see
 #'   \href{https://rdocumentation.org/packages/rhdf5/versions/2.16.0}{rhdf5
