@@ -237,6 +237,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         description <- ebv_i_read_att(dh, 'description')
       }else if (rhdf5::H5Aexists(dh, 'long_name')){
         description <- ebv_i_read_att(dh, 'long_name')[1]
+      } else {
+        description <- 'not defined'
       }
 
       #standard_name
