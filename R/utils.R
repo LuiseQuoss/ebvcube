@@ -312,7 +312,7 @@ ebv_i_check_ram <- function(dims, timestep, type){
     ram.pc.total <- ram.pc[1]
     #check if data too big
     if(ram.pc.free < ram.var.gb){
-      stop(paste0('The RAM needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb,2)))
+      stop(paste0('The space needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb,2)))
     }
     #at least 1 GB stays free
     if(ram.pc.free - ram.var.gb < 1){
