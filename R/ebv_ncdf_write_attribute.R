@@ -1,9 +1,9 @@
 #' Write a new attribute value to an EBV NetCDF
 #'
 #' @description Write a new attribute value to an EBV NetCDF. Not all attributes
-#'   can be changed. Some are always created automatically, e.g. the crs, time
-#'   and var_entity datasets. In this case you have to re-create the NetCDF
-#'   file.
+#'   can be changed. Some are always created automatically, e.g. the attributes
+#'   belonging to the crs, time and var_entity datasets. In this case you have
+#'   to re-create the NetCDF file.
 #'
 #' @param filepath Character. Path to the NetCDF file.
 #' @param attribute_name Character. Name of the attribute that should be
@@ -21,6 +21,9 @@
 #' @return Adds the new value to the attribute. Check your results using
 #'   [ebvnetcdf::ebv_properties()].
 #' @export
+#'
+#' @note You can change the ebv_class and the ebv_name. In this case you need to
+#'   change the ebv_class first.
 #'
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
@@ -114,11 +117,14 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
 
   #set (block) list ----
   att.num <- c('_FillValue')
-  att.int <- c('least_significant_digit')
-  att.chr <- c('standard_name', 'description', 'units', 'long_name', 'label', 'title', 'creator',
-               'institution', 'contactname', 'contactemail', 'ebv_class', 'ebv_name')
-  att.blocked <- c('axis', 'calendar', 'grid_mapping', '_ChunkSizes', 'value_range',
-                   'Conventions', 'ebv_subgroups', 't_delta', 'type')
+  att.chr <- c('standard_name', 'description', 'units', 'title', 'creator',
+               'institution', 'contactname', 'contactemail', 'ebv_class', 'ebv_name',
+               #for old standard
+               'long_name', 'label')
+  att.blocked <- c('grid_mapping', '_ChunkSizes', 'valid_range',
+                   'Conventions', 'ebv_subgroups', 'type', 'least_significant_digit',
+                   #for old standard
+                   'value_range')
 
   #check block list ----
   if(! is.null(levelpath)){
@@ -222,7 +228,7 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
 
   #check if attribute exists - written correct? ----
   if (! rhdf5::H5Aexists(h5obj, attribute_name)){
-    if (attribute_name %in% att.num | attribute_name %in% att.int | attribute_name %in% att.chr){
+    if (attribute_name %in% att.num | attribute_name %in% att.chr){
       stop('Attribute does not exist within given levelpath in NetCDF. Change your levelpath!')
     } else {
       stop('Attribute is written incorrectly or does not exist in NetCDF')
@@ -242,12 +248,6 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
       }
     } else if (attribute_name %in% att.chr){
       ebv_i_char_att(h5obj, attribute_name, value)
-    } else if (attribute_name %in% att.int){
-      if(! is.na(as.numeric(value))){
-        ebv_i_int_att(h5obj, attribute_name, value)
-      } else{
-        stop(paste0('The attribute ', attribute_name, ' needs to be an integer value.'))
-      }
     }
   }
 
