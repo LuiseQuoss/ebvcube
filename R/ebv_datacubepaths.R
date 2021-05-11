@@ -61,12 +61,12 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   }
 
   #paths ----
-  paths = c()
+  datacubepaths = c()
   for (row in 1:nrow(ls)){
     if(ls[row,3] == 'H5I_DATASET'){
       p <- paste0(ls[row,'group'], '/', ls[row, 'name'])
       p <- substring(p, 2, nchar(p))
-      paths <- c(paths, p)
+      datacubepaths <- c(datacubepaths, p)
     }
   }
 
@@ -77,12 +77,12 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
 
   #build result ----
-  entity_longnames <- c()
+  entity_names <- c()
   #scenario and metric ----
   if('scenario' %in% subgroups & 'metric' %in% subgroups){
-    scenario_longnames <- c()
-    metric_longnames <- c()
-    for (p in paths){
+    scenario_names <- c()
+    metric_names <- c()
+    for (p in datacubepaths){
       #entity longname
       dh <- hdf&p
       if (rhdf5::H5Aexists(dh, 'label')){
@@ -116,16 +116,16 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
       }
       rhdf5::H5Gclose(dh)
       #collect infos
-      scenario_longnames <- c(scenario_longnames, s)
-      metric_longnames <- c(metric_longnames, m)
-      entity_longnames <- c(entity_longnames, e)
+      scenario_names <- c(scenario_names, s)
+      metric_names <- c(metric_names, m)
+      entity_names <- c(entity_names, e)
     }
     #build result data.frame
-    result = data.frame(paths, scenario_longnames, metric_longnames, entity_longnames)
+    result = data.frame(datacubepaths, scenario_names, metric_names, entity_names)
   } else{
     # only metric ----
-    metric_longnames <- c()
-    for (p in paths){
+    metric_names <- c()
+    for (p in datacubepaths){
       #entity longname
       dh <- hdf&p
       if (rhdf5::H5Aexists(dh, 'label')){
@@ -152,12 +152,12 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
         }
         rhdf5::H5Gclose(dh)
       }
-      entity_longnames <- c(entity_longnames, e)
-      metric_longnames <- c(metric_longnames, m)
+      entity_names <- c(entity_names, e)
+      metric_names <- c(metric_names, m)
 
     }
     #build result data.frame
-    result = data.frame(paths, metric_longnames, entity_longnames)
+    result = data.frame(datacubepaths, metric_names, entity_names)
   }
 
   #close file
