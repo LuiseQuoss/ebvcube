@@ -2,7 +2,7 @@
 #'
 #' @description Change the resolution of one datacube of a EBV NetCDF based on
 #'   another EBV NetCDF or a given resolution. This functions writes temporary
-#'   files on your disk. Speficy a directory for these setting via
+#'   files on your disk. Specify a directory for these setting via
 #'   options('temp_directory'='/path/to/temp/directory').
 #'
 #' @param filepath_src Character. Path to the NetCDF file whose resolution
@@ -52,7 +52,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
-  #ensure that all tempfiles are deleted on exit ----
+  #ensure that all tempfiles are deleted on exit
   withr::defer(
     if(exists('temp')){
       if(file.exists(temp)){
@@ -239,8 +239,6 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
 
   #get epsg
   epsg_src <- prop_src@spatial$epsg
-  srs_src <- sp::CRS(SRS_string = paste0('EPSG:',epsg_src))
-  srs_dest <- sp::CRS(SRS_string = paste0('EPSG:',epsg_dest))
 
   #check if both epsg are valid
   epsg_list <- rgdal::make_EPSG()
@@ -250,6 +248,10 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   if (! epsg_src %in% epsg_list$code){
     stop(paste0('The given source epsg is not valid or not supported by R.\n', epsg_src))
   }
+
+  #srs defintion from epsg
+  srs_src <- sp::CRS(SRS_string = paste0('EPSG:',epsg_src))
+  srs_dest <- sp::CRS(SRS_string = paste0('EPSG:',epsg_dest))
 
   #get output type ot for gdal
   #type.long <- prop_src@entity_information@type
