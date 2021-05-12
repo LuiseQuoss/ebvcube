@@ -134,7 +134,7 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
     #process shp subset ----
     subset.raster <- ebv_data_read_shp(filepath, datacubepath, shp=subset, timestep=timestep, at=at, verbose=verbose)
     #raster to array
-    subset.array <- as.array(subset.raster)
+    subset.array <- raster::as.array(subset.raster)
     #less ram
     rm(subset.raster)
   } else {
