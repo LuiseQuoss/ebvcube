@@ -23,8 +23,8 @@ changed.}
 \item{levelpath}{Character. Default: NULL. Indicates the location of the
 attribute. The default means that the attribute is located at a global
 level. If the attribute is located at the datacubelevel just add the
-datacubepath. For the metric level the value may be 'metric00' or
-'scenario00/metric00'. This path depends on whether the NetCDF hierarchy
+datacubepath. For the metric level the value may be 'metric01' or
+'scenario01/metric01'. This path depends on whether the NetCDF hierarchy
 has scenarios or not.}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -48,11 +48,11 @@ change the ebv_class first.
 file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
 attribute1 <- 'standard_name'
 value1 <- 'mammals'
-level1 <- 'metric00'
+level1 <- 'metric01'
 #ebv_ncdf_write_attribute(file, attribute1, value1, level1)
 attribute2 <- '_FillValue'
 value2 <- -999
-level2 <- 'metric00/entity00'
+level2 <- 'metric01/entity01'
 #ebv_ncdf_write_attribute(file, attribute2, value2, level2)
 attribute3 <- 'creator'
 value3 <- 'Jane Doe'
