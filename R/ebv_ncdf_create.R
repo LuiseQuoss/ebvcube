@@ -37,14 +37,17 @@
 #' json <- system.file(file.path("extdata","1.json"), package="ebvnetcdf")
 #' out <- file.path(system.file(package='ebvnetcdf'),"extdata","sCAR_new.nc")
 #' #ebv_ncdf_create(json, out, 3, fillvalue=-3.4E38)
-ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, extent= c(-180,180,-90,90), fillvalue = NULL, prec = 'double', overwrite=FALSE,verbose=FALSE){
+ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
+                            extent= c(-180,180,-90,90), fillvalue = NULL,
+                            prec = 'double', overwrite=FALSE,verbose=FALSE){
   # start initial tests ----
-  # ensure file and all datahandles are cloed on exit
+  # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
+
   gids <- c('mgid', 'sgid')
   withr::defer(
     for (id in gids){
@@ -54,7 +57,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       }
     }
   )
-  dids <- c('mcrs.id', 'crs.id', 'lat.id', 'lon.id', 'time.id', 'var_entity.id')
+  dids <- c('mcrs.id', 'crs.id', 'lat.id', 'lon.id', 'time.id', 'var_entity.id','dc')
   withr::defer(
     for (id in dids){
       if(exists(id)){
@@ -165,7 +168,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   }
 
 
-  # end initial tests -------------------------------------------------------
+  # end initial tests ----
 
   #overwrite --> delete file
   if (file.exists(outputpath) & overwrite==TRUE){
@@ -191,24 +194,8 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   crs <- sp::CRS(SRS_string = paste0("EPSG:", epsg))
   ref <- sp::wkt(crs)
 
-  # :longitude_of_prime_meridian
-  parts <- stringr::str_split(ref, "[^[:print:]]")[[1]]
-  row <- parts[stringr::str_detect(parts, 'Longitude of natural origin')]
-  if (is.empty(row)){
-    row <- parts[stringr::str_detect(parts, 'PRIMEM')]
-  }
-  longitude_of_prime_meridian <- as.numeric(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]])
-
-  # :semi_major_axis
-  row <- parts[stringr::str_detect(parts, 'ELLIPSOID')]
-  index <- length(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]])-1
-  semi_major_axis <- as.numeric(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]][index])
-
-  # :inverse_flattening
-  index <- length(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]])
-  inverse_flattening <- as.numeric(regmatches(row, gregexpr("[[:digit:].]+", row))[[1]][index])
-
   # unit
+  parts <- stringr::str_split(ref, "[^[:print:]]")[[1]]
   row <- parts[stringr::str_detect(parts, 'CS')]
   if (stringr::str_detect(row, 'Cartesian') | stringr::str_detect(row, 'cartesian')){
     crs.unit <- 'meters'
@@ -476,18 +463,6 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   # :GeoTransform
   ebv_i_char_att(crs.id, 'GeoTransform', geo_trans)
 
-  # :grid_mapping_name
-  ebv_i_char_att(crs.id, 'grid_mapping_name', 'crs')
-
-  # :longitude_of_prime_meridian
-  ebv_i_num_att(crs.id, 'longitude_of_prime_meridian', longitude_of_prime_meridian)
-
-  # :semi_major_axis
-  ebv_i_num_att(crs.id, 'semi_major_axis', semi_major_axis)
-
-  # :inverse_flattening
-  ebv_i_num_att(crs.id, 'inverse_flattening', inverse_flattening)
-
   #close ds
   rhdf5::H5Dclose(crs.id)
 
@@ -624,18 +599,18 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
       description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
       ebv_i_char_att(mgid, 'standard_name', label)
       ebv_i_char_att(mgid, 'description', description)
-      #add subgroup 'crs' to metric
-      sid <- rhdf5::H5Screate_simple(1)
-      tid <- rhdf5::H5Tcopy("H5T_C_S1")
-      mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
-      rhdf5::H5Sclose(sid)
-      # :spatial_ref
-      ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
-      # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
-      ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
+      # #add subgroup 'crs' to metric
+      # sid <- rhdf5::H5Screate_simple(1)
+      # tid <- rhdf5::H5Tcopy("H5T_C_S1")
+      # mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
+      # rhdf5::H5Sclose(sid)
+      # # :spatial_ref
+      # ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
+      # # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
+      # ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
       #close datahandle
+      #rhdf5::H5Dclose(mcrs.id)
       rhdf5::H5Gclose(mgid)
-      rhdf5::H5Dclose(mcrs.id)
       j = j +1
     }
     #2. scenario and metric (entities are not relevant)
@@ -691,6 +666,20 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326, exte
   # if (rhdf5::H5Lexists(hdf, 'dim_entity')){
   #   rhdf5::h5delete(hdf, 'dim_entity')
   # }
+
+  #add entity attributes
+  datacubepaths <- ebv_datacubepaths(outputpath)
+  for (cube in datacubepaths[,1]){
+    dc <- rhdf5::H5Dopen(hdf, cube)
+    #grid_mapping
+    ebv_i_char_att(dc, 'grid_mapping', 'crs')
+    #description
+    ebv_i_char_att(dc, 'description', 'default')
+    # standard_name
+    ebv_i_char_att(dc, 'standard_name', 'default')
+    #close datahandle
+    rhdf5::H5Dclose(dc)
+  }
 
   # close file  ----
   rhdf5::H5Fclose(hdf)

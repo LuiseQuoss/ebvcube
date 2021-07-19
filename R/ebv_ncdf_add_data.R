@@ -263,14 +263,11 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep)),
                  count=c(lon.len,lat.len,length(timestep)))
 
-  #add entity attributes----
+  #add valid range attribute----
   #open file
   hdf <- rhdf5::H5Fopen(filepath_nc)
   #open DS
   did <- rhdf5::H5Dopen(hdf, datacubepath)
-
-  #grid_mapping
-  ebv_i_char_att(did, 'grid_mapping', 'crs')
 
   # :valid_range
   if (! rhdf5::H5Aexists(did, 'valid_range')){
@@ -302,20 +299,6 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
       rhdf5::H5Aclose(aid)
       rhdf5::H5Sclose(sid)
     }
-  }
-
-  # :description
-  if (! rhdf5::H5Aexists(did, 'description')){
-    ebv_i_char_att(did, 'description', 'default')
-  }
-
-  # # :least_significant_digit = 4; // int
-  # ebv_i_int_att(did, 'least_significant_digit', 4)
-
-  #attributes that are filled by user - created empty
-  # :label = "forest bird species";
-  if (! rhdf5::H5Aexists(did, 'standard_name')){
-    ebv_i_char_att(did, 'standard_name', 'default')
   }
 
   #delete automatically created attribute: :rhdf5-NA.OK
