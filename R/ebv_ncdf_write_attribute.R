@@ -113,6 +113,11 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
     }
   }
 
+  # check if attribute_name is string
+  if (checkmate::check_string(attribute_name) != TRUE){
+    stop('attribute_name must be of type character')
+  }
+
   #end initial tests ----
 
   #set (block) list ----
