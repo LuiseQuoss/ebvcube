@@ -104,7 +104,7 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
     #mask out fillvalue
     data.all <- replace(data.all, data.all==fillvalue, c(NA))
 
-    # warning for longer caluculation
+    # warning for longer calculation
     size <- dims[1]*dims[2]*dims[3]
     if (size > 100000000){
       message('Wow that is huge! Maybe get a tea...')
