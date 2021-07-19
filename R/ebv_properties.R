@@ -150,9 +150,11 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
   #get title
   title <- ebv_i_read_att(hdf, 'title')[1]
+  title <- stringr::str_conv(title ,"UTF-8")
 
   #get description
   description.file <- ebv_i_read_att(hdf, 'description')[1]
+  description.file <- stringr::str_conv(description.file ,"UTF-8")
 
   # #get value_range
   # value_range <- ebv_i_read_att(hdf, 'value_range')
@@ -165,11 +167,12 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   ebv_class <- ebv_i_read_att(hdf, 'ebv_class')
   ebv_subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
   creator <- ebv_i_read_att(hdf, 'creator')
+  creator <- stringr::str_conv(creator ,"UTF-8")
 
   #general
   general <- list(title=title, description=description.file,
                   ebv_class=ebv_class, ebv_name=ebv_name, ebv_subgroups=ebv_subgroups,
-                  creator=creator)#, value_range=value_range)
+                  creator=creator)
 
   #get srs ----
   srs.ds <- rhdf5::H5Dopen(hdf, 'crs')
@@ -238,6 +241,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       } else {
         description <- 'not defined'
       }
+      description <- stringr::str_conv(description ,"UTF-8")
 
       #standard_name
       if (rhdf5::H5Aexists(dh, 'label')){
@@ -289,6 +293,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
       #description
       description <- ebv_i_read_att(dh, 'description')[1]
+      description <- stringr::str_conv(description ,"UTF-8")
 
       #close data handle
       rhdf5::H5Gclose(dh)
@@ -363,6 +368,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       } else {
         description <- 'not defined'
       }
+      description <- stringr::str_conv(description ,"UTF-8")
 
       #label
       if (rhdf5::H5Aexists(dh, 'label')){
