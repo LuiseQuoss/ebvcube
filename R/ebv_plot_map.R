@@ -200,7 +200,8 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
 
   #check if quantile list values are unique
   if(length(unique(s)) != (classes+1)){
-    message('Error while creating quantiles. Color Scale will be corrupted')
+    message('Error while creating quantiles. Color Scale will be corrupted.
+            Most likely you will see less classes than you defined.')
     s <- unique(s)
   }
 
