@@ -599,17 +599,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
       description <- eval(parse(text=paste0('json$collections$metric',j,'$description')))
       ebv_i_char_att(mgid, 'standard_name', label)
       ebv_i_char_att(mgid, 'description', description)
-      # #add subgroup 'crs' to metric
-      # sid <- rhdf5::H5Screate_simple(1)
-      # tid <- rhdf5::H5Tcopy("H5T_C_S1")
-      # mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
-      # rhdf5::H5Sclose(sid)
-      # # :spatial_ref
-      # ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
-      # # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
-      # ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
-      #close datahandle
-      #rhdf5::H5Dclose(mcrs.id)
+      #close data handle
       rhdf5::H5Gclose(mgid)
       j = j +1
     }
@@ -645,18 +635,8 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
         description <- eval(parse(text=paste0('json$collections$metric',k,'$description')))
         ebv_i_char_att(mgid, 'standard_name', label)
         ebv_i_char_att(mgid, 'description', description)
-        #add subgroup 'crs' to metric
-        sid <- rhdf5::H5Screate_simple(1)
-        tid <- rhdf5::H5Tcopy("H5T_C_S1")
-        mcrs.id <- rhdf5::H5Dcreate(mgid, 'crs', tid, sid)
-        rhdf5::H5Sclose(sid)
-        # :spatial_ref
-        ebv_i_char_att(mcrs.id, 'spatial_ref', ref)
-        # :GeoTransform = "-180.0 0.25 0.0 90.0 0.0 -0.25";
-        ebv_i_char_att(mcrs.id, 'GeoTransform', geo_trans)
         #close datahandle
         rhdf5::H5Gclose(mgid)
-        rhdf5::H5Dclose(mcrs.id)
         k = k +1
       }
     }
