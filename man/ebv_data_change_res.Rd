@@ -58,7 +58,7 @@ resolution. Optional: return the raster object with the new resolution.
 \description{
 Change the resolution of one datacube of a EBV NetCDF based on
 another EBV NetCDF or a given resolution. This functions writes temporary
-files on your disk. Speficy a directory for these setting via
+files on your disk. Specify a directory for these setting via
 options('temp_directory'='/path/to/temp/directory').
 }
 \examples{
