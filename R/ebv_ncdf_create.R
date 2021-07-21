@@ -384,6 +384,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
     global.att['contactemail']<-'contact$contactEmail'
     global.att['ebv_class']<-'ebv$ebvClass'
     global.att['ebv_name']<-'ebv$ebvName'
+    global.att['license'] <- 'licenseName'
   }
   #add global.att to netcdf
   for (i in 1:length(global.att)){
