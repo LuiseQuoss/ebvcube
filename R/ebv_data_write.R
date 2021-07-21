@@ -135,6 +135,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
 
   # write DelayedMatrix ----
   if (class(data) == "DelayedMatrix"){
+
     #check temp directory
     temp_path <- getOption('temp_directory')[[1]]
     if (is.null(temp_path)){
@@ -198,6 +199,20 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
 
     # write several DelayedMatrix (list) ----
   } else if(class(data)=='list'){
+
+    #check temp directory
+    temp_path <- getOption('temp_directory')[[1]]
+    if (is.null(temp_path)){
+      stop('This function creates a temporary file. Please specify a temporary directory via options.')
+    } else {
+      if (checkmate::checkCharacter(temp_path) != TRUE){
+        stop('The temporary directory must be of type character.')
+      }
+      if (checkmate::checkDirectoryExists(temp_path) != TRUE){
+        stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+      }
+    }
+
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
 
