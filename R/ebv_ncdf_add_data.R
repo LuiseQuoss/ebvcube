@@ -233,17 +233,18 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
   #rotate data ----
   if (length(timestep) > 1){
-    data <- array(NA, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
-    for (i in 1:length(timestep)){
-      temp <- as.matrix(raster::as.array(raster)[,,i])
-      temp <- t(temp[nrow(temp):1,])
-      temp <- temp[,ncol(temp):1]
-      data[,,i] <- temp
-    }
+    data <- array(raster, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
+    # data <- array(NA, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
+    # for (i in 1:length(timestep)){
+    #   temp <- as.matrix(raster::as.array(raster)[,,i])
+    #   temp <- t(temp[nrow(temp):1,])
+    #   temp <- temp[,ncol(temp):1]
+    #   data[,,i] <- temp
+    # }
   } else {
     data <- matrix(raster, nrow=dim(raster)[1], ncol=dim(raster)[2])
-    data <- t(data[nrow(data):1,])
-    data <- data[,ncol(data):1]
+    #data <- t(data[nrow(data):1,])
+    #data <- data[,ncol(data):1]
   }
 
   #open file
@@ -265,7 +266,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
   #add valid range attribute----
   #open file
-  hdf <- rhdf5::H5Fopen(filepath_nc)
+  #hdf <- rhdf5::H5Fopen(filepath_nc)
   #open DS
   did <- rhdf5::H5Dopen(hdf, datacubepath)
 
