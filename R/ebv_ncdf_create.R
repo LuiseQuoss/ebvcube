@@ -648,12 +648,12 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
   #   rhdf5::h5delete(hdf, 'dim_entity')
   # }
 
-  #add entity attributes
+  #add entity attributes ----
   datacubepaths <- ebv_datacubepaths(outputpath)
   for (cube in datacubepaths[,1]){
     dc <- rhdf5::H5Dopen(hdf, cube)
     #grid_mapping
-    ebv_i_char_att(dc, 'grid_mapping', 'crs')
+    ebv_i_char_att(dc, 'grid_mapping', '/crs')
     #description
     ebv_i_char_att(dc, 'description', 'default')
     # standard_name
