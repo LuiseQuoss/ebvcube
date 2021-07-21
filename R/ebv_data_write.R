@@ -105,7 +105,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   if (checkmate::checkCharacter(datacubepath) != TRUE){
     stop('Datacubepath must be of type character.')
   }
-  hdf <- rhdf5::H5Fopen(filepath)
+  hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }

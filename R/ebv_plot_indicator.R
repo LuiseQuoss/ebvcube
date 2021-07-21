@@ -66,7 +66,7 @@ ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
   ebv_i_file_opened(filepath)
 
   #datacubepath check
-  hdf <- rhdf5::H5Fopen(filepath)
+  hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }

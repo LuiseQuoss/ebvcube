@@ -84,7 +84,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   ebv_i_file_opened(filepath)
 
   #datacubepath check
-  hdf <- rhdf5::H5Fopen(filepath)
+  hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }
@@ -143,7 +143,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
       data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep,
                                    delayed = FALSE, raster=TRUE, ignore.RAM=ignore.RAM,
                                    verbose=verbose) #if this throws an error the data is going to plotted in lower res
-      hdf <- rhdf5::H5Fopen(filepath)
+      hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
       if (is.empty(ebv_i_check_data(hdf, datacubepath))){
         message('Quantiles based on all layers.')
         data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,

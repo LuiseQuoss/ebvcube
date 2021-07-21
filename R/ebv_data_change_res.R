@@ -161,7 +161,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   if (checkmate::checkCharacter(datacubepath_src) != TRUE){
     stop('Datacubepath must be of type character.')
   }
-  hdf <- rhdf5::H5Fopen(filepath_src)
+  hdf <- rhdf5::H5Fopen(filepath_src, flags = "H5F_ACC_RDONLY")
   if (rhdf5::H5Lexists(hdf, datacubepath_src)==FALSE){
     stop(paste0('The given variable is not valid:\n', datacubepath_src))
   }
