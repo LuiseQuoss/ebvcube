@@ -3,7 +3,7 @@ citHeader("To cite ebvnetcdf in publications use:")
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Manual",
-         title = "ebvnetcdf: Working with EVB NetCDFs",
+         title = "ebvnetcdf: Working with netCDF for Essential Biodiversity Variables",
          author = c(person(given = "Luise",family = "Quoß"),
                   person(given = "Henrique Miguel", family = "Pereira"),
                   person(given = "Néstor", family = "Fernández")),
