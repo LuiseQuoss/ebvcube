@@ -128,19 +128,6 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     }
   }
 
-  #check temp directory
-  temp_path <- getOption('temp_directory')[[1]]
-  if (is.null(temp_path)){
-    stop('This function creates a temporary file. Please specify a temporary directory via options.')
-  } else {
-    if (checkmate::checkCharacter(temp_path) != TRUE){
-      stop('The temporary directory must be of type character.')
-    }
-    if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-      stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
-    }
-  }
-
   #######initial test end ----
 
   #get properties
@@ -148,6 +135,19 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
 
   # write DelayedMatrix ----
   if (class(data) == "DelayedMatrix"){
+    #check temp directory
+    temp_path <- getOption('temp_directory')[[1]]
+    if (is.null(temp_path)){
+      stop('This function creates a temporary file. Please specify a temporary directory via options.')
+    } else {
+      if (checkmate::checkCharacter(temp_path) != TRUE){
+        stop('The temporary directory must be of type character.')
+      }
+      if (checkmate::checkDirectoryExists(temp_path) != TRUE){
+        stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+      }
+    }
+
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
 
@@ -309,8 +309,14 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
     #write raster to disk
     raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)
     return(outputpath)
-
-  } else{
+  # write raster ----
+  } else if(class(data)=="RasterLayer"|class(data)=='RasterBrick'){
+    #mask out fillvalue
+    r<- raster::mask(data, data, maskvalue=prop@entity$fillvalue)
+    #write raster to disk
+    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)
+    return(outputpath)
+  }else{
     #not implemented, tell user
     stop(paste0('Not implemented for class ', class(data), '.'))
   }
