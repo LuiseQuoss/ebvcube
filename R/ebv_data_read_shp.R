@@ -3,7 +3,7 @@
 #' @description Read a subset of one or more layers from one datacube of the
 #'   NetCDF file. Subset definition by a shapefile. This functions writes
 #'   temporary files on your disk. Specify a directory for these setting via
-#'   options('temp_directory'='/path/to/temp/directory').
+#'   options('ebv_temp'='/path/to/temp/directory').
 #'
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
@@ -29,7 +29,7 @@
 #'
 #' @examples
 #' #define temp directory
-#' options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
+#' options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
 #' shp <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
@@ -163,7 +163,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   }
 
   #get temp directory
-  temp_path <- getOption('temp_directory')[[1]]
+  temp_path <- getOption('ebv_temp')[[1]]
   if (is.null(temp_path)){
     stop('This function creates a temporary file. Please specify a temporary directory via options.')
   } else {

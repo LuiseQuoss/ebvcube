@@ -2,7 +2,7 @@
 #' @description After you extracted data from the EBV NetCDF and worked with it
 #'   this function gives you the possibility to write it to disk as a GeoTiff.
 #'   This functions writes temporary files on your disk. Specify a directory for
-#'   these setting via options('temp_directory'='/path/to/temp/directory').
+#'   these setting via options('ebv_temp'='/path/to/temp/directory').
 #' @note Not yet implemented for subsets of the data (only whole spatial
 #'   coverage of the corresponding EBV NetCDF).
 #'
@@ -23,7 +23,7 @@
 #'
 #' @examples
 #' #define temp directory
-#' options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
+#' options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
 #' data <- ebv_data_read(file, datacubes[1,1], 1)
@@ -137,7 +137,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   if (class(data) == "DelayedMatrix"){
 
     #check temp directory
-    temp_path <- getOption('temp_directory')[[1]]
+    temp_path <- getOption('ebv_temp')[[1]]
     if (is.null(temp_path)){
       stop('This function creates a temporary file. Please specify a temporary directory via options.')
     } else {
@@ -201,7 +201,7 @@ ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=F
   } else if(class(data)=='list'){
 
     #check temp directory
-    temp_path <- getOption('temp_directory')[[1]]
+    temp_path <- getOption('ebv_temp')[[1]]
     if (is.null(temp_path)){
       stop('This function creates a temporary file. Please specify a temporary directory via options.')
     } else {

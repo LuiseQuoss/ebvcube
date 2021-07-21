@@ -3,7 +3,7 @@
 #' @description Map plot of the data of one timestep in one datacube of an EBV
 #'   NetCDF. This functions sometimes writes temporary files on your disk.
 #'   Speficy a directory for these setting via
-#'   options('temp_directory'='/path/to/temp/directory').
+#'   options('ebv_temp'='/path/to/temp/directory').
 #'
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
@@ -167,7 +167,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
                      prop@spatial$resolution[1] , ', displayed resoultion: 1 degree.'))
       message('Quantiles only based on current layer.')
       #check temp directory
-      temp_path <- getOption('temp_directory')[[1]]
+      temp_path <- getOption('ebv_temp')[[1]]
       if (is.null(temp_path)){
         stop('This function creates a temporary file. Please specify a temporary directory via options.')
       } else {

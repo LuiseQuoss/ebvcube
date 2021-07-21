@@ -45,7 +45,7 @@ Plots a map.
 Map plot of the data of one timestep in one datacube of an EBV
 NetCDF. This functions sometimes writes temporary files on your disk.
 Speficy a directory for these setting via
-options('temp_directory'='/path/to/temp/directory').
+options('ebv_temp'='/path/to/temp/directory').
 }
 \note{
 Uses the country outlines data from the

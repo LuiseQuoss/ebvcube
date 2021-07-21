@@ -50,11 +50,11 @@ subset is written onto the disk and the ouputpath is returned.
 Read a subset of one or more layers from one datacube of the
 NetCDF file. Subset definition by a shapefile. This functions writes
 temporary files on your disk. Specify a directory for these setting via
-options('temp_directory'='/path/to/temp/directory').
+options('ebv_temp'='/path/to/temp/directory').
 }
 \examples{
 #define temp directory
-options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
+options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 datacubes <- ebv_datacubepaths(file)
 shp <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")

@@ -38,7 +38,7 @@ Returns the outputpath.
 After you extracted data from the EBV NetCDF and worked with it
 this function gives you the possibility to write it to disk as a GeoTiff.
 This functions writes temporary files on your disk. Specify a directory for
-these setting via options('temp_directory'='/path/to/temp/directory').
+these setting via options('ebv_temp'='/path/to/temp/directory').
 }
 \note{
 Not yet implemented for subsets of the data (only whole spatial
@@ -46,7 +46,7 @@ coverage of the corresponding EBV NetCDF).
 }
 \examples{
 #define temp directory
-options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
+options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 datacubes <- ebv_datacubepaths(file)
 data <- ebv_data_read(file, datacubes[1,1], 1)

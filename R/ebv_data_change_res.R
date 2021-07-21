@@ -3,7 +3,7 @@
 #' @description Change the resolution of one datacube of a EBV NetCDF based on
 #'   another EBV NetCDF or a given resolution. This functions writes temporary
 #'   files on your disk. Specify a directory for these setting via
-#'   options('temp_directory'='/path/to/temp/directory').
+#'   options('ebv_temp'='/path/to/temp/directory').
 #'
 #' @param filepath_src Character. Path to the NetCDF file whose resolution
 #'   should be changed.
@@ -35,7 +35,7 @@
 #'
 #' @examples
 #' #define temp directory
-#' options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
+#' options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
 #' res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvnetcdf")
@@ -213,7 +213,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   }
 
   #get temp directory
-  temp_path <- getOption('temp_directory')[[1]]
+  temp_path <- getOption('ebv_temp')[[1]]
   if (is.null(temp_path)){
     stop('This function creates a temporary file. Please specify a temporary directory via options.')
   } else {

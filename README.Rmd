@@ -176,7 +176,7 @@ To subset the data using a shapefile you need to indicate a directory for tempor
 #load subset from shapefile (Germany)
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
-options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
+options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 data.shp <- ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
 dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile

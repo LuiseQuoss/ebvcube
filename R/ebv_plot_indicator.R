@@ -16,7 +16,7 @@
 #'   encompasses only one timestep a single mean is returned.
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
-#' @importFrom graphics par
+#' @importFrom graphics par plot
 #' @importFrom grDevices colors
 #'
 #' @examples

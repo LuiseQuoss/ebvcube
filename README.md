@@ -129,10 +129,10 @@ scenario and/or entity.
 ``` r
 datacubes <- ebv_datacubepaths(file)
 datacubes
-#>         paths scenario_longnames metric_longnames         entity_longnames
-#> 1 past/mean/0  past: 1900 - 2015             mean non forest birds species
-#> 2 past/mean/A  past: 1900 - 2015             mean         all brid species
-#> 3 past/mean/F  past: 1900 - 2015             mean      forest bird species
+#>   datacubepaths    scenario_names metric_names             entity_names
+#> 1   past/mean/0 past: 1900 - 2015         mean non forest birds species
+#> 2   past/mean/A past: 1900 - 2015         mean         all brid species
+#> 3   past/mean/F past: 1900 - 2015         mean      forest bird species
 ```
 
 In the next step we will get the properties of one specific datacube -
@@ -271,14 +271,14 @@ for temporarily created files.
 #load subset from shapefile (Germany)
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
-options('temp_directory'=system.file("extdata/", package="ebvnetcdf"))
+options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 data.shp <- ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
 dim(data.shp)
 #> [1]  9 11  3
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpCums7H\temp_libpath33e42bf56cdd\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpUPSl3W\temp_libpath29242b54245e\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -292,11 +292,10 @@ example is the Global Forest Cover dataset.
 ``` r
 forest <- system.file(file.path('extdata','hansen_tree_canopy_cover_01.nc'), package="ebvnetcdf")
 datacube <- ebv_datacubepaths(forest)
+#> Error in ebv_datacubepaths(forest): File does not exist.
 #trying to read the data to memory --> error!
 ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = F)
-#> Error in ebv_i_check_ram(prop@spatial$dimensions, timestep, type.long): The space needed to read the data into memory is larger than the free RAM.
-#> Free RAM: 1.33
-#> Needed RAM: 5.41
+#> Error in ebv_data_read(forest, datacube[1, 1], timestep = 1, delayed = F): File does not exist.
 ```
 
 The package provides the possibility to use the data as a DelayedArray.
@@ -306,14 +305,14 @@ Look into the manual to obtain more information.
 ``` r
 #reading the data as a DelayedArray
 data.da <- ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = T)
+#> Error in ebv_data_read(forest, datacube[1, 1], timestep = 1, delayed = T): File does not exist.
 dim(data.da)
-#> [1] 16800 43200
+#> Error in eval(expr, envir, enclos): Objekt 'data.da' nicht gefunden
 #imagine you work with the data, then:
 #writing the data back to disk
 out <- file.path(system.file(package="ebvnetcdf"),'extdata','forest.tif')
 ebv_data_write(data.da, forest, datacube[1,1], out,  overwrite=T)
-#> Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.
-#> [1] TRUE
+#> Error in ebv_data_write(data.da, forest, datacube[1, 1], out, overwrite = T): File does not exist.
 ```
 
 ### Take a peek on the creation of an EBV NetCDF
@@ -361,14 +360,14 @@ print(ebv_properties(newNc)@general)
 #check out the (still empty) datacubes
 dc.new <- ebv_datacubepaths(newNc)
 print(dc.new[c(1,5,6),])
-#>                          paths  scenario_longnames     metric_longnames
+#>                  datacubepaths      scenario_names         metric_names
 #> 1 scenario01/metric01/entity01      Sustainability Habitat availability
 #> 5 scenario01/metric01/entity05      Sustainability Habitat availability
 #> 6 scenario02/metric01/entity01 Middle of the Road  Habitat availability
-#>   entity_longnames
-#> 1      not defined
-#> 5      not defined
-#> 6      not defined
+#>   entity_names
+#> 1      default
+#> 5      default
+#> 6      default
 ```
 
 Hint: You can always take a look at your NetCDF in
@@ -464,15 +463,15 @@ citation('ebvnetcdf')
 #> 
 #> To cite ebvnetcdf in publications use:
 #> 
-#> Quoß L, Pereira H, Fernández N (2021). _ebvnetcdf: Working with EVB
-#> NetCDFs_. German Centre for Integrative Biodiversity Research (iDiv)
-#> Halle-Jena-Leipzig, Germany. R package version 0.0.1, <URL:
-#> https://git.idiv.de/lq39quba/ebvnetcdf>.
+#> Quoß L, Pereira H, Fernández N (2021). _ebvnetcdf: Working with netCDF
+#> for Essential Biodiversity Variables_. German Centre for Integrative
+#> Biodiversity Research (iDiv) Halle-Jena-Leipzig, Germany. R package
+#> version 0.0.1, <URL: https://git.idiv.de/lq39quba/ebvnetcdf>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {ebvnetcdf: Working with EVB NetCDFs},
+#>     title = {ebvnetcdf: Working with netCDF for Essential Biodiversity Variables},
 #>     author = {Luise Quoß and Henrique Miguel Pereira and Néstor Fernández},
 #>     year = {2021},
 #>     note = {R package version 0.0.1},

@@ -12,8 +12,6 @@
 #' data reading, ebv_plot_ for visualisation and ebv_netcdf_ for creating a
 #' NetCDF.
 #'
-#' @import checkmate gdalUtils HDF5Array jsonlite lattice memuse
-#'   methods ncdf4 raster rhdf5 rgdal sp stringr withr
 #'
 #' @docType package
 #' @name ebvnetcdf
