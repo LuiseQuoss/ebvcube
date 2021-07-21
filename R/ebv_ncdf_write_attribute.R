@@ -127,9 +127,9 @@ ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=
                #for old standard
                'long_name', 'label')
   att.blocked <- c('grid_mapping', '_ChunkSizes', 'valid_range',
-                   'Conventions', 'ebv_subgroups', 'type', 'least_significant_digit',
+                   'Conventions', 'ebv_subgroups',
                    #for old standard
-                   'value_range')
+                   'least_significant_digit','value_range')
 
   #check block list ----
   if(! is.null(levelpath)){
