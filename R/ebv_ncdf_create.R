@@ -657,6 +657,13 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
     ebv_i_char_att(dc, 'description', 'default')
     # standard_name
     ebv_i_char_att(dc, 'standard_name', 'default')
+    #valid_range
+    sid <- rhdf5::H5Screate_simple(2)
+    tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
+    aid <- rhdf5::H5Acreate(dc,'valid_range', tid,sid)
+    rhdf5::H5Awrite(aid, c(0,0))
+    rhdf5::H5Aclose(aid)
+    rhdf5::H5Sclose(sid)
     #close datahandle
     rhdf5::H5Dclose(dc)
   }
