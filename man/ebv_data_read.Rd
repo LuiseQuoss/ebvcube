@@ -11,7 +11,7 @@ ebv_data_read(
   delayed = TRUE,
   sparse = FALSE,
   raster = FALSE,
-  ignore.RAM = FALSE,
+  ignore_RAM = FALSE,
   verbose = FALSE
 )
 }
@@ -35,7 +35,7 @@ implementation by now.}
 get a raster. If both arguments are set to FALSE the function returns an
 array.}
 
-\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+\item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to

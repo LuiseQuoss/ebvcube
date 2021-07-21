@@ -2,7 +2,7 @@
 #' @param x A vector.
 #' @return Logical.
 #' @noRd
-is.empty <- function(x){
+ebv_i_empty <- function(x){
  if(length(x)==0){
    return(TRUE)
  } else {
@@ -316,11 +316,11 @@ ebv_i_check_ram <- function(dims, timestep, type){
     }
     #at least 1 GB stays free
     if(ram.pc.free - ram.var.gb < 1){
-      stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore.RAM = TRUE.')
+      stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore_RAM = TRUE.')
     }
     # #at least 15% stay free
     # if((ram.pc.total*0.15) > ram.var.gb){
-    #   stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore.RAM = TRUE.')
+    #   stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore_RAM = TRUE.')
     # }
   } else{
     message('Invalid type. RAM check ignored.')

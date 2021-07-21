@@ -9,7 +9,7 @@
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
 #' @param outputpath Character. Set path where the NetCDF file should be
 #'   created.
-#' @param entities.no Integer. Default: 0. Indicates how many entities there are
+#' @param entities_no Integer. Default: 0. Indicates how many entities there are
 #'   per metric.
 #' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
 #'   system via the corresponding epsg code.
@@ -37,7 +37,7 @@
 #' json <- system.file(file.path("extdata","1.json"), package="ebvnetcdf")
 #' out <- file.path(system.file(package='ebvnetcdf'),"extdata","sCAR_new.nc")
 #' #ebv_ncdf_create(json, out, 3, fillvalue=-3.4E38)
-ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
+ebv_ncdf_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
                             extent= c(-180,180,-90,90), fillvalue = NULL,
                             prec = 'double', overwrite=FALSE,verbose=FALSE){
   # start initial tests ----
@@ -150,9 +150,9 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
     stop('extent needs to be a list of 4 numeric values.')
   }
 
-  #check entities.no
-  if(checkmate::checkInt(entities.no) != TRUE){
-    stop('entities.no must be a single integer value.')
+  #check entities_no
+  if(checkmate::checkInt(entities_no) != TRUE){
+    stop('entities_no must be a single integer value.')
   }
 
   #check prec
@@ -257,21 +257,21 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
   lon.data <- seq((lon.min+(res/2)),(lon.max-(res/2)), res)
 
   # entities ----
-  if(!entities.no==0){
-    if ((entities.no) < 10){
+  if(!entities_no==0){
+    if ((entities_no) < 10){
       zeros <- 1
-    } else if ((entities.no) < 100){
+    } else if ((entities_no) < 100){
       zeros <- 2
-    } else if ((entities.no) < 1000){
+    } else if ((entities_no) < 1000){
       zeros <- 3
-    } else if ((entities.no-1) < 10000){
+    } else if ((entities_no-1) < 10000){
       zeros <- 4
-    } else if ((entities.no) < 100000){
+    } else if ((entities_no) < 100000){
       zeros <- 5
     }
     #create entity list
     entity.list <- c()
-    for (e in 1:(entities.no)){
+    for (e in 1:(entities_no)){
       reps <- rep('0', (zeros - nchar(e)))
       ent <- paste0('entity0', paste(reps, collapse = ''), as.character(e))
       entity.list <- c(entity.list, ent)
@@ -284,7 +284,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
   lat.dim <- ncdf4::ncdim_def('lat', crs.unit , vals = lat.data)
   lon.dim <- ncdf4::ncdim_def('lon', crs.unit, vals = lon.data)
   time.dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)
-  #entity.dim <- ncdf4::ncdim_def('dim_entity', units='', vals = c(1:entities.no), create_dimvar = F)
+  #entity.dim <- ncdf4::ncdim_def('dim_entity', units='', vals = c(1:entities_no), create_dimvar = F)
 
   # create list of vars ----
   var.list <- c()
@@ -410,7 +410,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
   # }
 
   # ebv subgroups ----
-  if(scenarios.no>0 & entities.no>0){
+  if(scenarios.no>0 & entities_no>0){
     sid <- rhdf5::H5Screate_simple(3)
     tid <- rhdf5::H5Tcopy("H5T_C_S1")
     rhdf5::H5Tset_size(tid, (nchar('scenario')+1))
@@ -427,7 +427,7 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
     rhdf5::H5Awrite(aid, c('scenario', 'metric'))
     rhdf5::H5Aclose(aid)
     rhdf5::H5Sclose(sid)
-  } else if (entities.no> 0){
+  } else if (entities_no> 0){
     sid <- rhdf5::H5Screate_simple(2)
     tid <- rhdf5::H5Tcopy("H5T_C_S1")
     rhdf5::H5Tset_size(tid, (nchar('entity')+1))
@@ -546,8 +546,8 @@ ebv_ncdf_create <- function(jsonpath, outputpath, entities.no=0, epsg=4326,
   rhdf5::H5Dclose(time.id)
 
   # add var_entity variable ----
-  if(!entities.no==0){
-    sid <- rhdf5::H5Screate_simple(entities.no)
+  if(!entities_no==0){
+    sid <- rhdf5::H5Screate_simple(entities_no)
     tid <- rhdf5::H5Tcopy("H5T_C_S1")
     rhdf5::H5Tset_size(tid, (nchar('entity0')+zeros))
     var_entity.id <- rhdf5::H5Dcreate(hdf, 'var_entity', tid, sid)

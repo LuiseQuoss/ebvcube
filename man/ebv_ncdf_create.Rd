@@ -7,7 +7,7 @@
 ebv_ncdf_create(
   jsonpath,
   outputpath,
-  entities.no = 0,
+  entities_no = 0,
   epsg = 4326,
   extent = c(-180, 180, -90, 90),
   fillvalue = NULL,
@@ -23,7 +23,7 @@ ebv_ncdf_create(
 \item{outputpath}{Character. Set path where the NetCDF file should be
 created.}
 
-\item{entities.no}{Integer. Default: 0. Indicates how many entities there are
+\item{entities_no}{Integer. Default: 0. Indicates how many entities there are
 per metric.}
 
 \item{epsg}{Integer. Default: 4326 (WGS84). Defines the coordinate reference

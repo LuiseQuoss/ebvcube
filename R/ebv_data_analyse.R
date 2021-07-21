@@ -17,7 +17,7 @@
 #'   [ebvnetcdf::ebv_data_read_bb()].
 #' @param numerical Logical. Default: TRUE. Change to FALSE if the data covered
 #'   by the NetCDF contains categorical data.
-#' @param na.rm Logical. Default: TRUE. NA values are removed in the analysis.
+#' @param na_rm Logical. Default: TRUE. NA values are removed in the analysis.
 #'   Change to FALSE to include NAs.
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
@@ -33,7 +33,8 @@
 #' datacubes <- ebv_datacubepaths(file)
 #' data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
 #' data.germany.1900 <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
-ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at=TRUE, epsg = 4326, numerical=TRUE, na.rm=TRUE, verbose=FALSE){
+ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1,
+                             at=TRUE, epsg = 4326, numerical=TRUE, na_rm=TRUE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -101,8 +102,8 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(na.rm, len=1, any.missing=F) != TRUE){
-    stop('na.rm must be of type logical.')
+  if(checkmate::checkLogical(na_rm, len=1, any.missing=F) != TRUE){
+    stop('na_rm must be of type logical.')
   }
   if(checkmate::checkLogical(numerical, len=1, any.missing=F) != TRUE){
     stop('numerical must be of type logical.')
@@ -145,12 +146,12 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1, at
     #numerical stats ----
     n <- length(subset.array)
     temp <- as.numeric(summary(array(subset.array)))
-    sd <- sd(subset.array, na.rm=na.rm)
+    sd <- sd(subset.array, na.rm=na_rm)
     stats <- list(min=temp[1], q25 = temp[2], q50=temp[3], mean =temp[4], q75 =temp[5], max=temp[6], std =sd, n =n, NAs =temp[7])
   }else{
     #categorical stats ----
     n <- length(subset.array)
-    temp <- as.numeric(stats::quantile(subset.array, na.rm=na.rm))
+    temp <- as.numeric(stats::quantile(subset.array, na.rm=na_rm))
     NAs <- sum(is.na(subset.array))
     stats <- list(min=temp[1], q25 = temp[2], q50=temp[3], q75 =temp[4], max=temp[5], n =n, NAs =NAs)
   }

@@ -20,11 +20,11 @@
 #'   "near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1"
 #'    and "q3". For detailed information see:
 #'   \href{https://gdal.org/programs/gdalwarp.html}{gdalwarp}.
-#' @param return.raster Logical. Default: FALSE. Set to TRUE to directly get the
+#' @param return_raster Logical. Default: FALSE. Set to TRUE to directly get the
 #'   corresponding raster object.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
 #'   outputfile defined by 'outputpath'.
-#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
@@ -42,9 +42,9 @@
 #' res2 <- c(1,1,4326)
 #' out <- file.path(system.file(package='ebvnetcdf'),"extdata","changeRes.tif")
 #' #ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
-#' #d <- ebv_data_change_res(file, datacubes[1,1], res2, NULL, 3, method='max', return.raster=TRUE)
+#' #d <- ebv_data_change_res(file, datacubes[1,1], res2, NULL, 3, method='max', return_raster=TRUE)
 ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,
-                                method='average', return.raster=FALSE, overwrite = FALSE, ignore.RAM=FALSE, verbose=FALSE){
+                                method='average', return_raster=FALSE, overwrite = FALSE, ignore_RAM=FALSE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -93,14 +93,14 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(return.raster, len=1, any.missing=F) != TRUE){
-    stop('return.raster must be of type logical.')
+  if(checkmate::checkLogical(return_raster, len=1, any.missing=F) != TRUE){
+    stop('return_raster must be of type logical.')
   }
   if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
     stop('overwrite must be of type logical.')
   }
-  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
-    stop('ignore.RAM must be of type logical.')
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+    stop('ignore_RAM must be of type logical.')
   }
 
   #filepath src check
@@ -226,9 +226,9 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   }
 
   #check ram, if raster should be returned
-  if (return.raster){
+  if (return_raster){
     #check needed RAM
-    if (!ignore.RAM){
+    if (!ignore_RAM){
       ebv_i_check_ram(res,timestep,type.long)
     } else{
       message('RAM capacities are ignored.')
@@ -329,7 +329,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                   t_srs = srs_dest,
-                  output_Raster = return.raster)
+                  output_Raster = return_raster)
   } else if (is.null(ot) & !is.null(te)) {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
                   tr=res,srcnodata=prop_src@entity$fillvalue,
@@ -337,7 +337,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                   t_srs = srs_dest,
-                  output_Raster = return.raster)
+                  output_Raster = return_raster)
   } else if(!is.null(ot) & is.null(te)){
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
                   tr=res,srcnodata=prop_src@entity$fillvalue,
@@ -345,7 +345,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                   t_srs = srs_dest,
-                  output_Raster = return.raster)
+                  output_Raster = return_raster)
   } else {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
                   tr=res,srcnodata=prop_src@entity$fillvalue,
@@ -353,7 +353,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                   t_srs = srs_dest,
-                  output_Raster = return.raster)
+                  output_Raster = return_raster)
   }
 
   #remove tempfiles ----
@@ -369,7 +369,7 @@ ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outp
   }
 
   #return array ----
-  if (return.raster){
+  if (return_raster){
     r <- raster::reclassify(r, cbind(prop_src@entity$fillvalue, NA))
     return(r)
   } else{

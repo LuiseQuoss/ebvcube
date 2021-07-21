@@ -11,9 +11,9 @@ ebv_data_change_res(
   outputpath,
   timestep = 1,
   method = "average",
-  return.raster = FALSE,
+  return_raster = FALSE,
   overwrite = FALSE,
-  ignore.RAM = FALSE,
+  ignore_RAM = FALSE,
   verbose = FALSE
 )
 }
@@ -39,13 +39,13 @@ from:
 and "q3". For detailed information see:
 \href{https://gdal.org/programs/gdalwarp.html}{gdalwarp}.}
 
-\item{return.raster}{Logical. Default: FALSE. Set to TRUE to directly get the
+\item{return_raster}{Logical. Default: FALSE. Set to TRUE to directly get the
 corresponding raster object.}
 
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
 outputfile defined by 'outputpath'.}
 
-\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+\item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -70,5 +70,5 @@ res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvnetcdf")
 res2 <- c(1,1,4326)
 out <- file.path(system.file(package='ebvnetcdf'),"extdata","changeRes.tif")
 #ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
-#d <- ebv_data_change_res(file, datacubes[1,1], res2, NULL, 3, method='max', return.raster=TRUE)
+#d <- ebv_data_change_res(file, datacubes[1,1], res2, NULL, 3, method='max', return_raster=TRUE)
 }

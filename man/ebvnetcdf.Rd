@@ -3,7 +3,7 @@
 \docType{package}
 \name{ebvnetcdf}
 \alias{ebvnetcdf}
-\title{Working with EVB NetCDFs}
+\title{Working with netCDF for Essential Biodiversity Variables}
 \description{
 This package can be used to easily access the data of the EBV NetCDFs which
 can be downloaded from the \href{portal.geobon.org}{Geobon Portal}. It also

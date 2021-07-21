@@ -9,9 +9,9 @@ ebv_plot_map(
   datacubepath,
   timestep = 1,
   countries = TRUE,
-  col.rev = TRUE,
+  col_rev = TRUE,
   classes = 5,
-  ignore.RAM = FALSE,
+  ignore_RAM = FALSE,
   verbose = FALSE
 )
 }
@@ -26,13 +26,13 @@ ebv_plot_map(
 \item{countries}{Logical. Default: TRUE. Simple country outlines will be
 plotted on top of the raster data. Disable by setting this option to FALSE.}
 
-\item{col.rev}{Logical. Default: TRUE. Set to FALSE if you want the color
+\item{col_rev}{Logical. Default: TRUE. Set to FALSE if you want the color
 ramp to be the other way around.}
 
 \item{classes}{Integer. Default: 5. Define the amount of classes (quantiles)
 for the symbology. Currently restricted to maximum 15 classes.}
 
-\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+\item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to

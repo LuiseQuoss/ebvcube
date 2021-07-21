@@ -12,7 +12,7 @@
 #' @param band Integer. Default: 1. Define which band(s) to read from GeoTiff.
 #'   Can be several. Don't have to be in order as the timesteps definition
 #'   requires.
-#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
@@ -35,7 +35,7 @@
 #' band <- c(1:3)
 #' #ebv_ncdf_add_data(file, tif, datacubepaths[1,1], ts, band)
 ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
-                              timestep=1, band=1, ignore.RAM=FALSE,
+                              timestep=1, band=1, ignore_RAM=FALSE,
                               verbose=FALSE){
   ### start initial tests ----
   # ensure file and all datahandles are closed on exit
@@ -83,8 +83,8 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
-    stop('ignore.RAM must be of type logical.')
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+    stop('ignore_RAM must be of type logical.')
   }
 
   #check if nc file exists
@@ -180,7 +180,7 @@ ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     type.long <- 'xx_xx_Int'
   }
 
-  if (!ignore.RAM){
+  if (!ignore_RAM){
     ebv_i_check_ram(size.int,timestep,type.long)
   } else{
     message('RAM capacities are ignored.')

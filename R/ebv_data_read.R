@@ -18,7 +18,7 @@
 #' @param raster Logical. Default: FALSE. Set to TRUE and 'delayed' to FALSE to
 #'   get a raster. If both arguments are set to FALSE the function returns an
 #'   array.
-#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
@@ -37,7 +37,8 @@
 #' #cSAR.delayedarray <- ebv_data_read(file, datacubes[1,1], c(1,6), delayed=T, sparse=T)
 #' #cSAR.raster <- ebv_data_read(file, datacubes[1,1], 1, delayed = F, raster = T)
 #' #cSAR.array <- ebv_data_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
-ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse=FALSE, raster=FALSE, ignore.RAM = FALSE, verbose = FALSE){
+ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE,
+                          sparse=FALSE, raster=FALSE, ignore_RAM = FALSE, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -76,8 +77,8 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
   if(checkmate::checkLogical(raster, len=1, any.missing=F) != TRUE){
     stop('raster must be of type logical.')
   }
-  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
-    stop('ignore.RAM must be of type logical.')
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+    stop('ignore_RAM must be of type logical.')
   }
 
   #filepath check
@@ -163,7 +164,7 @@ ebv_data_read <- function(filepath, datacubepath, timestep, delayed=TRUE, sparse
     # return any in-memory object ----
   } else{
     #check needed RAM
-    if (!ignore.RAM){
+    if (!ignore_RAM){
       type.long <- prop@entity$type
       ebv_i_check_ram(prop@spatial$dimensions,timestep,type.long)
     } else{

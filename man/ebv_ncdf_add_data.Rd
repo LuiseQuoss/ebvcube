@@ -10,7 +10,7 @@ ebv_ncdf_add_data(
   datacubepath,
   timestep = 1,
   band = 1,
-  ignore.RAM = FALSE,
+  ignore_RAM = FALSE,
   verbose = FALSE
 )
 }
@@ -30,7 +30,7 @@ a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
 Can be several. Don't have to be in order as the timesteps definition
 requires.}
 
-\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+\item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to

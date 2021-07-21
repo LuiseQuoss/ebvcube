@@ -16,7 +16,7 @@
 #'   system.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
 #'   outputfile defined by 'outputpath'.
-#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
@@ -40,7 +40,7 @@
 #' #path  <- ebv_data_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
 ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
                              timestep = 1, epsg = 4326, overwrite=FALSE,
-                             ignore.RAM = FALSE, verbose = FALSE){
+                             ignore_RAM = FALSE, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -72,8 +72,8 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
-    stop('ignore.RAM must be of type logical.')
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+    stop('ignore_RAM must be of type logical.')
   }
   if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
     stop('overwrite must be of type logical.')
@@ -175,7 +175,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
   #indices INCLUDING all pixels in specficied bb - bigger than original bb
   #lat indices
   lat.indices <- which(lat.data >= bb[3] & lat.data <= bb[4])
-  if (is.empty(lat.indices)){
+  if (ebv_i_empty(lat.indices)){
     stop('The bounding box given by you does not include any data. Have you given the bounding box with the corresponding EPSG in case it differs from WGS84 (EPSG 4326)?')
   }
   if (min(lat.data[lat.indices]) != min(lat.data)){ #lat.data[max(lat.indices)]
@@ -190,7 +190,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
   }
   #lon indices
   lon.indices <- which(lon.data >= bb[1] & lon.data <= bb[2])
-  if (is.empty(lon.indices)){
+  if (ebv_i_empty(lon.indices)){
     stop('The bounding box given by you does not include any data. Have you given the bounding box with the corresponding EPSG in case it differs from WGS84 (EPSG 4326)?')
   }
   if (max(lon.data[lon.indices]) != max(lon.data)){
@@ -214,7 +214,7 @@ ebv_data_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
   nrow <- length(lon.indices)
 
   #check needed RAM ----
-  if (!ignore.RAM){
+  if (!ignore_RAM){
     ebv_i_check_ram(c(ncol, nrow), timestep, prop@entity$type)
   } else{
     message('RAM capacities are ignored.')

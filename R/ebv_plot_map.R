@@ -11,11 +11,11 @@
 #' @param timestep Integer. Choose one timestep.
 #' @param countries Logical. Default: TRUE. Simple country outlines will be
 #'   plotted on top of the raster data. Disable by setting this option to FALSE.
-#' @param col.rev Logical. Default: TRUE. Set to FALSE if you want the color
+#' @param col_rev Logical. Default: TRUE. Set to FALSE if you want the color
 #'   ramp to be the other way around.
 #' @param classes Integer. Default: 5. Define the amount of classes (quantiles)
 #'   for the symbology. Currently restricted to maximum 15 classes.
-#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
@@ -33,7 +33,7 @@
 #' datacubes <- ebv_datacubepaths(file)
 #' ebv_plot_map(file, datacubes[1,1], timestep=9, classes=7)
 ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
-                         col.rev=TRUE, classes = 5, ignore.RAM=FALSE, verbose=FALSE){
+                         col_rev=TRUE, classes = 5, ignore_RAM=FALSE, verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -116,14 +116,14 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
-    stop('ignore.RAM must be of type logical.')
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+    stop('ignore_RAM must be of type logical.')
   }
   if(checkmate::checkLogical(countries, len=1, any.missing=F) != TRUE){
     stop('countries must be of type logical.')
   }
-  if(checkmate::checkLogical(col.rev, len=1, any.missing=F) != TRUE){
-    stop('col.rev must be of type logical.')
+  if(checkmate::checkLogical(col_rev, len=1, any.missing=F) != TRUE){
+    stop('col_rev must be of type logical.')
   }
 
   # end initial tests ----
@@ -141,10 +141,10 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
     #try reading whole data----
     {
       data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep,
-                                   delayed = FALSE, raster=TRUE, ignore.RAM=ignore.RAM,
+                                   delayed = FALSE, raster=TRUE, ignore_RAM=ignore_RAM,
                                    verbose=verbose) #if this throws an error the data is going to plotted in lower res
       hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-      if (is.empty(ebv_i_check_data(hdf, datacubepath))){
+      if (ebv_i_empty(ebv_i_check_data(hdf, datacubepath))){
         message('Quantiles based on all layers.')
         data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
                                          type = type.short)
@@ -185,7 +185,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
         file.remove(temp.map)
       }
       data.raster <- ebv_data_change_res(filepath, datacubepath, c(1,1, 4326),
-                                         temp.map, timestep, return.raster = TRUE, ignore.RAM=ignore.RAM, verbose=verbose)
+                                         temp.map, timestep, return_raster = TRUE, ignore_RAM=ignore_RAM, verbose=verbose)
       data.raster <- data.raster[[1]] #get first layer of brick --> class = raster
       data.all <- raster::as.array(data.raster) #use only one layer for quantile analysis
       results <- list(data.raster, data.all, temp.map)
@@ -209,11 +209,11 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   if (min(s)<0 & max(s)>0){
     diverging <- 'Blue-Red'
     col.regions <- colorspace::diverging_hcl(classes, palette = diverging,
-                                             rev = col.rev)
+                                             rev = col_rev)
   } else {
     single <- 'YlGn' # 'Greens'#
     col.regions <- colorspace::sequential_hcl(classes, palette = single,
-                                              rev = col.rev)
+                                              rev = col_rev)
   }
 
   #define display options ----

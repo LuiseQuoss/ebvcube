@@ -12,7 +12,7 @@ ebv_data_analyse(
   at = TRUE,
   epsg = 4326,
   numerical = TRUE,
-  na.rm = TRUE,
+  na_rm = TRUE,
   verbose = FALSE
 )
 }
@@ -39,7 +39,7 @@ bounding box and the coordinate reference system differs from WGS84. See
 \item{numerical}{Logical. Default: TRUE. Change to FALSE if the data covered
 by the NetCDF contains categorical data.}
 
-\item{na.rm}{Logical. Default: TRUE. NA values are removed in the analysis.
+\item{na_rm}{Logical. Default: TRUE. NA values are removed in the analysis.
 Change to FALSE to include NAs.}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to

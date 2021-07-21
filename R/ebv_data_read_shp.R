@@ -17,7 +17,7 @@
 #'   path or have center points inside the polygon(s).
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
 #'   outputfile defined by 'outputpath'.
-#' @param ignore.RAM Logical. Default: FALSE. Checks if there is enough space in
+#' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
@@ -36,7 +36,7 @@
 #' #cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
 ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
                               timestep = 1, at = TRUE, overwrite=FALSE,
-                              ignore.RAM=FALSE, verbose = FALSE){
+                              ignore_RAM=FALSE, verbose = FALSE){
   ####start initial checks ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -82,8 +82,8 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore.RAM, len=1, any.missing=F) != TRUE){
-    stop('ignore.RAM must be of type logical.')
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+    stop('ignore_RAM must be of type logical.')
   }
   if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
     stop('overwrite must be of type logical.')
@@ -212,7 +212,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   ext <- prop@spatial$extent
 
   #get subset of ncdf #checks for RAM
-  subset.nc <- ebv_data_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore.RAM = ignore.RAM, verbose=verbose)
+  subset.nc <- ebv_data_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore_RAM = ignore_RAM, verbose=verbose)
 
   #get extent of raster
   extent.raster <- raster::extent(subset.nc)
@@ -225,7 +225,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   #check ram
   dim.subset <- dim(subset.nc)
   #check needed RAM
-  if (!ignore.RAM){
+  if (!ignore_RAM){
     ebv_i_check_ram(dim.subset, timestep, 'H5T_STD_I8BE') #type=placeholder for integer
   } else{
     message('RAM capacities are ignored.')
@@ -247,7 +247,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
 
   #mask the subset ----
   #check needed RAM
-  if (!ignore.RAM){
+  if (!ignore_RAM){
     ebv_i_check_ram(dim.subset, timestep, 'H5T_NATIVE_FLOAT') #type=placeholder for double
   } else{
     message('RAM capacities are ignored.')

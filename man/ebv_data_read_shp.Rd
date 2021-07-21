@@ -12,7 +12,7 @@ ebv_data_read_shp(
   timestep = 1,
   at = TRUE,
   overwrite = FALSE,
-  ignore.RAM = FALSE,
+  ignore_RAM = FALSE,
   verbose = FALSE
 )
 }
@@ -36,7 +36,7 @@ path or have center points inside the polygon(s).}
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
 outputfile defined by 'outputpath'.}
 
-\item{ignore.RAM}{Logical. Default: FALSE. Checks if there is enough space in
+\item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
