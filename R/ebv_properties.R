@@ -94,7 +94,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   ebv_i_file_opened(filepath)
 
   # open file
-  hdf <- rhdf5::H5Fopen(filepath)
+  hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
 
   #variable check
   if (checkmate::checkCharacter(datacubepath) != TRUE & !is.null(datacubepath)){

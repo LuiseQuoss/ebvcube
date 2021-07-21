@@ -71,7 +71,7 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   }
 
   #open file
-  hdf <- rhdf5::H5Fopen(filepath)
+  hdf <- rhdf5::H5Fopen(filepath, flags="H5F_ACC_RDONLY")
 
   #ebv_subgroups
   subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
