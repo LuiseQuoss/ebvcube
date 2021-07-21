@@ -25,7 +25,7 @@
 #' @return Returns a raster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
 #' @export
-#' @seealso [ebvnetcdf::ebv_data_read_bb()] for subsetting via bounding box.
+#' @seealso [ebvnetcdf::ebv_read_bb()] for subsetting via bounding box.
 #'
 #' @examples
 #' #define temp directory
@@ -33,8 +33,8 @@
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
 #' shp <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
-#' #cSAR.germany <- ebv_data_read_bb(file, datacubes[1], shp)
-ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
+#' #cSAR.germany <- ebv_read_bb(file, datacubes[1], shp)
+ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
                               timestep = 1, at = TRUE, overwrite=FALSE,
                               ignore_RAM=FALSE, verbose = FALSE){
   ####start initial checks ----
@@ -212,7 +212,7 @@ ebv_data_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   ext <- prop@spatial$extent
 
   #get subset of ncdf #checks for RAM
-  subset.nc <- ebv_data_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore_RAM = ignore_RAM, verbose=verbose)
+  subset.nc <- ebv_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore_RAM = ignore_RAM, verbose=verbose)
 
   #get extent of raster
   extent.raster <- raster::extent(subset.nc)

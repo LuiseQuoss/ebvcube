@@ -3,7 +3,7 @@
 #' @description Create the core structure of the EBV NetCDF based on the json
 #'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
 #'   and attributes will be added afterwards. Use
-#'   [ebvnetcdf::ebv_ncdf_add_data()] to add the missing attributes.
+#'   [ebvnetcdf::ebv_add_data()] to add the missing attributes.
 #'
 #' @param jsonpath Character. Path to the json file downloaded from the
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
@@ -36,8 +36,8 @@
 #' @examples
 #' json <- system.file(file.path("extdata","1.json"), package="ebvnetcdf")
 #' out <- file.path(system.file(package='ebvnetcdf'),"extdata","sCAR_new.nc")
-#' #ebv_ncdf_create(json, out, 3, fillvalue=-3.4E38)
-ebv_ncdf_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
+#' #ebv_create(json, out, 3, fillvalue=-3.4E38)
+ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
                             extent= c(-180,180,-90,90), fillvalue = NULL,
                             prec = 'double', overwrite=FALSE,verbose=FALSE){
   # start initial tests ----

@@ -22,7 +22,7 @@
 #'   more capacities for the moment if needed.
 #'
 #' @return Adds data to the EBV NetCDF. Check your results using
-#'   [ebvnetcdf::ebv_data_read()] and/or [ebvnetcdf::ebv_data_analyse()].
+#'   [ebvnetcdf::ebv_read()] and/or [ebvnetcdf::ebv_analyse()].
 #' @export
 #'
 #' @importFrom utils capture.output
@@ -33,8 +33,8 @@
 #' # datacubes <- ebv_datacubepaths(file)
 #' ts <- c(2:4)
 #' band <- c(1:3)
-#' #ebv_ncdf_add_data(file, tif, datacubepaths[1,1], ts, band)
-ebv_ncdf_add_data <- function(filepath_nc, filepath_tif, datacubepath,
+#' #ebv_add_data(file, tif, datacubepaths[1,1], ts, band)
+ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
                               timestep=1, band=1, ignore_RAM=FALSE,
                               verbose=FALSE){
   ### start initial tests ----

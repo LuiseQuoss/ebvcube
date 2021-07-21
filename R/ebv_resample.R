@@ -41,9 +41,9 @@
 #' res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvnetcdf")
 #' res2 <- c(1,1,4326)
 #' out <- file.path(system.file(package='ebvnetcdf'),"extdata","changeRes.tif")
-#' #ebv_data_change_res(file, datacubes[1,1], res1,  out, c(1,6))
-#' #d <- ebv_data_change_res(file, datacubes[1,1], res2, NULL, 3, method='max', return_raster=TRUE)
-ebv_data_change_res <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,
+#' #ebv_resample(file, datacubes[1,1], res1,  out, c(1,6))
+#' #d <- ebv_resample(file, datacubes[1,1], res2, NULL, 3, method='max', return_raster=TRUE)
+ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,
                                 method='average', return_raster=FALSE, overwrite = FALSE, ignore_RAM=FALSE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit

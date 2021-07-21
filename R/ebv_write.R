@@ -7,7 +7,7 @@
 #'   coverage of the corresponding EBV NetCDF).
 #'
 #' @param data Your data object. May be raster, array, DelayedMatrix or list of
-#'   DelayedMatrix (see return values of [ebvnetcdf::ebv_data_read()])
+#'   DelayedMatrix (see return values of [ebvnetcdf::ebv_read()])
 #' @param filepath Character. Path to the NetCDF file you read the data from. Used for the
 #'   detection of properties as spatial extent and epsg.
 #' @param datacubepath Character. Path to the datacube you got the data from. Used for the
@@ -26,11 +26,11 @@
 #' options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
-#' data <- ebv_data_read(file, datacubes[1,1], 1)
+#' data <- ebv_read(file, datacubes[1,1], 1)
 #' # WORK WITH YOUR DATA
 #' out <- system.file(file.path("extdata","write_data.tif"), package="ebvnetcdf")
-#' #ebv_data_write(data, file, datacubes[1,1], out)
-ebv_data_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE, verbose=FALSE){
+#' #ebv_write(data, file, datacubes[1,1], out)
+ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(

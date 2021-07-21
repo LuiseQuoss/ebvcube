@@ -23,22 +23,22 @@
 #' @export
 #'
 #' @note You can change the ebv_class and the ebv_name. In this case you need to
-#'   change the ebv_class first.
+#'   change the ebv_class first. Don't forget to change the ebv_name accordingly!
 #'
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
 #' attribute1 <- 'standard_name'
 #' value1 <- 'mammals'
 #' level1 <- 'metric01'
-#' #ebv_ncdf_write_attribute(file, attribute1, value1, level1)
+#' #ebv_attribute(file, attribute1, value1, level1)
 #' attribute2 <- '_FillValue'
 #' value2 <- -999
 #' level2 <- 'metric01/entity01'
-#' #ebv_ncdf_write_attribute(file, attribute2, value2, level2)
+#' #ebv_attribute(file, attribute2, value2, level2)
 #' attribute3 <- 'creator'
 #' value3 <- 'Jane Doe'
-#' #ebv_ncdf_write_attribute(file, attribute3, value3)
-ebv_ncdf_write_attribute <- function(filepath, attribute_name, value, levelpath=NULL, verbose=FALSE){
+#' #ebv_attribute(file, attribute3, value3)
+ebv_attribute <- function(filepath, attribute_name, value, levelpath=NULL, verbose=FALSE){
   #start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(

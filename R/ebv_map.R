@@ -31,8 +31,8 @@
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
-#' ebv_plot_map(file, datacubes[1,1], timestep=9, classes=7)
-ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
+#' ebv_map(file, datacubes[1,1], timestep=9, classes=7)
+ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
                          col_rev=TRUE, classes = 5, ignore_RAM=FALSE, verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
@@ -140,7 +140,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   results <- tryCatch(
     #try reading whole data----
     {
-      data.raster <- ebv_data_read(filepath, datacubepath, timestep = timestep,
+      data.raster <- ebv_read(filepath, datacubepath, timestep = timestep,
                                    delayed = FALSE, raster=TRUE, ignore_RAM=ignore_RAM,
                                    verbose=verbose) #if this throws an error the data is going to plotted in lower res
       hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
@@ -184,7 +184,7 @@ ebv_plot_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
       if (file.exists(temp.map)){
         file.remove(temp.map)
       }
-      data.raster <- ebv_data_change_res(filepath, datacubepath, c(1,1, 4326),
+      data.raster <- ebv_resample(filepath, datacubepath, c(1,1, 4326),
                                          temp.map, timestep, return_raster = TRUE, ignore_RAM=ignore_RAM, verbose=verbose)
       data.raster <- data.raster[[1]] #get first layer of brick --> class = raster
       data.all <- raster::as.array(data.raster) #use only one layer for quantile analysis

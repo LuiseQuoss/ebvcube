@@ -11,10 +11,10 @@
 #'   analysed.
 #' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param at Logical. Optional. Default: TRUE. Only relevant if the subset is
-#'   indicated by a shapefile. See [ebvnetcdf::ebv_data_read_shp()].
+#'   indicated by a shapefile. See [ebvnetcdf::ebv_read_shp()].
 #' @param epsg Numeric. Optional. Only relevant if the subset is indicated by a
 #'   bounding box and the coordinate reference system differs from WGS84. See
-#'   [ebvnetcdf::ebv_data_read_bb()].
+#'   [ebvnetcdf::ebv_read_bb()].
 #' @param numerical Logical. Default: TRUE. Change to FALSE if the data covered
 #'   by the NetCDF contains categorical data.
 #' @param na_rm Logical. Default: TRUE. NA values are removed in the analysis.
@@ -24,16 +24,16 @@
 #'
 #' @return Returns a named list containing the measurements.
 #' @export
-#' @seealso [ebvnetcdf::ebv_data_read_bb()] and [ebvnetcdf::ebv_data_read_shp()]
+#' @seealso [ebvnetcdf::ebv_read_bb()] and [ebvnetcdf::ebv_read_shp()]
 #'   for the usage of subsets.
 #'
 #' @importFrom stats quantile
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
-#' data.global.year <- ebv_data_analyse(file, datacubes[1,1], timestep=c(1:12))
-#' data.germany.1900 <- ebv_data_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
-ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1,
+#' data_global_year <- ebv_analyse(file, datacubes[1,1], timestep=c(1:12))
+#' data_germany_1900 <- ebv_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
+ebv_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1,
                              at=TRUE, epsg = 4326, numerical=TRUE, na_rm=TRUE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
@@ -126,14 +126,14 @@ ebv_data_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1,
     subset.array <- replace(subset.array, subset.array==prop@entity$fillvalue[1], c(NA))
   }  else if(class(subset) == "numeric"){
     #process bb subset ----
-    subset.raster <- ebv_data_read_bb(filepath, datacubepath, bb=subset, timestep=timestep, epsg=epsg, verbose=verbose)
+    subset.raster <- ebv_read_bb(filepath, datacubepath, bb=subset, timestep=timestep, epsg=epsg, verbose=verbose)
     #raster to array
     subset.array <- raster::as.array(subset.raster)
     #less ram
     rm(subset.raster)
   } else if(endsWith(subset, '.shp')){
     #process shp subset ----
-    subset.raster <- ebv_data_read_shp(filepath, datacubepath, shp=subset, timestep=timestep, at=at, verbose=verbose)
+    subset.raster <- ebv_read_shp(filepath, datacubepath, shp=subset, timestep=timestep, at=at, verbose=verbose)
     #raster to array
     subset.array <- raster::as.array(subset.raster)
     #less ram

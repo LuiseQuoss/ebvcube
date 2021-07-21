@@ -156,12 +156,6 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   description.file <- ebv_i_read_att(hdf, 'description')[1]
   description.file <- stringr::str_conv(description.file ,"UTF-8")
 
-  # #get value_range
-  # value_range <- ebv_i_read_att(hdf, 'value_range')
-  # if(is.null(value_range)){
-  #   value_range <- array(NA)
-  # }
-
   #get more global attributes
   ebv_name <- ebv_i_read_att(hdf, 'ebv_name')
   ebv_class <- ebv_i_read_att(hdf, 'ebv_class')

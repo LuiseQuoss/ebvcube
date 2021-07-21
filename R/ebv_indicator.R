@@ -22,8 +22,8 @@
 #' @examples
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
-#' ebv_plot_indicator(file, datacubes[1,1])
-ebv_plot_indicator <- function(filepath, datacubepath, color="dodgerblue4",
+#' ebv_indicator(file, datacubes[1,1])
+ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
                                verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
