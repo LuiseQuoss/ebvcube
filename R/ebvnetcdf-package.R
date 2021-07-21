@@ -1,4 +1,4 @@
-#' Working with EVB NetCDFs
+#' Working with netCDF for Essential Biodiversity Variables
 #'
 #'
 #' This package can be used to easily access the data of the EBV NetCDFs which
