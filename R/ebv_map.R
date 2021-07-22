@@ -237,7 +237,7 @@ ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
       sp::spplot(data.raster, xlab='latitude', ylab='longitude',
              scales=list(draw = TRUE), at = s,
              col.regions=col.regions,
-             sp.layout = list(wrld_simpl, first=FALSE),
+             sp.layout = list(wrld_simpl, first=F, col.regions=NA),
              set = TRUE,
              main = title,
              sub = subtitle
