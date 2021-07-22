@@ -6,19 +6,19 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-This package can be used to easily access the data of the EBV NetCDFs
+This package can be used to easily access the data of the EBV netCDFs
 which can be downloaded from the [Geobon
 Portal](https://portal.geobon.org/). It also provides some basic
-visualization. Advanced users can build their own NetCDFs with the EBV
+visualization. Advanced users can build their own netCDFs with the EBV
 standard.
 
-## EBVs - Essential Biodiversity Variables
+## 1. EBVs - Essential Biodiversity Variables
 
-The EBV NetCDF standard is designed to hold Essential Biodiversity
+The EBV netCDF standard is designed to hold Essential Biodiversity
 Variables. This concept is further described
 [here](https://geobon.org/ebvs/what-are-ebvs/). An important core
-element of the EBV NetCDFs is their nested structure. All datacubes in
-the NetCDF are assigned to one metric. But this metric can have several
+element of the EBV netCDFs is their nested structure. All datacubes in
+the netCDF are assigned to one metric. But this metric can have several
 entities. On top of this hierarchy there can be several scenarios. The
 following block displays an abstract exhausted hierarchy.
 
@@ -37,7 +37,7 @@ following block displays an abstract exhausted hierarchy.
         └── entity999
 ```
 
-The following is a practical example of the NetCDF structure. Basis is
+The following is a practical example of the netCDF structure. Basis is
 the [global habitat availability for mammals
 dataset](https://portal.geobon.org/ebv-detail?id=5).
 
@@ -61,11 +61,11 @@ dataset](https://portal.geobon.org/ebv-detail?id=5).
         └── Habromys lepturus    
 ```
 
-Just keep in mind: All EBV NetCDF always have a metric. But they may or
-may not have a scenario and/or entity. The resulting entities hold the
-datacubepaths we are going to access.
+Just keep in mind: All EBV netCDF always have a metric. But they may or
+may not have a scenario and/or entity. The resulting datacubes are going
+to be accesses.
 
-## Installation
+## 2. Installation
 
 You can install the ebvnetcdf packages with:
 
@@ -76,25 +76,23 @@ You can install the ebvnetcdf packages with:
 # 3. install(devtools)
 # 4. install(dependencies=T)
 
-#futur: when repo is public (Does not work right now.)
+#future: when repo is public (Does not work right now.)
 devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
 ```
 
-This packages usey GDAL tools. You need a GDAL installation on your
+This packages uses GDAL tools. You need a GDAL installation on your
 machine. GDAL version: 3.1.4
 
-## Working with the package - a quick intro
+## 3. Working with the package - a quick intro
 
-### Take a very first look at the file
+### 3.1 Take a very first look at the file
 
 With the following two functions you get the core information about the
-data from a specific EBV NetCDF. First we take a look at some basic
+data from a specific EBV netCDF. First we take a look at some basic
 metadata of that file.
 
 ``` r
 library(ebvnetcdf)
-#> Warning: replacing previous import 'raster::quantile' by 'stats::quantile' when
-#> loading 'ebvnetcdf'
 
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 prop.file <- ebv_properties(file)
@@ -182,7 +180,7 @@ prop.dc@entity
 #> [1] NA
 ```
 
-### Plot the data to get a better impression
+### 3.2 Plot the data to get a better impression
 
 To discover the spatial distribution of the data you can plot a map of
 the datacube that we just looked at. It has 12 timesteps. Here we look
@@ -191,7 +189,7 @@ at the sixth one.
 ``` r
 #plot the global map
 dc <- datacubes[1,1]
-ebv_plot_map(file, dc, timestep = 6)
+ebv_map(file, dc, timestep = 6)
 #> Quantiles based on all layers.
 ```
 
@@ -215,7 +213,7 @@ The function returns the values, catch them!
 
 ``` r
 #get the averages and plot
-averages <- ebv_plot_indicator(file, dc)
+averages <- ebv_indicator(file, dc)
 #> [1] "calculating timesteps..."
 #> ================================================================================
 ```
@@ -232,25 +230,29 @@ It would be cool to have that for other indicators as well? Well you
 have to wait for an update of the package. Or maybe implement it
 yourself using the functions coming up next?
 
-### Read the data from the files to start working
+### 3.3 Read the data from the files to start working
 
 Before you actually load the data it may be nice to get an impression of
 the value range and other basic measurements.
 
 ``` r
 #info for whole dataset
-measurements <- ebv_data_analyse(file, dc)
+measurements <- ebv_analyse(file, dc)
 #see the included measurements
 names(measurements)
 #> [1] "min"  "q25"  "q50"  "mean" "q75"  "max"  "std"  "n"    "NAs"
 #how many pixels are included?
+measurements$n
+#> [1] 64800
 measurements$mean
 #> [1] 0.436336
 
 #info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
-measurements.bb <- ebv_data_analyse(file, dc, bb)
+measurements.bb <- ebv_analyse(file, dc, bb)
 #how many pixels are now included?
+measurements.bb$n
+#> [1] 80
 measurements.bb$mean
 #> [1] -0.5584893
 ```
@@ -259,7 +261,7 @@ To access the data you can use the following:
 
 ``` r
 #load whole data as array for two timesteps
-data <- ebv_data_read(file, dc, c(1,2), delayed = F)
+data <- ebv_read(file, dc, c(1,2), delayed = F)
 dim(data)
 #> [1] 180 360   2
 ```
@@ -272,13 +274,13 @@ for temporarily created files.
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
 options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
-data.shp <- ebv_data_read_shp(file, dc, shp, NULL, c(1,2,3))
+data.shp <- ebv_read_shp(file, dc, shp, NULL, c(1,2,3))
 dim(data.shp)
 #> [1]  9 11  3
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpUPSl3W\temp_libpath29242b54245e\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpmOGQyV\temp_libpath2c0c4f386ff9\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -286,45 +288,21 @@ raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
-Imagine you have a very large dataset but only limited memory. A good
-example is the Global Forest Cover dataset.
+Imagine you have a very large dataset but only limited memory. The
+package provides the possibility to load the data as a DelayedArray. A
+second function helps you to write that data back on disk properly. Look
+into the manual to obtain more information.
 
-``` r
-forest <- system.file(file.path('extdata','hansen_tree_canopy_cover_01.nc'), package="ebvnetcdf")
-datacube <- ebv_datacubepaths(forest)
-#> Error in ebv_datacubepaths(forest): File does not exist.
-#trying to read the data to memory --> error!
-ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = F)
-#> Error in ebv_data_read(forest, datacube[1, 1], timestep = 1, delayed = F): File does not exist.
-```
+### 3.4 Take a peek on the creation of an EBV netCDF
 
-The package provides the possibility to use the data as a DelayedArray.
-A second function helps you to write that data back on disk properly.
-Look into the manual to obtain more information.
-
-``` r
-#reading the data as a DelayedArray
-data.da <- ebv_data_read(forest, datacube[1,1], timestep = 1, delayed = T)
-#> Error in ebv_data_read(forest, datacube[1, 1], timestep = 1, delayed = T): File does not exist.
-dim(data.da)
-#> Error in eval(expr, envir, enclos): Objekt 'data.da' nicht gefunden
-#imagine you work with the data, then:
-#writing the data back to disk
-out <- file.path(system.file(package="ebvnetcdf"),'extdata','forest.tif')
-ebv_data_write(data.da, forest, datacube[1,1], out,  overwrite=T)
-#> Error in ebv_data_write(data.da, forest, datacube[1, 1], out, overwrite = T): File does not exist.
-```
-
-### Take a peek on the creation of an EBV NetCDF
-
-#### 1. Create an empty EBV NetCDF (with metadata)
+#### a. Create an empty EBV netCDF (with metadata)
 
 This process is still work in progress. Right now you’ll have to insert
 all the metadata in the Geobon Portal and then use the resulting json
-file to create an empty NetCDF file which complies to the EBV NetCDF
+file to create an empty netCDF file which complies to the EBV netCDF
 standard. It has the correct structure and holds the metadata.
 Additionally to that json file the function needs the amount of entities
-the NetCDF will encompass.
+the netCDF will encompass and the coordinate reference system.
 
 The example is based on the [Global habitat availability for
 mammals](https://portal.geobon.org/ebv-detail?id=5). As its ID in the
@@ -334,10 +312,10 @@ geoportal is 5 the json file is just called 5.
 #paths
 json <- system.file(file.path('extdata','5.json'), package="ebvnetcdf")
 newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','mammals.nc')
-#defining the fillvalue
+#defining the fillvalue - optional
 fv <- -3.4e+38
 #lets say it has 5 entities, which is not true in reality!
-ebv_ncdf_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
+ebv_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
 #> $title
@@ -370,85 +348,37 @@ print(dc.new[c(1,5,6),])
 #> 6      default
 ```
 
-Hint: You can always take a look at your NetCDF in
+Hint: You can always take a look at your netCDF in
 [Panoply](https://www.giss.nasa.gov/tools/panoply/) provided by NASA.
 That’s very helpful to understand the structure.
 
-#### 2. Add your data to the EBV NetCDF
+#### b. Add your data to the EBV NetCDF
 
-In the next step you can add your data to the NetCDF from GeoTiff files.
+In the next step you can add your data to the netCDF from GeoTiff files.
 You need to indicate the datacubepath the data belongs to. You can add
-your data timestep per timestep, in slices or all at once. Also keep in
-mind to define the extent and the coordinate reference system if your
-file doesn’t cover global extent using WGS84 (see the manual for
-detailed info).
-
-You can simply add more data to the same datacube by changing the
-timestep definition.
+your data timestep per timestep, in slices or all at once. You can
+simply add more data to the same datacube by changing the timestep
+definition.
 
 ``` r
 #path to tif with data
 tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
 #adding the data
-ebv_ncdf_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
+ebv_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
 #> The fillvalue of the GeoTiff (value: -Inf) differs from
 #>                    the fillvalue of the datacube: -3.39999995214436e+38.
 ```
 
-#### 3. Add missing attributes to datacube
+#### c. Add missing attributes to datacube
 
-Now there are still a two information missing about the data you just
-added. The following function makes it possible to add the information.
-
-``` r
-#looking at the corrent entity information
-print(ebv_properties(newNc, dc.new[1,1])@entity)
-#> $description
-#> [1] "default"
-#> 
-#> $standard_name
-#> [1] "default"
-#> 
-#> $unit
-#> [1] "km2"
-#> 
-#> $type
-#> [1] "H5T_IEEE_F32LE"
-#> 
-#> $fillvalue
-#> [1] -3.4e+38
-#> 
-#> $value_range
-#> [1]   0.0000 772.7673
-#adding standard_name
-ebv_ncdf_write_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulu', levelpath=dc.new[1,1])
-#adding description
-ebv_ncdf_write_attribute(newNc, attribute_name='description', value='Data on Area Of Habitat (AOH)', levelpath=dc.new[1,1])
-#rechecking properties - now it looks good! but there is a typo for the label..
-print(ebv_properties(newNc, dc.new[1,1])@entity)
-#> $description
-#> [1] "Data on Area Of Habitat (AOH)"
-#> 
-#> $standard_name
-#> [1] "Eumops auripendulu"
-#> 
-#> $unit
-#> [1] "km2"
-#> 
-#> $type
-#> [1] "H5T_IEEE_F32LE"
-#> 
-#> $fillvalue
-#> [1] -3.4e+38
-#> 
-#> $value_range
-#> [1]   0.0000 772.7673
-```
-
-Ups! So you did a mistake and want to change the attribute?! No problem:
+Now there are still a information missing about the data you just added:
+the standard\_name and description of each entity. The following
+function makes it possible to add the information. Ups! So you did a
+mistake and want to change the attribute?! No problem. Just use the same
+function to change it again.
 
 ``` r
-ebv_ncdf_write_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
+ebv_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
 print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
 #> [1] "Eumops auripendulus"
