@@ -245,7 +245,7 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     #   data[,,i] <- temp
     # }
   } else {
-    data <- matrix(raster, nrow=dim(raster)[1], ncol=dim(raster)[2])
+    data <- matrix(raster, nrow=dim(raster)[2], ncol=dim(raster)[1])
     #data <- t(data[nrow(data):1,])
     #data <- data[,ncol(data):1]
   }
