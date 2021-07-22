@@ -280,7 +280,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpmOGQyV\temp_libpath2c0c4f386ff9\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpmOGQyV\temp_libpath2c0c4c641d7b\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -387,6 +387,8 @@ print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
 In this case the levelpath corresponds to the datacube path. But you can
 also alter attributes at the metric or scenario level. See the manual
 for more info.
+
+## 4. Cite package
 
 ``` r
 citation('ebvnetcdf')
