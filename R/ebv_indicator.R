@@ -141,7 +141,11 @@ ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
     #plot ----
     withr::local_par(mar=c(7,5,3,1))
     plot(timevalues, values, xlab = 'time', ylab='average', type = 'b',
-         main = title, col.main = 'grey', cex.main = 1.2, font.main=2,
+         main = paste(strwrap(
+           title,
+           width = 80
+         ), collapse = "\n"),
+         col.main = 'grey', cex.main = 1.2, font.main=2,
          sub =label, col.sub = 'grey', cex.sub=0.8, font.sub=2,
          lwd = 2,
          col = ifelse(1:time %in% as.integer(false), 'red', color)
