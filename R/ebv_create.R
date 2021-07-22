@@ -284,7 +284,6 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
   lat.dim <- ncdf4::ncdim_def('lat', crs.unit , vals = lat.data)
   lon.dim <- ncdf4::ncdim_def('lon', crs.unit, vals = lon.data)
   time.dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)
-  #entity.dim <- ncdf4::ncdim_def('dim_entity', units='', vals = c(1:entities_no), create_dimvar = F)
 
   # create list of vars ----
   var.list <- c()
@@ -359,10 +358,6 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
   # also creates groups
   nc <- ncdf4::nc_create(outputpath, var.list.nc, force_v4 = T, verbose = verbose)
 
-  # add var_entity variable ----
-  #var_entity <- ncdf4::ncvar_def('var_entity', 'variable entity', dim = list(nchar.dim, entity.dim), compression=2, verbose = verbose, prec='char')
-  #ncdf4::ncvar_add(nc, var_entity, verbose = verbose)
-
   # close file
   ncdf4::nc_close(nc)
 
@@ -391,23 +386,6 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
     att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
     ebv_i_char_att(hdf, names(global.att[i]), att.txt)
   }
-
-  # if(!scenarios.no==0){
-  #   scenarios.list <- c()
-  #   scenarios.ebv <- c()
-  #   scenarios.name <- c()
-  #
-  #   for (i in 0:(scenarios.no-1)){
-  #     txt <- paste0('json$collections$scenario', i, '$description')
-  #     value <- eval(parse(text = txt))
-  #     scenarios.list <- c(scenarios.list, value)
-  #     value.ebv <- stringr::str_split(value, '-')[[1]][1]
-  #     scenarios.ebv = c(scenarios.ebv, value.ebv)
-  #     txt <- paste0('json$collections$scenario', i, '$name')
-  #     value.name <- eval(parse(text = txt))
-  #     scenarios.name <- c(scenarios.name, value.name)
-  #   }
-  # }
 
   # ebv subgroups ----
   if(scenarios.no>0 & entities_no>0){
@@ -486,9 +464,6 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
   # :axis = "Y";
   ebv_i_char_att(lat.id, 'axis', 'Y')
 
-  # :long_name = "latitude";
-  # ebv_i_char_att(lat.id, 'long_name', 'latitude')
-
   #close dataset
   rhdf5::H5Dclose(lat.id)
 
@@ -510,9 +485,6 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
 
   # :axis = "X";
   ebv_i_char_att(lon.id, 'axis', 'X')
-
-  # # :long_name = "longitude";
-  # ebv_i_char_att(lon.id, 'long_name', 'longitude')
 
   #close dataset
   rhdf5::H5Dclose(lon.id)
@@ -539,9 +511,6 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
   # :calendar = "standard";
   ebv_i_char_att(time.id, 'calendar', 'standard')
 
-  # # :long_name = "time";
-  # ebv_i_char_att(time.id, 'long_name', 'time')
-
   #close group
   rhdf5::H5Dclose(time.id)
 
@@ -561,9 +530,6 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
     rhdf5::H5Dwrite(var_entity.id, 'data', h5spaceMem = sid, h5spaceFile = sid)
     rhdf5::H5Sclose(sid)
   }
-
-  # open dataset
-  # var_entity.id <- rhdf5::H5Dopen(hdf, 'var_entity')
 
   # :standard_name = "variable entity";
   ebv_i_char_att(var_entity.id, 'standard_name', 'variable entity')
@@ -642,11 +608,6 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
       }
     }
   }
-
-  # remove dim_entity----
-  # if (rhdf5::H5Lexists(hdf, 'dim_entity')){
-  #   rhdf5::h5delete(hdf, 'dim_entity')
-  # }
 
   #add entity attributes ----
   datacubepaths <- ebv_datacubepaths(outputpath)
