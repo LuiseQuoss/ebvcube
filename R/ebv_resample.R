@@ -290,11 +290,12 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
     if (!is.null(ot)){
       gw <- gdalUtils::gdalwarp(srcfile = filepath,
                                 dstfile = temp_2,
-                                ot = ot,
                                 s_srs=srs_src,
                                 t_srs=srs_dest,
+                                ot = ot,
                                 co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                overwrite=TRUE)
+                                overwrite=TRUE,
+                                verbose=T)
     } else {
       gw <- gdalUtils::gdalwarp(filepath, temp_2,
                                 s_srs=srs_src,

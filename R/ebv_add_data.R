@@ -226,10 +226,13 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
   #get fill value from tif
   nodata <- raster@file@nodatavalue
-  if (nodata != fillvalue){
-    message(paste0('The fillvalue of the GeoTiff (value: ',nodata,') differs from
+  if(!is.na(nodata)&!is.na(fillvalue)){
+    if (nodata != fillvalue){
+      message(paste0('The fillvalue of the GeoTiff (value: ',nodata,') differs from
                    the fillvalue of the datacube: ', fillvalue, '.'))
+    }
   }
+
 
   #rotate data ----
   if (length(timestep) > 1){
@@ -265,8 +268,7 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
                  count=c(lon.len,lat.len,length(timestep)))
 
   #add valid range attribute----
-  #open file
-  #hdf <- rhdf5::H5Fopen(filepath_nc)
+
   #open DS
   did <- rhdf5::H5Dopen(hdf, datacubepath)
 
