@@ -80,8 +80,34 @@ You can install the ebvnetcdf packages with:
 devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
 ```
 
-This packages uses GDAL tools. You need a GDAL installation on your
-machine. GDAL version: 3.1.4
+This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL
+installation on your machine. One possibility to install GDAL is the
+OSGeo4W Network installer <https://trac.osgeo.org/osgeo4w/>. Check GDAL
+when running the installation! If you have QGIS on your machine, GDAL
+should be included. To check that, install the gdalUtils package in R
+and run gdalUtils::gdal_setInstallation(). It takes quite a while the
+first time as it looks for a GDAL installation. Now
+getOption(‘gdalUtils_gdalPath’) should return the GDAL installation. If
+you have problems you can set the GDAL related paths by hand using the
+following lines of code. Your paths may differ! First check your GDAL
+installation.
+
+``` r
+#add GDAL path to the existing paths
+Sys.getenv("PATH")
+#> [1] "C:\\rtools40\\usr\\bin;C:\\OSGeo4W64\\bin;C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
+Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+#check and change path for proj_lib, gdal_data and gdal_driver_path
+Sys.getenv("PROJ_LIB") 
+#> [1] "C:\\OSGeo4W64\\share\\proj"
+Sys.getenv("GDAL_DATA") 
+#> [1] "C:\\OSGeo4W64\\share\\gdal"
+Sys.getenv("GDAL_DRIVER_PATH") 
+#> [1] "C:\\OSGeo4W64\\bin\\gdalplugins"
+Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+```
 
 ## 3. Working with the package - a quick intro
 
@@ -135,8 +161,8 @@ datacubes
 
 In the next step we will get the properties of one specific datacube -
 fyi: the result also holds the general file properties from above. This
-time you get the warning that the value\_range does not exists. So don’t
-take the displayed value\_range seriously.
+time you get the warning that the value_range does not exists. So don’t
+take the displayed value_range seriously.
 
 ``` r
 prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
@@ -193,7 +219,7 @@ ebv_map(file, dc, timestep = 6)
 #> Quantiles based on all layers.
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 ``` r
 # What was the data about again? Check the properties!
@@ -218,7 +244,7 @@ averages <- ebv_indicator(file, dc)
 #> ================================================================================
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 ``` r
 averages
@@ -250,11 +276,12 @@ measurements$mean
 #info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
 measurements.bb <- ebv_analyse(file, dc, bb)
+#> Error in rgdal::make_EPSG(): PROJ 6 database empty
 #how many pixels are now included?
 measurements.bb$n
-#> [1] 80
+#> Error in eval(expr, envir, enclos): Objekt 'measurements.bb' nicht gefunden
 measurements.bb$mean
-#> [1] -0.5584893
+#> Error in eval(expr, envir, enclos): Objekt 'measurements.bb' nicht gefunden
 ```
 
 To access the data you can use the following:
@@ -275,19 +302,20 @@ shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf
 #define directory for temporary files
 options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 data.shp <- ebv_read_shp(file, dc, shp, NULL, c(1,2,3))
+#> Error in rgdal::make_EPSG(): PROJ 6 database empty
 dim(data.shp)
-#> [1]  9 11  3
+#> Error in eval(expr, envir, enclos): Objekt 'data.shp' nicht gefunden
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpmOGQyV\temp_libpath2c0c4c641d7b\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpOGmMe8\temp_libpathda8236c44a0\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
 raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
+#> Error in h(simpleError(msg, call)): Fehler bei der Auswertung des Argumentes 'obj' bei der Methodenauswahl für Funktion 'spplot': Objekt 'data.shp' nicht gefunden
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 Imagine you have a very large dataset but only limited memory. The
 package provides the possibility to load the data as a DelayedArray. A
 second function helps you to write that data back on disk properly. Look
@@ -316,36 +344,17 @@ newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','mammals.nc')
 fv <- -3.4e+38
 #lets say it has 5 entities, which is not true in reality!
 ebv_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
+#> Error in rgdal::make_EPSG(): PROJ 6 database empty
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
-#> $title
-#> [1] "Global habitat availability for mammals from 2015-2055"
-#> 
-#> $description
-#> [1] "Global habitat availability for 5,090 mammals in 5 year intervals (subset from 2015 to 2055)."
-#> 
-#> $ebv_class
-#> [1] "Species populations"
-#> 
-#> $ebv_name
-#> [1] "Species distributions"
-#> 
-#> $ebv_subgroups
-#> [1] "scenario" "metric"   "entity"  
-#> 
-#> $creator
-#> [1] "Daniele Baisero"
+#> Error in ebv_properties(newNc): File does not exist.
+#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
 #check out the (still empty) datacubes
 dc.new <- ebv_datacubepaths(newNc)
+#> Error in ebv_datacubepaths(newNc): File does not exist.
+#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
 print(dc.new[c(1,5,6),])
-#>                  datacubepaths      scenario_names         metric_names
-#> 1 scenario01/metric01/entity01      Sustainability Habitat availability
-#> 5 scenario01/metric01/entity05      Sustainability Habitat availability
-#> 6 scenario02/metric01/entity01 Middle of the Road  Habitat availability
-#>   entity_names
-#> 1      default
-#> 5      default
-#> 6      default
+#> Error in print(dc.new[c(1, 5, 6), ]): Objekt 'dc.new' nicht gefunden
 ```
 
 Hint: You can always take a look at your netCDF in
@@ -365,23 +374,26 @@ definition.
 tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
 #adding the data
 ebv_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
-#> The fillvalue of the GeoTiff (value: -Inf) differs from
-#>                    the fillvalue of the datacube: -3.39999995214436e+38.
+#> Error in ebv_add_data(newNc, tif, datacubepath = dc.new[1, 1], timestep = c(1, : NetCDF File does not exist.
+#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
 ```
 
 #### c. Add missing attributes to datacube
 
 Now there are still a information missing about the data you just added:
-the standard\_name and description of each entity. The following
-function makes it possible to add the information. Ups! So you did a
-mistake and want to change the attribute?! No problem. Just use the same
-function to change it again.
+the standard_name and description of each entity. The following function
+makes it possible to add the information. Ups! So you did a mistake and
+want to change the attribute?! No problem. Just use the same function to
+change it again.
 
 ``` r
 ebv_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
+#> Error in ebv_attribute(newNc, attribute_name = "standard_name", value = "Eumops auripendulus", : NetCDF file does not exist.
+#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
 #check the properties one more time - perfect!
 print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
-#> [1] "Eumops auripendulus"
+#> Error in ebv_properties(newNc, dc.new[1, 1]): File does not exist.
+#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
