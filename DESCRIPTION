@@ -42,5 +42,6 @@ Imports:
     stringr,
     utils,
     withr
+SystemRequirements: GDAL binaries
 Depends: 
     R (>= 2.10) 
