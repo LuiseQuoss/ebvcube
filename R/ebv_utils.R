@@ -23,7 +23,7 @@ ebv_i_os <- function(){
 #' @return Logical.
 #' @noRd
 ebv_i_file_opened <- function(filepath){
-  if (ebv_i_os() =='Linux'){
+  if (ebv_i_os() =='Linux' | ebv_i_os() =='Mac'){
     stdout <- paste0('lsof -t ', filepath, ' | wc -w')
     result <- system(stdout, intern=TRUE)
     if(result == '0'){
@@ -44,9 +44,16 @@ ebv_i_file_opened <- function(filepath){
       }
     }
   } else if (ebv_i_os() == 'Windows') {
-    #still needs to be done
+    withr::local_options(list(warn = -1))
+    #check whether file can be accessed with writing permission
+    cmd <- paste0("powershell $FileStream = [System.IO.File]::Open('",filepath,"','Open','Write')")
+    out <- shell(cmd, intern=T,mustWork=T)
+    #process out
+    if(!ebv_i_empty(out)){
+      stop('File opened in another application. Please close file and try again.')
+    }
   } else {
-    #still needs to be done
+    print('File opened check not implemented for this OS.')
   }
 }
 
