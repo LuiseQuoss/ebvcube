@@ -242,17 +242,8 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   #rotate data ----
   if (length(timestep) > 1){
     data <- array(raster, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
-    # data <- array(NA, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
-    # for (i in 1:length(timestep)){
-    #   temp <- as.matrix(raster::as.array(raster)[,,i])
-    #   temp <- t(temp[nrow(temp):1,])
-    #   temp <- temp[,ncol(temp):1]
-    #   data[,,i] <- temp
-    # }
   } else {
     data <- matrix(raster, nrow=dim(raster)[2], ncol=dim(raster)[1])
-    #data <- t(data[nrow(data):1,])
-    #data <- data[,ncol(data):1]
   }
 
   #open file
@@ -267,10 +258,10 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     #set new dimension of dataset
     rhdf5::H5Dset_extent(did, dims)
     rhdf5::H5Dclose(did)
-    H5Sclose(file_space)
+    rhdf5::H5Sclose(file_space)
   }else{
-    H5Dclose(did)
-    H5Sclose(file_space)
+    rhdf5::H5Dclose(did)
+    rhdf5::H5Sclose(file_space)
   }
 
   #write data
