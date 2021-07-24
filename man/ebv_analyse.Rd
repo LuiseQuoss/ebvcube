@@ -56,7 +56,7 @@ sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 datacubes <- ebv_datacubepaths(file)
 data_global_year <- ebv_analyse(file, datacubes[1,1], timestep=c(1:12))
-data_germany_1900 <- ebv_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
+#data_germany_1900 <- ebv_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 }
 \seealso{
 \code{\link[=ebv_read_bb]{ebv_read_bb()}} and \code{\link[=ebv_read_shp]{ebv_read_shp()}}

@@ -32,7 +32,7 @@
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
 #' data_global_year <- ebv_analyse(file, datacubes[1,1], timestep=c(1:12))
-#' data_germany_1900 <- ebv_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
+#' #data_germany_1900 <- ebv_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
 ebv_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1,
                              at=TRUE, epsg = 4326, numerical=TRUE, na_rm=TRUE, verbose=FALSE){
   ####initial tests start ----
