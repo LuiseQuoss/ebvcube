@@ -45,6 +45,11 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     }
   )
   withr::defer(
+    if(exists('file_space')){
+      if(rhdf5::H5Iis_valid(file_space)==TRUE){rhdf5::H5Sclose(file_space)}
+    }
+  )
+  withr::defer(
     if(exists('aid')){
       if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
     }
@@ -262,10 +267,15 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     #set new dimension of dataset
     rhdf5::H5Dset_extent(did, dims)
     rhdf5::H5Dclose(did)
+    H5Sclose(file_space)
+  }else{
+    H5Dclose(did)
+    H5Sclose(file_space)
   }
+
   #write data
   rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep)),
-                 count=c(lon.len,lat.len,length(timestep)))
+                 count=c(lon.len,lat.len,length(timestep)))#, native=T)
 
   #add valid range attribute----
 
