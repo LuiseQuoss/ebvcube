@@ -282,6 +282,25 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
     filepath <- temp
   }
 
+  if(!file.exists(filepath)){
+    stop('GDAL did not work properly. Did you install GDAL correctly? You can
+    check and set the correct GDAL paths with the following lines of code:
+    #check out which GDAL installation is used currently by gdalUtils:
+    getOption("gdalUtils_gdalPath")[[1]]$python_utilities
+    #your paths may differ! check your GDAL installation
+    #add GDAL path to the existing paths
+    Sys.getenv("PATH")
+    Sys.setenv(PATH = paste0("C:\\OSGeo4W64\\bin;",Sys.getenv("PATH")))
+    #check and change path for proj_lib, gdal_data and gdal_driver_path
+    Sys.getenv("PROJ_LIB")
+    Sys.getenv("GDAL_DATA")
+    Sys.getenv("GDAL_DRIVER_PATH")
+    Sys.setenv(PROJ_LIB = "C:\\OSGeo4W64\\share\\proj")
+    Sys.setenv(GDAL_DATA = "C:\\OSGeo4W64\\share\\gdal")
+    Sys.setenv(GDAL_DRIVER_PATH = "C:\\OSGeo4W64\\bin\\gdalplugins")
+        ')
+  }
+
   #check if epsgs differ ----
   if(epsg_src != epsg_dest){
     #define output parameters
@@ -294,8 +313,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
                                 t_srs=srs_dest,
                                 ot = ot,
                                 co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                overwrite=TRUE,
-                                verbose=T)
+                                overwrite=TRUE)
     } else {
       gw <- gdalUtils::gdalwarp(filepath, temp_2,
                                 s_srs=srs_src,
@@ -304,6 +322,25 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
                                 overwrite=TRUE)
     }
     filepath <- temp_2
+  }
+
+  if(!file.exists(filepath)){
+    stop('GDAL did not work properly. Did you install GDAL correctly? You can
+    check and set the correct GDAL paths with the following lines of code:
+    #check out which GDAL installation is used currently by gdalUtils
+    getOption("gdalUtils_gdalPath")[[1]]$python_utilities
+    #your paths may differ! check your GDAL installation
+    #add GDAL path to the existing paths
+    Sys.getenv("PATH")
+    Sys.setenv(PATH = paste0("C:\\OSGeo4W64\\bin;",Sys.getenv("PATH")))
+    #check and change path for proj_lib, gdal_data and gdal_driver_path
+    Sys.getenv("PROJ_LIB")
+    Sys.getenv("GDAL_DATA")
+    Sys.getenv("GDAL_DRIVER_PATH")
+    Sys.setenv(PROJ_LIB = "C:\\OSGeo4W64\\share\\proj")
+    Sys.setenv(GDAL_DATA = "C:\\OSGeo4W64\\share\\gdal")
+    Sys.setenv(GDAL_DRIVER_PATH = "C:\\OSGeo4W64\\bin\\gdalplugins")
+        ')
   }
 
   #get extent to align pixels ----
