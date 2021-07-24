@@ -107,7 +107,7 @@ ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
                 min_time, ' to ', max_time, '.'))
   }
 
-    #check classes argument - single integer
+  #check classes argument - single integer
   if (checkmate::checkInt(classes)!=TRUE){
     stop('The argument classes must be of type "single integerish value"')
   }
@@ -144,14 +144,22 @@ ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
                                    delayed = FALSE, raster=TRUE, ignore_RAM=ignore_RAM,
                                    verbose=verbose) #if this throws an error the data is going to plotted in lower res
       hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-      if (ebv_i_empty(ebv_i_check_data(hdf, datacubepath))){
-        message('Quantiles based on all layers.')
-        data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
-                                         type = type.short)
-      }else{
-        message('Quantiles only based on current layer because not all layers hold data.')
-        data.all <- raster::as.matrix(data.raster)
-      }
+      data.all <- tryCatch(
+        {
+          if (ebv_i_empty(ebv_i_check_data(hdf, datacubepath))){
+            message('Quantiles based on all layers.')
+            data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
+                                             type = type.short)
+          }else{
+            message('Quantiles only based on current layer because not all layers hold data.')
+            data.all <- raster::as.matrix(data.raster)
+          }
+        },
+        error = function(cond){
+          message('Quantiles only based on current layer because not all layers hold data.')
+          data.all <- raster::as.matrix(data.raster)
+        })
+
       rhdf5::H5Fclose(hdf)
 
       #mask out fillvalue ----
