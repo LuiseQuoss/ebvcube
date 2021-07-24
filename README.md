@@ -308,7 +308,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\Documents\R\R-4.0.3\library\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpOGmMe8\temp_libpathda82a6155be\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -345,17 +345,36 @@ fv <- -3.4e+38
 #lets say it has 5 entities, which is not true in reality!
 ebv_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
 #> Error in rgdal::make_EPSG(): PROJ 6 database empty
-#> Error in rhdf5::H5Iis_valid(id): is(h5identifier, "H5IdComponent") is not TRUE
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
-#> Error in ebv_properties(newNc): File does not exist.
-#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
+#> $title
+#> [1] "Global habitat availability for mammals from 2015-2055"
+#> 
+#> $description
+#> [1] "Global habitat availability for 5,090 mammals in 5 year intervals (subset from 2015 to 2055)."
+#> 
+#> $ebv_class
+#> [1] "Species populations"
+#> 
+#> $ebv_name
+#> [1] "Species distributions"
+#> 
+#> $ebv_subgroups
+#> [1] "scenario" "metric"   "entity"  
+#> 
+#> $creator
+#> [1] "Daniele Baisero"
 #check out the (still empty) datacubes
 dc.new <- ebv_datacubepaths(newNc)
-#> Error in ebv_datacubepaths(newNc): File does not exist.
-#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
 print(dc.new[c(1,5,6),])
-#> Error in print(dc.new[c(1, 5, 6), ]): Objekt 'dc.new' nicht gefunden
+#>                  datacubepaths      scenario_names         metric_names
+#> 1 scenario01/metric01/entity01      Sustainability Habitat availability
+#> 5 scenario01/metric01/entity05      Sustainability Habitat availability
+#> 6 scenario02/metric01/entity01 Middle of the Road  Habitat availability
+#>          entity_names
+#> 1 Eumops auripendulus
+#> 5             default
+#> 6             default
 ```
 
 Hint: You can always take a look at your netCDF in
@@ -375,8 +394,8 @@ definition.
 tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
 #adding the data
 ebv_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
-#> Error in ebv_add_data(newNc, tif, datacubepath = dc.new[1, 1], timestep = c(1, : NetCDF File does not exist.
-#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
+#> The fillvalue of the GeoTiff (value: -Inf) differs from
+#>                    the fillvalue of the datacube: -3.39999995214436e+38.
 ```
 
 #### c. Add missing attributes to datacube
@@ -389,12 +408,10 @@ change it again.
 
 ``` r
 ebv_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
-#> Error in ebv_attribute(newNc, attribute_name = "standard_name", value = "Eumops auripendulus", : NetCDF file does not exist.
-#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
+#> Error in ebv_attribute(newNc, attribute_name = "standard_name", value = "Eumops auripendulus", : Value of standard_name already is set to "Eumops auripendulus".
 #check the properties one more time - perfect!
 print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
-#> Error in ebv_properties(newNc, dc.new[1, 1]): File does not exist.
-#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
+#> [1] "Eumops auripendulus"
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
