@@ -191,13 +191,11 @@ ebv_create <- function(jsonpath, outputpath, entities_no=0, epsg=4326,
   geo_trans <- paste0(extent[1], " ",res," 0.0 ", extent[4], " 0.0 -", res)
 
   # :spatial_ref
-  crs <- sp::CRS(SRS_string = paste0("EPSG:", epsg))
-  ref <- sp::wkt(crs)
+  crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", epsg))
+  ref <- paste(crs[5:length(crs)], collapse = ' ')
 
   # unit
-  parts <- stringr::str_split(ref, "[^[:print:]]")[[1]]
-  row <- parts[stringr::str_detect(parts, 'CS')]
-  if (stringr::str_detect(row, 'Cartesian') | stringr::str_detect(row, 'cartesian')){
+  if(stringr::str_detect(ref,'PROJCRS')){
     crs.unit <- 'meters'
   } else{
     crs.unit <- 'degrees'
