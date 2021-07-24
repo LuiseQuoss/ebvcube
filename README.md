@@ -82,7 +82,7 @@ devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
 
 This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL
 installation on your machine. One possibility to install GDAL is the
-OSGeo4W Network installer <https://trac.osgeo.org/osgeo4w/>. Check GDAL
+[OSGeo4W Network installer](https://trac.osgeo.org/osgeo4w/). Check GDAL
 when running the installation! If you have QGIS on your machine, GDAL
 should be included. To check that, install the gdalUtils package in R
 and run gdalUtils::gdal_setInstallation(). It takes quite a while the
@@ -308,7 +308,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpOGmMe8\temp_libpathda8236c44a0\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\Documents\R\R-4.0.3\library\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -345,14 +345,15 @@ fv <- -3.4e+38
 #lets say it has 5 entities, which is not true in reality!
 ebv_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
 #> Error in rgdal::make_EPSG(): PROJ 6 database empty
+#> Error in rhdf5::H5Iis_valid(id): is(h5identifier, "H5IdComponent") is not TRUE
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
 #> Error in ebv_properties(newNc): File does not exist.
-#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
+#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
 #check out the (still empty) datacubes
 dc.new <- ebv_datacubepaths(newNc)
 #> Error in ebv_datacubepaths(newNc): File does not exist.
-#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
+#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
 print(dc.new[c(1,5,6),])
 #> Error in print(dc.new[c(1, 5, 6), ]): Objekt 'dc.new' nicht gefunden
 ```
@@ -375,7 +376,7 @@ tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf"
 #adding the data
 ebv_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
 #> Error in ebv_add_data(newNc, tif, datacubepath = dc.new[1, 1], timestep = c(1, : NetCDF File does not exist.
-#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
+#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
 ```
 
 #### c. Add missing attributes to datacube
@@ -389,11 +390,11 @@ change it again.
 ``` r
 ebv_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
 #> Error in ebv_attribute(newNc, attribute_name = "standard_name", value = "Eumops auripendulus", : NetCDF file does not exist.
-#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
+#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
 #check the properties one more time - perfect!
 print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
 #> Error in ebv_properties(newNc, dc.new[1, 1]): File does not exist.
-#> C:/Users/lq39quba/AppData/Local/Temp/RtmpOGmMe8/temp_libpathda8236c44a0/ebvnetcdf/extdata/mammals.nc
+#> C:/Users/lq39quba/Documents/R/R-4.0.3/library/ebvnetcdf/extdata/mammals.nc
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can

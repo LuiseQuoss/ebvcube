@@ -82,7 +82,7 @@ devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
 
 ```
 This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL installation on your machine. 
-One possibility to install GDAL is the OSGeo4W Network installer https://trac.osgeo.org/osgeo4w/. Check GDAL when running the installation! If you have QGIS on your machine, GDAL should be included. To check that, install the gdalUtils package in R and run gdalUtils::gdal_setInstallation(). It takes quite a while the first time as it looks for a GDAL installation. Now getOption('gdalUtils_gdalPath') should return the GDAL installation.
+One possibility to install GDAL is the [OSGeo4W Network installer](https://trac.osgeo.org/osgeo4w/). Check GDAL when running the installation! If you have QGIS on your machine, GDAL should be included. To check that, install the gdalUtils package in R and run gdalUtils::gdal_setInstallation(). It takes quite a while the first time as it looks for a GDAL installation. Now getOption('gdalUtils_gdalPath') should return the GDAL installation.
 If you have problems you can set the GDAL related paths by hand using the following lines of code. Your paths may differ! First check your GDAL installation.
 ```{r}
 #add GDAL path to the existing paths
