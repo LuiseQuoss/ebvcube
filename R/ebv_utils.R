@@ -23,7 +23,7 @@ ebv_i_os <- function(){
 #' @return Logical.
 #' @noRd
 ebv_i_file_opened <- function(filepath){
-  if (ebv_i_os() =='Linux' | ebv_i_os() =='Mac'){
+  if (ebv_i_os() =='Linux' | ebv_i_os() =='Darwin'){
     stdout <- paste0('lsof -t ', filepath, ' | wc -w')
     result <- system(stdout, intern=TRUE)
     if(result == '0'){
