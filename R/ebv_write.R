@@ -175,7 +175,9 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
     type.long <- prop@entity$type
     ot <- ebv_i_type_ot(type.long)
 
-    a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
+    a_srs <- paste0('EPSG:', prop@spatial$epsg)
+    #a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
+
     #add CRS, shift to -180,90, add nodata value
     if(!is.null(ot)){
       gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
@@ -216,7 +218,8 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
 
-    a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
+    #a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
+    a_srs <- paste0('EPSG:', prop@spatial$epsg)
     temps <- c()
     #turn listed DelayedArrays into tif
     for (i in 1:length(data)){
