@@ -129,10 +129,10 @@ ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   # end initial tests ----
 
   #get needed properties
-  fillvalue <- prop@entity$fillvalue[1]
-  type.short <- ebv_i_type_r(prop@entity$type)
+  fillvalue <- prop@ebv_cube$fillvalue[1]
+  type.short <- ebv_i_type_r(prop@ebv_cube$type)
   title <- prop@general$title
-  label <- prop@entity$standard_name
+  label <- prop@ebv_cube$standard_name
   subtitle <- paste0(label, ' (timestep: ', timestep, ')')
   epsg <- prop@spatial$epsg
 

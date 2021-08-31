@@ -119,11 +119,11 @@ ebv_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1,
   #process global scale ----
   if (is.null(subset)){
     #process whole file + variable+ timestep
-    type.short <- ebv_i_type_r(prop@entity$type)
+    type.short <- ebv_i_type_r(prop@ebv_cube$type)
     all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath, as.sparse = T, type = type.short)
     subset.array <- all[,,timestep]
     #give fillvalue as nodata value
-    subset.array <- replace(subset.array, subset.array==prop@entity$fillvalue[1], c(NA))
+    subset.array <- replace(subset.array, subset.array==prop@ebv_cube$fillvalue[1], c(NA))
   }  else if(class(subset) == "numeric"){
     #process bb subset ----
     subset.raster <- ebv_read_bb(filepath, datacubepath, bb=subset, timestep=timestep, epsg=epsg, verbose=verbose)

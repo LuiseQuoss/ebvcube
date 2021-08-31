@@ -84,9 +84,9 @@ ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
   time <- prop@spatial$dimensions[3]
   timevalues <- prop@temporal$timesteps_natural
   title <- prop@general$title
-  label <- prop@entity$standard_name
-  fillvalue <- prop@entity$fillvalue
-  type.short <- ebv_i_type_r(prop@entity$type)
+  label <- prop@ebv_cube$standard_name
+  fillvalue <- prop@ebv_cube$fillvalue
+  type.short <- ebv_i_type_r(prop@ebv_cube$type)
   dims <- prop@spatial$dimensions
 
   #check if only one timestep

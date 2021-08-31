@@ -172,7 +172,7 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
     )
 
     #get output type ot for gdal
-    type.long <- prop@entity$type
+    type.long <- prop@ebv_cube$type
     ot <- ebv_i_type_ot(type.long)
 
     a_srs <- paste0('EPSG:', prop@spatial$epsg)
@@ -184,14 +184,14 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
                      a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
                      a_srs = a_srs,
                      co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED'),
-                     a_nodata=prop@entity$fillvalue,
+                     a_nodata=prop@ebv_cube$fillvalue,
                      ot = ot)
     } else{
       gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
                      a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
                      a_srs = a_srs,
                      co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED'),
-                     a_nodata=prop@entity$fillvalue)
+                     a_nodata=prop@ebv_cube$fillvalue)
     }
 
     #delete temp file
@@ -254,7 +254,7 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
       gdalUtils::gdal_translate(temp.tif, temp.vrt, of='VRT', overwrite=TRUE,
                      a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
                      a_srs = a_srs)#,
-      #a_nodata=prop@entity_information@fillvalue)
+      #a_nodata=prop@ebv_cube_information@fillvalue)
     }
 
     #merge all vrts to one vrt
@@ -265,13 +265,13 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
                                    prop@spatial$extent[2], prop@spatial$extent[4]))
 
     #get output type ot for gdal
-    type.long <- prop@entity$type
+    type.long <- prop@ebv_cube$type
     ot <- ebv_i_type_ot(type.long)
 
     #gdal translate: add fillvalue, add ot if given, output final tif
     if(!is.null(ot)){
       gdalUtils::gdal_translate(temp.vrt, outputpath,
-                     a_nodata=prop@entity$fillvalue,
+                     a_nodata=prop@ebv_cube$fillvalue,
                      overwrite=overwrite,
                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                      a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4],
@@ -280,7 +280,7 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
                      ot=ot)
     } else {
       gdalUtils::gdal_translate(temp.vrt, outputpath,
-                     a_nodata=prop@entity$fillvalue,
+                     a_nodata=prop@ebv_cube$fillvalue,
                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                      a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4],
                                 prop@spatial$extent[2], prop@spatial$extent[3]),
@@ -321,8 +321,8 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
       )
     }
 
-    #NAvalue(r) <- prop@entity_information@fillvalue
-    r<- raster::mask(r, r, maskvalue=prop@entity$fillvalue)
+    #NAvalue(r) <- prop@ebv_cube_information@fillvalue
+    r<- raster::mask(r, r, maskvalue=prop@ebv_cube$fillvalue)
 
     #write raster to disk
     raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)
@@ -330,7 +330,7 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
   # write raster ----
   } else if(class(data)=="RasterLayer"|class(data)=='RasterBrick'){
     #mask out fillvalue
-    r<- raster::mask(data, data, maskvalue=prop@entity$fillvalue)
+    r<- raster::mask(data, data, maskvalue=prop@ebv_cube$fillvalue)
     #write raster to disk
     raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)
     return(outputpath)

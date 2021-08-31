@@ -169,7 +169,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
 
   #get properties source
   prop_src <- ebv_properties(filepath_src, datacubepath_src, verbose)
-  type.long <- prop_src@entity$type
+  type.long <- prop_src@ebv_cube$type
 
   #source timestep check
   #check if timestep is valid type
@@ -254,7 +254,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
   srs_dest <- sp::CRS(SRS_string = paste0('EPSG:',epsg_dest))
 
   #get output type ot for gdal
-  #type.long <- prop_src@entity_information@type
+  #type.long <- prop_src@ebv_cube_information@type
   ot <- ebv_i_type_ot(type.long)
 
   #set path to variable in netcdf for gdal
@@ -362,7 +362,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
   #write tif with new resolution ----
   if (!is.null(ot) & !is.null(te)){
     r <- gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@entity$fillvalue,
+                  tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
                   ot=ot,r = method, te = te,
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
@@ -370,7 +370,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
                   output_Raster = return_raster)
   } else if (is.null(ot) & !is.null(te)) {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@entity$fillvalue,
+                  tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
                   r = method, te = te,
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
@@ -378,7 +378,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
                   output_Raster = return_raster)
   } else if(!is.null(ot) & is.null(te)){
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@entity$fillvalue,
+                  tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
                   r = method, ot = ot,
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
@@ -386,7 +386,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
                   output_Raster = return_raster)
   } else {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@entity$fillvalue,
+                  tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
                   r = method,
                   overwrite=overwrite,
                   co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
@@ -408,7 +408,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
 
   #return array ----
   if (return_raster){
-    r <- raster::reclassify(r, cbind(prop_src@entity$fillvalue, NA))
+    r <- raster::reclassify(r, cbind(prop_src@ebv_cube$fillvalue, NA))
     return(r)
   } else{
     return(outputpath)
