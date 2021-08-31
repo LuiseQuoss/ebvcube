@@ -278,11 +278,12 @@ ebv_i_type_raster <- function(datanotation, byteorder){
 ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
   #src epsg: epsg given for the bb
   #dest epsg: epsg of the nc --> epsg of the returned bb
+  crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", src_epsg))
+  crs_src <- sp::CRS(stringr::str_remove(paste(crs[2], collapse = ' '), 'PROJ.4 : '))
+  crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", dest_epsg))
+  crs_dest <- sp::CRS(stringr::str_remove(paste(crs[2], collapse = ' '), 'PROJ.4 : '))
 
-  crs_src <- sp::CRS(paste0(SRS_string = "EPSG:", src_epsg))
-  crs_dest <- sp::CRS(paste0(SRS_string = "EPSG:", dest_epsg))
-
-  p1 <- matrix(data = c(bb[1],bb[3]), nrow = 1, ncol = 2)
+    p1 <- matrix(data = c(bb[1],bb[3]), nrow = 1, ncol = 2)
   sp1 <- sp::SpatialPoints(p1, proj4string=crs_src)
 
   p2 <- matrix(data = c(bb[2],bb[4]), nrow = 1, ncol = 2)
