@@ -8,7 +8,7 @@
 #' @slot metric Named list. Elements: standard_name, description
 #' @slot scenario Named list. Elements: standard_name, description
 #' @slot ebv_cube Named list. Elements: standard_name, description, unit, type,
-#'   fillvalue, value_range
+#'   fillvalue
 #'
 #' @return S4 class containing the EBV netCDF properties
 #' @export
@@ -182,18 +182,17 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
     #get srs ----
     srs.ds <- rhdf5::H5Dopen(hdf, 'crs')
-    srs.chr <- ebv_i_read_att(srs.ds, 'spatial_ref')
-    srs <- sp::CRS(srs.chr)
+    srs <- ebv_i_read_att(srs.ds, 'spatial_ref')
     rhdf5::H5Dclose(srs.ds)
 
     #get epsg
-    epsg <- as.integer(rgdal::showEPSG(srs.chr))
+    epsg <- as.integer(rgdal::showEPSG(srs))
 
     #get dims
     dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time))
 
     #create spatial list for S4 class
-    spatial <- list(srs=srs, epsg=epsg, resolution=resolution, extent=extent, dimensions=dims)
+    spatial <- list(wkt2=srs, epsg=epsg, resolution=resolution, extent=extent, dimensions=dims)
 
     #get time info ----
     add <- 40177
@@ -265,22 +264,11 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
           unit <- ebv_i_read_att(dh, 'unit')[1]
         }
 
-        #get value_range
-        if (rhdf5::H5Aexists(dh, 'valid_range')){
-          value_range <- ebv_i_read_att(dh, 'valid_range')
-        } else {
-          value_range <- ebv_i_read_att(hdf, 'value_range')
-        }
-        # catch mistakes of old netcdfs
-        if(is.null(value_range)){
-          value_range <- array(NA)
-        }
-
         #close data handle
         rhdf5::H5Dclose(dh)
 
         #create object of S4 class
-        entity <- list(description=description, standard_name=standard_name, unit=unit, type=type, fillvalue=fillvalue, value_range=value_range)
+        entity <- list(description=description, standard_name=standard_name, unit=unit, type=type, fillvalue=fillvalue)
 
         ####get metric info ----
         #one level higher
@@ -388,22 +376,11 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         #unit
         unit <- ebv_i_read_att(dh, 'units')[1]
 
-        #get value_range
-        if (rhdf5::H5Aexists(dh, 'valid_range')){
-          value_range <- ebv_i_read_att(dh, 'valid_range')
-        } else {
-          value_range <- ebv_i_read_att(hdf, 'value_range')
-        }
-        # catch mistakes of old netcdfs
-        if(is.null(value_range)){
-          value_range <- array(NA)
-        }
-
         #close data handle
         rhdf5::H5Dclose(dh)
 
         #create object of S4 class
-        entity <- list(description=description, standard_name=standard_name, unit=unit, type=type, fillvalue=fillvalue, value_range=value_range)
+        entity <- list(description=description, standard_name=standard_name, unit=unit, type=type, fillvalue=fillvalue)
 
         ####get metric info ----
         #one level higher
