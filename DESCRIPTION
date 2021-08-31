@@ -15,7 +15,7 @@ Authors@R:
            role = c("aut"),
            email = "nestor.fernandez@idiv.de")
            )
-Description: This package can be used to easily access the data of the EBV NetCDFs which can be 
+Description: This package can be used to easily access the data of the EBV netCDFs which can be 
     downloaded here: portal.geobon.org. It also provides some basic visualization of the data. 
     Advanced users can build their own NetCDFs with the EBV standard using this package.
 License: GPL (>= 3)
