@@ -220,14 +220,14 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     raster <- raster::raster(filepath_tif, band)
   }
 
-  #get value range from tif ----
-  if (raster@data@haveminmax){
-    min <- min(raster@data@min)
-    max <- max(raster@data@max)
-    value_range <- c(min, max)
-  }else{
-    value_range <- 'None'
-  }
+  # #get value range from tif ----
+  # if (raster@data@haveminmax){
+  #   min <- min(raster@data@min)
+  #   max <- max(raster@data@max)
+  #   value_range <- c(min, max)
+  # }else{
+  #   value_range <- 'None'
+  # }
 
   #get fill value from tif
   nodata <- raster@file@nodatavalue
@@ -242,8 +242,12 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   #rotate data ----
   if (length(timestep) > 1){
     data <- array(raster, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
+    for (i in 1:length(timestep)){
+      data[,,i] <- data[,ncol(data):1,i]
+    }
   } else {
     data <- matrix(raster, nrow=dim(raster)[2], ncol=dim(raster)[1])
+    data <- data[,ncol(data):1]
   }
 
   #open file
@@ -268,42 +272,8 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep)),
                  count=c(lon.len,lat.len,length(timestep)))#, native=T)
 
-  #add valid range attribute----
-
   #open DS
   did <- rhdf5::H5Dopen(hdf, datacubepath)
-
-  # :valid_range
-  if (! rhdf5::H5Aexists(did, 'valid_range')){
-    sid <- rhdf5::H5Screate_simple(length(value_range))
-    tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
-    #H5Tset_size(tid, max(nchar(ebv_subgroups_desc))+1)
-    aid <- rhdf5::H5Acreate(did,'valid_range', tid,sid)
-    rhdf5::H5Awrite(aid, value_range)
-    rhdf5::H5Aclose(aid)
-    rhdf5::H5Sclose(sid)
-  } else{
-    old.vr <- ebv_i_read_att(did, 'valid_range')
-    old.min <- old.vr[1]
-    old.max <- old.vr[2]
-    new.vr <- old.vr
-    if (old.min > value_range[1]){
-      new.vr[1] <- value_range[1]
-    }
-    if (old.max < value_range[2]){
-      new.vr[2] <- value_range[2]
-    }
-    if ((old.min != new.vr[1])|(old.max != new.vr[2])){
-      value_range <- new.vr
-      rhdf5::H5Adelete(did, 'valid_range')
-      sid <- rhdf5::H5Screate_simple(length(value_range))
-      tid <- rhdf5::H5Tcopy("H5T_NATIVE_DOUBLE")
-      aid <- rhdf5::H5Acreate(did, name = 'valid_range', tid,sid)
-      rhdf5::H5Awrite(aid, value_range)
-      rhdf5::H5Aclose(aid)
-      rhdf5::H5Sclose(sid)
-    }
-  }
 
   #delete automatically created attribute: :rhdf5-NA.OK
   if(rhdf5::H5Aexists(did, 'rhdf5-NA.OK')){
