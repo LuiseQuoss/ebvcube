@@ -189,14 +189,15 @@ ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   }
 
   #get epsg of ncdf
-  epsg.nc <- prop@spatial$epsg
+  epsg.nc <- as.integer(prop@spatial$epsg)
+  wkt.nc <- prop@spatial$wkt2
 
   #original extent
   extent.org <- raster::extent(subset)
 
   #reproject shp if necessary to epsg of ncdf ----
   if (epsg.shp != epsg.nc){
-    subset <- sp::spTransform(subset, sp::CRS(paste0('EPSG:',epsg.nc)))
+    subset <- sp::spTransform(subset, sp::CRS(SRS_string = wkt.nc))
     tempshp <- file.path(temp_path, 'temp_EBV_shp_subset')
     if (dir.exists(tempshp)){
       unlink(tempshp, recursive = TRUE)
@@ -255,8 +256,8 @@ ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   subset.raster <- raster::mask(subset.nc, temp.raster, maskvalue=0, overwrite=TRUE)
 
   #set nodata value
-  subset.raster <- raster::reclassify(subset.raster, cbind(prop@entity$fillvalue, NA))
-  raster::crs(subset.raster) <- sp::CRS(SRS_string = paste0('EPSG:', epsg.nc))
+  subset.raster <- raster::reclassify(subset.raster, cbind(prop@ebv_cube$fillvalue, NA))
+  raster::crs(subset.raster) <- sp::CRS(SRS_string = wkt.nc)
 
   #remove temp shp
   if (epsg.shp != epsg.nc){
