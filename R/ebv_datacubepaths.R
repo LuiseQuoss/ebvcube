@@ -54,6 +54,14 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
 
   #file overview
   ls <- rhdf5::h5ls(filepath)
+
+  #check structure
+  if('entities' %in% ls$name){
+    new <- TRUE
+  } else{
+    new <- FALSE
+  }
+
   #get all datasets ----
   remove <- c('crs', 'dim_entity', 'lat', 'lon', 'crs', 'time', 'var_entity',
               'entities', 'entity', 'nchar')
@@ -80,7 +88,7 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   #build result ----
   entity_names <- c()
   #scenario and metric ----
-  if('scenario' %in% subgroups & 'metric' %in% subgroups){
+  if(('scenario' %in% subgroups )| stringr::str_detect(datacubepaths[1], 'scenario')){
     scenario_names <- c()
     metric_names <- c()
     for (p in datacubepaths){
@@ -122,7 +130,11 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
       entity_names <- c(entity_names, e)
     }
     #build result data.frame
-    result = data.frame(datacubepaths, scenario_names, metric_names, entity_names)
+    if(!new | !any(entity_names=='not defined')){
+      result = data.frame(datacubepaths, scenario_names, metric_names, entity_names)
+    } else{
+      result = data.frame(datacubepaths, scenario_names, metric_names)
+    }
   } else{
     # only metric ----
     metric_names <- c()
@@ -158,7 +170,12 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
 
     }
     #build result data.frame
-    result = data.frame(datacubepaths, metric_names, entity_names)
+    if(!new | ! any(entity_names=='not defined')){
+      result = data.frame(datacubepaths, metric_names, entity_names)
+    } else{
+      result = data.frame(datacubepaths, metric_names)
+    }
+
   }
 
   #close file
