@@ -1,9 +1,9 @@
-#' Read subset (bounding box) of one datacube of an EBV NetCDF
+#' Read subset (bounding box) of one datacube of an EBV netCDF
 #'
 #' @description Read a subset of one or more layers from one datacube of the
 #'   NetCDF file. Subset definition by a bounding box.
 #'
-#' @param filepath Character. Path to the NetCDF file.
+#' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param bb Integer Vector. Definition of subsset by bounding box: c(xmin,
@@ -22,11 +22,11 @@
 #'   TRUE.
 #'
 #' @return Returns a raster object if no outputpath is given. Otherwise the
-#'   subset is written onto the disk and the ouputpath is returned.
+#'   subset is written onto the disk and the outputpath is returned.
 #' @export
 #'
-#' @note In case the epsg of the Bounding Box and the NetCDF differ, the data is
-#'   returned based on the epsg of the NetCDF Dataset.
+#' @note In case the epsg of the Bounding Box and the netCDF differ, the data is
+#'   returned based on the epsg of the netCDF Dataset.
 #' @seealso [ebvnetcdf::ebv_read_shp()] for subsetting via shapefile.
 #'
 #' @examples
@@ -141,15 +141,17 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
   if(checkmate::checkIntegerish(epsg) != TRUE){
     stop('epsg must be of type integer.')
   }
-  epsg_list <- rgdal::make_EPSG()
-  if (! epsg %in% epsg_list$code){
-    stop(paste0('The given epsg is not valid or not supported by R.\n', epsg))
+  crs <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg))
+  if(any(stringr::str_detect(as.character(crs), 'crs not found'))){
+    stop('Given EPSG code is not in PROJ library. Did you give a wrong EPSG code?')
+  } else if (any(stringr::str_detect(as.character(crs), '(?i)error'))){
+    stop(paste0('Could not process EPSG. See error from gdalUtils:\n', as.character(paste0(crs, collapse = '\n'))))
   }
 
   #######initial test end ----
 
   #get basic information of file ----
-  crs <- prop@spatial$srs@projargs
+  crs <- prop@spatial$wkt2
   epsg_file <- prop@spatial$epsg
   resolution <- prop@spatial$resolution
   ext <- prop@spatial$extent
@@ -215,7 +217,7 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
 
   #check needed RAM ----
   if (!ignore_RAM){
-    ebv_i_check_ram(c(ncol, nrow), timestep, prop@entity$type)
+    ebv_i_check_ram(c(ncol, nrow), timestep, prop@ebv_cube$type)
   } else{
     message('RAM capacities are ignored.')
   }
@@ -230,8 +232,10 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
       part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep[i]), count = c(length(lon.indices),length(lat.indices),1))
       #create and rotate array
       mat <- matrix(part, c(nrow, ncol))
-      mat <- t(mat[nrow(mat):1,,drop=FALSE])
-      mat <- mat[,ncol(mat):1,drop=FALSE]
+      # mat <- t(mat[nrow(mat):1,,drop=FALSE])
+      # mat <- mat[,ncol(mat):1,drop=FALSE]
+      mat <- t(mat[,,drop=FALSE])
+      mat <- mat[nrow(mat):1,]
 
       array3d[,,i] <- array(mat, c(ncol, nrow))
     }
@@ -249,8 +253,10 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
     part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep), count = c(length(lon.indices),length(lat.indices),1))
     #create and rotate array
     mat <- matrix(part, c(nrow, ncol))
-    mat <- t(mat[nrow(mat):1,,drop=FALSE])
-    mat <- mat[,ncol(mat):1,drop=FALSE]
+    # mat <- t(mat[nrow(mat):1,,drop=FALSE])
+    # mat <- mat[,ncol(mat):1,drop=FALSE]
+    mat <- t(mat[,,drop=FALSE])
+    mat <- mat[nrow(mat):1,]
 
     #array to raster
     r <- raster::raster(
@@ -262,7 +268,7 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
   }
 
   #set nodata value
-  r <- raster::reclassify(r, cbind(prop@entity$fillvalue, NA))
+  r <- raster::reclassify(r, cbind(prop@ebv_cube$fillvalue, NA))
 
   #return data ----
   if (!is.null(outputpath)){
