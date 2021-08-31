@@ -55,7 +55,8 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   #file overview
   ls <- rhdf5::h5ls(filepath)
   #get all datasets ----
-  remove <- c('crs', 'dim_entity', 'lat', 'lon', 'crs', 'time', 'var_entity')
+  remove <- c('crs', 'dim_entity', 'lat', 'lon', 'crs', 'time', 'var_entity',
+              'entities', 'entity', 'nchar')
   for (r in remove){
     ls <- ls[ls[,2]!=r,]
   }
