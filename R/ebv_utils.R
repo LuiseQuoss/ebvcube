@@ -301,9 +301,9 @@ ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
 #' @param type R type returned by [ebvnetcdf::ebv_i_type_r()].
 #' @return Throws an error if the RAM restrictions are surpassed.
 #' @noRd
-ebv_i_check_ram <- function(dims, timestep, type){
+ebv_i_check_ram <- function(dims, timestep, entity, type){
   #amount of pixels
-  size <- dims[1]*dims[2]*length(timestep)
+  size <- dims[1]*dims[2]*length(timestep)*length(entity)
   if(!is.na(ebv_i_type_r(type))){
     if(ebv_i_type_r(type)=='integer'){
       ###integer: size*4 = bytes
@@ -334,6 +334,39 @@ ebv_i_check_ram <- function(dims, timestep, type){
     message('Invalid type. RAM check ignored.')
   }
 }
+# ebv_i_check_ram <- function(dims, timestep, type){
+#   #amount of pixels
+#   size <- dims[1]*dims[2]*length(timestep)
+#   if(!is.na(ebv_i_type_r(type))){
+#     if(ebv_i_type_r(type)=='integer'){
+#       ###integer: size*4 = bytes
+#       bytes <- size * 4 + 224
+#       ram.var.gb <- bytes/(1024^3)
+#     }else if(ebv_i_type_r(type)=='double'){
+#       ###float: size*8 = bytes
+#       bytes <- size * 8 + 224
+#       ram.var.gb <- bytes/(1024^3)
+#     }
+#     #get ram pc
+#     ram.pc <- ebv_i_ram()
+#     ram.pc.free <- ram.pc[2]
+#     ram.pc.total <- ram.pc[1]
+#     #check if data too big
+#     if(ram.pc.free < ram.var.gb){
+#       stop(paste0('The space needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb,2)))
+#     }
+#     #at least 1 GB stays free
+#     if(ram.pc.free - ram.var.gb < 1){
+#       stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore_RAM = TRUE.')
+#     }
+#     # #at least 15% stay free
+#     # if((ram.pc.total*0.15) > ram.var.gb){
+#     #   stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore_RAM = TRUE.')
+#     # }
+#   } else{
+#     message('Invalid type. RAM check ignored.')
+#   }
+# }
 
 #' Check if data in datacube is missing
 #'
@@ -342,7 +375,7 @@ ebv_i_check_ram <- function(dims, timestep, type){
 #' @param timestep vector of integers. optional.
 #' @return Returns vector of bands that are empty. Else returns empty vector.
 #' @noRd
-ebv_i_check_data <- function(hdf, datacubepath, timestep=NULL){
+ebv_i_check_data <- function(hdf, datacubepath, entity_index, timestep=NULL){
   if (is.null(timestep)){
     did <- hdf&datacubepath
     file_space <- rhdf5::H5Dget_space(did)
@@ -353,20 +386,47 @@ ebv_i_check_data <- function(hdf, datacubepath, timestep=NULL){
   for (t in timestep){
     r <- tryCatch(
       {
-        r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t), count=c(1,1,1))
+        r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t,entity_index), count=c(1,1,1,1))
       },
       error = function(e){
-        #print(e)
+        print(e)
         #message(paste0('Timestep ', t, ' holds no data.'));
         r <- TRUE
       }
     )
-    if(r == TRUE){
+    if(is.na(r)){
+
+    }else if(r == TRUE){
       result <- c(result, t)
     }
   }
   return(result)
 }
+# ebv_i_check_data <- function(hdf, datacubepath, timestep=NULL){
+#   if (is.null(timestep)){
+#     did <- hdf&datacubepath
+#     file_space <- rhdf5::H5Dget_space(did)
+#     timestep <- 1:rhdf5::H5Sget_simple_extent_dims(file_space)$size[3]
+#     rhdf5::H5Dclose(did)
+#   }
+#   result <- c()
+#   for (t in timestep){
+#     r <- tryCatch(
+#       {
+#         r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t), count=c(1,1,1))
+#       },
+#       error = function(e){
+#         #print(e)
+#         #message(paste0('Timestep ', t, ' holds no data.'));
+#         r <- TRUE
+#       }
+#     )
+#     if(r == TRUE){
+#       result <- c(result, t)
+#     }
+#   }
+#   return(result)
+# }
 
 
 #' Adds uint attribute to a specified h5object.
