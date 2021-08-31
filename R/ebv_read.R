@@ -129,12 +129,12 @@ ebv_read <- function(filepath, datacubepath, timestep, delayed=TRUE,
   #######initial test end ----
 
   #get fillvalue
-  fillvalue <- prop@entity$fillvalue
+  fillvalue <- prop@ebv_cube$fillvalue
 
   if (delayed==TRUE){
     #return delayed array ----
     #get type
-    type.long <- prop@entity$type
+    type.long <- prop@ebv_cube$type
     #get numeric type
     type.short <- ebv_i_type_r(type.long)
 
@@ -146,8 +146,8 @@ ebv_read <- function(filepath, datacubepath, timestep, delayed=TRUE,
       h5array <- c()
       #rotate array
       for (i in 1:length(timestep)){
-        temp <- t(part[nrow(part):1,,i]) #,drop=FALSE
-        temp <- temp[,ncol(temp):1] #,drop=FALSE
+        temp <- t(part[,,i]) #,drop=FALSE
+        temp <- temp[nrow(temp):1,]
         temp <- replace(temp, temp==fillvalue, c(NA))
         h5array <- c(h5array, temp)
       }
@@ -165,7 +165,7 @@ ebv_read <- function(filepath, datacubepath, timestep, delayed=TRUE,
   } else{
     #check needed RAM
     if (!ignore_RAM){
-      type.long <- prop@entity$type
+      type.long <- prop@ebv_cube$type
       ebv_i_check_ram(prop@spatial$dimensions,timestep,type.long)
     } else{
       message('RAM capacities are ignored.')
@@ -178,8 +178,8 @@ ebv_read <- function(filepath, datacubepath, timestep, delayed=TRUE,
                      count=c(prop@spatial$dimensions[2],prop@spatial$dimensions[1],1))
       #rotate matrix
       mat <- matrix(part, c(prop@spatial$dimensions[2], prop@spatial$dimensions[1]))
-      mat <- t(mat[nrow(mat):1,,drop=FALSE])
-      mat <- mat[,ncol(mat):1,drop=FALSE]
+      mat <- t(mat[,,drop=FALSE])
+      mat <- mat[nrow(mat):1,]
       mat <- replace(mat, which(base::match(mat, fillvalue)==1), c(NA))
       #fill array
       h5array[,,i] <- mat
