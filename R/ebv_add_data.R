@@ -210,7 +210,7 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
   # get properties ----
   prop <- ebv_properties(filepath_nc, datacubepath)
-  fillvalue <- prop@entity$fillvalue
+  fillvalue <- prop@ebv_cube$fillvalue
 
   #get data from tif ----
   if (length(timestep) > 1){
