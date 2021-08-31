@@ -1,8 +1,8 @@
-#' Get datacubepaths of EBV NetCDF
-#' @description Get the paths to the datacubes of the EBV NetCDF to access the
+#' Get datacubepaths of EBV netCDF
+#' @description Get the paths to the datacubes of the EBV netCDF to access the
 #'   data.
 #'
-#' @param filepath Character. Path to the NetCDF file.
+#' @param filepath Character. Path to the netCDF file.
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
 #'

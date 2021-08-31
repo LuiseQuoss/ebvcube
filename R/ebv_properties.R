@@ -2,7 +2,7 @@
 #'
 #' @slot general Named list. Elements: title, description, ebv_class, ebv_name,
 #'   ebv_subgroups, creator
-#' @slot spatial Named list. Elements: srs, epsg, resolution, extent, dimensions
+#' @slot spatial Named list. Elements: wkt2, epsg, resolution, extent, dimensions
 #' @slot temporal Named list. Elements: units, t_delta, timesteps,
 #'   timesteps_natural
 #' @slot metric Named list. Elements: standard_name, description
@@ -22,11 +22,11 @@ methods::setClass("EBV netCDF properties", slots=list(general="list",
                                                       scenario="list",
                                                       ebv_cube="list"))
 
-#' Read properties of EBV NetCDF
+#' Read properties of EBV netCDF
 #'
-#' @description Structured access to all attributes of the NetCDF file.
+#' @description Structured access to all attributes of the netCDF file.
 #'
-#' @param filepath Character. Path to the NetCDF file.
+#' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Optional. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.
