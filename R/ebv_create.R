@@ -2,15 +2,15 @@
 #'
 #' @description Create the core structure of the EBV NetCDF based on the json
 #'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
-#'   and attributes will be added afterwards. Use
-#'   [ebvnetcdf::ebv_add_data()] to add the missing attributes.
+#'   and attributes will be added afterwards. Use [ebvnetcdf::ebv_add_data()] to
+#'   add the missing attributes.
 #'
 #' @param jsonpath Character. Path to the json file downloaded from the
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
 #' @param outputpath Character. Set path where the NetCDF file should be
 #'   created.
-#' @param entities_no Integer. Default: 0. Indicates how many entities there are
-#'   per metric.
+#' @param entities Character. Csv table holding the entity names. Should have
+#'   only one column, each row is the name of one entity.
 #' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
 #'   system via the corresponding epsg code.
 #' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
