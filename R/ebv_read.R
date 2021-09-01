@@ -166,7 +166,7 @@ ebv_read <- function(filepath, datacubepath, timestep, delayed=TRUE,
     #check needed RAM
     if (!ignore_RAM){
       type.long <- prop@ebv_cube$type
-      ebv_i_check_ram(prop@spatial$dimensions,timestep,type.long)
+      ebv_i_check_ram(prop@spatial$dimensions,timestep,1,type.long)
     } else{
       message('RAM capacities are ignored.')
     }
