@@ -1,8 +1,8 @@
-#' Add data to a self-created EBV NetCDF
+#' Add data to a self-created EBV netCDF
 #'
-#' @description Add data to the self-created EBV NetCDF from GeoTiffs.
+#' @description Add data to the self-created EBV netCDF from GeoTiffs.
 #'
-#' @param filepath_nc Character. Path to the self-created NetCDF file.
+#' @param filepath_nc Character. Path to the self-created netCDF file.
 #' @param filepath_tif Character. Path to the GeoTiff file containing the data.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
@@ -21,7 +21,7 @@
 #'   block-processing or other method implemented so far. Move to a machine with
 #'   more capacities for the moment if needed.
 #'
-#' @return Adds data to the EBV NetCDF. Check your results using
+#' @return Adds data to the EBV netCDF. Check your results using
 #'   [ebvnetcdf::ebv_read()] and/or [ebvnetcdf::ebv_analyse()].
 #' @export
 #'
@@ -47,16 +47,6 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   withr::defer(
     if(exists('file_space')){
       if(rhdf5::H5Iis_valid(file_space)==TRUE){rhdf5::H5Sclose(file_space)}
-    }
-  )
-  withr::defer(
-    if(exists('aid')){
-      if(rhdf5::H5Iis_valid(aid)==TRUE){rhdf5::H5Aclose(aid)}
-    }
-  )
-  withr::defer(
-    if(exists('sid')){
-      if(rhdf5::H5Iis_valid(sid)==TRUE){rhdf5::H5Sclose(sid)}
     }
   )
   withr::defer(
