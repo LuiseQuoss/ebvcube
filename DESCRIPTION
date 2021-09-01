@@ -41,7 +41,8 @@ Imports:
     stats,
     stringr,
     utils,
-    withr
+    withr,
+    ncmeta
 SystemRequirements: GDAL binaries
 Depends: 
     R (>= 2.10) 

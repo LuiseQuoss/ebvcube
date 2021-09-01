@@ -2,16 +2,18 @@
 % Please edit documentation in R/ebv_create.R
 \name{ebv_create}
 \alias{ebv_create}
-\title{Create an EBV NetCDF}
+\title{Create an EBV netCDF}
 \usage{
 ebv_create(
   jsonpath,
   outputpath,
-  entities_no = 0,
+  entities,
   epsg = 4326,
   extent = c(-180, 180, -90, 90),
+  resolution = c(1, 1),
   fillvalue = NULL,
   prec = "double",
+  force_4D = TRUE,
   overwrite = FALSE,
   verbose = FALSE
 )
@@ -23,8 +25,8 @@ ebv_create(
 \item{outputpath}{Character. Set path where the NetCDF file should be
 created.}
 
-\item{entities_no}{Integer. Default: 0. Indicates how many entities there are
-per metric.}
+\item{entities}{Character. Csv table holding the entity names. Should have
+only one column, each row is the name of one entity.}
 
 \item{epsg}{Integer. Default: 4326 (WGS84). Defines the coordinate reference
 system via the corresponding epsg code.}
@@ -32,11 +34,21 @@ system via the corresponding epsg code.}
 \item{extent}{Numeric. Default: c(-180,180,-90,90). Defines the extent of the
 data: c(xmin, xmax, ymin, ymax).}
 
+\item{resolution}{Numerical. Vector of two numerical values defining the
+longitudinal and latitudinal resolution of the pixel: c(lon,lat).}
+
 \item{fillvalue}{Numeric. Value of the missing data in the array. Not
 mandatory but should be defined!}
 
 \item{prec}{Character. Default: 'double'. Precision of the data set. Valid
 options: 'short' 'integer' 'float' 'double' 'char' 'byte'.}
+
+\item{force_4D}{Logical. Default is TRUE. If the argument is TRUE, there will
+be 4D cubes (lon, lat, time, entity) per metric. If this argument is
+changed to FALSE, there will be 3D cubes (lon, lat, time) per entity (per
+metric). So the latter yields a higher amount of cubes and does not bundle
+all information per metric. In the future the standard will be restricted
+to the 4D version. Recommendation: go with the 4D cubes!}
 
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
 outputfile defined by 'outputpath'.}
@@ -50,11 +62,11 @@ Creates the NetCDF file at the 'outputpath' location.
 \description{
 Create the core structure of the EBV NetCDF based on the json
 from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
-and attributes will be added afterwards. Use
-\code{\link[=ebv_add_data]{ebv_add_data()}} to add the missing attributes.
+and attributes will be added afterwards. Use \code{\link[=ebv_add_data]{ebv_add_data()}} to
+add the missing attributes.
 }
 \note{
-To check out the results take a look at your NetCDF file with
+To check out the results take a look at your netCDF file with
 \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided by the
 NASA.
 }

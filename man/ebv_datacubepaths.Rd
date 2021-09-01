@@ -2,12 +2,12 @@
 % Please edit documentation in R/ebv_datacubepaths.R
 \name{ebv_datacubepaths}
 \alias{ebv_datacubepaths}
-\title{Get datacubepaths of EBV NetCDF}
+\title{Get datacubepaths of EBV netCDF}
 \usage{
 ebv_datacubepaths(filepath, verbose = FALSE)
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
 TRUE.}
@@ -17,7 +17,7 @@ Dataframe containing the paths to access the datacubes and
 descriptions of scenario, metric and entity if existing.
 }
 \description{
-Get the paths to the datacubes of the EBV NetCDF to access the
+Get the paths to the datacubes of the EBV netCDF to access the
 data.
 }
 \examples{

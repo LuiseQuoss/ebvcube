@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_read_bb.R
 \name{ebv_read_bb}
 \alias{ebv_read_bb}
-\title{Read subset (bounding box) of one datacube of an EBV NetCDF}
+\title{Read subset (bounding box) of one datacube of an EBV netCDF}
 \usage{
 ebv_read_bb(
   filepath,
@@ -17,7 +17,7 @@ ebv_read_bb(
 )
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
@@ -45,15 +45,15 @@ TRUE.}
 }
 \value{
 Returns a raster object if no outputpath is given. Otherwise the
-subset is written onto the disk and the ouputpath is returned.
+subset is written onto the disk and the outputpath is returned.
 }
 \description{
 Read a subset of one or more layers from one datacube of the
 NetCDF file. Subset definition by a bounding box.
 }
 \note{
-In case the epsg of the Bounding Box and the NetCDF differ, the data is
-returned based on the epsg of the NetCDF Dataset.
+In case the epsg of the Bounding Box and the netCDF differ, the data is
+returned based on the epsg of the netCDF Dataset.
 }
 \examples{
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")

@@ -2,12 +2,12 @@
 % Please edit documentation in R/ebv_properties.R
 \name{ebv_properties}
 \alias{ebv_properties}
-\title{Read properties of EBV NetCDF}
+\title{Read properties of EBV netCDF}
 \usage{
 ebv_properties(filepath, datacubepath = NULL, verbose = FALSE)
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
 \item{datacubepath}{Character. Optional. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
@@ -19,7 +19,7 @@ S4 class containing information about file or file and datacube
 depending on input.
 }
 \description{
-Structured access to all attributes of the NetCDF file.
+Structured access to all attributes of the netCDF file.
 }
 \examples{
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
