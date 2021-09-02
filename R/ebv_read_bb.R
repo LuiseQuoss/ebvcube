@@ -6,7 +6,10 @@
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param bb Integer Vector. Definition of subsset by bounding box: c(xmin,
+#' @param entity Character or Integer. Default is NULL. (As if the structure
+#'   were 3D. Then no entity argument is needed.) Character string or single
+#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
+#' @param bb Integer Vector. Definition of subset by bounding box: c(xmin,
 #'   xmax, ymin, ymax).
 #' @param outputpath Character. Default: NULL, returns the data as a raster
 #'   object in memory. Optional: set path to write subset as GeoTiff on disk.
@@ -38,9 +41,9 @@
 #' #cSAR.germany <- ebv_read_bb(file, datacubes[1], bb_wgs84, timestep = c(1,4,12))
 #' #path <- ebv_read_bb(file, datacubes[1], bb_wgs84, out, timestep = c(2,3))
 #' #path  <- ebv_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
-ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
-                             timestep = 1, epsg = 4326, overwrite=FALSE,
-                             ignore_RAM = FALSE, verbose = FALSE){
+ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
+                        outputpath=NULL, epsg = 4326, overwrite=FALSE,
+                        ignore_RAM = FALSE, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -102,6 +105,7 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
+
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)
 
@@ -141,12 +145,34 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
   if(checkmate::checkIntegerish(epsg) != TRUE){
     stop('epsg must be of type integer.')
   }
+
   crs <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg))
   if(any(stringr::str_detect(as.character(crs), 'crs not found'))){
     stop('Given EPSG code is not in PROJ library. Did you give a wrong EPSG code?')
   } else if (any(stringr::str_detect(as.character(crs), '(?i)error'))){
     stop(paste0('Could not process EPSG. See error from gdalUtils:\n', as.character(paste0(crs, collapse = '\n'))))
   }
+
+  #check file structure
+  is_4D <- ebv_i_4D(filepath)
+  if(is_4D){
+    if(is.null(entity)){
+      stop('Your working with a 4D cube based EBV netCDF. Please specify the entity-argument.')
+    }
+    #check entity
+    entity_names <- prop@general$entity_names
+    ebv_i_entity(entity, entity_names)
+
+    #get entity index
+    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
+      entity_index <- entity
+    } else if (checkmate::checkCharacter(entity)==TRUE){
+      entity_index <- which(entity_names==entity)
+    } else{
+      entity <- 1 #set entity to 1 (for ebv_i_check_ram)
+    }
+  }
+
 
   #######initial test end ----
 
@@ -217,27 +243,40 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
 
   #check needed RAM ----
   if (!ignore_RAM){
-    ebv_i_check_ram(c(ncol, nrow), timestep, prop@ebv_cube$type)
+    ebv_i_check_ram(c(ncol, nrow), timestep, entity, prop@ebv_cube$type)
   } else{
     message('RAM capacities are ignored.')
   }
 
   #get data ----
-  #get multiple timesteps - 3D
+  #get multiple timesteps
   if (length(timestep)>1){
     array3d <- array(dim=c(ncol,nrow, length(timestep)))
 
-    for (i in 1:length(timestep)){
-      #get subset
-      part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep[i]), count = c(length(lon.indices),length(lat.indices),1))
-      #create and rotate array
-      mat <- matrix(part, c(nrow, ncol))
-      # mat <- t(mat[nrow(mat):1,,drop=FALSE])
-      # mat <- mat[,ncol(mat):1,drop=FALSE]
-      mat <- t(mat[,,drop=FALSE])
-      mat <- mat[nrow(mat):1,]
+    if(is_4D){
+      #read from 4D structure
+      for (i in 1:length(timestep)){
+        #get subset
+        part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep[i], entity_index), count = c(length(lon.indices),length(lat.indices),1,length(entity_index)))
+        #create and rotate array
+        mat <- matrix(part, c(nrow, ncol,1))
+        mat <- t(mat)
+        mat <- mat[nrow(mat):1,,drop=FALSE]
+        array3d[,,i] <- array(mat, c(ncol, nrow))
+      }
+    } else{
+      # read from 3D structure
+      for (i in 1:length(timestep)){
+        #get subset
+        part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep[i]), count = c(length(lon.indices),length(lat.indices),1))
+        #create and rotate array
+        mat <- matrix(part, c(nrow, ncol))
+        mat <- t(mat[,,drop=FALSE])
+        #mat <- mat[nrow(mat):1,]
 
-      array3d[,,i] <- array(mat, c(ncol, nrow))
+        array3d[,,i] <- array(mat, c(ncol, nrow))
+      }
+
     }
 
     #array to raster
@@ -249,14 +288,25 @@ ebv_read_bb <- function(filepath, datacubepath, bb, outputpath=NULL,
     )
 
   }else{
-    #get one timestep 2D
-    part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep), count = c(length(lon.indices),length(lat.indices),1))
-    #create and rotate array
-    mat <- matrix(part, c(nrow, ncol))
-    # mat <- t(mat[nrow(mat):1,,drop=FALSE])
-    # mat <- mat[,ncol(mat):1,drop=FALSE]
-    mat <- t(mat[,,drop=FALSE])
-    mat <- mat[nrow(mat):1,]
+    #get one timestep
+
+    if(is_4D){
+    #read from 4D structure
+      part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep, entity_index), count = c(length(lon.indices),length(lat.indices),1,length(entity_index)))
+      #create and rotate array
+      mat <- matrix(part, c(nrow, ncol))
+      mat <- t(mat)
+      mat <- mat[nrow(mat):1,,drop=FALSE]
+
+    }else{
+    #read from 3D structure
+      part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep), count = c(length(lon.indices),length(lat.indices),1))
+      #create and rotate array
+      mat <- matrix(part, c(nrow, ncol))
+      mat <- t(mat[,,drop=FALSE])
+      #mat <- mat[nrow(mat):1,]
+
+    }
 
     #array to raster
     r <- raster::raster(
