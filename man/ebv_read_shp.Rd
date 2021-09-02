@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_read_shp.R
 \name{ebv_read_shp}
 \alias{ebv_read_shp}
-\title{Read subset (shapefile) of one datacube of an EBV NetCDF}
+\title{Read subset (shapefile) of one datacube of an EBV netCDF}
 \usage{
 ebv_read_shp(
   filepath,
@@ -18,7 +18,7 @@ ebv_read_shp(
 )
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
@@ -53,7 +53,7 @@ subset is written onto the disk and the ouputpath is returned.
 }
 \description{
 Read a subset of one or more layers from one datacube of the
-NetCDF file. Subset definition by a shapefile. This functions writes
+netCDF file. Subset definition by a shapefile. This functions writes
 temporary files on your disk. Specify a directory for these setting via
 options('ebv_temp'='/path/to/temp/directory').
 }
