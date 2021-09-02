@@ -2,12 +2,13 @@
 % Please edit documentation in R/ebv_add_data.R
 \name{ebv_add_data}
 \alias{ebv_add_data}
-\title{Add data to a self-created EBV NetCDF}
+\title{Add data to a self-created EBV netCDF}
 \usage{
 ebv_add_data(
   filepath_nc,
   filepath_tif,
   datacubepath,
+  entity = NULL,
   timestep = 1,
   band = 1,
   ignore_RAM = FALSE,
@@ -15,12 +16,16 @@ ebv_add_data(
 )
 }
 \arguments{
-\item{filepath_nc}{Character. Path to the self-created NetCDF file.}
+\item{filepath_nc}{Character. Path to the self-created netCDF file.}
 
 \item{filepath_tif}{Character. Path to the GeoTiff file containing the data.}
 
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+
+\item{entity}{Character or Integer. Default is NULL. (As if the structure
+were 3D. Then no entity argument is needed.) Character string or single
+integer value indicating the entity of the 4D structure of the EBV netCDFs.}
 
 \item{timestep}{Integer. Default: 1. Define to which timestep or timesteps
 the data should be added. If several timesteps are given they have to be in
@@ -37,11 +42,11 @@ your memory to read the data. Can be switched off (set to TRUE).}
 TRUE.}
 }
 \value{
-Adds data to the EBV NetCDF. Check your results using
+Adds data to the EBV netCDF. Check your results using
 \code{\link[=ebv_read]{ebv_read()}} and/or \code{\link[=ebv_analyse]{ebv_analyse()}}.
 }
 \description{
-Add data to the self-created EBV NetCDF from GeoTiffs.
+Add data to the self-created EBV netCDF from GeoTiffs.
 }
 \note{
 If the data exceeds your memory the RAM check will throw an error. No
