@@ -6,6 +6,9 @@
 #' @param filepath_tif Character. Path to the GeoTiff file containing the data.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
+#' @param entity Character or Integer. Default is NULL. (As if the structure
+#'   were 3D. Then no entity argument is needed.) Character string or single
+#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
 #' @param timestep Integer. Default: 1. Define to which timestep or timesteps
 #'   the data should be added. If several timesteps are given they have to be in
 #'   a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
@@ -34,7 +37,7 @@
 #' ts <- c(2:4)
 #' band <- c(1:3)
 #' #ebv_add_data(file, tif, datacubepaths[1,1], ts, band)
-ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
+ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,entity=NULL,
                               timestep=1, band=1, ignore_RAM=FALSE,
                               verbose=FALSE){
   ### start initial tests ----
@@ -121,6 +124,32 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   }
   rhdf5::H5Fclose(hdf)
 
+  # get properties
+  prop <- ebv_properties(filepath_nc, datacubepath)
+  fillvalue <- prop@ebv_cube$fillvalue
+  dims <- prop@spatial$dimensions
+  entity_names <- prop@general$entity_names
+
+  #check file structure
+  is_4D <- ebv_i_4D(filepath_nc)
+  if(is_4D){
+    if(is.null(entity)){
+      stop('Your working with a 4D cube based EBV netCDF. Please specify the entity-argument.')
+    }
+    #check entity ----
+    # check entity name
+    ebv_i_entity(entity, entity_names)
+
+    #get entity index
+    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
+      entity_index <- entity
+    } else if (checkmate::checkCharacter(entity)==TRUE){
+      entity_index <- which(entity_names==entity)
+    } else{
+      entity <- 1 #set entity to 1 (for ebv_i_check_ram)
+    }
+  }
+
   #check timesteps
   #check if timestep is valid type
   if(checkmate::checkIntegerish(timestep) != TRUE){
@@ -128,7 +157,7 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   }
 
   #check timestep range
-  max_time <- length(rhdf5::h5read(filepath_nc,'time'))
+  max_time <- dims[3] #length(rhdf5::h5read(filepath_nc,'time'))
   min_time <- 1
   if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
     stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
@@ -176,14 +205,14 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   }
 
   if (!ignore_RAM){
-    ebv_i_check_ram(size.int,timestep,type.long)
+    ebv_i_check_ram(size.int,timestep,entity,type.long)
   } else{
     message('RAM capacities are ignored.')
   }
 
   #check if dims of tif data correspond to lat and lon in netcdf
-  lat.len <- length(rhdf5::h5read(filepath_nc, 'lat'))
-  lon.len <- length(rhdf5::h5read(filepath_nc, 'lon'))
+  lat.len <- dims[1]
+  lon.len <- dims[2]
   if ((size.int[1] != lon.len) & (size.int[2] != lat.len)){
     stop(paste0('The size of your GeoTiff does not correspond to the latitude and longitude coordinates.
   Size should be: ', lon.len, ', ', lat.len, '. But is: ', size.int[1], ', ', size.int[2]))
@@ -198,10 +227,6 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
 
   ### end initial test ----
 
-  # get properties ----
-  prop <- ebv_properties(filepath_nc, datacubepath)
-  fillvalue <- prop@ebv_cube$fillvalue
-
   #get data from tif ----
   if (length(timestep) > 1){
     raster <- raster::brick(filepath_tif)[[band]]
@@ -209,15 +234,6 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   } else{
     raster <- raster::raster(filepath_tif, band)
   }
-
-  # #get value range from tif ----
-  # if (raster@data@haveminmax){
-  #   min <- min(raster@data@min)
-  #   max <- max(raster@data@max)
-  #   value_range <- c(min, max)
-  # }else{
-  #   value_range <- 'None'
-  # }
 
   #get fill value from tif
   nodata <- raster@file@nodatavalue
@@ -232,25 +248,20 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
   #rotate data ----
   if (length(timestep) > 1){
     data <- array(raster, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
-    for (i in 1:length(timestep)){
-      data[,,i] <- data[,ncol(data):1,i]
-    }
   } else {
     data <- matrix(raster, nrow=dim(raster)[2], ncol=dim(raster)[1])
-    data <- data[,ncol(data):1]
   }
+
 
   #open file
   hdf <- rhdf5::H5Fopen(filepath_nc)
 
-  # add data to nc ----
-  #get dim of dataset
+  #set dim of dataset ----
   did <- rhdf5::H5Dopen(hdf, datacubepath)
-  dims <- c(lon.len,lat.len,max_time)
   file_space <- rhdf5::H5Dget_space(did)
   if (rhdf5::H5Sget_simple_extent_dims(file_space)$size[3] != dims[3]){
     #set new dimension of dataset
-    rhdf5::H5Dset_extent(did, dims)
+    rhdf5::H5Dset_extent(did, c(dims[2],dims[1],dims[3:length(dims)]))
     rhdf5::H5Dclose(did)
     rhdf5::H5Sclose(file_space)
   }else{
@@ -258,9 +269,17 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,
     rhdf5::H5Sclose(file_space)
   }
 
-  #write data
-  rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep)),
-                 count=c(lon.len,lat.len,length(timestep)))#, native=T)
+  #write data ----
+
+  if(is_4D){
+    #write data 4D
+    rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep),entity_index),
+                   count=c(lon.len,lat.len,length(timestep),length(entity)))
+  } else{
+    #write data 3D
+    rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep)),
+                   count=c(lon.len,lat.len,length(timestep)))
+  }
 
   #open DS
   did <- rhdf5::H5Dopen(hdf, datacubepath)
