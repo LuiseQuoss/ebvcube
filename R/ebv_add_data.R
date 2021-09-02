@@ -137,7 +137,6 @@ ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,entity=NULL,
       stop('Your working with a 4D cube based EBV netCDF. Please specify the entity-argument.')
     }
     #check entity ----
-    # check entity name
     ebv_i_entity(entity, entity_names)
 
     #get entity index
