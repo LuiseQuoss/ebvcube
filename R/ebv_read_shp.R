@@ -8,6 +8,9 @@
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
+#' @param entity Character or Integer. Default is NULL. (As if the structure
+#'   were 3D. Then no entity argument is needed.) Character string or single
+#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
 #' @param shp Character. Path to the shapefile defining the subset.
 #' @param outputpath Character. Default: NULL, returns the data as a raster
 #'   object in memory. Optional: set path to write subset as GeoTiff on disk.
@@ -34,7 +37,7 @@
 #' datacubes <- ebv_datacubepaths(file)
 #' shp <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
 #' #cSAR.germany <- ebv_read_bb(file, datacubes[1], shp)
-ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
+ebv_read_shp <- function(filepath, datacubepath, shp, entity=NULL, outputpath=NULL,
                               timestep = 1, at = TRUE, overwrite=FALSE,
                               ignore_RAM=FALSE, verbose = FALSE){
   ####start initial checks ----
@@ -175,29 +178,54 @@ ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
     }
   }
 
+  #check file structure
+  is_4D <- ebv_i_4D(filepath)
+  if(is_4D){
+    if(is.null(entity)){
+      stop('Your working with a 4D cube based EBV netCDF. Please specify the entity-argument.')
+    }
+    #check entity
+    entity_names <- prop@general$entity_names
+    ebv_i_entity(entity, entity_names)
+
+    #get entity index
+    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
+      entity_index <- entity
+    } else if (checkmate::checkCharacter(entity)==TRUE){
+      entity_index <- which(entity_names==entity)
+    } else{
+      entity <- 1 #set entity to 1 (for ebv_i_check_ram)
+    }
+  }
+
   ####end initial checks ----
 
   #read shapefile
   subset <- rgdal::readOGR(shp, verbose=FALSE)
 
   #get_epsg of shp ----
-  temp_epsg <- rgdal::showEPSG(sp::proj4string(subset))
+  temp_epsg <- gdalUtils::gdalsrsinfo(shp)
+  temp_epsg <- rgdal::showEPSG(paste0(temp_epsg[5:length(temp_epsg)],collapse=' '))
+
   if(is.na(as.integer(temp_epsg))){
-    stop(paste0('The given srs of the shapefile is not supported.\n', temp_epsg))
+    stop(paste0('The given crs of the shapefile is not supported.\n',
+                'See error from gdalUtils:\n',
+                as.character(paste0(temp_epsg, collapse = '\n'))))
   } else {
     epsg.shp <- as.integer(temp_epsg)
   }
 
   #get epsg of ncdf
   epsg.nc <- as.integer(prop@spatial$epsg)
-  wkt.nc <- prop@spatial$wkt2
+  crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", epsg.nc))
+  crs.nc <- sp::CRS(stringr::str_remove(paste(crs[2], collapse = ' '), 'PROJ.4 : '))
 
   #original extent
   extent.org <- raster::extent(subset)
 
   #reproject shp if necessary to epsg of ncdf ----
   if (epsg.shp != epsg.nc){
-    subset <- sp::spTransform(subset, sp::CRS(SRS_string = wkt.nc))
+    subset <- sp::spTransform(subset, crs.nc)
     tempshp <- file.path(temp_path, 'temp_EBV_shp_subset')
     if (dir.exists(tempshp)){
       unlink(tempshp, recursive = TRUE)
@@ -213,7 +241,9 @@ ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   ext <- prop@spatial$extent
 
   #get subset of ncdf #checks for RAM
-  subset.nc <- ebv_read_bb(filepath, datacubepath, c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax), timestep=timestep, epsg=epsg.nc, ignore_RAM = ignore_RAM, verbose=verbose)
+  subset.nc <- ebv_read_bb(filepath, datacubepath, entity=entity,
+                           bb=c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax),
+                           timestep=timestep, epsg=epsg.nc, ignore_RAM = ignore_RAM, verbose=verbose)
 
   #get extent of raster
   extent.raster <- raster::extent(subset.nc)
@@ -227,7 +257,7 @@ ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   dim.subset <- dim(subset.nc)
   #check needed RAM
   if (!ignore_RAM){
-    ebv_i_check_ram(dim.subset, timestep, 'H5T_STD_I8BE') #type=placeholder for integer
+    ebv_i_check_ram(dim.subset, timestep, entity, 'H5T_STD_I8BE') #type=placeholder for integer
   } else{
     message('RAM capacities are ignored.')
   }
@@ -249,7 +279,7 @@ ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
   #mask the subset ----
   #check needed RAM
   if (!ignore_RAM){
-    ebv_i_check_ram(dim.subset, timestep, 'H5T_NATIVE_FLOAT') #type=placeholder for double
+    ebv_i_check_ram(dim.subset, timestep, entity, 'H5T_NATIVE_FLOAT') #type=placeholder for double
   } else{
     message('RAM capacities are ignored.')
   }
@@ -257,7 +287,7 @@ ebv_read_shp <- function(filepath, datacubepath, shp, outputpath=NULL,
 
   #set nodata value
   subset.raster <- raster::reclassify(subset.raster, cbind(prop@ebv_cube$fillvalue, NA))
-  raster::crs(subset.raster) <- sp::CRS(SRS_string = wkt.nc)
+  raster::crs(subset.raster) <- crs.nc
 
   #remove temp shp
   if (epsg.shp != epsg.nc){
