@@ -18,7 +18,7 @@ ebv_i_os <- function(){
   return(as.character(temp['sysname']))
 }
 
-#' Checks if the NetCDF file is opened somewhere else.
+#' Checks if the netCDF file is opened somewhere else.
 #' @param filepath Path to NetCDF file.
 #' @return Logical.
 #' @noRd
@@ -334,39 +334,6 @@ ebv_i_check_ram <- function(dims, timestep, entity, type){
     message('Invalid type. RAM check ignored.')
   }
 }
-# ebv_i_check_ram <- function(dims, timestep, type){
-#   #amount of pixels
-#   size <- dims[1]*dims[2]*length(timestep)
-#   if(!is.na(ebv_i_type_r(type))){
-#     if(ebv_i_type_r(type)=='integer'){
-#       ###integer: size*4 = bytes
-#       bytes <- size * 4 + 224
-#       ram.var.gb <- bytes/(1024^3)
-#     }else if(ebv_i_type_r(type)=='double'){
-#       ###float: size*8 = bytes
-#       bytes <- size * 8 + 224
-#       ram.var.gb <- bytes/(1024^3)
-#     }
-#     #get ram pc
-#     ram.pc <- ebv_i_ram()
-#     ram.pc.free <- ram.pc[2]
-#     ram.pc.total <- ram.pc[1]
-#     #check if data too big
-#     if(ram.pc.free < ram.var.gb){
-#       stop(paste0('The space needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb,2)))
-#     }
-#     #at least 1 GB stays free
-#     if(ram.pc.free - ram.var.gb < 1){
-#       stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore_RAM = TRUE.')
-#     }
-#     # #at least 15% stay free
-#     # if((ram.pc.total*0.15) > ram.var.gb){
-#     #   stop('Reading that data into memory will significantly slow down your PC. If you still want to go on, set ignore_RAM = TRUE.')
-#     # }
-#   } else{
-#     message('Invalid type. RAM check ignored.')
-#   }
-# }
 
 #' Check if data in datacube is missing
 #'
@@ -402,32 +369,6 @@ ebv_i_check_data <- function(hdf, datacubepath, entity_index, timestep=NULL){
   }
   return(result)
 }
-# ebv_i_check_data <- function(hdf, datacubepath, timestep=NULL){
-#   if (is.null(timestep)){
-#     did <- hdf&datacubepath
-#     file_space <- rhdf5::H5Dget_space(did)
-#     timestep <- 1:rhdf5::H5Sget_simple_extent_dims(file_space)$size[3]
-#     rhdf5::H5Dclose(did)
-#   }
-#   result <- c()
-#   for (t in timestep){
-#     r <- tryCatch(
-#       {
-#         r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t), count=c(1,1,1))
-#       },
-#       error = function(e){
-#         #print(e)
-#         #message(paste0('Timestep ', t, ' holds no data.'));
-#         r <- TRUE
-#       }
-#     )
-#     if(r == TRUE){
-#       result <- c(result, t)
-#     }
-#   }
-#   return(result)
-# }
-
 
 #' Adds uint attribute to a specified h5object.
 #' @param h5obj H5object to write the attribute to, see
@@ -594,4 +535,54 @@ ebv_i_read_att <-  function(h5obj, name){
   }
 }
 
+#' Checks whether or not a file corresponding to the 4D or the 3D structure.
+#'
+#' @param filepath character. Path to netCDF file.
+#' @return Logical. TRUE if 4D, FALSE if 3D.
+#' @noRd
+ebv_i_4D <- function(filepath){
+  withr::local_options(list(warn = -1)) #suppress warning if attribute does not exist
+  hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
+  dims <- ebv_i_read_att(hdf, 'ebv_cube_dimensions')
+  if (is.null(dims)){
+    dim <- 3
+  } else if(stringr::str_detect(dims,'entity')){
+    dim <- 4
+  } else{
+    dim <- 3
+  }
+  rhdf5::H5Fclose(hdf)
+  if(dim==3){
+    return(FALSE)
+  }else{
+    return(TRUE)
+  }
+}
+
+#' Check given entity argument
+#'
+#' @param entity Integer or character value pointing to entity in cube
+#' @param entity_names Vector of entity names (character) derived by ebv_properties
+#'
+#' @return Throws error if entity argument is not valid.
+#' @noRd
+ebv_i_entity <- function(entity, entity_names){
+  if(!is.null(entity)){
+    #integer inside the range?
+    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
+      if(entity > length(entity_names)){
+        stop(paste0('Given entity value (', entity,') bigger than available entities (',length(entity_names),').'))
+      }
+      #name correct?
+    } else if (checkmate::checkCharacter(entity)==TRUE){
+      if(!entity %in% entity_names){
+        stop('Given entity name is not valid. Check ebv_properties(filepath)@general$entity_names for available entity names.')
+      }
+      #turn entity name into index number
+      entity <- which(entity_names==entity)
+    }else{
+      stop('Entities must be of type integer or character.')
+    }
+  }
+}
 
