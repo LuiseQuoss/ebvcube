@@ -2,11 +2,12 @@
 % Please edit documentation in R/ebv_analyse.R
 \name{ebv_analyse}
 \alias{ebv_analyse}
-\title{Get a simple explorative analysis of an EBV NetCDF datacube}
+\title{Get a simple explorative analysis of an EBV netCDF datacube}
 \usage{
 ebv_analyse(
   filepath,
   datacubepath,
+  entity = NULL,
   subset = NULL,
   timestep = 1,
   at = TRUE,
@@ -17,10 +18,14 @@ ebv_analyse(
 )
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+
+\item{entity}{Character or Integer. Default is NULL. (As if the structure
+were 3D. Then no entity argument is needed.) Character string or single
+integer value indicating the entity of the 4D structure of the EBV netCDFs.}
 
 \item{subset}{Optional if you want measurements on a smaller subset. Possible
 via the path to a shapefile (character) or the indication of a bounding box
@@ -37,7 +42,7 @@ bounding box and the coordinate reference system differs from WGS84. See
 \code{\link[=ebv_read_bb]{ebv_read_bb()}}.}
 
 \item{numerical}{Logical. Default: TRUE. Change to FALSE if the data covered
-by the NetCDF contains categorical data.}
+by the netCDF contains categorical data.}
 
 \item{na_rm}{Logical. Default: TRUE. NA values are removed in the analysis.
 Change to FALSE to include NAs.}

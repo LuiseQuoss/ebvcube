@@ -1,10 +1,13 @@
-#' Get a simple explorative analysis of an EBV NetCDF datacube
+#' Get a simple explorative analysis of an EBV netCDF datacube
 #'
 #' @description Get basic measurements of the data, including min, max, mean,
 #'   sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
-#' @param filepath Character. Path to the NetCDF file.
+#' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
+#' @param entity Character or Integer. Default is NULL. (As if the structure
+#'   were 3D. Then no entity argument is needed.) Character string or single
+#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
 #' @param subset Optional if you want measurements on a smaller subset. Possible
 #'   via the path to a shapefile (character) or the indication of a bounding box
 #'   (vector of four numeric values) defining the subset. Else the whole area is
@@ -16,7 +19,7 @@
 #'   bounding box and the coordinate reference system differs from WGS84. See
 #'   [ebvnetcdf::ebv_read_bb()].
 #' @param numerical Logical. Default: TRUE. Change to FALSE if the data covered
-#'   by the NetCDF contains categorical data.
+#'   by the netCDF contains categorical data.
 #' @param na_rm Logical. Default: TRUE. NA values are removed in the analysis.
 #'   Change to FALSE to include NAs.
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -33,8 +36,9 @@
 #' datacubes <- ebv_datacubepaths(file)
 #' data_global_year <- ebv_analyse(file, datacubes[1,1], timestep=c(1:12))
 #' #data_germany_1900 <- ebv_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
-ebv_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1,
-                             at=TRUE, epsg = 4326, numerical=TRUE, na_rm=TRUE, verbose=FALSE){
+ebv_analyse <- function(filepath, datacubepath, entity=NULL, subset=NULL,
+                        timestep=1, at=TRUE, epsg = 4326, numerical=TRUE,
+                        na_rm=TRUE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -112,28 +116,56 @@ ebv_analyse <- function(filepath, datacubepath, subset=NULL, timestep=1,
     stop('at must be of type logical.')
   }
 
+  #check file structure
+  is_4D <- ebv_i_4D(filepath)
+  if(is_4D){
+    if(is.null(entity)){
+      stop('Your working with a 4D cube based EBV netCDF. Please specify the entity-argument.')
+    }
+    #check entity
+    entity_names <- prop@general$entity_names
+    ebv_i_entity(entity, entity_names)
+
+    #get entity index
+    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
+      entity_index <- entity
+    } else if (checkmate::checkCharacter(entity)==TRUE){
+      entity_index <- which(entity_names==entity)
+    } else{
+      entity <- 1 #set entity to 1 (for ebv_i_check_ram)
+    }
+  }
+
   #more checks are included in subset bb and subset shp
 
   ####initial tests end ----
 
-  #process global scale ----
+    #process global scale ----
   if (is.null(subset)){
     #process whole file + variable+ timestep
     type.short <- ebv_i_type_r(prop@ebv_cube$type)
     all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath, as.sparse = T, type = type.short)
-    subset.array <- all[,,timestep]
+    if(is_4D){
+      #process 4D
+      subset.array <- all[,,timestep,entity_index]
+    } else{
+      #process 3D
+      subset.array <- all[,,timestep]
+    }
     #give fillvalue as nodata value
     subset.array <- replace(subset.array, subset.array==prop@ebv_cube$fillvalue[1], c(NA))
   }  else if(class(subset) == "numeric"){
     #process bb subset ----
-    subset.raster <- ebv_read_bb(filepath, datacubepath, bb=subset, timestep=timestep, epsg=epsg, verbose=verbose)
+    subset.raster <- ebv_read_bb(filepath, datacubepath, entity=entity, bb=subset,
+                                 timestep=timestep, epsg=epsg, verbose=verbose)
     #raster to array
     subset.array <- raster::as.array(subset.raster)
     #less ram
     rm(subset.raster)
   } else if(endsWith(subset, '.shp')){
     #process shp subset ----
-    subset.raster <- ebv_read_shp(filepath, datacubepath, shp=subset, timestep=timestep, at=at, verbose=verbose)
+    subset.raster <- ebv_read_shp(filepath, datacubepath, entity=entity,
+                                  shp=subset, timestep=timestep, at=at, verbose=verbose)
     #raster to array
     subset.array <- raster::as.array(subset.raster)
     #less ram
