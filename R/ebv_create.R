@@ -64,7 +64,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       }
     }
   )
-  dids <- c('mcrs.id', 'crs.id', 'lat.id', 'lon.id', 'time.id', 'var_entity.id','dc')
+  dids <- c('crs.id', 'lat.id', 'lon.id', 'time.id', 'did')
   withr::defer(
     for (id in dids){
       if(exists(id)){
@@ -221,7 +221,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # get crs information ----
   # :GeoTransform
   res <- resolution
-  geo_trans <- paste0(extent[1], " ",res[1]," 0.0 ", extent[3], " 0.0 ", res[2])
+  geo_trans <- paste0(extent[1], " ",res[1]," 0.0 ", extent[4], " 0.0 -", res[2])
 
   # :spatial_ref
   #crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", epsg))
@@ -306,6 +306,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   lat.min <- extent[3]
   lat.max <- extent[4]
   lat_data <- seq((lat.min+(res[2]/2)), (lat.max-(res[2]/2)), res[2])
+  lat_data <- rev(lat_data)
 
   # lon ----
   lon.min <- extent[1]
@@ -472,7 +473,11 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(hdf, 'date_issued', 'pending')
   ebv_i_char_att(hdf, 'history', paste0('EBV netCDF created using ebvnetcdf, ', Sys.Date()))
   ebv_i_char_att(hdf, 'ebv_vocabulary', 'https://portal.geobon.org/api/v1/ebv')
-  ebv_i_char_att(hdf, 'ebv_cube_dimensions', 'lon; lat; time')
+  if(force_4D){
+    ebv_i_char_att(hdf, 'ebv_cube_dimensions', 'lon; lat; time; entity')
+  } else{
+    ebv_i_char_att(hdf, 'ebv_cube_dimensions', 'lon; lat; time')
+  }
 
   #dynamic attributes
   {
