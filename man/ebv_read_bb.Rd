@@ -7,9 +7,10 @@
 ebv_read_bb(
   filepath,
   datacubepath,
+  entity = NULL,
+  timestep = 1,
   bb,
   outputpath = NULL,
-  timestep = 1,
   epsg = 4326,
   overwrite = FALSE,
   ignore_RAM = FALSE,
@@ -22,13 +23,17 @@ ebv_read_bb(
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{bb}{Integer Vector. Definition of subsset by bounding box: c(xmin,
+\item{entity}{Character or Integer. Default is NULL. (As if the structure
+were 3D. Then no entity argument is needed.) Character string or single
+integer value indicating the entity of the 4D structure of the EBV netCDFs.}
+
+\item{timestep}{Integer. Choose one or several timesteps.}
+
+\item{bb}{Integer Vector. Definition of subset by bounding box: c(xmin,
 xmax, ymin, ymax).}
 
 \item{outputpath}{Character. Default: NULL, returns the data as a raster
 object in memory. Optional: set path to write subset as GeoTiff on disk.}
-
-\item{timestep}{Integer. Choose one or several timesteps.}
 
 \item{epsg}{Integer. Default: 4326 (WGS84). Change accordingly if your
 bounding box coordinates are based on a different coordinate reference

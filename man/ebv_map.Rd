@@ -8,6 +8,7 @@ ebv_map(
   filepath,
   datacubepath,
   timestep = 1,
+  entity = NULL,
   countries = TRUE,
   col_rev = TRUE,
   classes = 5,

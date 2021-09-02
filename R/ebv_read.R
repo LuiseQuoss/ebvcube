@@ -113,7 +113,6 @@ ebv_read <- function(filepath, datacubepath, timestep, entity=NULL, type='a',
 
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)
-  entity_names <- prop@general$entity_names
 
   #check file structure
   is_4D <- ebv_i_4D(filepath)
@@ -122,6 +121,7 @@ ebv_read <- function(filepath, datacubepath, timestep, entity=NULL, type='a',
       stop('Your working with a 4D cube based EBV netCDF. Please specify the entity-argument.')
     }
     #check entity
+    entity_names <- prop@general$entity_names
     ebv_i_entity(entity, entity_names)
 
     #get entity index

@@ -8,6 +8,7 @@ ebv_read_shp(
   filepath,
   datacubepath,
   shp,
+  entity = NULL,
   outputpath = NULL,
   timestep = 1,
   at = TRUE,
@@ -23,6 +24,10 @@ ebv_read_shp(
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{shp}{Character. Path to the shapefile defining the subset.}
+
+\item{entity}{Character or Integer. Default is NULL. (As if the structure
+were 3D. Then no entity argument is needed.) Character string or single
+integer value indicating the entity of the 4D structure of the EBV netCDFs.}
 
 \item{outputpath}{Character. Default: NULL, returns the data as a raster
 object in memory. Optional: set path to write subset as GeoTiff on disk.}
