@@ -491,7 +491,12 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     ebv_spatial_description <- ebv_i_read_att(hdf, 'ebv_spatial_description')
 
     #get dims
-    dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time), dim(hdf$entity))
+    if(ebv_i_4D(filepath)){
+      dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time), dim(hdf$entity))
+    } else{
+      dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time))
+    }
+
 
     #get extent
     extent <- c(min(hdf$lon)-resolution[1]/2, max(hdf$lon)+resolution[1]/2,
