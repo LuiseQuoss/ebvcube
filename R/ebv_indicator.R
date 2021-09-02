@@ -7,6 +7,9 @@
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
+#' @param entity Character or Integer. Default is NULL. (As if the structure
+#'   were 3D. Then no entity argument is needed.) Character string or single
+#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -23,8 +26,8 @@
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
 #' ebv_indicator(file, datacubes[1,1])
-ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
-                               verbose=FALSE){
+ebv_indicator <- function(filepath, datacubepath, entity=NULL,
+                          color="dodgerblue4", verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -39,6 +42,9 @@ ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
   }
   if(missing(datacubepath)){
     stop('Datacubepath argument is missing.')
+  }
+  if(missing(entity)){
+    stop('Entity argument is missing.')
   }
 
   #turn off local warnings if verbose=TRUE
@@ -77,6 +83,26 @@ ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
     stop('color not known. Choose a different one!')
   }
 
+  #check file structure
+  is_4D <- ebv_i_4D(filepath)
+  if(is_4D){
+    if(is.null(entity)){
+      stop('Your working with a 4D cube based EBV netCDF. Please specify the entity-argument.')
+    }
+    #check entity
+    entity_names <- prop@general$entity_names
+    ebv_i_entity(entity, entity_names)
+
+    #get entity index
+    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
+      entity_index <- entity
+    } else if (checkmate::checkCharacter(entity)==TRUE){
+      entity_index <- which(entity_names==entity)
+    } else{
+      entity <- 1 #set entity to 1 (for ebv_i_check_ram)
+    }
+  }
+
   # end initial tests ----
 
   # basic attributes ----
@@ -84,10 +110,28 @@ ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
   time <- prop@spatial$dimensions[3]
   timevalues <- prop@temporal$timesteps_natural
   title <- prop@general$title
-  label <- prop@ebv_cube$standard_name
   fillvalue <- prop@ebv_cube$fillvalue
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
   dims <- prop@spatial$dimensions
+  #label
+  ls <- rhdf5::h5ls(filepath)
+  if('entities' %in% ls$name){
+    new <- TRUE
+  } else{
+    new <- FALSE
+  }
+  if(new){
+    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
+      label <- prop@general$entity_names[entity]
+      entity_index <- entity
+    } else if (checkmate::checkCharacter(entity)==TRUE){
+      label <- entity
+      entity_index <- which(entity_names==entity)
+    }
+  }else{
+    label <- prop@ebv_cube$standard_name
+    entity_index <- 1
+  }
 
   #check if only one timestep
   if (dims[3]==1){
@@ -105,7 +149,11 @@ ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
     data.all <- replace(data.all, data.all==fillvalue, c(NA))
 
     # warning for longer calculation
-    size <- dims[1]*dims[2]*dims[3]
+    if(is_4D){
+      size <- dims[1]*dims[2]*dims[3]*dims[4]
+    }else{
+      size <- dims[1]*dims[2]*dims[3]
+    }
     if (size > 100000000){
       message('Wow that is huge! Maybe get a tea...')
     }
@@ -119,7 +167,11 @@ ebv_indicator <- function(filepath, datacubepath, color="dodgerblue4",
       utils::setTxtProgressBar(pb,t)
       f <- tryCatch(
         {
-          data <- data.all[,,t]
+          if(is_4D){
+            data <- data.all[,,t,entity_index]
+          }else{
+            data <- data.all[,,t]
+          }
           mean <- mean(data, na.rm=TRUE)
           f <- 0
         },
