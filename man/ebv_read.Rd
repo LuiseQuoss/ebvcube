@@ -2,38 +2,38 @@
 % Please edit documentation in R/ebv_read.R
 \name{ebv_read}
 \alias{ebv_read}
-\title{Read datasube from an EBV NetCDF}
+\title{Read data from an EBV netCDF}
 \usage{
 ebv_read(
   filepath,
   datacubepath,
   timestep,
-  delayed = TRUE,
+  entity = NULL,
+  type = "a",
   sparse = FALSE,
-  raster = FALSE,
   ignore_RAM = FALSE,
   verbose = FALSE
 )
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
 \item{timestep}{Integer. Choose one or several timesteps (vector).}
 
-\item{delayed}{Logical. Default: TRUE. Returns data as DelayedMatrix object.
-More timesteps are not returned as a 3D array but as a list of the
-DelayedMatrix (one matrix per band).}
+\item{entity}{Character or Integer. Default is NULL. (As if the structure
+were 3D. Then no entity argument is needed.) Character string or single
+integer value indicating the entity of the 4D structure of the EBV netCDFs.}
+
+\item{type}{Character. Choose between 'a', 'r' and 'da'. The first returns an
+array or matrix object. The 'r' indicates raster as return class. The
+latter returns a DelayedArray object.}
 
 \item{sparse}{Logical. Default: FALSE. Set to TRUE if the data contains a lot
 empty raster cells. Only relevant for DelayedMatrix. No further
 implementation by now.}
-
-\item{raster}{Logical. Default: FALSE. Set to TRUE and 'delayed' to FALSE to
-get a raster. If both arguments are set to FALSE the function returns an
-array.}
 
 \item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
@@ -46,9 +46,9 @@ Array, Raster or DelayedMatrix object containing the data of the
 corresponding datacube and timestep(s).
 }
 \description{
-Read one or more layers from one datacube of the NetCDF file.
+Read one or more layers from one datacube of the netCDF file.
 Decide between in-memory array, in-memory raster or an array-like object
-(DelayedMatrix) pointing to the on-disk NetCDF file. Latter is useful for
+(DelayedMatrix) pointing to the on-disk netCDF file. Latter is useful for
 data that exceeds your memory.
 }
 \note{
