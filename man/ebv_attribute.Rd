@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_attribute.R
 \name{ebv_attribute}
 \alias{ebv_attribute}
-\title{Write a new attribute value to an EBV NetCDF}
+\title{Write a new attribute value to an EBV netCDF}
 \usage{
 ebv_attribute(
   filepath,
@@ -13,7 +13,7 @@ ebv_attribute(
 )
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
 \item{attribute_name}{Character. Name of the attribute that should be
 changed.}
@@ -23,8 +23,8 @@ changed.}
 \item{levelpath}{Character. Default: NULL. Indicates the location of the
 attribute. The default means that the attribute is located at a global
 level. If the attribute is located at the datacubelevel just add the
-datacubepath. For the metric level the value may be 'metric01' or
-'scenario01/metric01'. This path depends on whether the NetCDF hierarchy
+datacubepath, e.g. metric_1/ebv_cube. For the metric level the value may be 'metric_1' or
+'scenario_1/metric_1'. This path depends on whether the netCDF hierarchy
 has scenarios or not.}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -35,10 +35,10 @@ Adds the new value to the attribute. Check your results using
 \code{\link[=ebv_properties]{ebv_properties()}}.
 }
 \description{
-Write a new attribute value to an EBV NetCDF. Not all attributes
+Write a new attribute value to an EBV netCDF. Not all attributes
 can be changed. Some are always created automatically, e.g. the attributes
 belonging to the crs, time and var_entity datasets. In this case you have
-to re-create the NetCDF file.
+to re-create the netCDF file.
 }
 \note{
 You can change the ebv_class and the ebv_name. In this case you need to

@@ -1,19 +1,19 @@
-#' Write a new attribute value to an EBV NetCDF
+#' Write a new attribute value to an EBV netCDF
 #'
-#' @description Write a new attribute value to an EBV NetCDF. Not all attributes
+#' @description Write a new attribute value to an EBV netCDF. Not all attributes
 #'   can be changed. Some are always created automatically, e.g. the attributes
 #'   belonging to the crs, time and var_entity datasets. In this case you have
-#'   to re-create the NetCDF file.
+#'   to re-create the netCDF file.
 #'
-#' @param filepath Character. Path to the NetCDF file.
+#' @param filepath Character. Path to the netCDF file.
 #' @param attribute_name Character. Name of the attribute that should be
 #'   changed.
 #' @param value New value that should be assigned to the attribute.
 #' @param levelpath Character. Default: NULL. Indicates the location of the
 #'   attribute. The default means that the attribute is located at a global
 #'   level. If the attribute is located at the datacubelevel just add the
-#'   datacubepath. For the metric level the value may be 'metric01' or
-#'   'scenario01/metric01'. This path depends on whether the NetCDF hierarchy
+#'   datacubepath, e.g. metric_1/ebv_cube. For the metric level the value may be 'metric_1' or
+#'   'scenario_1/metric_1'. This path depends on whether the netCDF hierarchy
 #'   has scenarios or not.
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
@@ -38,7 +38,8 @@
 #' attribute3 <- 'creator'
 #' value3 <- 'Jane Doe'
 #' #ebv_attribute(file, attribute3, value3)
-ebv_attribute <- function(filepath, attribute_name, value, levelpath=NULL, verbose=FALSE){
+ebv_attribute <- function(filepath, attribute_name, value,
+                          levelpath=NULL, verbose=FALSE){
   #start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -46,24 +47,15 @@ ebv_attribute <- function(filepath, attribute_name, value, levelpath=NULL, verbo
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
+
   withr::defer(
-    if (exists('h5obj')){
-      if(rhdf5::H5Iis_valid(h5obj)==TRUE){
-        tryCatch(
-          {
-            rhdf5::H5Gclose(h5obj)
-          },
-          error = function(e){
-            tryCatch(
-              {
-                rhdf5::H5Dclose(h5obj)
-              },
-              error = function(e){
-                rhdf5::H5Fclose(h5obj)
-              }
-            )
-          }
-        )
+    if(exists('h5obj')){
+      if(is.null(levelpath)){
+        if(rhdf5::H5Iis_valid(h5obj)==TRUE){rhdf5::H5Fclose(h5obj)}
+      } else if(length(stringr::str_split(levelpath, '/')[[1]])==3){
+        if(rhdf5::H5Iis_valid(h5obj)==TRUE){rhdf5::H5Dclose(h5obj)}
+      } else{
+        if(rhdf5::H5Iis_valid(h5obj)==TRUE){rhdf5::H5Gclose(h5obj)}
       }
     }
   )
@@ -118,42 +110,61 @@ ebv_attribute <- function(filepath, attribute_name, value, levelpath=NULL, verbo
     stop('attribute_name must be of type character')
   }
 
+  # check if value is string
+  if (checkmate::check_string(value) != TRUE){
+    stop('value must be of type character')
+  }
+
   #end initial tests ----
 
-  #set (block) list ----
-  att.num <- c('_FillValue')
-  att.chr <- c('standard_name', 'description', 'units', 'title', 'creator',
-               'institution', 'contactname', 'contactemail', 'ebv_class', 'ebv_name',
-               #for old standard
-               'long_name', 'label')
-  att.blocked <- c('grid_mapping', '_ChunkSizes', 'valid_range',
-                   'Conventions', 'ebv_subgroups',
-                   #for old standard
-                   'least_significant_digit','value_range')
+  #set white list ----
+  att.chr <- c(#global
+    'history', 'keywords', 'title', 'summary', 'references', 'source',
+    'project', 'date_created', 'creator_name', 'creator_institution',
+    'creator_email','license','contributor_name','publisher_name',
+    'publisher_institution','publisher_email','comment',
+    'ebv_class', 'ebv_name','ebv_spatial_scope', 'ebv_spatial_description',
+    'ebv_domain', 'ebv_scenario_classification_name', 'processing_level',
+    #scenario and metric
+    'standard_name', 'long_name',
+    #metric and ebv_cube
+    'units',
+    #ebv_cube
+    'coverage_content_type')
 
-  #check block list ----
-  if(! is.null(levelpath)){
-    if(mapply(grepl,'crs',levelpath,ignore.case=TRUE)){
-      stop('Changes in CRS are blocked! Rebuild NetCDF if you want a different CRS definition.')
-    } else if(mapply(grepl,'lat',levelpath,ignore.case=TRUE)){
-      stop('Changes for the latitude dataset is blocked! Rebuild NetCDF if you want a different latitude definition.')
-    }else if(mapply(grepl,'lon',levelpath,ignore.case=TRUE)){
-      stop('Changes for the longitude dataset is blocked! Rebuild NetCDF if you want a different longitude definition.')
-    }else if(mapply(grepl,'var_entity',levelpath,ignore.case=TRUE)){
-      stop('Changes for the var_entity dataset is blocked! Always built automatically.')
-    }else if(mapply(grepl,'time',levelpath,ignore.case=TRUE)){
-      stop('Changes for the time dataset is blocked! Rebuild NetCDF if you want a different time definition.')
-    }
-  }
+  # set and evaluate black list ----
+  att.blocked <- c(
+    #global
+    'id', 'naming_authority', 'Conventions', 'date_issued',
+    #ebv_cube
+    '_FillValue', 'grid_mapping','coordinate','_ChunkSizes')
+
   if(attribute_name %in% att.blocked){
     stop(paste0('Changes for the attribute ', attribute_name, ' are blocked! Always built automatically.' ))
+  }
+
+
+  # block entirely: crs, entities, lat, lon, time ----
+  #check block list
+  if(! is.null(levelpath)){
+    if(mapply(grepl,'crs',levelpath,ignore.case=TRUE)){
+      stop('Changes for the CRS are blocked! Rebuild netCDF if you want a different CRS definition.')
+    } else if(mapply(grepl,'lat',levelpath,ignore.case=TRUE)){
+      stop('Changes for the latitude dataset are blocked! Rebuild netCDF if you want a different latitude definition.')
+    }else if(mapply(grepl,'lon',levelpath,ignore.case=TRUE)){
+      stop('Changes for the longitude dataset are blocked! Rebuild netCDF if you want a different longitude definition.')
+    }else if(mapply(grepl,'entities',levelpath,ignore.case=TRUE)){
+      stop('Changes for the entities dataset are blocked! Always built automatically.')
+    }else if(mapply(grepl,'time',levelpath,ignore.case=TRUE)){
+      stop('Changes for the time dataset are blocked! Rebuild netCDF if you want a different time definition.')
+    }
   }
 
   #extra check for ebv_class and ebv_name ----
   #get current ebv_name and ebv_class
   ebv.class <- ebv_i_read_att(hdf, 'ebv_class')
   ebv.name <- ebv_i_read_att(hdf, 'ebv_name')
-  rhdf5::H5Fclose(hdf)
+  #rhdf5::H5Fclose(hdf)
   ebv.classes <- c('Genetic composition', 'Species populations', 'Species traits', 'Community composition',
                    'Ecosystem functioning', 'Ecosystem structure', 'Ecosystem services')
   if(attribute_name=='ebv_class'){
@@ -216,63 +227,51 @@ ebv_attribute <- function(filepath, attribute_name, value, levelpath=NULL, verbo
     }
   }
 
-  #open h5object ----
-  if (! is.null(levelpath)){
-    hdf <- rhdf5::H5Fopen(filepath)
-    h5obj <- tryCatch(
-      {
-        h5obj <- rhdf5::H5Gopen(hdf, levelpath)
-      },
-      error = function(e){
-        h5obj <- rhdf5::H5Dopen(hdf, levelpath)
-      }
-    )
-  } else {
-    h5obj <- rhdf5::H5Fopen(filepath)
+  #extra check for ebv_domain ----
+  if (attribute_name == 'ebv_domain'){
+    if(! value %in% c('Terrestrial', 'Marine', 'Freshwater')){
+      stop(paste0('The ebv_domain can only have one of the following values: ',
+                  'Terrestrial, Marine or Freshwater'))
+    }
   }
+
+  #open h5object ----
+  if(is.null(levelpath)){
+    if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
+    h5obj <- rhdf5::H5Fopen(filepath)
+  } else if(length(stringr::str_split(levelpath, '/')[[1]])==3){
+    h5obj <- rhdf5::H5Dopen(hdf, levelpath)
+  } else{
+    h5obj <- rhdf5::H5Gopen(hdf, levelpath)
+  }
+
 
   #check if attribute exists - written correct? ----
   if (! rhdf5::H5Aexists(h5obj, attribute_name)){
-    if (attribute_name %in% att.num | attribute_name %in% att.chr){
-      stop('Attribute does not exist within given levelpath in NetCDF. Change your levelpath!')
+    if (attribute_name %in% att.chr){
+      stop('Attribute does not exist within given levelpath in netCDF. Change your levelpath!')
     } else {
-      stop('Attribute is written incorrectly or does not exist in NetCDF')
+      stop(paste0('Attribute is written incorrectly or does not exist in netCDF.',
+                  ' Available attributes: ', paste(att.chr, collapse=', ')))
     }
   }
+
 
   #read attribute, change if different ----
   att <- ebv_i_read_att(h5obj, attribute_name)
   if(att==value){
     stop(paste0('Value of ', attribute_name, ' already is set to "', value, '".'))
-  } else {
-    if(attribute_name %in% att.num){
-      if(! is.na(as.numeric(value))){
-        ebv_i_num_att(h5obj, attribute_name, value)
-      } else{
-        stop(paste0('The attribute ', attribute_name, ' needs to be a double value.'))
-      }
-    } else if (attribute_name %in% att.chr){
-      ebv_i_char_att(h5obj, attribute_name, value)
-    }
+  } else if (attribute_name %in% att.chr){
+    ebv_i_char_att(h5obj, attribute_name, value)
   }
 
   #close handles ----
-  if (exists('h5obj')){
-    tryCatch(
-      {
-        rhdf5::H5Gclose(h5obj)
-      },
-      error = function(e){
-        tryCatch(
-          {
-              rhdf5::H5Dclose(h5obj)
-          },
-          error = function(e){
-            rhdf5::H5Fclose(h5obj)
-          }
-        )
-      }
-    )
+  if(is.null(levelpath)){
+    rhdf5::H5Fclose(h5obj)
+  } else if(length(stringr::str_split(levelpath, '/')[[1]])==3){
+    rhdf5::H5Dclose(h5obj)
+  } else{
+    rhdf5::H5Gclose(h5obj)
   }
 
   if(exists('hdf')){
