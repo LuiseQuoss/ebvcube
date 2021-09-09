@@ -8,6 +8,9 @@
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
+#' @param entity Character or Integer. Default is NULL. (As if the structure
+#'   were 3D. Then no entity argument is needed.) Character string or single
+#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
 #' @param timestep Integer. Choose one timestep.
 #' @param countries Logical. Default: TRUE. Simple country outlines will be
 #'   plotted on top of the raster data. Disable by setting this option to FALSE.
@@ -32,7 +35,7 @@
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #' datacubes <- ebv_datacubepaths(file)
 #' ebv_map(file, datacubes[1,1], timestep=9, classes=7)
-ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
+ebv_map <- function(filepath, datacubepath, timestep=1, entity=NULL, countries =TRUE,
                          col_rev=TRUE, classes = 5, ignore_RAM=FALSE, verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
@@ -135,18 +138,41 @@ ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   label <- prop@ebv_cube$standard_name
   subtitle <- paste0(label, ' (timestep: ', timestep, ')')
   epsg <- prop@spatial$epsg
+  dims <- as.numeric(prop@spatial$dimensions)
+
+  #check file structure
+  is_4D <- ebv_i_4D(filepath)
+  if(is_4D){
+    if(is.null(entity)){
+      stop('Your working with a 4D cube based EBV netCDF. Please specify the entity-argument.')
+    }
+    #check entity
+    entity_names <- prop@general$entity_names
+    ebv_i_entity(entity, entity_names)
+
+    #get entity index
+    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
+      entity_index <- entity
+    } else if (checkmate::checkCharacter(entity)==TRUE){
+      entity_index <- which(entity_names==entity)
+    } else{
+      entity <- 1 #set entity to 1 (for ebv_i_check_ram)
+    }
+  } else{
+    entity <- 1
+  }
 
   #get raster data - ram check included
   results <- tryCatch(
     #try reading whole data----
     {
-      data.raster <- ebv_read(filepath, datacubepath, timestep = timestep,
-                                   delayed = FALSE, raster=TRUE, ignore_RAM=ignore_RAM,
+      data.raster <- ebv_read(filepath, datacubepath, entity=entity, timestep = timestep,
+                                   type='r', ignore_RAM=ignore_RAM,
                                    verbose=verbose) #if this throws an error the data is going to plotted in lower res
       hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
       data.all <- tryCatch(
         {
-          if (ebv_i_empty(ebv_i_check_data(hdf, datacubepath))){
+          if (ebv_i_empty(ebv_i_check_data(hdf, datacubepath, entity, is_4D))){
             message('Quantiles based on all layers.')
             data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
                                              type = type.short)
@@ -192,8 +218,11 @@ ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
       if (file.exists(temp.map)){
         file.remove(temp.map)
       }
-      data.raster <- ebv_resample(filepath, datacubepath, c(1,1, 4326),
-                                         temp.map, timestep, return_raster = TRUE, ignore_RAM=ignore_RAM, verbose=verbose)
+      data.raster <- ebv_resample(filepath_src=filepath, datacubepath_src=datacubepath,
+                                  entity_src=entity, resolution=c(1,1, 4326),
+                                  outputpath=temp.map, timestep_src = timestep,
+                                  method='average', return_raster=TRUE, overwrite = FALSE,
+                                  ignore_RAM=ignore_RAM, verbose=verbose)
       data.raster <- data.raster[[1]] #get first layer of brick --> class = raster
       data.all <- raster::as.array(data.raster) #use only one layer for quantile analysis
       results <- list(data.raster, data.all, temp.map)
@@ -203,6 +232,18 @@ ebv_map <- function(filepath, datacubepath, timestep=1, countries =TRUE,
   data.raster <- results[[1]]
   data.all <- results[[2]]
   temp.map <- results[[3]]
+
+  #check if huge data
+  # warning for longer calculation
+  if(is_4D){
+    size <- dims[1]*dims[2]*dims[3]*dims[4]
+  }else{
+    size <- dims[1]*dims[2]*dims[3]
+  }
+  if (size > 100000000){
+    message('Wow that is huge! Maybe get a tea, the caluculation will take a while...')
+  }
+
   #get quantiles ----
   s <- stats::quantile(data.all, probs = seq(0, 1, (1/classes)), na.rm=TRUE)
 
