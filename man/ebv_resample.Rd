@@ -7,9 +7,10 @@
 ebv_resample(
   filepath_src,
   datacubepath_src,
+  entity_src = NULL,
   resolution,
   outputpath,
-  timestep = 1,
+  timestep_src = 1,
   method = "average",
   return_raster = FALSE,
   overwrite = FALSE,
@@ -22,7 +23,11 @@ ebv_resample(
 should be changed.}
 
 \item{datacubepath_src}{Character. Path to the datacube (use
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}) whose resolution should be changed..}
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}) whose resolution should be changed.}
+
+\item{entity_src}{Character or Integer. Default is NULL. (As if the structure
+were 3D. Then no entity_src argument is needed.) Character string or single
+integer value indicating the entity_src of the 4D structure of the EBV netCDFs.}
 
 \item{resolution}{Either the path to an EBV NetCDF file that determines the
 resolution (character) or the resolution defined directly (numeric). The
@@ -31,7 +36,7 @@ x-resolution, the y-resolution and the corresponding epsg.}
 
 \item{outputpath}{Character. Set path to write data as GeoTiff on disk.}
 
-\item{timestep}{Integer. Choose one or several timesteps (vector).}
+\item{timestep_src}{Integer. Choose one or several timesteps (vector).}
 
 \item{method}{Character. Default: Average. Define resampling method. Choose
 from:
