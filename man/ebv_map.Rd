@@ -24,6 +24,10 @@ ebv_map(
 
 \item{timestep}{Integer. Choose one timestep.}
 
+\item{entity}{Character or Integer. Default is NULL. (As if the structure
+were 3D. Then no entity argument is needed.) Character string or single
+integer value indicating the entity of the 4D structure of the EBV netCDFs.}
+
 \item{countries}{Logical. Default: TRUE. Simple country outlines will be
 plotted on top of the raster data. Disable by setting this option to FALSE.}
 
