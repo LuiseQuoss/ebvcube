@@ -4,13 +4,23 @@
 \alias{ebv_indicator}
 \title{Plot the average over time of one datacube of an EBV NetCDF}
 \usage{
-ebv_indicator(filepath, datacubepath, color = "dodgerblue4", verbose = FALSE)
+ebv_indicator(
+  filepath,
+  datacubepath,
+  entity = NULL,
+  color = "dodgerblue4",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{filepath}{Character. Path to the NetCDF file.}
 
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+
+\item{entity}{Character or Integer. Default is NULL. (As if the structure
+were 3D. Then no entity argument is needed.) Character string or single
+integer value indicating the entity of the 4D structure of the EBV netCDFs.}
 
 \item{color}{Character. Default: dodgerblue4. Change to any color known by R
 \code{\link[grDevices:colors]{grDevices::colors()}}}
