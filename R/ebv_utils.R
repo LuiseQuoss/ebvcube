@@ -342,7 +342,7 @@ ebv_i_check_ram <- function(dims, timestep, entity, type){
 #' @param timestep vector of integers. optional.
 #' @return Returns vector of bands that are empty. Else returns empty vector.
 #' @noRd
-ebv_i_check_data <- function(hdf, datacubepath, entity_index, timestep=NULL){
+ebv_i_check_data <- function(hdf, datacubepath, entity_index, is_4D, timestep=NULL){
   if (is.null(timestep)){
     did <- hdf&datacubepath
     file_space <- rhdf5::H5Dget_space(did)
@@ -353,7 +353,12 @@ ebv_i_check_data <- function(hdf, datacubepath, entity_index, timestep=NULL){
   for (t in timestep){
     r <- tryCatch(
       {
-        r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t,entity_index), count=c(1,1,1,1))
+        if(is_4D){
+          r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t,entity_index), count=c(1,1,1,1))
+        }else{
+          r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t), count=c(1,1,1))
+        }
+
       },
       error = function(e){
         print(e)
@@ -487,7 +492,8 @@ ebv_i_char_att <- function(h5obj, name, data){
   )
   # add attribute ----
   count <- 1
-  for (u in c('\ufc', '\uf6', '\ue4', '\udf', '\udc', '\uc4', '\ud6')){
+  for (u in c('\ufc', '\uf6', '\ue4', '\udf', '\udc', '\uc4', '\ud6',
+              '\u60', '\ub4')){
     count <- count + stringr::str_count(data, u)
   }
   if(!rhdf5::H5Aexists(h5obj, name)){
