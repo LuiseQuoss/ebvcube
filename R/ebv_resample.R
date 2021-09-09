@@ -8,13 +8,16 @@
 #' @param filepath_src Character. Path to the NetCDF file whose resolution
 #'   should be changed.
 #' @param datacubepath_src Character. Path to the datacube (use
-#'   [ebvnetcdf::ebv_datacubepaths()]) whose resolution should be changed..
+#'   [ebvnetcdf::ebv_datacubepaths()]) whose resolution should be changed.
+#' @param entity_src Character or Integer. Default is NULL. (As if the structure
+#'   were 3D. Then no entity_src argument is needed.) Character string or single
+#'   integer value indicating the entity_src of the 4D structure of the EBV netCDFs.
 #' @param resolution Either the path to an EBV NetCDF file that determines the
 #'   resolution (character) or the resolution defined directly (numeric). The
 #'   vector defining the resolution directly must contain three elements: the
 #'   x-resolution, the y-resolution and the corresponding epsg.
 #' @param outputpath Character. Set path to write data as GeoTiff on disk.
-#' @param timestep Integer. Choose one or several timesteps (vector).
+#' @param timestep_src Integer. Choose one or several timesteps (vector).
 #' @param method Character. Default: Average. Define resampling method. Choose
 #'   from:
 #'   "near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1"
@@ -43,7 +46,7 @@
 #' out <- file.path(system.file(package='ebvnetcdf'),"extdata","changeRes.tif")
 #' #ebv_resample(file, datacubes[1,1], res1,  out, c(1,6))
 #' #d <- ebv_resample(file, datacubes[1,1], res2, NULL, 3, method='max', return_raster=TRUE)
-ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath, timestep = 1,
+ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, resolution, outputpath, timestep_src = 1,
                                 method='average', return_raster=FALSE, overwrite = FALSE, ignore_RAM=FALSE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
@@ -111,7 +114,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
     stop(paste0('File does not exist.\n', filepath_src))
   }
   if (!endsWith(filepath_src, '.nc')){
-    stop(paste0('File ending is wrong. File cannot be processed.'))
+    stop(paste0('File ending of filepath_src is wrong. File cannot be processed.'))
   }
 
   #file closed?
@@ -139,7 +142,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
       stop(paste0('Filepath_dest does not exist.\n', filepath_dest))
     }
     if (!endsWith(filepath_dest, '.nc')){
-      stop(paste0('File ending is wrong. File cannot be processed.'))
+      stop(paste0('File ending of filepath_dest is wrong. File cannot be processed.'))
     }
 
     #file closed
@@ -170,18 +173,39 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
   #get properties source
   prop_src <- ebv_properties(filepath_src, datacubepath_src, verbose)
   type.long <- prop_src@ebv_cube$type
+  entity_names <- prop_src@general$entity_names
+  extent_src <- prop_src@spatial$extent
+
+  #check file structure
+  is_4D <- ebv_i_4D(filepath_src)
+  if(is_4D){
+    if(is.null(entity_src)){
+      stop('Your working with a 4D cube based EBV netCDF. Please specify the entity_src-argument.')
+    }
+    #check entity_src ----
+    ebv_i_entity(entity_src, entity_names)
+
+    #get entity index
+    if(checkmate::checkIntegerish(entity_src, len=1) == TRUE){
+      entity_index <- entity_src
+    } else if (checkmate::checkCharacter(entity_src)==TRUE){
+      entity_index <- which(entity_names==entity_src)
+    } else{
+      entity_src <- 1 #set entity to 1 (for ebv_i_check_ram)
+    }
+  }
 
   #source timestep check
   #check if timestep is valid type
-  if(checkmate::checkIntegerish(timestep) != TRUE){
-    stop('Timestep has to be an integer or a list of integers.')
+  if(checkmate::checkIntegerish(timestep_src) != TRUE){
+    stop('timestep_src has to be an integer or a list of integers.')
   }
 
-  #check timestep range
+  #check timestep_src range
   max_time <- prop_src@spatial$dimensions[3]
   min_time <- 1
-  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
-    stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
+  if(checkmate::checkIntegerish(timestep_src, lower=min_time, upper=max_time) != TRUE){
+    stop(paste0('Chosen timestep_src ', paste(timestep_src, collapse = ' '), ' is out of bounds. timestep_src range is ', min_time, ' to ', max_time, '.'))
   }
 
   #outputpath check
@@ -229,29 +253,32 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
   if (return_raster){
     #check needed RAM
     if (!ignore_RAM){
-      ebv_i_check_ram(res,timestep,type.long)
+      ebv_i_check_ram(res,timestep_src,entity_src, type.long)
     } else{
       message('RAM capacities are ignored.')
     }
   }
 
-  #######initial test end ----
-
   #get epsg
   epsg_src <- prop_src@spatial$epsg
 
   #check if both epsg are valid
-  epsg_list <- rgdal::make_EPSG()
-  if (! epsg_dest %in% epsg_list$code){
-    stop(paste0('The given target epsg is not valid or not supported by R.\n', epsg_dest))
+  gdal_return <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg_dest))
+  if(any(stringr::str_detect(gdal_return, 'ERROR'))){
+    stop(paste0('The given target epsg (',epsg_dest,') is not valid or not supported by your GDAL installation.',
+                '\nSee GDAL error message:\n', paste(gdal_return, collapse=' ')))
   }
-  if (! epsg_src %in% epsg_list$code){
-    stop(paste0('The given source epsg is not valid or not supported by R.\n', epsg_src))
+  gdal_return <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg_src))
+  if(any(stringr::str_detect(gdal_return, 'ERROR'))){
+    stop(paste0('The given source epsg (',epsg_src,') is not valid or not supported by your GDAL installation.',
+                '\nSee GDAL error message:\n', paste(gdal_return, collapse=' ')))
   }
 
+  #######initial test end ----
+
   #srs defintion from epsg
-  srs_src <- sp::CRS(SRS_string = paste0('EPSG:',epsg_src))
-  srs_dest <- sp::CRS(SRS_string = paste0('EPSG:',epsg_dest))
+  srs_src <- paste0('EPSG:',epsg_src) #paste(gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg_src)), collapse=' ')
+  srs_dest <- paste0('EPSG:',epsg_dest) # paste(gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg_dest)), collapse=' ')
 
   #get output type ot for gdal
   #type.long <- prop_src@ebv_cube_information@type
@@ -260,6 +287,14 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
   #set path to variable in netcdf for gdal
   filepath <- paste0('NETCDF:', filepath_src,':',datacubepath_src)
 
+  if(is_4D){
+    #define bands
+    #listed by: entity1 - all timesteps, entity2 - all timesteps
+    bands <- (entity_index-1) * prop_src@spatial$dimensions[3] + timestep_src
+  } else{
+    bands <- timestep_src
+  }
+
   #check if src dataset has several timesteps ----
   if (prop_src@spatial$dimensions[3] > 1){
     #define output parameters
@@ -267,20 +302,25 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
     temp <- file.path(temp_path, name)
     #select given timesteps, write tempfile
     if (!is.null(ot)){
-      gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep,
+      gt <- gdalUtils::gdal_translate(filepath, temp, b = bands,
                                       ot = ot,
                                       co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                                       overwrite=TRUE,
-                                      a_srs = srs_src)
+                                      a_srs = srs_src,
+                                      a_ullr = c(extent_src[1],extent_src[4],extent_src[2],extent_src[3]),
+                                      verbose=verbose)
     } else {
-      gt <- gdalUtils::gdal_translate(filepath, temp, b = timestep,
+      gt <- gdalUtils::gdal_translate(filepath, temp, b = bands,
                                       co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
                                       overwrite=TRUE,
-                                      a_srs = srs_src)
+                                      a_srs = srs_src,
+                                      a_ullr = c(extent_src[1],extent_src[4],extent_src[2],extent_src[3]),
+                                      verbose=verbose)
     }
     #change filepath
     filepath <- temp
   }
+
 
   if(!file.exists(filepath)){
     stop('GDAL did not work properly. Did you install GDAL correctly? You can
@@ -300,6 +340,8 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
     Sys.setenv(GDAL_DRIVER_PATH = "C:\\OSGeo4W64\\bin\\gdalplugins")
         ')
   }
+
+
 
   #check if epsgs differ ----
   if(epsg_src != epsg_dest){
@@ -362,36 +404,40 @@ ebv_resample <- function(filepath_src, datacubepath_src, resolution, outputpath,
   #write tif with new resolution ----
   if (!is.null(ot) & !is.null(te)){
     r <- gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
-                  ot=ot,r = method, te = te,
-                  overwrite=overwrite,
-                  co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                  t_srs = srs_dest,
-                  output_Raster = return_raster)
+                             tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
+                             ot=ot,r = method, te = te,
+                             overwrite=overwrite,
+                             co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                             t_srs = srs_dest,
+                             output_Raster = return_raster,
+                             verbose=verbose)
   } else if (is.null(ot) & !is.null(te)) {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
-                  r = method, te = te,
-                  overwrite=overwrite,
-                  co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                  t_srs = srs_dest,
-                  output_Raster = return_raster)
+                              tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
+                              r = method, te = te,
+                              overwrite=overwrite,
+                              co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                              t_srs = srs_dest,
+                              output_Raster = return_raster,
+                              verbose=verbose)
   } else if(!is.null(ot) & is.null(te)){
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
-                  r = method, ot = ot,
-                  overwrite=overwrite,
-                  co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                  t_srs = srs_dest,
-                  output_Raster = return_raster)
+                              tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
+                              r = method, ot = ot,
+                              overwrite=overwrite,
+                              co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                              t_srs = srs_dest,
+                              output_Raster = return_raster,
+                              verbose=verbose)
   } else {
     r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                  tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
-                  r = method,
-                  overwrite=overwrite,
-                  co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                  t_srs = srs_dest,
-                  output_Raster = return_raster)
+                              tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
+                              r = method,
+                              overwrite=overwrite,
+                              co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
+                              t_srs = srs_dest,
+                              output_Raster = return_raster,
+                              verbose=verbose)
   }
 
   #remove tempfiles ----
