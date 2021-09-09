@@ -319,11 +319,13 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, resolu
     }
     #change filepath
     filepath <- temp
+  } else{
+    filepath <- filepath_src
   }
 
 
   if(!file.exists(filepath)){
-    stop('GDAL did not work properly. Did you install GDAL correctly? You can
+    stop('1 GDAL did not work properly. Did you install GDAL correctly? You can
     check and set the correct GDAL paths with the following lines of code:
     #check out which GDAL installation is used currently by gdalUtils:
     getOption("gdalUtils_gdalPath")[[1]]$python_utilities
@@ -454,7 +456,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, resolu
 
   #return array ----
   if (return_raster){
-    r <- raster::reclassify(r, cbind(prop_src@ebv_cube$fillvalue, NA))
+    #r <- raster::reclassify(r, cbind(prop_src@ebv_cube$fillvalue, NA))
     return(r)
   } else{
     return(outputpath)
