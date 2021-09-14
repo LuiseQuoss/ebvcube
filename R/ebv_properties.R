@@ -439,6 +439,10 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       name <- paste0(entity_data[,col], collapse = '')
       entity_names <- c(entity_names, name)
     }
+    #trim whitespaces
+    entity_names <- gsub(pattern = "(^ +| +$)",
+         replacement = "",
+         x = entity_names)
 
     time_data <- rhdf5::h5read(hdf, 'time')
 
