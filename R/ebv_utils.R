@@ -491,22 +491,24 @@ ebv_i_char_att <- function(h5obj, name, data){
     }
   )
   # add attribute ----
-  count <- 1
-  for (u in c('\ufc', '\uf6', '\ue4', '\udf', '\udc', '\uc4', '\ud6',
-              '\u60', '\ub4')){
-    count <- count + stringr::str_count(data, u)
-  }
+  count <- 1+ length(charToRaw(data))
+  # count <- 1
+  # for (u in c('\ufc', '\uf6', '\ue4', '\udf', '\udc', '\uc4', '\ud6',
+  #             '\u60', '\ub4')){
+  #   count <- count + stringr::str_count(data, u)
+  # }
+  # count <- count + 10
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_C_S1")
-    rhdf5::H5Tset_size(tid, nchar(data)+count)
+    rhdf5::H5Tset_size(tid, count) #nchar(data)+count
     aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
     rhdf5::H5Sclose(sid)
   } else {
     rhdf5::H5Adelete(h5obj, name)
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_C_S1")
-    rhdf5::H5Tset_size(tid, nchar(data)+count)
+    rhdf5::H5Tset_size(tid, count) #nchar(data)+count
     aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
     rhdf5::H5Sclose(sid)
   }
