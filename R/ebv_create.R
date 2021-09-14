@@ -625,15 +625,11 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   entity.values <- c()
   for (i in 1:length(entity_csv[,1])){
     new_values <- stringr::str_split(entity_csv[i,1],'')[[1]]
-    #print(new_values)
-    print(length(new_values))
     if (length(new_values)<max_char){
       for (i in 1:(max_char - length(new_values))){
         new_values<- c(new_values, ' ')
         }
     }
-    print(new_values)
-    print(length(new_values))
     entity.values <- c(entity.values, new_values)
   }
   entity.id <- rhdf5::H5Dopen(hdf, 'entities')
