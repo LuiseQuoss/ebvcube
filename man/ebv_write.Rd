@@ -6,9 +6,10 @@
 \usage{
 ebv_write(
   data,
-  filepath,
-  datacubepath,
   outputpath,
+  epsg = 4326,
+  extent = c(-180, 180, -90, 90),
+  type = "FLT8S",
   overwrite = FALSE,
   verbose = FALSE
 )
@@ -17,32 +18,39 @@ ebv_write(
 \item{data}{Your data object. May be raster, array, DelayedMatrix or list of
 DelayedMatrix (see return values of \code{\link[=ebv_read]{ebv_read()}})}
 
-\item{filepath}{Character. Path to the NetCDF file you read the data from. Used for the
-detection of properties as spatial extent and epsg.}
+\item{outputpath}{Character. Set the path where you want to write the data to
+disk as a GeoTiff. Ending needs to be *.tif.}
 
-\item{datacubepath}{Character. Path to the datacube you got the data from. Used for the
-detection of properties as data type and nodata value.}
+\item{epsg}{Integer. Default: 4326 (WGS84). Defines the coordinate reference
+system via the corresponding epsg code.}
 
-\item{outputpath}{Character. Set the path where you want to write the data to disk as a
-GeoTiff.}
+\item{extent}{Numeric. Default: c(-180,180,-90,90). Defines the extent of the
+data: c(xmin, xmax, ymin, ymax).}
 
-\item{overwrite}{Locigal. Default: FALSE. Set to TRUE to overwrite the outputfile
-defined by 'outputpath'.}
+\item{type}{Character. Default is FLT8S Indicate the datatype of the GeoTiff
+file. Possible values: LOG1S, INT1S, INT1S, INT2S, INT2U, INT4S, INT4U,
+FLT4S, FLT8S.}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.}
+\item{overwrite}{Locigal. Default: FALSE. Set to TRUE to overwrite the
+outputfile defined by 'outputpath'.}
+
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
+TRUE.}
 }
 \value{
 Returns the outputpath.
 }
 \description{
-After you extracted data from the EBV NetCDF and worked with it
+After you extracted data from the EBV netCDF and worked with it
 this function gives you the possibility to write it to disk as a GeoTiff.
 This functions writes temporary files on your disk. Specify a directory for
 these setting via options('ebv_temp'='/path/to/temp/directory').
 }
 \note{
 Not yet implemented for subsets of the data (only whole spatial
-coverage of the corresponding EBV NetCDF).
+coverage of the corresponding EBV netCDF).
+
+For the datatype definition see \code{\link[raster:dataType]{raster::dataType()}}.
 }
 \examples{
 #define temp directory
@@ -52,5 +60,5 @@ datacubes <- ebv_datacubepaths(file)
 data <- ebv_read(file, datacubes[1,1], 1)
 # WORK WITH YOUR DATA
 out <- system.file(file.path("extdata","write_data.tif"), package="ebvnetcdf")
-#ebv_write(data, file, datacubes[1,1], out)
+#ebv_write(data, out)
 }

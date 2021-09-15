@@ -23,7 +23,8 @@ ebv_read_shp(
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{shp}{Character. Path to the shapefile defining the subset.}
+\item{shp}{Character. Path to the shapefile defining the subset. Ending needs
+to be *.shp.}
 
 \item{entity}{Character or Integer. Default is NULL. (As if the structure
 were 3D. Then no entity argument is needed.) Character string or single

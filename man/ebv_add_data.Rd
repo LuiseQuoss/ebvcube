@@ -18,7 +18,8 @@ ebv_add_data(
 \arguments{
 \item{filepath_nc}{Character. Path to the self-created netCDF file.}
 
-\item{filepath_tif}{Character. Path to the GeoTiff file containing the data.}
+\item{filepath_tif}{Character. Path to the GeoTiff file containing the data.
+Ending needs to be *.tif.}
 
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
