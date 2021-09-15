@@ -50,7 +50,7 @@ these setting via options('ebv_temp'='/path/to/temp/directory').
 Not yet implemented for subsets of the data (only whole spatial
 coverage of the corresponding EBV netCDF).
 
-For the datatype definition see \code{\link[raster:dataType]{raster::dataType()}}.
+For more info on the datatype definition see \code{\link[raster:dataType]{raster::dataType()}}.
 }
 \examples{
 #define temp directory

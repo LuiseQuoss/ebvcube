@@ -22,7 +22,7 @@
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
 #'
-#' @note For the datatype definition see [raster::dataType()].
+#' @note For more info on the datatype definition see [raster::dataType()].
 #'
 #' @return Returns the outputpath.
 #' @export
