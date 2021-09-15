@@ -1,22 +1,28 @@
 #' Write the extracted data on your disk as a GeoTiff
-#' @description After you extracted data from the EBV NetCDF and worked with it
+#' @description After you extracted data from the EBV netCDF and worked with it
 #'   this function gives you the possibility to write it to disk as a GeoTiff.
 #'   This functions writes temporary files on your disk. Specify a directory for
 #'   these setting via options('ebv_temp'='/path/to/temp/directory').
 #' @note Not yet implemented for subsets of the data (only whole spatial
-#'   coverage of the corresponding EBV NetCDF).
+#'   coverage of the corresponding EBV netCDF).
 #'
 #' @param data Your data object. May be raster, array, DelayedMatrix or list of
 #'   DelayedMatrix (see return values of [ebvnetcdf::ebv_read()])
-#' @param filepath Character. Path to the NetCDF file you read the data from. Used for the
-#'   detection of properties as spatial extent and epsg.
-#' @param datacubepath Character. Path to the datacube you got the data from. Used for the
-#'   detection of properties as data type and nodata value.
-#' @param outputpath Character. Set the path where you want to write the data to disk as a
-#'   GeoTiff.
-#' @param overwrite Locigal. Default: FALSE. Set to TRUE to overwrite the outputfile
-#'   defined by 'outputpath'.
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.
+#' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
+#'   system via the corresponding epsg code.
+#' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
+#'   data: c(xmin, xmax, ymin, ymax).
+#' @param type Character. Default is FLT8S Indicate the datatype of the GeoTiff
+#'   file. Possible values: LOG1S, INT1S, INT1S, INT2S, INT2U, INT4S, INT4U,
+#'   FLT4S, FLT8S.
+#' @param outputpath Character. Set the path where you want to write the data to
+#'   disk as a GeoTiff. Ending needs to be *.tif.
+#' @param overwrite Locigal. Default: FALSE. Set to TRUE to overwrite the
+#'   outputfile defined by 'outputpath'.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
+#'   TRUE.
+#'
+#' @note For the datatype definition see [raster::dataType()].
 #'
 #' @return Returns the outputpath.
 #' @export
@@ -29,15 +35,10 @@
 #' data <- ebv_read(file, datacubes[1,1], 1)
 #' # WORK WITH YOUR DATA
 #' out <- system.file(file.path("extdata","write_data.tif"), package="ebvnetcdf")
-#' #ebv_write(data, file, datacubes[1,1], out)
-ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE, verbose=FALSE){
+#' #ebv_write(data, out)
+ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
+                      type='FLT8S', overwrite=FALSE, verbose=FALSE){
   ####initial tests start ----
-  # ensure file and all datahandles are closed on exit
-  withr::defer(
-    if(exists('hdf')){
-      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
-    }
-  )
 
   #ensure that all tempfiles are deleted on exit
   withr::defer(
@@ -61,11 +62,11 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
   if(missing(data)){
     stop('Data argument is missing.')
   }
-  if(missing(filepath)){
-    stop('Filepath argument is missing.')
+  if(missing(epsg)){
+    stop('EPSG argument is missing.')
   }
-  if(missing(datacubepath)){
-    stop('Datacubepath argument is missing.')
+  if(missing(extent)){
+    stop('Extent argument is missing.')
   }
   #are all arguments given?
   if(missing(outputpath)){
@@ -87,30 +88,6 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
     stop('overwrite must be of type logical.')
   }
 
-  #filepath check
-  if (checkmate::checkCharacter(filepath) != TRUE){
-    stop('Filepath must be of type character.')
-  }
-  if (checkmate::checkFileExists(filepath) != TRUE){
-    stop(paste0('File does not exist.\n', filepath))
-  }
-  if (!endsWith(filepath, '.nc')){
-    stop(paste0('File ending is wrong. File cannot be processed.'))
-  }
-
-  #file closed?
-  ebv_i_file_opened(filepath)
-
-  #variable check
-  if (checkmate::checkCharacter(datacubepath) != TRUE){
-    stop('Datacubepath must be of type character.')
-  }
-  hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
-    stop(paste0('The given variable is not valid:\n', datacubepath))
-  }
-  rhdf5::H5Fclose(hdf)
-
   #outputpath check
   if (checkmate::checkCharacter(outputpath) != TRUE){
     stop('Outputpath must be of type character.')
@@ -128,10 +105,23 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
     }
   }
 
-  #######initial test end ----
+  #check if epsg is valid
+  if(checkmate::checkIntegerish(epsg) != TRUE){
+    stop('epsg must be of type integer.')
+  }
+  crs <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg))
+  if(any(stringr::str_detect(as.character(crs), 'crs not found'))){
+    stop('Given EPSG code is not in PROJ library. Did you give a wrong EPSG code?')
+  } else if (any(stringr::str_detect(as.character(crs), '(?i)error'))){
+    stop(paste0('Could not process EPSG. See error from gdalUtils:\n', as.character(paste0(crs, collapse = '\n'))))
+  }
 
-  #get properties
-  prop <- ebv_properties(filepath, datacubepath, verbose)
+  #check type
+  if(! type %in% c('LOG1S', 'INT1S', 'INT1S', 'INT2S', 'INT2U', 'INT4S', 'INT4U', 'FLT4S', 'FLT8S')){
+    stop('The type needs to be one of the following values: LOG1S, INT1S, INT1S, INT2S, INT2U, INT4S, INT4U, FLT4S, FLT8S.')
+  }
+
+  #######initial test end ----
 
   # write DelayedMatrix ----
   if (class(data) == "DelayedMatrix"){
@@ -172,26 +162,27 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
     )
 
     #get output type ot for gdal
-    type.long <- prop@ebv_cube$type
+    type.long <- type
     ot <- ebv_i_type_ot(type.long)
 
-    a_srs <- paste0('EPSG:', prop@spatial$epsg)
+    a_srs <- paste0('EPSG:', epsg)
     #a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
 
     #add CRS, shift to -180,90, add nodata value
     if(!is.null(ot)){
       gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
-                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_ullr = c(extent[1], extent[4], extent[2], extent[3]),
                      a_srs = a_srs,
                      co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED'),
-                     a_nodata=prop@ebv_cube$fillvalue,
+                     #a_nodata=prop@ebv_cube$fillvalue,
                      ot = ot)
     } else{
       gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
-                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_ullr = c(extent[1], extent[4], extent[2], extent[3]),
                      a_srs = a_srs,
-                     co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED'),
-                     a_nodata=prop@ebv_cube$fillvalue)
+                     co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED')
+                     #a_nodata=prop@ebv_cube$fillvalue
+                     )
     }
 
     #delete temp file
@@ -219,7 +210,7 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
 
     #a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
-    a_srs <- paste0('EPSG:', prop@spatial$epsg)
+    a_srs <- paste0('EPSG:', epsg)
     temps <- c()
     #turn listed DelayedArrays into tif
     for (i in 1:length(data)){
@@ -252,7 +243,7 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
 
       #add georeference, shift to -180,-90,
       gdalUtils::gdal_translate(temp.tif, temp.vrt, of='VRT', overwrite=TRUE,
-                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4], prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_ullr = c(extent[1], extent[4], extent[2],extent[3]),
                      a_srs = a_srs)#,
       #a_nodata=prop@ebv_cube_information@fillvalue)
     }
@@ -261,29 +252,29 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
     temp.vrt <- file.path(temp_path, 'temp_EBV_write_data.vrt')
     gdalUtils::gdalbuildvrt(temps, temp.vrt, separate=TRUE, overwrite=TRUE,
                             a_srs = a_srs,
-                            te = c(prop@spatial$extent[1], prop@spatial$extent[3],
-                                   prop@spatial$extent[2], prop@spatial$extent[4]))
+                            te = c(extent[1], extent[3],
+                                   extent[2], extent[4]))
 
     #get output type ot for gdal
-    type.long <- prop@ebv_cube$type
+    type.long <- type
     ot <- ebv_i_type_ot(type.long)
 
     #gdal translate: add fillvalue, add ot if given, output final tif
     if(!is.null(ot)){
       gdalUtils::gdal_translate(temp.vrt, outputpath,
-                     a_nodata=prop@ebv_cube$fillvalue,
+                     #a_nodata=prop@ebv_cube$fillvalue,
                      overwrite=overwrite,
                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4],
-                            prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_ullr = c(extent[1], extent[4],
+                            extent[2], extent[3]),
                      a_srs = a_srs,
                      ot=ot)
     } else {
       gdalUtils::gdal_translate(temp.vrt, outputpath,
-                     a_nodata=prop@ebv_cube$fillvalue,
+                     #a_nodata=prop@ebv_cube$fillvalue,
                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                     a_ullr = c(prop@spatial$extent[1], prop@spatial$extent[4],
-                                prop@spatial$extent[2], prop@spatial$extent[3]),
+                     a_ullr = c(extent[1], extent[4],
+                                extent[2], extent[3]),
                      a_srs = a_srs,
                      overwrite=overwrite)
     }
@@ -303,36 +294,40 @@ ebv_write <- function(data, filepath, datacubepath, outputpath, overwrite=FALSE,
   }else if (class(data)=="array"| class(data)=="matrix"){
     #data from array/matrix - in memory
 
+    crs <- paste(crs[5:length(crs)], collapse = ' ')
+
     if(length(dim(data))==2){
       #convert to raster
       r <- raster::raster(
         data,
-        xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],
-        ymn=prop@spatial$extent[3], ymx=prop@spatial$extent[4],
-        crs=prop@spatial$srs
+        xmn=extent[1], xmx=extent[2],
+        ymn=extent[3], ymx=extent[4],
+        crs=crs
       )
     } else {
       #convert to raster
       r <-raster::brick(
         data,
-        xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],
-        ymn=prop@spatial$extent[3], ymx=prop@spatial$extent[4],
-        crs=prop@spatial$srs
+        xmn=extent[1], xmx=extent[2],
+        ymn=extent[3], ymx=extent[4],
+        crs=crs
       )
     }
 
     #NAvalue(r) <- prop@ebv_cube_information@fillvalue
-    r<- raster::mask(r, r, maskvalue=prop@ebv_cube$fillvalue)
+    #r<- raster::mask(r, r, maskvalue=prop@ebv_cube$fillvalue)
 
     #write raster to disk
-    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)
+    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite,
+                        datatype=type)
     return(outputpath)
   # write raster ----
   } else if(class(data)=="RasterLayer"|class(data)=='RasterBrick'){
     #mask out fillvalue
-    r<- raster::mask(data, data, maskvalue=prop@ebv_cube$fillvalue)
+    #r<- raster::mask(data, data, maskvalue=prop@ebv_cube$fillvalue)
     #write raster to disk
-    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)
+    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite,
+                        datatype=type)
     return(outputpath)
   }else{
     #not implemented, tell user
