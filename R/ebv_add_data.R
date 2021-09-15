@@ -4,6 +4,7 @@
 #'
 #' @param filepath_nc Character. Path to the self-created netCDF file.
 #' @param filepath_tif Character. Path to the GeoTiff file containing the data.
+#'   Ending needs to be *.tif.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
 #' @param entity Character or Integer. Default is NULL. (As if the structure
