@@ -261,7 +261,7 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
         #create and rotate array
         mat <- matrix(part, c(nrow, ncol,1))
         mat <- t(mat)
-        mat <- mat[nrow(mat):1,,drop=FALSE]
+        #mat <- mat[nrow(mat):1,,drop=FALSE]
         array3d[,,i] <- array(mat, c(ncol, nrow))
       }
     } else{
@@ -296,7 +296,7 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
       #create and rotate array
       mat <- matrix(part, c(nrow, ncol))
       mat <- t(mat)
-      mat <- mat[nrow(mat):1,,drop=FALSE]
+      #mat <- mat[nrow(mat):1,,drop=FALSE]
 
     }else{
     #read from 3D structure
