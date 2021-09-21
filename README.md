@@ -113,15 +113,15 @@ installation.
 ``` r
 #add GDAL path to the existing paths
 Sys.getenv("PATH")
-#> [1] "C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\OSGeo4W64\\bin;C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
+#> [1] "C:\\rtools40\\usr\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
 #Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
 #check and change path for proj_lib, gdal_data and gdal_driver_path
 Sys.getenv("PROJ_LIB") 
-#> [1] "C:\\OSGeo4W64\\share\\proj"
+#> [1] "C:/Users/lq39quba/Documents/R/R-4.0.3/library/rgdal/proj"
 Sys.getenv("GDAL_DATA") 
-#> [1] "C:\\OSGeo4W64\\share\\gdal"
+#> [1] "C:/Users/lq39quba/Documents/R/R-4.0.3/library/rgdal/gdal"
 Sys.getenv("GDAL_DRIVER_PATH") 
-#> [1] "C:\\OSGeo4W64\\bin\\gdalplugins"
+#> [1] ""
 #Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
 #Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
 #Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
@@ -178,36 +178,10 @@ datacubes
 ```
 
 In the next step we will get the properties of one specific datacube -
-fyi: the result also holds the general file properties from above. This
-time you get the warning that the value_range does not exists. So don’t
-take the displayed value_range seriously.
+fyi: the result also holds the general file properties from above.
 
 ``` r
-prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
-#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
-#> = native): An open HDF5 file handle exists. If the file has changed on disk
-#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
-#> open HDF5 object handles.
-
-#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
-#> = native): An open HDF5 file handle exists. If the file has changed on disk
-#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
-#> open HDF5 object handles.
-
-#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
-#> = native): An open HDF5 file handle exists. If the file has changed on disk
-#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
-#> open HDF5 object handles.
-
-#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
-#> = native): An open HDF5 file handle exists. If the file has changed on disk
-#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
-#> open HDF5 object handles.
-
-#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
-#> = native): An open HDF5 file handle exists. If the file has changed on disk
-#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
-#> open HDF5 object handles.
+prop.dc <- ebv_properties(file, datacubes[1,1])
 prop.dc@ebv_cube
 #> $description
 #> [1] "Changes in bird diversity at the grid cell level caused by land-use, estimated by the cSAR model (Martins & Pereira, 2017). It reports changes in species number (percentage and absolute), relative to 1900, for all bird species, forest bird species, and non-forest bird species in each cell. Uses the LUH 2.0 projections for land-use, and the PREDICTS coefficients for bird affinities to land-uses."
@@ -326,7 +300,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpANnIkR\temp_libpath173048125951\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpYDlCRz\temp_libpath305476bf457a\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -362,10 +336,13 @@ entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF using the 4D cube representation
-# ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T, 
-#            fillvalue = fv, prec='float', force_4D = TRUE)
-#check out the general propeties of our newly created file
-print(ebv_properties(newNc)@general)
+ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
+           fillvalue = fv, prec='float', force_4D = TRUE)
+#> Error in sp::CRS(SRS_string = crs_ref): NA
+#> Error: Error in h5checktype(). The provided H5Identifier is not a group identifier.
+
+#check out some general propeties of our newly created file
+print(ebv_properties(newNc)@general[1:5])
 #> $title
 #> [1] "Local bird diversity (cSAR/BES-SIM)"
 #> 
@@ -380,107 +357,11 @@ print(ebv_properties(newNc)@general)
 #> 
 #> $ebv_domain
 #> [1] "Terrestrial"
-#> 
-#> $references
-#> [1] "https://www.idiv.de/en/groups_and_people/core_groups/biodiversity_conservation/projects.html"
-#> 
-#> $source
-#> [1] "Uses the LUH 2.0 projections for land-use, and PREDICTS based coefficients for bird affinities to land-uses. See more details in associated publication (Pereira et al. 2020, doi.org/10.1101/2020.04.14.031716)."
-#> 
-#> $project
-#> [1] "https://geobon.org"
-#> 
-#> $creator_name
-#> [1] "Ines Martins, Henrique Pereira"
-#> 
-#> $creator_institution
-#> [1] "German Centre for Integrative Biodiversity Research (iDiv)"
-#> 
-#> $creator_email
-#> [1] "hpereira@idiv.de"
-#> 
-#> $contributor_name
-#> [1] "Ines Martins"
-#> 
-#> $publisher_name
-#> [1] "Ines Martins"
-#> 
-#> $publisher_institution
-#> [1] "German Centre for Integrative Biodiversity Research (iDiv)"
-#> 
-#> $publisher_email
-#> [1] "istmartins@gmail.com"
-#> 
-#> $comment
-#> [1] ""
-#> 
-#> $keywords
-#> [1] "ebv_class: Community composition, ebv_name: Taxonomic and phylogenetic diversity, ebv_domain: Terrestrial, ebv_spatial_scope: Global, ebv_entity_type: Functional species groups, ebv_scenario_classification_name: "
-#> 
-#> $id
-#> [1] "6123759fc1fde"
-#> 
-#> $history
-#> [1] "EBV netCDF created using ebvnetcdf, 2021-09-21"
-#> 
-#> $licence
-#> function () 
-#> {
-#>     cat("\nThis software is distributed under the terms of the GNU General\n")
-#>     cat("Public License, either Version 2, June 1991 or Version 3, June 2007.\n")
-#>     cat("The terms of version 2 of the license are in a file called COPYING\nwhich you should have received with\n")
-#>     cat("this software and which can be displayed by RShowDoc(\"COPYING\").\n")
-#>     cat("Version 3 of the license can be displayed by RShowDoc(\"GPL-3\").\n")
-#>     cat("\n")
-#>     cat("Copies of both versions 2 and 3 of the license can be found\n")
-#>     cat("at https://www.R-project.org/Licenses/.\n")
-#>     cat("\n")
-#>     cat("A small number of files (the API header files listed in\n")
-#>     cat("R_DOC_DIR/COPYRIGHTS) are distributed under the\n")
-#>     cat("LESSER GNU GENERAL PUBLIC LICENSE, version 2.1 or later.\n")
-#>     cat("This can be displayed by RShowDoc(\"LGPL-2.1\"),\n")
-#>     cat("or obtained at the URI given.\n")
-#>     cat("Version 3 of the license can be displayed by RShowDoc(\"LGPL-3\").\n")
-#>     cat("\n")
-#>     cat("'Share and Enjoy.'\n\n")
-#> }
-#> <bytecode: 0x000000003e91cac8>
-#> <environment: namespace:base>
-#> 
-#> $conventions
-#> [1] "CF-1.8; ACDD-1.3; EBV-1.0"
-#> 
-#> $naming_authority
-#> [1] "iDiv"
-#> 
-#> $date_created
-#> [1] "2021-08-03"
-#> 
-#> $date_issued
-#> [1] "pending"
-#> 
-#> $entity_names
-#> [1] "forest bird species"     "non-forest bird species"
-#> [3] "all bird species"       
-#> 
-#> $entity_type
-#> [1] "Functional species groups"
-#> 
-#> $entity_scope
-#> [1] "All birds, Non-forest birds, forest birds"
-#> 
-#> $entity_classification_name
-#> [1] "N/A"
-#> 
-#> $entity_classification_url
-#> [1] "N/A"
 #check out the (still empty) datacubes
 dc.new <- ebv_datacubepaths(newNc)
 print(dc.new)
-#>                  datacubepaths    scenario_names
-#> 1 scenario_1/metric_1/ebv_cube past: 1900 - 2015
-#>                                   metric_names
-#> 1 Relative change in the number of species (%)
+#>                  datacubepaths scenario_names metric_names
+#> 1 scenario_1/metric_1/ebv_cube    not defined  not defined
 ```
 
 Hint: You can always take a look at your netCDF in
@@ -503,10 +384,16 @@ tif_paths <- file.path(root, tifs)
 #adding the data
 entity <- 1
 for (tif in tif_paths){
-  # ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity, 
-  #             timestep=1:12, filepath_tif = tif, band=1:12)
+  ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
+              timestep=1:12, filepath_tif = tif, band=1:12)
   entity <- entity + 1
 }
+#> The fillvalue of the GeoTiff (value: -Inf) differs from
+#>                    the fillvalue of the datacube: -3.39999995214436e+38.
+#> The fillvalue of the GeoTiff (value: -Inf) differs from
+#>                    the fillvalue of the datacube: -3.39999995214436e+38.
+#> The fillvalue of the GeoTiff (value: -Inf) differs from
+#>                    the fillvalue of the datacube: -3.39999995214436e+38.
 ```
 
 #### c. Add missing attributes to datacube
