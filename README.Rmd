@@ -266,9 +266,9 @@ for (tif in tif_paths){
 Now there are still a information missing about the data you just added: the standard_name and description of each entity. The following function makes it possible to add the information.
 Ups! So you did a mistake and want to change the attribute?! No problem. Just use the same function to change it again.
 ```{r}
-ebv_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
+ebv_attribute(newNc, attribute_name='units', value='percentage', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
-print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
+print(ebv_properties(newNc, dc.new[1,1])@ebv_cube$units)
 
 ```
 In this case the levelpath corresponds to the datacube path. But you can also alter attributes at the metric or scenario level. See the manual for more info.

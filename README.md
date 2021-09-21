@@ -112,19 +112,21 @@ installation.
 
 ``` r
 #add GDAL path to the existing paths
-Sys.getenv("PATH")
-#> [1] "C:\\rtools40\\usr\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
 #Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
 #check and change path for proj_lib, gdal_data and gdal_driver_path
+#Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+#Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+#Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+
+#you can always check your GDAL path settings using
+Sys.getenv("PATH")
+#> [1] "C:\\rtools40\\usr\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
 Sys.getenv("PROJ_LIB") 
 #> [1] "C:/Users/lq39quba/Documents/R/R-4.0.3/library/rgdal/proj"
 Sys.getenv("GDAL_DATA") 
 #> [1] "C:/Users/lq39quba/Documents/R/R-4.0.3/library/rgdal/gdal"
 Sys.getenv("GDAL_DRIVER_PATH") 
 #> [1] ""
-#Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
-#Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
-#Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
 ```
 
 ## 3. Working with the package - a quick intro
@@ -300,7 +302,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpYDlCRz\temp_libpath305476bf457a\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpYDlCRz\temp_libpath30545bd17d6d\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -405,11 +407,10 @@ want to change the attribute?! No problem. Just use the same function to
 change it again.
 
 ``` r
-ebv_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
-#> Error in ebv_attribute(newNc, attribute_name = "standard_name", value = "Eumops auripendulus", : Attribute does not exist within given levelpath in netCDF. Change your levelpath!
+ebv_attribute(newNc, attribute_name='units', value='percentage', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
-print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
-#> Error in print(ebv_properties(newNc, dc.new[1, 1])@entity$standard_name): kein Slot des Namens "entity" für dieses Objekt der Klasse "EBV netCDF properties"
+print(ebv_properties(newNc, dc.new[1,1])@ebv_cube$units)
+#> [1] "percentage"
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
