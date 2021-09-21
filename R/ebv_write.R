@@ -62,13 +62,6 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   if(missing(data)){
     stop('Data argument is missing.')
   }
-  if(missing(epsg)){
-    stop('EPSG argument is missing.')
-  }
-  if(missing(extent)){
-    stop('Extent argument is missing.')
-  }
-  #are all arguments given?
   if(missing(outputpath)){
     stop('Outputpath argument is missing.')
   }
@@ -326,7 +319,9 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     #mask out fillvalue
     #r<- raster::mask(data, data, maskvalue=prop@ebv_cube$fillvalue)
     #write raster to disk
-    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite,
+    crs <- paste(crs[5:length(crs)], collapse = ' ')
+    raster::crs(data) <- crs
+    raster::writeRaster(data, outputpath, format = "GTiff", overwrite = overwrite,
                         datatype=type)
     return(outputpath)
   }else{
