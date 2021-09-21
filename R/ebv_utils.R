@@ -283,7 +283,7 @@ ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
   crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", dest_epsg))
   crs_dest <- sp::CRS(stringr::str_remove(paste(crs[2], collapse = ' '), 'PROJ.4 : '))
 
-    p1 <- matrix(data = c(bb[1],bb[3]), nrow = 1, ncol = 2)
+  p1 <- matrix(data = c(bb[1],bb[3]), nrow = 1, ncol = 2)
   sp1 <- sp::SpatialPoints(p1, proj4string=crs_src)
 
   p2 <- matrix(data = c(bb[2],bb[4]), nrow = 1, ncol = 2)
