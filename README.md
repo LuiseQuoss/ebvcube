@@ -22,23 +22,40 @@ the netCDF are assigned to one metric. But this metric can have several
 entities. On top of this hierarchy there can be several scenarios. The
 following block displays an abstract exhausted hierarchy.
 
+### 3D structure
+
+The datacube have the dimensions longitude, latitude and time.
+
 ``` bash
-├── scenario1
-│   └── metric1
-│       ├── entity1
-│       ├── entity2
+├── scenari_1
+│   └── metric_1
+│       ├── entity_1
+│       ├── entity_2
 │       ├── ...
-│       └── entity999
-└── scenario2
-    └── metric2
-        ├── entity1
-        ├── entity2
+│       └── entity_999
+└── scenario_2
+    └── metric_2
+        ├── entity_1
+        ├── entity_2
         ├── ...
-        └── entity999
+        └── entity_999
 ```
 
-The following is a practical example of the netCDF structure. Basis is
-the [global habitat availability for mammals
+### 4D structure
+
+The datacube have the dimensions longitude, latitude, time and entity.
+
+``` bash
+├── scenari_1
+│   └── metric_1
+│       └── ebv_cube
+└── scenario_2
+    └── metric_2
+        └── ebv_cube
+```
+
+The following is a practical example of the netCDF structure (3D). Basis
+is the [global habitat availability for mammals
 dataset](https://portal.geobon.org/ebv-detail?id=5).
 
 ``` bash
@@ -62,8 +79,9 @@ dataset](https://portal.geobon.org/ebv-detail?id=5).
 ```
 
 Just keep in mind: All EBV netCDF always have a metric. But they may or
-may not have a scenario and/or entity. The resulting datacubes are going
-to be accesses.
+may not have a scenario. The resulting datacubes hold the data. These
+datacubes can be 3D or 4D. The latter is going to be the standard (3D is
+about to be deprecated).
 
 ## 2. Installation
 
@@ -95,15 +113,15 @@ installation.
 ``` r
 #add GDAL path to the existing paths
 Sys.getenv("PATH")
-#> [1] "C:\\rtools40\\usr\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
+#> [1] "C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\OSGeo4W64\\bin;C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
 #Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
 #check and change path for proj_lib, gdal_data and gdal_driver_path
 Sys.getenv("PROJ_LIB") 
-#> [1] "C:/Users/lq39quba/Documents/R/R-4.0.3/library/rgdal/proj"
+#> [1] "C:\\OSGeo4W64\\share\\proj"
 Sys.getenv("GDAL_DATA") 
-#> [1] "C:/Users/lq39quba/Documents/R/R-4.0.3/library/rgdal/gdal"
+#> [1] "C:\\OSGeo4W64\\share\\gdal"
 Sys.getenv("GDAL_DRIVER_PATH") 
-#> [1] ""
+#> [1] "C:\\OSGeo4W64\\bin\\gdalplugins"
 #Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
 #Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
 #Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
@@ -143,7 +161,7 @@ prop.file@general
 #> $creator
 #> [1] "Ines Martins"
 slotNames(prop.file)
-#> [1] "general"  "spatial"  "temporal" "metric"   "scenario" "entity"
+#> [1] "general"  "spatial"  "temporal" "metric"   "scenario" "ebv_cube"
 ```
 
 Now let’s get the paths to all possible datacubes. The resulting
@@ -185,15 +203,19 @@ prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
 #> = native): An open HDF5 file handle exists. If the file has changed on disk
 #> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
 #> open HDF5 object handles.
-#> Warning in ebv_i_read_att(hdf, "value_range"): The attribute value_range does not exist. Or maybe wrong location in NetCDF?
-prop.dc@entity
+
+#> Warning in h5checktypeOrOpenLoc(file, readonly = TRUE, fapl = NULL, native
+#> = native): An open HDF5 file handle exists. If the file has changed on disk
+#> meanwhile, the function may not work properly. Run 'h5closeAll()' to close all
+#> open HDF5 object handles.
+prop.dc@ebv_cube
 #> $description
 #> [1] "Changes in bird diversity at the grid cell level caused by land-use, estimated by the cSAR model (Martins & Pereira, 2017). It reports changes in species number (percentage and absolute), relative to 1900, for all bird species, forest bird species, and non-forest bird species in each cell. Uses the LUH 2.0 projections for land-use, and the PREDICTS coefficients for bird affinities to land-uses."
 #> 
 #> $standard_name
 #> [1] "non forest birds species"
 #> 
-#> $unit
+#> $units
 #> [1] "mean change of species diversity per area (pixel size) to baseline 1900 "
 #> 
 #> $type
@@ -201,9 +223,6 @@ prop.dc@entity
 #> 
 #> $fillvalue
 #> [1] -3.4e+38
-#> 
-#> $value_range
-#> [1] NA
 ```
 
 ### 3.2 Plot the data to get a better impression
@@ -226,7 +245,7 @@ ebv_map(file, dc, timestep = 6)
 prop.dc@general$title
 #> [1] "Changes in local bird diversity (cSAR)"
 # And the datacube?
-prop.dc@entity$standard_name
+prop.dc@ebv_cube$standard_name
 #> [1] "non forest birds species"
 #What time is the sixth timestep representing?
 prop.dc@temporal$timesteps_natural[6]
@@ -275,7 +294,7 @@ measurements$mean
 
 #info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
-measurements.bb <- ebv_analyse(file, dc, bb)
+measurements.bb <- ebv_analyse(file, dc, subset = bb)
 #how many pixels are now included?
 measurements.bb$n
 #> [1] 80
@@ -287,7 +306,7 @@ To access the data you can use the following:
 
 ``` r
 #load whole data as array for two timesteps
-data <- ebv_read(file, dc, c(1,2), delayed = F)
+data <- ebv_read(file, dc, timestep = c(1,2), type = 'a')
 dim(data)
 #> [1] 180 360   2
 ```
@@ -300,20 +319,21 @@ for temporarily created files.
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
 options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
-data.shp <- ebv_read_shp(file, dc, shp, NULL, c(1,2,3))
+data.shp <- ebv_read_shp(file, dc, shp = shp, timestep = c(1,2,3))
+#> Error in sp::CRS(stringr::str_remove(paste(crs[2], collapse = " "), "PROJ.4 : ")): NA
 dim(data.shp)
-#> [1]  9 11  3
+#> Error in eval(expr, envir, enclos): Objekt 'data.shp' nicht gefunden
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpSynZ3m\temp_libpath134863e96fad\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpANnIkR\temp_libpath173048125951\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
 raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
+#> Error in h(simpleError(msg, call)): Fehler bei der Auswertung des Argumentes 'obj' bei der Methodenauswahl für Funktion 'spplot': Objekt 'data.shp' nicht gefunden
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 Imagine you have a very large dataset but only limited memory. The
 package provides the possibility to load the data as a DelayedArray. A
 second function helps you to write that data back on disk properly. Look
@@ -336,26 +356,131 @@ geoportal is 5 the json file is just called 5.
 
 ``` r
 #paths
-json <- system.file(file.path('extdata','5.json'), package="ebvnetcdf")
-newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','mammals.nc')
+json <- system.file(file.path('extdata','metadata.json'), package="ebvnetcdf")
+newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','test.nc')
+entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
-#lets say it has 5 entities, which is not true in reality!
-ebv_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
+#create the netCDF using the 4D cube representation
+# ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T, 
+#            fillvalue = fv, prec='float', force_4D = TRUE)
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
-#> Error in sp::CRS(srs.chr): NA
+#> $title
+#> [1] "Local bird diversity (cSAR/BES-SIM)"
+#> 
+#> $description
+#> [1] "Changes in bird diversity at 1-degree resolution caused by land use, estimated by the cSAR model for 1900-2015 using LUH2.0 historical reconstruction of land-use."
+#> 
+#> $ebv_class
+#> [1] "Community composition"
+#> 
+#> $ebv_name
+#> [1] "Taxonomic and phylogenetic diversity"
+#> 
+#> $ebv_domain
+#> [1] "Terrestrial"
+#> 
+#> $references
+#> [1] "https://www.idiv.de/en/groups_and_people/core_groups/biodiversity_conservation/projects.html"
+#> 
+#> $source
+#> [1] "Uses the LUH 2.0 projections for land-use, and PREDICTS based coefficients for bird affinities to land-uses. See more details in associated publication (Pereira et al. 2020, doi.org/10.1101/2020.04.14.031716)."
+#> 
+#> $project
+#> [1] "https://geobon.org"
+#> 
+#> $creator_name
+#> [1] "Ines Martins, Henrique Pereira"
+#> 
+#> $creator_institution
+#> [1] "German Centre for Integrative Biodiversity Research (iDiv)"
+#> 
+#> $creator_email
+#> [1] "hpereira@idiv.de"
+#> 
+#> $contributor_name
+#> [1] "Ines Martins"
+#> 
+#> $publisher_name
+#> [1] "Ines Martins"
+#> 
+#> $publisher_institution
+#> [1] "German Centre for Integrative Biodiversity Research (iDiv)"
+#> 
+#> $publisher_email
+#> [1] "istmartins@gmail.com"
+#> 
+#> $comment
+#> [1] ""
+#> 
+#> $keywords
+#> [1] "ebv_class: Community composition, ebv_name: Taxonomic and phylogenetic diversity, ebv_domain: Terrestrial, ebv_spatial_scope: Global, ebv_entity_type: Functional species groups, ebv_scenario_classification_name: "
+#> 
+#> $id
+#> [1] "6123759fc1fde"
+#> 
+#> $history
+#> [1] "EBV netCDF created using ebvnetcdf, 2021-09-21"
+#> 
+#> $licence
+#> function () 
+#> {
+#>     cat("\nThis software is distributed under the terms of the GNU General\n")
+#>     cat("Public License, either Version 2, June 1991 or Version 3, June 2007.\n")
+#>     cat("The terms of version 2 of the license are in a file called COPYING\nwhich you should have received with\n")
+#>     cat("this software and which can be displayed by RShowDoc(\"COPYING\").\n")
+#>     cat("Version 3 of the license can be displayed by RShowDoc(\"GPL-3\").\n")
+#>     cat("\n")
+#>     cat("Copies of both versions 2 and 3 of the license can be found\n")
+#>     cat("at https://www.R-project.org/Licenses/.\n")
+#>     cat("\n")
+#>     cat("A small number of files (the API header files listed in\n")
+#>     cat("R_DOC_DIR/COPYRIGHTS) are distributed under the\n")
+#>     cat("LESSER GNU GENERAL PUBLIC LICENSE, version 2.1 or later.\n")
+#>     cat("This can be displayed by RShowDoc(\"LGPL-2.1\"),\n")
+#>     cat("or obtained at the URI given.\n")
+#>     cat("Version 3 of the license can be displayed by RShowDoc(\"LGPL-3\").\n")
+#>     cat("\n")
+#>     cat("'Share and Enjoy.'\n\n")
+#> }
+#> <bytecode: 0x000000003e91cac8>
+#> <environment: namespace:base>
+#> 
+#> $conventions
+#> [1] "CF-1.8; ACDD-1.3; EBV-1.0"
+#> 
+#> $naming_authority
+#> [1] "iDiv"
+#> 
+#> $date_created
+#> [1] "2021-08-03"
+#> 
+#> $date_issued
+#> [1] "pending"
+#> 
+#> $entity_names
+#> [1] "forest bird species"     "non-forest bird species"
+#> [3] "all bird species"       
+#> 
+#> $entity_type
+#> [1] "Functional species groups"
+#> 
+#> $entity_scope
+#> [1] "All birds, Non-forest birds, forest birds"
+#> 
+#> $entity_classification_name
+#> [1] "N/A"
+#> 
+#> $entity_classification_url
+#> [1] "N/A"
 #check out the (still empty) datacubes
 dc.new <- ebv_datacubepaths(newNc)
-print(dc.new[c(1,5,6),])
-#>                  datacubepaths      scenario_names         metric_names
-#> 1 scenario01/metric01/entity01      Sustainability Habitat availability
-#> 5 scenario01/metric01/entity05      Sustainability Habitat availability
-#> 6 scenario02/metric01/entity01 Middle of the Road  Habitat availability
-#>   entity_names
-#> 1      default
-#> 5      default
-#> 6      default
+print(dc.new)
+#>                  datacubepaths    scenario_names
+#> 1 scenario_1/metric_1/ebv_cube past: 1900 - 2015
+#>                                   metric_names
+#> 1 Relative change in the number of species (%)
 ```
 
 Hint: You can always take a look at your netCDF in
@@ -372,10 +497,16 @@ definition.
 
 ``` r
 #path to tif with data
-tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
+root <- system.file(file.path('extdata'), package="ebvnetcdf") 
+tifs <- c('sm_entity0.tif', 'sm_entity1.tif', 'sm_entity2.tif')
+tif_paths <- file.path(root, tifs)
 #adding the data
-ebv_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
-#> Error in sp::CRS(srs.chr): NA
+entity <- 1
+for (tif in tif_paths){
+  # ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity, 
+  #             timestep=1:12, filepath_tif = tif, band=1:12)
+  entity <- entity + 1
+}
 ```
 
 #### c. Add missing attributes to datacube
@@ -388,9 +519,10 @@ change it again.
 
 ``` r
 ebv_attribute(newNc, attribute_name='standard_name', value='Eumops auripendulus', levelpath=dc.new[1,1])
+#> Error in ebv_attribute(newNc, attribute_name = "standard_name", value = "Eumops auripendulus", : Attribute does not exist within given levelpath in netCDF. Change your levelpath!
 #check the properties one more time - perfect!
 print(ebv_properties(newNc, dc.new[1,1])@entity$standard_name)
-#> Error in sp::CRS(srs.chr): NA
+#> Error in print(ebv_properties(newNc, dc.new[1, 1])@entity$standard_name): kein Slot des Namens "entity" für dieses Objekt der Klasse "EBV netCDF properties"
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can

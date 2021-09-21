@@ -26,22 +26,37 @@ This package can be used to easily access the data of the EBV netCDFs which can 
 The EBV netCDF standard is designed to hold Essential Biodiversity Variables. This concept is further described [here](https://geobon.org/ebvs/what-are-ebvs/).
 An important core element of the EBV netCDFs is their nested structure. All datacubes in the netCDF are assigned to one metric. But this metric can have several entities. On top of this hierarchy there can be several scenarios. The following block displays an abstract exhausted hierarchy.
 
+### 3D structure
+The datacube have the dimensions longitude, latitude and time.
+
 ```bash
-├── scenario1
-│   └── metric1
-│       ├── entity1
-│       ├── entity2
+├── scenari_1
+│   └── metric_1
+│       ├── entity_1
+│       ├── entity_2
 │       ├── ...
-│       └── entity999
-└── scenario2
-    └── metric2
-        ├── entity1
-        ├── entity2
+│       └── entity_999
+└── scenario_2
+    └── metric_2
+        ├── entity_1
+        ├── entity_2
         ├── ...
-        └── entity999
+        └── entity_999
 ```
 
-The following is a practical example of the netCDF structure. Basis is the [global habitat availability for mammals dataset](https://portal.geobon.org/ebv-detail?id=5).
+### 4D structure
+The datacube have the dimensions longitude, latitude, time and entity.
+
+```bash
+├── scenari_1
+│   └── metric_1
+│       └── ebv_cube
+└── scenario_2
+    └── metric_2
+        └── ebv_cube
+```
+
+The following is a practical example of the netCDF structure (3D). Basis is the [global habitat availability for mammals dataset](https://portal.geobon.org/ebv-detail?id=5).
 
 ```bash
 ├── SSP1-RCP2.6
@@ -64,7 +79,7 @@ The following is a practical example of the netCDF structure. Basis is the [glob
 
 ```
 
-Just keep in mind: All EBV netCDF always have a metric. But they may or may not have a scenario and/or entity. The resulting datacubes are going to be accesses.
+Just keep in mind: All EBV netCDF always have a metric. But they may or may not have a scenario. The resulting datacubes hold the data. These datacubes can be 3D or 4D. The latter is going to be the standard (3D is about to be deprecated).
 
 ## 2. Installation
 
@@ -130,7 +145,7 @@ This time you get the warning that the value_range does not exists. So don't tak
 
 ```{r}
 prop.dc <- ebv_properties(file, datacubes[1,1], verbose=T)
-prop.dc@entity
+prop.dc@ebv_cube
 ```
 
 
@@ -145,7 +160,7 @@ ebv_map(file, dc, timestep = 6)
 # What was the data about again? Check the properties!
 prop.dc@general$title
 # And the datacube?
-prop.dc@entity$standard_name
+prop.dc@ebv_cube$standard_name
 #What time is the sixth timestep representing?
 prop.dc@temporal$timesteps_natural[6]
 
@@ -175,7 +190,7 @@ measurements$mean
 
 #info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
-measurements.bb <- ebv_analyse(file, dc, bb)
+measurements.bb <- ebv_analyse(file, dc, subset = bb)
 #how many pixels are now included?
 measurements.bb$n
 measurements.bb$mean
@@ -184,7 +199,7 @@ measurements.bb$mean
 To access the data you can use the following: 
 ```{r}
 #load whole data as array for two timesteps
-data <- ebv_read(file, dc, c(1,2), delayed = F)
+data <- ebv_read(file, dc, timestep = c(1,2), type = 'a')
 dim(data)
 ```
 To subset the data using a shapefile you need to indicate a directory for temporarily created files.
@@ -193,7 +208,7 @@ To subset the data using a shapefile you need to indicate a directory for tempor
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
 options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
-data.shp <- ebv_read_shp(file, dc, shp, NULL, c(1,2,3))
+data.shp <- ebv_read_shp(file, dc, shp = shp, timestep = c(1,2,3))
 dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
@@ -209,17 +224,19 @@ The example is based on the [Global habitat availability for mammals ](https://p
 
 ```{r}
 #paths
-json <- system.file(file.path('extdata','5.json'), package="ebvnetcdf")
-newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','mammals.nc')
+json <- system.file(file.path('extdata','metadata.json'), package="ebvnetcdf")
+newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','test.nc')
+entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
-#lets say it has 5 entities, which is not true in reality!
-ebv_create(json, newNc, 5, overwrite=T,fillvalue = fv, prec='float')
+#create the netCDF using the 4D cube representation
+# ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T, 
+#            fillvalue = fv, prec='float', force_4D = TRUE)
 #check out the general propeties of our newly created file
 print(ebv_properties(newNc)@general)
 #check out the (still empty) datacubes
 dc.new <- ebv_datacubepaths(newNc)
-print(dc.new[c(1,5,6),])
+print(dc.new)
 ```
 Hint: You can always take a look at your netCDF in [Panoply](https://www.giss.nasa.gov/tools/panoply/) provided by NASA. That's very helpful to understand the structure.
 
@@ -228,9 +245,17 @@ In the next step you can add your data to the netCDF from GeoTiff files. You nee
 
 ```{r}
 #path to tif with data
-tif <- system.file(file.path('extdata','mammals_ts123.tif'), package="ebvnetcdf") 
+root <- system.file(file.path('extdata'), package="ebvnetcdf") 
+tifs <- c('sm_entity0.tif', 'sm_entity1.tif', 'sm_entity2.tif')
+tif_paths <- file.path(root, tifs)
 #adding the data
-ebv_add_data(newNc, tif, datacubepath=dc.new[1,1], timestep=c(1,2,3), band=c(1,2,3))
+entity <- 1
+for (tif in tif_paths){
+  # ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity, 
+  #             timestep=1:12, filepath_tif = tif, band=1:12)
+  entity <- entity + 1
+}
+
 
 ```
 
