@@ -86,7 +86,12 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
   hdf <- rhdf5::H5Fopen(filepath, flags="H5F_ACC_RDONLY")
 
   #ebv_subgroups
-  subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
+  if (! new){
+    subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
+  } else{
+    subgroups <- c()
+  }
+
 
   #build result ----
   entity_names <- c()
