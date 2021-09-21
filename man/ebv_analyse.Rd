@@ -8,8 +8,8 @@ ebv_analyse(
   filepath,
   datacubepath,
   entity = NULL,
-  subset = NULL,
   timestep = 1,
+  subset = NULL,
   at = TRUE,
   epsg = 4326,
   numerical = TRUE,
@@ -27,12 +27,12 @@ ebv_analyse(
 were 3D. Then no entity argument is needed.) Character string or single
 integer value indicating the entity of the 4D structure of the EBV netCDFs.}
 
+\item{timestep}{Integer. Choose one or several timesteps (vector).}
+
 \item{subset}{Optional if you want measurements on a smaller subset. Possible
 via the path to a shapefile (character) or the indication of a bounding box
 (vector of four numeric values) defining the subset. Else the whole area is
 analysed.}
-
-\item{timestep}{Integer. Choose one or several timesteps (vector).}
 
 \item{at}{Logical. Optional. Default: TRUE. Only relevant if the subset is
 indicated by a shapefile. See \code{\link[=ebv_read_shp]{ebv_read_shp()}}.}
@@ -58,10 +58,24 @@ Get basic measurements of the data, including min, max, mean,
 sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 }
 \examples{
+#set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
-data_global_year <- ebv_analyse(file, datacubes[1,1], timestep=c(1:12))
-#data_germany_1900 <- ebv_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
+#set path to shp file
+shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+
+#get measurements for full extent and all timesteps
+data_global <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
+                           entity = NULL, timestep = 1:12)
+
+#get measurements for germany only (using bounding box) and one timestep
+# data_bb_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
+#                             entity = NULL, timestep = 1:12, subset = c(5,15,47,55))
+
+#get measurements for germany only (using shp) and one timestep
+# data_shp_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
+#                              entity = NULL, timestep = 1:12, subset = shp_path)
 }
 \seealso{
 \code{\link[=ebv_read_bb]{ebv_read_bb()}} and \code{\link[=ebv_read_shp]{ebv_read_shp()}}

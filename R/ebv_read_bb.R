@@ -6,9 +6,10 @@
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param entity Character or Integer. Default is NULL. (As if the structure
-#'   were 3D. Then no entity argument is needed.) Character string or single
-#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
+#' @param entity Character or Integer. Default is NULL. If the structure is 3D,
+#'   the entity argument is set to NULL. Else, a character string or single
+#'   integer value must indicate the entity of the 4D structure of the EBV
+#'   netCDFs.
 #' @param bb Integer Vector. Definition of subset by bounding box: c(xmin,
 #'   xmax, ymin, ymax).
 #' @param outputpath Character. Default: NULL, returns the data as a raster
@@ -33,14 +34,32 @@
 #' @seealso [ebvnetcdf::ebv_read_shp()] for subsetting via shapefile.
 #'
 #' @examples
+#' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
+#'
+#' #set outputpath
 #' out <- file.path(system.file(package='ebvnetcdf'),"extdata","subset_bb.tif")
+#' #define two different bounding boxes based on different EPSG codes
 #' bb_wgs84 <- c(5,15,47,55)
 #' bb_utm32 <- c(271985, 941837, 5232640, 6101151)
-#' #cSAR.germany <- ebv_read_bb(file, datacubes[1], bb_wgs84, timestep = c(1,4,12))
-#' #path <- ebv_read_bb(file, datacubes[1], bb_wgs84, out, timestep = c(2,3))
-#' #path  <- ebv_read_bb(file, datacubes[1], bb_utm32, out, timestep=1, epsg=32632, overwrite=T)
+#'
+#' print(gdalUtils::gdalsrsinfo(paste0("EPSG:", 32632)))
+#'
+#' #read bb (based on EPSG 4326) - return Raster
+#' # cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
+#' #                             entity = NULL, timestep = c(1,4,12), bb = bb_wgs84)
+#'
+#' #read bb (based on EPSG 4326) - write to GeoTiff
+#' # path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
+#' #                     entity = NULL, timestep = 1, bb = bb_wgs84,
+#' #                     outputpath = out, overwrite = TRUE)
+#'
+#' #read bb (based on EPSG 32632) - write to GeoTiff
+#' # path  <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
+#' #                      entity = NULL, timestep = 1:3, bb = bb_utm32,
+#' #                      epsg = 32632, outputpath = out, overwrite = TRUE)
 ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
                         outputpath=NULL, epsg = 4326, overwrite=FALSE,
                         ignore_RAM = FALSE, verbose = FALSE){

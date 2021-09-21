@@ -7,10 +7,10 @@
 ebv_read_shp(
   filepath,
   datacubepath,
-  shp,
   entity = NULL,
-  outputpath = NULL,
   timestep = 1,
+  shp,
+  outputpath = NULL,
   at = TRUE,
   overwrite = FALSE,
   ignore_RAM = FALSE,
@@ -23,17 +23,18 @@ ebv_read_shp(
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
+\item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
+the entity argument is set to NULL. Else, a character string or single
+integer value must indicate the entity of the 4D structure of the EBV
+netCDFs.}
+
+\item{timestep}{Integer. Choose one or several timesteps (vector).}
+
 \item{shp}{Character. Path to the shapefile defining the subset. Ending needs
 to be *.shp.}
 
-\item{entity}{Character or Integer. Default is NULL. (As if the structure
-were 3D. Then no entity argument is needed.) Character string or single
-integer value indicating the entity of the 4D structure of the EBV netCDFs.}
-
 \item{outputpath}{Character. Default: NULL, returns the data as a raster
 object in memory. Optional: set path to write subset as GeoTiff on disk.}
-
-\item{timestep}{Integer. Choose one or several timesteps (vector).}
 
 \item{at}{Logical. Default: TRUE, all pixels touched by the polygon(s) will
 be updated. Set to FALSE to only include pixels that are on the line render
@@ -61,10 +62,17 @@ options('ebv_temp'='/path/to/temp/directory').
 \examples{
 #define temp directory
 options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+#set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
-shp <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
-#cSAR.germany <- ebv_read_bb(file, datacubes[1], shp)
+#set path to shp file
+shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+
+#read subset - return Raster
+# cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
+#                              entity = NULL, timestep = 1, shp = shp_path,
+#                              outputpath = NULL)
 }
 \seealso{
 \code{\link[=ebv_read_bb]{ebv_read_bb()}} for subsetting via bounding box.

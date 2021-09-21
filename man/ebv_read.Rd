@@ -7,8 +7,8 @@
 ebv_read(
   filepath,
   datacubepath,
-  timestep,
   entity = NULL,
+  timestep = 1,
   type = "a",
   sparse = FALSE,
   ignore_RAM = FALSE,
@@ -21,11 +21,12 @@ ebv_read(
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{timestep}{Integer. Choose one or several timesteps (vector).}
+\item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
+the entity argument is set to NULL. Else, a character string or single
+integer value must indicate the entity of the 4D structure of the EBV
+netCDFs.}
 
-\item{entity}{Character or Integer. Default is NULL. (As if the structure
-were 3D. Then no entity argument is needed.) Character string or single
-integer value indicating the entity of the 4D structure of the EBV netCDFs.}
+\item{timestep}{Integer. Choose one or several timesteps (vector).}
 
 \item{type}{Character. Choose between 'a', 'r' and 'da'. The first returns an
 array or matrix object. The 'r' indicates raster as return class. The
@@ -57,9 +58,19 @@ For working with the DelayedMatrix take a look at
 \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-utils}.
 }
 \examples{
+#set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
-#cSAR.delayedarray <- ebv_read(file, datacubes[1,1], c(1,6), delayed=T, sparse=T)
-#cSAR.raster <- ebv_read(file, datacubes[1,1], 1, delayed = F, raster = T)
-#cSAR.array <- ebv_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
+
+#read data as DelayedArray
+cSAR.delayedarray <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+                              entity = NULL, timestep = c(1,6), type='da',
+                              sparse=TRUE)
+#read data as Raster
+cSAR.raster <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+                              entity = NULL, timestep = 1:3, type='r')
+#read data as Array
+cSAR.array <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+                              entity = NULL, timestep = 1, type='r')
 }

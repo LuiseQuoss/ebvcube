@@ -8,9 +8,10 @@
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param entity Character or Integer. Default is NULL. (As if the structure
-#'   were 3D. Then no entity argument is needed.) Character string or single
-#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
+#' @param entity Character or Integer. Default is NULL. If the structure is 3D,
+#'   the entity argument is set to NULL. Else, a character string or single
+#'   integer value must indicate the entity of the 4D structure of the EBV
+#'   netCDFs.
 #' @param shp Character. Path to the shapefile defining the subset. Ending needs
 #'   to be *.shp.
 #' @param outputpath Character. Default: NULL, returns the data as a raster
@@ -34,13 +35,20 @@
 #' @examples
 #' #define temp directory
 #' options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+#' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
-#' shp <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
-#' #cSAR.germany <- ebv_read_bb(file, datacubes[1], shp)
-ebv_read_shp <- function(filepath, datacubepath, shp, entity=NULL, outputpath=NULL,
-                              timestep = 1, at = TRUE, overwrite=FALSE,
-                              ignore_RAM=FALSE, verbose = FALSE){
+#' #set path to shp file
+#' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+#'
+#' #read subset - return Raster
+#' # cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
+#' #                              entity = NULL, timestep = 1, shp = shp_path,
+#' #                              outputpath = NULL)
+ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
+                         shp, outputpath=NULL, at = TRUE, overwrite=FALSE,
+                         ignore_RAM=FALSE, verbose = FALSE){
   ####start initial checks ----
   # ensure file and all datahandles are closed on exit
   withr::defer(

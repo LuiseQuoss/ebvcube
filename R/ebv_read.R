@@ -8,9 +8,10 @@
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param entity Character or Integer. Default is NULL. (As if the structure
-#'   were 3D. Then no entity argument is needed.) Character string or single
-#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
+#' @param entity Character or Integer. Default is NULL. If the structure is 3D,
+#'   the entity argument is set to NULL. Else, a character string or single
+#'   integer value must indicate the entity of the 4D structure of the EBV
+#'   netCDFs.
 #' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param type Character. Choose between 'a', 'r' and 'da'. The first returns an
 #'   array or matrix object. The 'r' indicates raster as return class. The
@@ -27,18 +28,27 @@
 #'   [DelayedArray::DelayedArray()] and the
 #'   \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-utils}.
 #'
-#'
 #' @return Array, Raster or DelayedMatrix object containing the data of the
 #'   corresponding datacube and timestep(s).
 #' @export
 #'
 #' @examples
+#' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
-#' #cSAR.delayedarray <- ebv_read(file, datacubes[1,1], c(1,6), delayed=T, sparse=T)
-#' #cSAR.raster <- ebv_read(file, datacubes[1,1], 1, delayed = F, raster = T)
-#' #cSAR.array <- ebv_read(file, datacubes[1,1], c(1,1,3), delayed = F, raster = F)
-ebv_read <- function(filepath, datacubepath, timestep, entity=NULL, type='a',
+#'
+#' #read data as DelayedArray
+#' cSAR.delayedarray <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+#'                               entity = NULL, timestep = c(1,6), type='da',
+#'                               sparse=TRUE)
+#' #read data as Raster
+#' cSAR.raster <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+#'                               entity = NULL, timestep = 1:3, type='r')
+#' #read data as Array
+#' cSAR.array <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+#'                               entity = NULL, timestep = 1, type='r')
+ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
                      sparse=FALSE, ignore_RAM = FALSE, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
@@ -53,12 +63,6 @@ ebv_read <- function(filepath, datacubepath, timestep, entity=NULL, type='a',
   }
   if(missing(datacubepath)){
     stop('Datacubepath argument is missing.')
-  }
-  if(missing(timestep)){
-    stop('Timestep argument is missing.')
-  }
-  if(missing(entity)){
-    stop('Entity argument is missing.')
   }
 
   #turn off local warnings if verbose=TRUE

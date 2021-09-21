@@ -32,12 +32,27 @@
 #'
 #' @importFrom stats quantile
 #' @examples
+#' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
-#' data_global_year <- ebv_analyse(file, datacubes[1,1], timestep=c(1:12))
-#' #data_germany_1900 <- ebv_analyse(file, datacubes[1,1], c(5,15,47,55), timestep=1)
-ebv_analyse <- function(filepath, datacubepath, entity=NULL, subset=NULL,
-                        timestep=1, at=TRUE, epsg = 4326, numerical=TRUE,
+#' #set path to shp file
+#' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+#'
+#' #get measurements for full extent and all timesteps
+#' data_global <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
+#'                            entity = NULL, timestep = 1:12)
+#'
+#' #get measurements for germany only (using bounding box) and one timestep
+#' # data_bb_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
+#' #                             entity = NULL, timestep = 1:12, subset = c(5,15,47,55))
+#'
+#' #get measurements for germany only (using shp) and one timestep
+#' # data_shp_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
+#' #                              entity = NULL, timestep = 1:12, subset = shp_path)
+
+ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
+                        subset=NULL, at=TRUE, epsg = 4326, numerical=TRUE,
                         na_rm=TRUE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
