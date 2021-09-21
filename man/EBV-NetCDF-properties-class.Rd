@@ -14,22 +14,29 @@ EBV netCDF properties class (S4)
 
 \describe{
 \item{\code{general}}{Named list. Elements: title, description, ebv_class, ebv_name,
-ebv_subgroups, creator}
+ebv_domain, references, source, project, creator_name, creator_institution,
+creator_email, contributor_name, publisher_name, publisher_institution,
+publisher_email, comment, keywords, id, history, licence, conventions,
+naming_authority, date_created, date_issued, entity_names, entity_type,
+entity_scope, entity_classification_name, entity_classification_url}
 
-\item{\code{spatial}}{Named list. Elements: wkt2, epsg, resolution, extent, dimensions}
+\item{\code{spatial}}{Named list. Elements: wkt2, epsg, extent, resolution,
+crs_units, dimensions, scope, description}
 
-\item{\code{temporal}}{Named list. Elements: units, t_delta, timesteps,
+\item{\code{temporal}}{Named list. Elements: resolution, units, timesteps,
 timesteps_natural}
 
-\item{\code{metric}}{Named list. Elements: standard_name, description}
+\item{\code{metric}}{Named list. Elements: name, description}
 
-\item{\code{scenario}}{Named list. Elements: standard_name, description}
+\item{\code{scenario}}{Named list. Elements: name, description}
 
-\item{\code{ebv_cube}}{Named list. Elements: standard_name, description, unit, type,
-fillvalue}
+\item{\code{ebv_cube}}{Named list. Elements: units, coverage_content_type, fillvalue,
+type}
 }}
 
 \note{
 If the properties class holds e.g. no scenario information this is
-indicated with an element called status in the list.
+indicated with an element called status in the list. \cr If you read an EBV
+netCDF based on an older standard, the properties will differ from the
+definition above.
 }
