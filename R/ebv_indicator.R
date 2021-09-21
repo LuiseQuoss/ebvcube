@@ -48,9 +48,6 @@ ebv_indicator <- function(filepath, datacubepath, entity=NULL,
   if(missing(datacubepath)){
     stop('Datacubepath argument is missing.')
   }
-  if(missing(entity)){
-    stop('Entity argument is missing.')
-  }
 
   #turn off local warnings if verbose=TRUE
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
