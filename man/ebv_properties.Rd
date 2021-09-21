@@ -22,8 +22,13 @@ depending on input.
 Structured access to all attributes of the netCDF file.
 }
 \examples{
+#set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
+
+#get properties only for the file
 prop_file <- ebv_properties(file)
+#get properties for the file and a specific datacube
 prop_dc <- ebv_properties(file, datacubes[1,1])
 }

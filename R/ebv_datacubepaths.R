@@ -11,7 +11,10 @@
 #' @export
 #'
 #' @examples
+#' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#'
+#' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 ebv_datacubepaths <- function(filepath, verbose = FALSE){
   ####initial tests start ----

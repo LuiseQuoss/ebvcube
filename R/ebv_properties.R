@@ -1,20 +1,27 @@
 #' EBV netCDF properties class (S4)
 #'
 #' @slot general Named list. Elements: title, description, ebv_class, ebv_name,
-#'   ebv_subgroups, creator
-#' @slot spatial Named list. Elements: wkt2, epsg, resolution, extent, dimensions
-#' @slot temporal Named list. Elements: units, t_delta, timesteps,
+#'   ebv_domain, references, source, project, creator_name, creator_institution,
+#'   creator_email, contributor_name, publisher_name, publisher_institution,
+#'   publisher_email, comment, keywords, id, history, licence, conventions,
+#'   naming_authority, date_created, date_issued, entity_names, entity_type,
+#'   entity_scope, entity_classification_name, entity_classification_url
+#' @slot spatial Named list. Elements: wkt2, epsg, extent, resolution,
+#'   crs_units, dimensions, scope, description
+#' @slot temporal Named list. Elements: resolution, units, timesteps,
 #'   timesteps_natural
-#' @slot metric Named list. Elements: standard_name, description
-#' @slot scenario Named list. Elements: standard_name, description
-#' @slot ebv_cube Named list. Elements: standard_name, description, unit, type,
-#'   fillvalue
+#' @slot metric Named list. Elements: name, description
+#' @slot scenario Named list. Elements: name, description
+#' @slot ebv_cube Named list. Elements: units, coverage_content_type, fillvalue,
+#'   type
 #'
 #' @return S4 class containing the EBV netCDF properties
 #' @export
 #'
 #' @note If the properties class holds e.g. no scenario information this is
-#'   indicated with an element called status in the list.
+#'   indicated with an element called status in the list. \cr If you read an EBV
+#'   netCDF based on an older standard, the properties will differ from the
+#'   definition above.
 methods::setClass("EBV netCDF properties", slots=list(general="list",
                                                       spatial="list",
                                                       temporal="list",
@@ -36,9 +43,14 @@ methods::setClass("EBV netCDF properties", slots=list(general="list",
 #' @export
 #'
 #' @examples
+#' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
+#'
+#' #get properties only for the file
 #' prop_file <- ebv_properties(file)
+#' #get properties for the file and a specific datacube
 #' prop_dc <- ebv_properties(file, datacubes[1,1])
 ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   ####initial tests start ----
@@ -268,7 +280,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         rhdf5::H5Dclose(dh)
 
         #create object of S4 class
-        entity <- list(description=description, standard_name=standard_name, unit=unit, type=type, fillvalue=fillvalue)
+        entity <- list(description=description, standard_name=standard_name, units=unit, type=type, fillvalue=fillvalue)
 
         ####get metric info ----
         #one level higher
@@ -380,7 +392,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         rhdf5::H5Dclose(dh)
 
         #create object of S4 class
-        entity <- list(description=description, standard_name=standard_name, unit=unit, type=type, fillvalue=fillvalue)
+        entity <- list(description=description, standard_name=standard_name, units=unit, type=type, fillvalue=fillvalue)
 
         ####get metric info ----
         #one level higher
@@ -601,7 +613,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     type <- as.vector(info)[i[1]]
     type <- stringr::str_remove(type, 'type')
     type <- stringr::str_replace_all(type, stringr::fixed(" "), "")
-    ebv_cube <- list('untis'=units_d, 'coverage_content_type'=coverage_content_type,
+    ebv_cube <- list('units'=units_d, 'coverage_content_type'=coverage_content_type,
                      'fillvalue'=fillvalue, 'type'=type)
 
   }else{

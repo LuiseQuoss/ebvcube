@@ -21,6 +21,9 @@ Get the paths to the datacubes of the EBV netCDF to access the
 data.
 }
 \examples{
+#set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+
+#get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
 }
