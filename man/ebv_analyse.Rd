@@ -23,9 +23,10 @@ ebv_analyse(
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{entity}{Character or Integer. Default is NULL. (As if the structure
-were 3D. Then no entity argument is needed.) Character string or single
-integer value indicating the entity of the 4D structure of the EBV netCDFs.}
+\item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
+the entity argument is set to NULL. Else, a character string or single
+integer value must indicate the entity of the 4D structure of the EBV
+netCDFs.}
 
 \item{timestep}{Integer. Choose one or several timesteps (vector).}
 

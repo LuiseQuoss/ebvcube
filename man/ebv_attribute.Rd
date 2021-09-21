@@ -45,16 +45,26 @@ You can change the ebv_class and the ebv_name. In this case you need to
 change the ebv_class first. Don't forget to change the ebv_name accordingly!
 }
 \examples{
-file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+#set path to EBV netCDF
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+
+#change the standard_name of the metric
 attribute1 <- 'standard_name'
-value1 <- 'mammals'
-level1 <- 'metric01'
-#ebv_attribute(file, attribute1, value1, level1)
-attribute2 <- '_FillValue'
-value2 <- -999
-level2 <- 'metric01/entity01'
-#ebv_attribute(file, attribute2, value2, level2)
-attribute3 <- 'creator'
+value1 <- 'new fake metric name'
+level1 <- 'scenario_1/metric_1'
+# ebv_attribute(filepath = file, attribute_name = attribute1,
+#               value = value1, level = level1)
+
+#change the units of the ebv_cube
+attribute2 <- 'units'
+value2 <- 'mean'
+level2 <- 'scenario_1/metric_1/ebv_cube' #equal to the datacubepath
+# ebv_attribute(filepath = file, attribute_name = attribute2,
+#               value = value2, level = level2)
+
+#change the name of the creator at the global level
+attribute3 <- 'creator_name'
 value3 <- 'Jane Doe'
-#ebv_attribute(file, attribute3, value3)
+# ebv_attribute(filepath = file, attribute_name = attribute3,
+#               value = value3)
 }

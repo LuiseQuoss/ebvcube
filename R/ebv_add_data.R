@@ -7,9 +7,10 @@
 #'   Ending needs to be *.tif.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param entity Character or Integer. Default is NULL. (As if the structure
-#'   were 3D. Then no entity argument is needed.) Character string or single
-#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
+#' @param entity Character or Integer. Default is NULL. If the structure is 3D,
+#'   the entity argument is set to NULL. Else, a character string or single
+#'   integer value must indicate the entity of the 4D structure of the EBV
+#'   netCDFs.
 #' @param timestep Integer. Default: 1. Define to which timestep or timesteps
 #'   the data should be added. If several timesteps are given they have to be in
 #'   a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
@@ -32,15 +33,19 @@
 #' @importFrom utils capture.output
 #'
 #' @examples
-#' file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+#' #set path to EBV netCDF
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' #get all datacubepaths of EBV netCDF
+#' datacubes <- ebv_datacubepaths(file)
+#' #set path to GeoTiff with data
 #' tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvnetcdf")
-#' # datacubes <- ebv_datacubepaths(file)
-#' ts <- c(2:4)
-#' band <- c(1:3)
-#' #ebv_add_data(file, tif, datacubepaths[1,1], ts, band)
-ebv_add_data <- function(filepath_nc, filepath_tif, datacubepath,entity=NULL,
-                              timestep=1, band=1, ignore_RAM=FALSE,
-                              verbose=FALSE){
+#'
+#' # add data to the timestep 2, 3 and 4 using the first three bands of the GeoTiff
+#' #ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
+#' #             entity = NULL, timestep = 2:4, filepath_tif = tif, band = 1:3)
+ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
+                         filepath_tif, band=1, ignore_RAM=FALSE,
+                         verbose=FALSE){
   ### start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(

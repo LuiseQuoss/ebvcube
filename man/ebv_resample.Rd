@@ -8,9 +8,9 @@ ebv_resample(
   filepath_src,
   datacubepath_src,
   entity_src = NULL,
+  timestep_src = 1,
   resolution,
   outputpath,
-  timestep_src = 1,
   method = "average",
   return_raster = FALSE,
   overwrite = FALSE,
@@ -25,9 +25,12 @@ should be changed.}
 \item{datacubepath_src}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}) whose resolution should be changed.}
 
-\item{entity_src}{Character or Integer. Default is NULL. (As if the structure
-were 3D. Then no entity_src argument is needed.) Character string or single
-integer value indicating the entity_src of the 4D structure of the EBV netCDFs.}
+\item{entity_src}{Character or Integer. Default is NULL. If the structure is 3D,
+the entity argument is set to NULL. Else, a character string or single
+integer value must indicate the entity of the 4D structure of the EBV
+netCDFs.}
+
+\item{timestep_src}{Integer. Choose one or several timesteps (vector).}
 
 \item{resolution}{Either the path to an EBV NetCDF file that determines the
 resolution (character) or the resolution defined directly (numeric). The
@@ -35,8 +38,6 @@ vector defining the resolution directly must contain three elements: the
 x-resolution, the y-resolution and the corresponding epsg.}
 
 \item{outputpath}{Character. Set path to write data as GeoTiff on disk.}
-
-\item{timestep_src}{Integer. Choose one or several timesteps (vector).}
 
 \item{method}{Character. Default: Average. Define resampling method. Choose
 from:
@@ -69,11 +70,24 @@ options('ebv_temp'='/path/to/temp/directory').
 \examples{
 #define temp directory
 options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+#set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
+
+#define different resolutions
 res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvnetcdf")
 res2 <- c(1,1,4326)
+#define output path
 out <- file.path(system.file(package='ebvnetcdf'),"extdata","changeRes.tif")
-#ebv_resample(file, datacubes[1,1], res1,  out, c(1,6))
-#d <- ebv_resample(file, datacubes[1,1], res2, NULL, 3, method='max', return_raster=TRUE)
+
+#resample using a netCDF file - return GeoTiff
+# ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
+#              entity_src=NULL, timestep_src = 1, resolution = res1,
+#              outputpath = out)
+
+#resample defining the resolution and EPSG code by hand - return Raster
+# data_raster <- ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
+#                             entity_src=NULL, timestep_src = 1, resolution = res1,
+#                             outputpath = out, method='max', return_raster=TRUE)
 }

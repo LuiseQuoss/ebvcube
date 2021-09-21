@@ -66,6 +66,7 @@ options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
+
 #set path to shp file
 shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
 

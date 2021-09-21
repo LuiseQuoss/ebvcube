@@ -8,9 +8,10 @@
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param entity Character or Integer. Default is NULL. (As if the structure
-#'   were 3D. Then no entity argument is needed.) Character string or single
-#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
+#' @param entity Character or Integer. Default is NULL. If the structure is 3D,
+#'   the entity argument is set to NULL. Else, a character string or single
+#'   integer value must indicate the entity of the 4D structure of the EBV
+#'   netCDFs.
 #' @param timestep Integer. Choose one timestep.
 #' @param countries Logical. Default: TRUE. Simple country outlines will be
 #'   plotted on top of the raster data. Disable by setting this option to FALSE.
@@ -32,11 +33,16 @@
 #' @importFrom colorspace diverging_hcl sequential_hcl
 #'
 #' @examples
+#' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
-#' ebv_map(file, datacubes[1,1], timestep=9, classes=7)
-ebv_map <- function(filepath, datacubepath, timestep=1, entity=NULL, countries =TRUE,
-                         col_rev=TRUE, classes = 5, ignore_RAM=FALSE, verbose=FALSE){
+#'
+#' #plot a map for the 9th timestep, divide into 7 classes
+#' ebv_map(filepath = file, datacubepath = datacubes[1,1], entity = NULL,
+#'         timestep = 9, classes = 7)
+ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =TRUE,
+                    col_rev=TRUE, classes = 5, ignore_RAM=FALSE, verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -167,8 +173,8 @@ ebv_map <- function(filepath, datacubepath, timestep=1, entity=NULL, countries =
     #try reading whole data----
     {
       data.raster <- ebv_read(filepath, datacubepath, entity=entity, timestep = timestep,
-                                   type='r', ignore_RAM=ignore_RAM,
-                                   verbose=verbose) #if this throws an error the data is going to plotted in lower res
+                              type='r', ignore_RAM=ignore_RAM,
+                              verbose=verbose) #if this throws an error the data is going to plotted in lower res
       hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
       data.all <- tryCatch(
         {

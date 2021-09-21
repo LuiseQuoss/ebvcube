@@ -71,7 +71,14 @@ To check out the results take a look at your netCDF file with
 NASA.
 }
 \examples{
-json <- system.file(file.path("extdata","1.json"), package="ebvnetcdf")
+#set path to JSON file
+json <- system.file(file.path("extdata","metadata.json"), package="ebvnetcdf")
+#set output path of the new EBV netCDF
 out <- file.path(system.file(package='ebvnetcdf'),"extdata","sCAR_new.nc")
-#ebv_create(json, out, 3, fillvalue=-3.4E38)
+#set path to the csv holding the entity names
+entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
+
+#create new EBV netCDF
+# ebv_create(jsonpath = json, outputpath = out, entities = entities,
+#            fillvalue=-3.4E38)
 }

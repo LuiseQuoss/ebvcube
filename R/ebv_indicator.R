@@ -7,9 +7,10 @@
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvnetcdf::ebv_datacubepaths()]).
-#' @param entity Character or Integer. Default is NULL. (As if the structure
-#'   were 3D. Then no entity argument is needed.) Character string or single
-#'   integer value indicating the entity of the 4D structure of the EBV netCDFs.
+#' @param entity Character or Integer. Default is NULL. If the structure is 3D,
+#'   the entity argument is set to NULL. Else, a character string or single
+#'   integer value must indicate the entity of the 4D structure of the EBV
+#'   netCDFs.
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -23,9 +24,13 @@
 #' @importFrom grDevices colors
 #'
 #' @examples
+#' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
-#' ebv_indicator(file, datacubes[1,1])
+#'
+#' #plot the change of the mean over time of the first datacube
+#' ebv_indicator(filepath = file, datacubepath = datacubes[1,1], entity = NULL)
 ebv_indicator <- function(filepath, datacubepath, entity=NULL,
                           color="dodgerblue4", verbose=FALSE){
   # start initial tests ----

@@ -7,8 +7,8 @@
 ebv_map(
   filepath,
   datacubepath,
-  timestep = 1,
   entity = NULL,
+  timestep = 1,
   countries = TRUE,
   col_rev = TRUE,
   classes = 5,
@@ -22,11 +22,12 @@ ebv_map(
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{timestep}{Integer. Choose one timestep.}
+\item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
+the entity argument is set to NULL. Else, a character string or single
+integer value must indicate the entity of the 4D structure of the EBV
+netCDFs.}
 
-\item{entity}{Character or Integer. Default is NULL. (As if the structure
-were 3D. Then no entity argument is needed.) Character string or single
-integer value indicating the entity of the 4D structure of the EBV netCDFs.}
+\item{timestep}{Integer. Choose one timestep.}
 
 \item{countries}{Logical. Default: TRUE. Simple country outlines will be
 plotted on top of the raster data. Disable by setting this option to FALSE.}
@@ -57,7 +58,12 @@ Uses the country outlines data from the
 \href{https://cran.r-project.org/package=maptools}{maptools package}.
 }
 \examples{
+#set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
-ebv_map(file, datacubes[1,1], timestep=9, classes=7)
+
+#plot a map for the 9th timestep, divide into 7 classes
+ebv_map(filepath = file, datacubepath = datacubes[1,1], entity = NULL,
+        timestep = 9, classes = 7)
 }

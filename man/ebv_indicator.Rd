@@ -18,9 +18,10 @@ ebv_indicator(
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{entity}{Character or Integer. Default is NULL. (As if the structure
-were 3D. Then no entity argument is needed.) Character string or single
-integer value indicating the entity of the 4D structure of the EBV netCDFs.}
+\item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
+the entity argument is set to NULL. Else, a character string or single
+integer value must indicate the entity of the 4D structure of the EBV
+netCDFs.}
 
 \item{color}{Character. Default: dodgerblue4. Change to any color known by R
 \code{\link[grDevices:colors]{grDevices::colors()}}}
@@ -38,7 +39,11 @@ time (x-axis). If the datacube has only one timestep a single mean value is
 returned.
 }
 \examples{
+#set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
-ebv_indicator(file, datacubes[1,1])
+
+#plot the change of the mean over time of the first datacube
+ebv_indicator(filepath = file, datacubepath = datacubes[1,1], entity = NULL)
 }

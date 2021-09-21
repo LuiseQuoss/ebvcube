@@ -6,10 +6,10 @@
 \usage{
 ebv_add_data(
   filepath_nc,
-  filepath_tif,
   datacubepath,
   entity = NULL,
   timestep = 1,
+  filepath_tif,
   band = 1,
   ignore_RAM = FALSE,
   verbose = FALSE
@@ -18,19 +18,20 @@ ebv_add_data(
 \arguments{
 \item{filepath_nc}{Character. Path to the self-created netCDF file.}
 
-\item{filepath_tif}{Character. Path to the GeoTiff file containing the data.
-Ending needs to be *.tif.}
-
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{entity}{Character or Integer. Default is NULL. (As if the structure
-were 3D. Then no entity argument is needed.) Character string or single
-integer value indicating the entity of the 4D structure of the EBV netCDFs.}
+\item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
+the entity argument is set to NULL. Else, a character string or single
+integer value must indicate the entity of the 4D structure of the EBV
+netCDFs.}
 
 \item{timestep}{Integer. Default: 1. Define to which timestep or timesteps
 the data should be added. If several timesteps are given they have to be in
 a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
+
+\item{filepath_tif}{Character. Path to the GeoTiff file containing the data.
+Ending needs to be *.tif.}
 
 \item{band}{Integer. Default: 1. Define which band(s) to read from GeoTiff.
 Can be several. Don't have to be in order as the timesteps definition
@@ -55,10 +56,14 @@ block-processing or other method implemented so far. Move to a machine with
 more capacities for the moment if needed.
 }
 \examples{
-file <- system.file(file.path("extdata","cSAR_new.nc"), package="ebvnetcdf")
+#set path to EBV netCDF
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#get all datacubepaths of EBV netCDF
+datacubes <- ebv_datacubepaths(file)
+#set path to GeoTiff with data
 tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvnetcdf")
-# datacubes <- ebv_datacubepaths(file)
-ts <- c(2:4)
-band <- c(1:3)
-#ebv_add_data(file, tif, datacubepaths[1,1], ts, band)
+
+# add data to the timestep 2, 3 and 4 using the first three bands of the GeoTiff
+#ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
+#             entity = NULL, timestep = 2:4, filepath_tif = tif, band = 1:3)
 }
