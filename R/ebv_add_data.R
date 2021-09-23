@@ -107,7 +107,7 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     stop('GeoTiff Filepath must be of type character.')
   }
   if (checkmate::checkFileExists(filepath_tif) != TRUE){
-    stop(paste0('GeoTiff does not exist.\n', filepath_nc))
+    stop(paste0('GeoTiff does not exist.\n', filepath_tif))
   }
   if (!endsWith(filepath_tif, '.tif')){
     stop(paste0('GeoTiff file ending is wrong. File cannot be processed.'))
