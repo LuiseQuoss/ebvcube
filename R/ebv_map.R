@@ -141,10 +141,9 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   fillvalue <- prop@ebv_cube$fillvalue[1]
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
   title <- prop@general$title
-  label <- prop@ebv_cube$standard_name
-  subtitle <- paste0(label, ' (timestep: ', timestep, ')')
   epsg <- prop@spatial$epsg
   dims <- as.numeric(prop@spatial$dimensions)
+  timestep.nat <- prop@temporal$timesteps_natural[timestep]
 
   #check file structure
   is_4D <- ebv_i_4D(filepath)
@@ -159,14 +158,20 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
     #get entity index
     if(checkmate::checkIntegerish(entity, len=1) == TRUE){
       entity_index <- entity
+      label <- prop@general$entity_names[entity_index]
     } else if (checkmate::checkCharacter(entity)==TRUE){
       entity_index <- which(entity_names==entity)
+      label <- prop@general$entity_names[entity_index]
     } else{
       entity <- 1 #set entity to 1 (for ebv_i_check_ram)
+      label <- prop@general$entity_names[entity]
     }
   } else{
     entity <- 1
+    label <- prop@ebv_cube$standard_name
   }
+
+  subtitle <- paste0(label, ' (', timestep.nat,')')
 
   #get raster data - ram check included
   results <- tryCatch(
