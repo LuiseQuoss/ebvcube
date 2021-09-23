@@ -20,14 +20,14 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV netCDFs which can be downloaded from the
-[Geobon Portal](https://portal.geobon.org/). It also provides some basic visualization. Advanced users can build their own netCDFs with the EBV standard.
+[GEO BON Portal](https://portal.geobon.org/). It also provides some basic visualization. Advanced users can build their own netCDFs with the EBV standard.
 
 ## 1. EBVs - Essential Biodiversity Variables
 The EBV netCDF standard is designed to hold Essential Biodiversity Variables. This concept is further described [here](https://geobon.org/ebvs/what-are-ebvs/).
 An important core element of the EBV netCDFs is their nested structure. All datacubes in the netCDF are assigned to one metric. But this metric can have several entities. On top of this hierarchy there can be several scenarios. The following block displays an abstract exhausted hierarchy.
 
 ### 3D structure
-The datacube have the dimensions longitude, latitude and time.
+The datacubes have the dimensions longitude, latitude and time.
 
 ```bash
 ├── scenari_1
@@ -45,7 +45,7 @@ The datacube have the dimensions longitude, latitude and time.
 ```
 
 ### 4D structure
-The datacube have the dimensions longitude, latitude, time and entity.
+The datacubes have the dimensions longitude, latitude, time and entity.
 
 ```bash
 ├── scenari_1
@@ -86,14 +86,7 @@ Just keep in mind: All EBV netCDF always have a metric. But they may or may not 
 You can install the ebvnetcdf packages with: 
 
 ``` r
-#currently:
-# 1. pull git repo
-# 2. open ebvnetcdf.RProj
-# 3. install(devtools)
-# 4. install(dependencies=T)
-
-#future: when repo is public (Does not work right now.)
-devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
+devtools::install_github('https://github.com/LuiseQuoss/ebvnetcdf')
 
 ```
 This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL installation on your machine. 
@@ -102,6 +95,7 @@ If you have problems you can set the GDAL related paths by hand using the follow
 ```{r echo=TRUE}
 #add GDAL path to the existing paths
 #Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+
 #check and change path for proj_lib, gdal_data and gdal_driver_path
 #Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
 #Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
@@ -232,8 +226,8 @@ entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF using the 4D cube representation
-ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
-           fillvalue = fv, prec='float', force_4D = TRUE)
+# ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
+#            fillvalue = fv, prec='float', force_4D = TRUE)
 
 #check out some general propeties of our newly created file
 print(ebv_properties(newNc)@general[1:5])
@@ -254,8 +248,8 @@ tif_paths <- file.path(root, tifs)
 #adding the data
 entity <- 1
 for (tif in tif_paths){
-  ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
-              timestep=1:12, filepath_tif = tif, band=1:12)
+  # ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
+  #             timestep=1:12, filepath_tif = tif, band=1:12)
   entity <- entity + 1
 }
 

@@ -7,7 +7,7 @@
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV netCDFs
-which can be downloaded from the [Geobon
+which can be downloaded from the [GEO BON
 Portal](https://portal.geobon.org/). It also provides some basic
 visualization. Advanced users can build their own netCDFs with the EBV
 standard.
@@ -24,7 +24,7 @@ following block displays an abstract exhausted hierarchy.
 
 ### 3D structure
 
-The datacube have the dimensions longitude, latitude and time.
+The datacubes have the dimensions longitude, latitude and time.
 
 ``` bash
 ├── scenari_1
@@ -43,7 +43,7 @@ The datacube have the dimensions longitude, latitude and time.
 
 ### 4D structure
 
-The datacube have the dimensions longitude, latitude, time and entity.
+The datacubes have the dimensions longitude, latitude, time and entity.
 
 ``` bash
 ├── scenari_1
@@ -88,14 +88,7 @@ about to be deprecated).
 You can install the ebvnetcdf packages with:
 
 ``` r
-#currently:
-# 1. pull git repo
-# 2. open ebvnetcdf.RProj
-# 3. install(devtools)
-# 4. install(dependencies=T)
-
-#future: when repo is public (Does not work right now.)
-devtools::install_gitlab("lq39quba/ebvnetcdf", host='git.idiv.de')
+devtools::install_github('https://github.com/LuiseQuoss/ebvnetcdf')
 ```
 
 This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL
@@ -120,13 +113,13 @@ installation.
 
 #you can always check your GDAL path settings using
 Sys.getenv("PATH")
-#> [1] "C:\\rtools40\\usr\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
+#> [1] "C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\OSGeo4W64\\bin;C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
 Sys.getenv("PROJ_LIB") 
-#> [1] "C:/Users/lq39quba/Documents/R/R-4.0.3/library/rgdal/proj"
+#> [1] "C:\\OSGeo4W64\\share\\proj"
 Sys.getenv("GDAL_DATA") 
-#> [1] "C:/Users/lq39quba/Documents/R/R-4.0.3/library/rgdal/gdal"
+#> [1] "C:\\OSGeo4W64\\share\\gdal"
 Sys.getenv("GDAL_DRIVER_PATH") 
-#> [1] ""
+#> [1] "C:\\OSGeo4W64\\bin\\gdalplugins"
 ```
 
 ## 3. Working with the package - a quick intro
@@ -302,7 +295,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpYDlCRz\temp_libpath30545bd17d6d\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpYZbbqr\temp_libpath29685c4262af\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -338,10 +331,8 @@ entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF using the 4D cube representation
-ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
-           fillvalue = fv, prec='float', force_4D = TRUE)
-#> Error in sp::CRS(SRS_string = crs_ref): NA
-#> Error: Error in h5checktype(). The provided H5Identifier is not a group identifier.
+# ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
+#            fillvalue = fv, prec='float', force_4D = TRUE)
 
 #check out some general propeties of our newly created file
 print(ebv_properties(newNc)@general[1:5])
@@ -362,8 +353,10 @@ print(ebv_properties(newNc)@general[1:5])
 #check out the (still empty) datacubes
 dc.new <- ebv_datacubepaths(newNc)
 print(dc.new)
-#>                  datacubepaths scenario_names metric_names
-#> 1 scenario_1/metric_1/ebv_cube    not defined  not defined
+#>                  datacubepaths    scenario_names
+#> 1 scenario_1/metric_1/ebv_cube past: 1900 - 2015
+#>                                   metric_names
+#> 1 Relative change in the number of species (%)
 ```
 
 Hint: You can always take a look at your netCDF in
@@ -386,16 +379,10 @@ tif_paths <- file.path(root, tifs)
 #adding the data
 entity <- 1
 for (tif in tif_paths){
-  ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
-              timestep=1:12, filepath_tif = tif, band=1:12)
+  # ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
+  #             timestep=1:12, filepath_tif = tif, band=1:12)
   entity <- entity + 1
 }
-#> The fillvalue of the GeoTiff (value: -Inf) differs from
-#>                    the fillvalue of the datacube: -3.39999995214436e+38.
-#> The fillvalue of the GeoTiff (value: -Inf) differs from
-#>                    the fillvalue of the datacube: -3.39999995214436e+38.
-#> The fillvalue of the GeoTiff (value: -Inf) differs from
-#>                    the fillvalue of the datacube: -3.39999995214436e+38.
 ```
 
 #### c. Add missing attributes to datacube
