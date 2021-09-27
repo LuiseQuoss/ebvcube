@@ -93,13 +93,12 @@ This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL installatio
 One possibility to install GDAL is the [OSGeo4W Network installer](https://trac.osgeo.org/osgeo4w/). Check GDAL when running the installation! If you have QGIS on your machine, GDAL should be included. To check that, install the gdalUtils package in R and run gdalUtils::gdal_setInstallation(). It takes quite a while the first time as it looks for a GDAL installation. Now getOption('gdalUtils_gdalPath') should return the GDAL installation.
 If you have problems you can set the GDAL related paths by hand using the following lines of code. Your paths may differ! First check your GDAL installation.
 ```{r echo=TRUE}
-#add GDAL path to the existing paths
-#Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
-
-#check and change path for proj_lib, gdal_data and gdal_driver_path
-#Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
-#Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
-#Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+# #add GDAL path to the existing paths
+# Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+# #check and change path for proj_lib, gdal_data and gdal_driver_path
+# Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+# Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+# Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
 
 #you can always check your GDAL path settings using
 Sys.getenv("PATH")
@@ -200,6 +199,11 @@ dim(data)
 ```
 To subset the data using a shapefile you need to indicate a directory for temporarily created files.
 ```{r}
+Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+
 #load subset from shapefile (Germany)
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
@@ -226,8 +230,8 @@ entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF using the 4D cube representation
-# ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
-#            fillvalue = fv, prec='float', force_4D = TRUE)
+ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
+           fillvalue = fv, prec='float', force_4D = TRUE)
 
 #check out some general propeties of our newly created file
 print(ebv_properties(newNc)@general[1:5])
@@ -248,8 +252,8 @@ tif_paths <- file.path(root, tifs)
 #adding the data
 entity <- 1
 for (tif in tif_paths){
-  # ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
-  #             timestep=1:12, filepath_tif = tif, band=1:12)
+  ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
+              timestep=1:12, filepath_tif = tif, band=1:12)
   entity <- entity + 1
 }
 

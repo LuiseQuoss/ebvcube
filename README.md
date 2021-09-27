@@ -104,12 +104,12 @@ following lines of code. Your paths may differ! First check your GDAL
 installation.
 
 ``` r
-#add GDAL path to the existing paths
-#Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
-#check and change path for proj_lib, gdal_data and gdal_driver_path
-#Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
-#Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
-#Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+# #add GDAL path to the existing paths
+# Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+# #check and change path for proj_lib, gdal_data and gdal_driver_path
+# Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+# Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+# Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
 
 #you can always check your GDAL path settings using
 Sys.getenv("PATH")
@@ -260,7 +260,6 @@ measurements$n
 #> [1] 64800
 measurements$mean
 #> [1] 0.436336
-
 #info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
 measurements.bb <- ebv_analyse(file, dc, subset = bb)
@@ -284,25 +283,29 @@ To subset the data using a shapefile you need to indicate a directory
 for temporarily created files.
 
 ``` r
+Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+
 #load subset from shapefile (Germany)
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
 #define directory for temporary files
 options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
 data.shp <- ebv_read_shp(file, dc, shp = shp, timestep = c(1,2,3))
-#> Error in sp::CRS(stringr::str_remove(paste(crs[2], collapse = " "), "PROJ.4 : ")): NA
 dim(data.shp)
-#> Error in eval(expr, envir, enclos): Objekt 'data.shp' nicht gefunden
+#> [1]  9 11  3
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpYZbbqr\temp_libpath29685c4262af\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpSyl9Vs\temp_libpath36b0288845fb\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
 raster::spplot(data.shp[[1]], sp.layout = list(shp.data, first=FALSE))
-#> Error in h(simpleError(msg, call)): Fehler bei der Auswertung des Argumentes 'obj' bei der Methodenauswahl für Funktion 'spplot': Objekt 'data.shp' nicht gefunden
 ```
 
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 Imagine you have a very large dataset but only limited memory. The
 package provides the possibility to load the data as a DelayedArray. A
 second function helps you to write that data back on disk properly. Look
@@ -331,8 +334,8 @@ entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF using the 4D cube representation
-# ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
-#            fillvalue = fv, prec='float', force_4D = TRUE)
+ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
+           fillvalue = fv, prec='float', force_4D = TRUE)
 
 #check out some general propeties of our newly created file
 print(ebv_properties(newNc)@general[1:5])
@@ -379,10 +382,16 @@ tif_paths <- file.path(root, tifs)
 #adding the data
 entity <- 1
 for (tif in tif_paths){
-  # ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
-  #             timestep=1:12, filepath_tif = tif, band=1:12)
+  ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
+              timestep=1:12, filepath_tif = tif, band=1:12)
   entity <- entity + 1
 }
+#> The fillvalue of the GeoTiff (value: -Inf) differs from
+#>                    the fillvalue of the datacube: -3.39999995214436e+38.
+#> The fillvalue of the GeoTiff (value: -Inf) differs from
+#>                    the fillvalue of the datacube: -3.39999995214436e+38.
+#> The fillvalue of the GeoTiff (value: -Inf) differs from
+#>                    the fillvalue of the datacube: -3.39999995214436e+38.
 ```
 
 #### c. Add missing attributes to datacube
