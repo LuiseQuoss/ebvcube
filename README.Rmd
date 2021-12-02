@@ -247,13 +247,13 @@ In the next step you can add your data to the netCDF from GeoTiff files. You nee
 ```{r}
 #path to tif with data
 root <- system.file(file.path('extdata'), package="ebvnetcdf") 
-tifs <- c('sm_entity0.tif', 'sm_entity1.tif', 'sm_entity2.tif')
+tifs <- c('entity1.tif', 'entity2.tif', 'entity3.tif')
 tif_paths <- file.path(root, tifs)
 #adding the data
 entity <- 1
 for (tif in tif_paths){
   ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
-              timestep=1:12, filepath_tif = tif, band=1:12)
+              timestep=1:3, filepath_tif = tif, band=1:3)
   entity <- entity + 1
 }
 
