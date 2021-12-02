@@ -1,23 +1,30 @@
 Package: ebvnetcdf
 Title: Working with netCDF for Essential Biodiversity Variables
 Version: 0.0.1
+Date: 2021-12-01
 Authors@R: 
     c(person(given = "Luise",
-           family = "Quo√ü",
+           family = "Quoﬂ",
            role = c("aut", "cre"),
            email = "luise.quoss@idiv.de"),
     person(given = "Henrique Miguel",
            family = "Pereira",
            role = c("aut"),
            email = "henrique.pereira@idiv.de"),
-    person(given = "N√©stor",
-           family = "Fern√°ndez",
+    person(given = "NÈstor",
+           family = "Fern·ndez",
            role = c("aut"),
            email = "nestor.fernandez@idiv.de")
            )
-Description: This package can be used to easily access the data of the EBV netCDFs which can be 
-    downloaded here: portal.geobon.org. It also provides some basic visualization of the data. 
-    Advanced users can build their own NetCDFs with the EBV standard using this package.
+Author: Luise Quoﬂ [aut, cre],
+	Henrique Pereira [aut],
+	NÈstor Fern·ndez [aut]
+Maintainer: Luise Quoﬂ <luise.quoss@idiv.de>
+Description: Functions to easily access the data of the EBV netCDFs which can be 
+    downloaded here: <portal.geobon.org>. Also some basic visualization of the data is provided. 
+    Advanced users can build their own netCDFs with the EBV standard using this package.
+URL: <https://portal.geobon.org/> <https://geobon.org/ebvs/what-are-ebvs/> <https://github.com/LuiseQuoss/ebvnetcdf>
+BugReports: <https://github.com/LuiseQuoss/ebvnetcdf/issues>
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -46,3 +53,4 @@ Imports:
 SystemRequirements: GDAL binaries
 Depends: 
     R (>= 2.10) 
+VignetteBuilder: knitr, rmarkdown
