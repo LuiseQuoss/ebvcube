@@ -4,22 +4,22 @@ Version: 0.0.1
 Date: 2021-12-01
 Authors@R: 
     c(person(given = "Luise",
-           family = "Quoﬂ",
+           family = "Quo?",
            role = c("aut", "cre"),
            email = "luise.quoss@idiv.de"),
     person(given = "Henrique Miguel",
            family = "Pereira",
            role = c("aut"),
            email = "henrique.pereira@idiv.de"),
-    person(given = "NÈstor",
-           family = "Fern·ndez",
+    person(given = "N?stor",
+           family = "Fern?ndez",
            role = c("aut"),
            email = "nestor.fernandez@idiv.de")
            )
-Author: Luise Quoﬂ [aut, cre],
+Author: Luise Quo? [aut, cre],
 	Henrique Pereira [aut],
-	NÈstor Fern·ndez [aut]
-Maintainer: Luise Quoﬂ <luise.quoss@idiv.de>
+	N?stor Fern?ndez [aut]
+Maintainer: Luise Quo? <luise.quoss@idiv.de>
 Description: Functions to easily access the data of the EBV netCDFs which can be 
     downloaded here: <portal.geobon.org>. Also some basic visualization of the data is provided. 
     Advanced users can build their own netCDFs with the EBV standard using this package.
@@ -29,7 +29,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports: 
     checkmate,
     colorspace,
@@ -50,7 +50,10 @@ Imports:
     utils,
     withr,
     ncmeta
+Suggests:
+    knitr,
+    rmarkdown
 SystemRequirements: GDAL binaries
 Depends: 
-    R (>= 2.10) 
+    R (>= 3.5.0) 
 VignetteBuilder: knitr, rmarkdown
