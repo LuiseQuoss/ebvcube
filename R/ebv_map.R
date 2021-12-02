@@ -24,9 +24,6 @@
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
 #'
-#' @note Uses the country outlines data from the
-#'   \href{https://cran.r-project.org/package=maptools}{maptools package}.
-#'
 #' @return Plots a map.
 #' @export
 #' @importFrom utils data
@@ -289,7 +286,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   #plot with country outlines ----
   if (countries){
     if(epsg != 4326){
-      wrld_simpl <- sp::spTransform(wrld_simpl,
+      wrld_simpl <- sp::spTransform(world_boundaries,
                                     sp::CRS(SRS_string = paste0('EPSG:', epsg)))
     }
 
@@ -297,7 +294,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
       sp::spplot(data.raster, xlab='latitude', ylab='longitude',
              scales=list(draw = TRUE), at = s,
              col.regions=col.regions,
-             sp.layout = list(wrld_simpl, first=F, col.regions=NA),
+             sp.layout = list(world_boundaries, first=F, col.regions=NA),
              set = TRUE,
              main = title,
              sub = subtitle

@@ -53,10 +53,6 @@ NetCDF. This functions sometimes writes temporary files on your disk.
 Speficy a directory for these setting via
 options('ebv_temp'='/path/to/temp/directory').
 }
-\note{
-Uses the country outlines data from the
-\href{https://cran.r-project.org/package=maptools}{maptools package}.
-}
 \examples{
 #set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
