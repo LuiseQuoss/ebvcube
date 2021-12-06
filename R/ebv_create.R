@@ -145,10 +145,14 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   }
 
   #check if epsg is valid
-  if(checkmate::checkIntegerish(epsg) != TRUE){
+  if(stringr::str_detect(epsg, 'ESRI')){
+    crs <- gdalUtils::gdalsrsinfo(epsg)
+  } else if (checkmate::checkIntegerish(epsg) != TRUE){
     stop('epsg must be of type integer.')
+  } else {
+    crs <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg))
   }
-  crs <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg))
+
   if(any(stringr::str_detect(as.character(crs), 'crs not found'))){
     stop('Given EPSG code is not in PROJ library. Did you give a wrong EPSG code?')
   } else if (any(stringr::str_detect(as.character(crs), '(?i)error'))){
