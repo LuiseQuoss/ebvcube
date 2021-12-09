@@ -1,15 +1,17 @@
-citHeader("To cite ebvnetcdf in publications use:")
+citHeader("To cite ebvcube in publications use:")
 
 note <- sprintf("R package version %s", meta$Version)
 
 bibentry(bibtype = "Manual",
-         title = "ebvnetcdf: Working with netCDF for Essential Biodiversity Variables",
+         title = "ebvcube: Working with netCDF for Essential Biodiversity Variables",
          author = c(person(given = "Luise",family = "Quoß"),
+                  person(given = "Christian", family = "Langer"),
                   person(given = "Henrique Miguel", family = "Pereira"),
-                  person(given = "Néstor", family = "Fernández")),
+                  person(given = "Néstor", family = "Fernández"),
+                  person(given = "José", family = "Valdez")),
          year = "2021",
          note = note,
 	 organization = "German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig",
 	 address = "Germany",
-	 url = "https://git.idiv.de/lq39quba/ebvnetcdf"
+	 url = "https://github.com/LuiseQuoss/ebvcube"
 )

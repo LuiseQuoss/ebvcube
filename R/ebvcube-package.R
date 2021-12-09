@@ -14,5 +14,5 @@
 #'
 #'
 #' @docType package
-#' @name ebvnetcdf
+#' @name ebvcube
 NULL

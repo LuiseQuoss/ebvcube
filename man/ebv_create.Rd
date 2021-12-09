@@ -72,11 +72,11 @@ NASA.
 }
 \examples{
 #set path to JSON file
-json <- system.file(file.path("extdata","metadata.json"), package="ebvnetcdf")
+json <- system.file(file.path("extdata","metadata.json"), package="ebvcube")
 #set output path of the new EBV netCDF
-out <- file.path(system.file(package='ebvnetcdf'),"extdata","sCAR_new.nc")
+out <- file.path(system.file(package='ebvcube'),"extdata","sCAR_new.nc")
 #set path to the csv holding the entity names
-entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
+entities <- file.path(system.file(package='ebvcube'),"extdata","entities.csv")
 
 #create new EBV netCDF
 # ebv_create(jsonpath = json, outputpath = out, entities = entities,

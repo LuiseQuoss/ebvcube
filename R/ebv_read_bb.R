@@ -5,7 +5,7 @@
 #'
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
-#'   [ebvnetcdf::ebv_datacubepaths()]).
+#'   [ebvcube::ebv_datacubepaths()]).
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
@@ -31,16 +31,16 @@
 #'
 #' @note In case the epsg of the Bounding Box and the netCDF differ, the data is
 #'   returned based on the epsg of the netCDF Dataset.
-#' @seealso [ebvnetcdf::ebv_read_shp()] for subsetting via shapefile.
+#' @seealso [ebvcube::ebv_read_shp()] for subsetting via shapefile.
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
 #' #set outputpath
-#' out <- file.path(system.file(package='ebvnetcdf'),"extdata","subset_bb.tif")
+#' out <- file.path(system.file(package='ebvcube'),"extdata","subset_bb.tif")
 #' #define two different bounding boxes based on different EPSG codes
 #' bb_wgs84 <- c(5,15,47,55)
 #' bb_utm32 <- c(271985, 941837, 5232640, 6101151)

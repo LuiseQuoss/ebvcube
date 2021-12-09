@@ -22,7 +22,7 @@ data.
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)

@@ -4,7 +4,7 @@
 #'   sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
-#'   [ebvnetcdf::ebv_datacubepaths()]).
+#'   [ebvcube::ebv_datacubepaths()]).
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
@@ -15,10 +15,10 @@
 #'   analysed.
 #' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param at Logical. Optional. Default: TRUE. Only relevant if the subset is
-#'   indicated by a shapefile. See [ebvnetcdf::ebv_read_shp()].
+#'   indicated by a shapefile. See [ebvcube::ebv_read_shp()].
 #' @param epsg Numeric. Optional. Only relevant if the subset is indicated by a
 #'   bounding box and the coordinate reference system differs from WGS84. See
-#'   [ebvnetcdf::ebv_read_bb()].
+#'   [ebvcube::ebv_read_bb()].
 #' @param numerical Logical. Default: TRUE. Change to FALSE if the data covered
 #'   by the netCDF contains categorical data.
 #' @param na_rm Logical. Default: TRUE. NA values are removed in the analysis.
@@ -28,17 +28,17 @@
 #'
 #' @return Returns a named list containing the measurements.
 #' @export
-#' @seealso [ebvnetcdf::ebv_read_bb()] and [ebvnetcdf::ebv_read_shp()]
+#' @seealso [ebvcube::ebv_read_bb()] and [ebvcube::ebv_read_shp()]
 #'   for the usage of subsets.
 #'
 #' @importFrom stats quantile
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #' #set path to shp file
-#' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+#' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
 #'
 #' #get measurements for full extent and all timesteps
 #' data_global <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],

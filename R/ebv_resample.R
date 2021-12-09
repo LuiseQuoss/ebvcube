@@ -8,7 +8,7 @@
 #' @param filepath_src Character. Path to the NetCDF file whose resolution
 #'   should be changed.
 #' @param datacubepath_src Character. Path to the datacube (use
-#'   [ebvnetcdf::ebv_datacubepaths()]) whose resolution should be changed.
+#'   [ebvcube::ebv_datacubepaths()]) whose resolution should be changed.
 #' @param entity_src Character or Integer. Default is NULL. If the structure is 3D,
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
@@ -39,17 +39,17 @@
 #'
 #' @examples
 #' #define temp directory
-#' options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+#' options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
 #' #define different resolutions
-#' res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvnetcdf")
+#' res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvcube")
 #' res2 <- c(1,1,4326)
 #' #define output path
-#' out <- file.path(system.file(package='ebvnetcdf'),"extdata","changeRes.tif")
+#' out <- file.path(system.file(package='ebvcube'),"extdata","changeRes.tif")
 #'
 #' #resample using a netCDF file - return GeoTiff
 #' # ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],

@@ -61,14 +61,14 @@ options('ebv_temp'='/path/to/temp/directory').
 }
 \examples{
 #define temp directory
-options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
 
 #set path to shp file
-shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
 
 #read subset - return Raster
 # cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],

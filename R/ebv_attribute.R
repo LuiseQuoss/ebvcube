@@ -19,7 +19,7 @@
 #'   TRUE.
 #'
 #' @return Adds the new value to the attribute. Check your results using
-#'   [ebvnetcdf::ebv_properties()].
+#'   [ebvcube::ebv_properties()].
 #' @export
 #'
 #' @note You can change the ebv_class and the ebv_name. In this case you need to
@@ -27,7 +27,7 @@
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #'
 #' #change the standard_name of the metric
 #' attribute1 <- 'standard_name'

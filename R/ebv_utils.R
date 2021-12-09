@@ -73,7 +73,7 @@ ebv_i_ram <- function(){
 
 #' Turns hdf5 type of NetCDF into R type
 #' @param type.long Character. Hdf5 type of NetCDF file - retrieved from
-#'   [ebvnetcdf::ebv_properties()].
+#'   [ebvcube::ebv_properties()].
 #' @return Character. Short type: double or integer.
 #' @noRd
 ebv_i_type_r <- function(type.long){
@@ -108,7 +108,7 @@ ebv_i_type_r <- function(type.long){
 
 #' Turns hdf5 type of NetCDF into gdal type
 #' @param type.long Character. Hdf5 type of NetCDF file - retrieved from
-#'   [ebvnetcdf::ebv_properties()].
+#'   [ebvcube::ebv_properties()].
 #' @return Character. Gdal type, specified with 'ot' argument.
 #' @noRd
 ebv_i_type_ot <- function(type.long){
@@ -218,7 +218,7 @@ ebv_i_type_ot <- function(type.long){
 
 #' Turns hdf5 type of NetCDF into raster type
 #' @param type.long Character. Hdf5 type of NetCDF file - retrieved from
-#'   [ebvnetcdf::ebv_properties()].
+#'   [ebvcube::ebv_properties()].
 #' @return Character. Raster type of raster package in R.
 #' @noRd
 ebv_i_type_raster <- function(datanotation, byteorder){
@@ -269,7 +269,7 @@ ebv_i_type_raster <- function(datanotation, byteorder){
 }
 
 #' Transforms the bounding boxs to another epsg. Used in
-#' [ebvnetcdf::ebv_data_read_bb()].
+#' [ebvcube::ebv_data_read_bb()].
 #' @param bb Bounding box corresponding to src_epsg.
 #' @param src_epsg Current epsg of the bounding box.
 #' @param dest_epsg New epsg of the bounding box.
@@ -298,7 +298,7 @@ ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
 #' Checks if there is enough memory to load the specified array.
 #' @param dims x and y dimensions.
 #' @param timestep Timesteps indicated by user - uses the length of it.
-#' @param type R type returned by [ebvnetcdf::ebv_i_type_r()].
+#' @param type R type returned by [ebvcube::ebv_i_type_r()].
 #' @return Throws an error if the RAM restrictions are surpassed.
 #' @noRd
 ebv_i_check_ram <- function(dims, timestep, entity, type){

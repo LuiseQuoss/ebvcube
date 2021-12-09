@@ -35,7 +35,7 @@ methods::setClass("EBV netCDF properties", slots=list(general="list",
 #'
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Optional. Path to the datacube (use
-#'   [ebvnetcdf::ebv_datacubepaths()]).
+#'   [ebvcube::ebv_datacubepaths()]).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.
 #'
 #' @return S4 class containing information about file or file and datacube
@@ -44,7 +44,7 @@ methods::setClass("EBV netCDF properties", slots=list(general="list",
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'

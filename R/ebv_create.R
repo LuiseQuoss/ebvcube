@@ -2,7 +2,7 @@
 #'
 #' @description Create the core structure of the EBV NetCDF based on the json
 #'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
-#'   and attributes will be added afterwards. Use [ebvnetcdf::ebv_add_data()] to
+#'   and attributes will be added afterwards. Use [ebvcube::ebv_add_data()] to
 #'   add the missing attributes.
 #'
 #' @param jsonpath Character. Path to the json file downloaded from the
@@ -42,11 +42,11 @@
 #'
 #' @examples
 #' #set path to JSON file
-#' json <- system.file(file.path("extdata","metadata.json"), package="ebvnetcdf")
+#' json <- system.file(file.path("extdata","metadata.json"), package="ebvcube")
 #' #set output path of the new EBV netCDF
-#' out <- file.path(system.file(package='ebvnetcdf'),"extdata","sCAR_new.nc")
+#' out <- file.path(system.file(package='ebvcube'),"extdata","sCAR_new.nc")
 #' #set path to the csv holding the entity names
-#' entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
+#' entities <- file.path(system.file(package='ebvcube'),"extdata","entities.csv")
 #'
 #' #create new EBV netCDF
 #' # ebv_create(jsonpath = json, outputpath = out, entities = entities,
@@ -482,7 +482,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(hdf, 'Conventions', 'CF-1.8; ACDD-1.3; EBV-1.0')
   ebv_i_char_att(hdf, 'naming_authority', 'iDiv')
   ebv_i_char_att(hdf, 'date_issued', 'pending')
-  ebv_i_char_att(hdf, 'history', paste0('EBV netCDF created using ebvnetcdf, ', Sys.Date()))
+  ebv_i_char_att(hdf, 'history', paste0('EBV netCDF created using ebvcube, ', Sys.Date()))
   ebv_i_char_att(hdf, 'ebv_vocabulary', 'https://portal.geobon.org/api/v1/ebv')
   if(force_4D){
     ebv_i_char_att(hdf, 'ebv_cube_dimensions', 'lon; lat; time; entity')

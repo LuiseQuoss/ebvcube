@@ -7,7 +7,7 @@
 #'   coverage of the corresponding EBV netCDF).
 #'
 #' @param data Your data object. May be raster, array, DelayedMatrix or list of
-#'   DelayedMatrix (see return values of [ebvnetcdf::ebv_read()])
+#'   DelayedMatrix (see return values of [ebvcube::ebv_read()])
 #' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
 #'   system via the corresponding epsg code.
 #' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
@@ -29,9 +29,9 @@
 #'
 #' @examples
 #' #define temp directory
-#' options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+#' options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
@@ -40,7 +40,7 @@
 #' # HERE YOU CAN WORK WITH YOUR DATA
 #'
 #' #write data to disk as GeoTiff
-#' out <- system.file(file.path("extdata","write_data.tif"), package="ebvnetcdf")
+#' out <- system.file(file.path("extdata","write_data.tif"), package="ebvcube")
 #' # ebv_write(data = data, outputpath = out)
 #'
 #' #read a subset

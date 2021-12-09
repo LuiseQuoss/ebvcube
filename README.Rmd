@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ebvnetcdf package
+# ebvcube package
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -83,10 +83,10 @@ Just keep in mind: All EBV netCDF always have a metric. But they may or may not 
 
 ## 2. Installation
 
-You can install the ebvnetcdf packages with: 
+You can install the ebvcube packages with: 
 
 ``` r
-devtools::install_github('https://github.com/LuiseQuoss/ebvnetcdf')
+devtools::install_github('https://github.com/LuiseQuoss/ebvcube')
 
 ```
 This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL installation on your machine. 
@@ -117,9 +117,9 @@ With the following two functions you get the core information about the data fro
 First we take a look at some basic metadata of that file.
 
 ```{r example}
-library(ebvnetcdf)
+library(ebvcube)
 
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 prop.file <- ebv_properties(file)
 
 #take a look at the general properties of the dataset - there are more properties to discover!
@@ -205,9 +205,9 @@ Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
 Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
 
 #load subset from shapefile (Germany)
-shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
+shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvcube")
 #define directory for temporary files
-options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 data.shp <- ebv_read_shp(file, dc, shp = shp, timestep = c(1,2,3))
 dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
@@ -224,9 +224,9 @@ The example is based on the [Global habitat availability for mammals ](https://p
 
 ```{r}
 #paths
-json <- system.file(file.path('extdata','metadata.json'), package="ebvnetcdf")
-newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','test.nc')
-entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
+json <- system.file(file.path('extdata','metadata.json'), package="ebvcube")
+newNc <- file.path(system.file(package="ebvcube"),'extdata','test.nc')
+entities <- file.path(system.file(package='ebvcube'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF using the 4D cube representation
@@ -246,7 +246,7 @@ In the next step you can add your data to the netCDF from GeoTiff files. You nee
 
 ```{r}
 #path to tif with data
-root <- system.file(file.path('extdata'), package="ebvnetcdf") 
+root <- system.file(file.path('extdata'), package="ebvcube") 
 tifs <- c('entity1.tif', 'entity2.tif', 'entity3.tif')
 tif_paths <- file.path(root, tifs)
 #adding the data
@@ -273,7 +273,7 @@ In this case the levelpath corresponds to the datacube path. But you can also al
 
 ## 4. Cite package
 ```{r}
-citation('ebvnetcdf')
+citation('ebvcube')
 ```
 
 

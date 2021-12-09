@@ -54,9 +54,9 @@ For more info on the datatype definition see \code{\link[raster:dataType]{raster
 }
 \examples{
 #define temp directory
-options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
 
@@ -65,7 +65,7 @@ data <- ebv_read(filepath = file, datacubepath = datacubes[1,1], timestep = 1)
 # HERE YOU CAN WORK WITH YOUR DATA
 
 #write data to disk as GeoTiff
-out <- system.file(file.path("extdata","write_data.tif"), package="ebvnetcdf")
+out <- system.file(file.path("extdata","write_data.tif"), package="ebvcube")
 # ebv_write(data = data, outputpath = out)
 
 #read a subset

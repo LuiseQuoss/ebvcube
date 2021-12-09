@@ -6,7 +6,7 @@
 #' @param filepath_tif Character. Path to the GeoTiff file containing the data.
 #'   Ending needs to be *.tif.
 #' @param datacubepath Character. Path to the datacube (use
-#'   [ebvnetcdf::ebv_datacubepaths()]).
+#'   [ebvcube::ebv_datacubepaths()]).
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
@@ -27,18 +27,18 @@
 #'   more capacities for the moment if needed.
 #'
 #' @return Adds data to the EBV netCDF. Check your results using
-#'   [ebvnetcdf::ebv_read()] and/or [ebvnetcdf::ebv_analyse()].
+#'   [ebvcube::ebv_read()] and/or [ebvcube::ebv_analyse()].
 #' @export
 #'
 #' @importFrom utils capture.output
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #' #set path to GeoTiff with data
-#' tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvnetcdf")
+#' tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvcube")
 #'
 #' # add data to the timestep 2, 3 and 4 using the first three bands of the GeoTiff
 #' #ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],

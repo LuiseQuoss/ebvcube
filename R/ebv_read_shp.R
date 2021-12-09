@@ -7,7 +7,7 @@
 #'
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
-#'   [ebvnetcdf::ebv_datacubepaths()]).
+#'   [ebvcube::ebv_datacubepaths()]).
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
@@ -30,18 +30,18 @@
 #' @return Returns a raster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
 #' @export
-#' @seealso [ebvnetcdf::ebv_read_bb()] for subsetting via bounding box.
+#' @seealso [ebvcube::ebv_read_bb()] for subsetting via bounding box.
 #'
 #' @examples
 #' #define temp directory
-#' options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+#' options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
 #' #set path to shp file
-#' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvnetcdf")
+#' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
 #'
 #' #read subset - return Raster
 #' # cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
