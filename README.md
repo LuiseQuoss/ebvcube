@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ebvnetcdf package
+# ebvcube package
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -85,10 +85,10 @@ about to be deprecated).
 
 ## 2. Installation
 
-You can install the ebvnetcdf packages with:
+You can install the ebvcube packages with:
 
 ``` r
-devtools::install_github('https://github.com/LuiseQuoss/ebvnetcdf')
+devtools::install_github('https://github.com/LuiseQuoss/ebvcube')
 ```
 
 This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL
@@ -113,7 +113,7 @@ installation.
 
 #you can always check your GDAL path settings using
 Sys.getenv("PATH")
-#> [1] "C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\OSGeo4W64\\bin;C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath;C:\\windows\\system32;C:\\windows;C:\\windows\\System32\\Wbem;C:\\windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\windows\\System32\\OpenSSH\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY\\;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts\\;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64\\;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
+#> [1] "C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
 Sys.getenv("PROJ_LIB") 
 #> [1] "C:\\OSGeo4W64\\share\\proj"
 Sys.getenv("GDAL_DATA") 
@@ -131,9 +131,9 @@ data from a specific EBV netCDF. First we take a look at some basic
 metadata of that file.
 
 ``` r
-library(ebvnetcdf)
+library(ebvcube)
 
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvnetcdf")
+file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 prop.file <- ebv_properties(file)
 
 #take a look at the general properties of the dataset - there are more properties to discover!
@@ -289,16 +289,16 @@ Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
 Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
 
 #load subset from shapefile (Germany)
-shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvnetcdf")
+shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvcube")
 #define directory for temporary files
-options('ebv_temp'=system.file("extdata/", package="ebvnetcdf"))
+options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 data.shp <- ebv_read_shp(file, dc, shp = shp, timestep = c(1,2,3))
 dim(data.shp)
 #> [1]  9 11  3
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\Documents\R\R-4.0.3\library\ebvnetcdf\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpQpjcnr\temp_libpath375053f66c62\ebvcube\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -328,9 +328,9 @@ geoportal is 5 the json file is just called 5.
 
 ``` r
 #paths
-json <- system.file(file.path('extdata','metadata.json'), package="ebvnetcdf")
-newNc <- file.path(system.file(package="ebvnetcdf"),'extdata','test.nc')
-entities <- file.path(system.file(package='ebvnetcdf'),"extdata","entities.csv")
+json <- system.file(file.path('extdata','metadata.json'), package="ebvcube")
+newNc <- file.path(system.file(package="ebvcube"),'extdata','test.nc')
+entities <- file.path(system.file(package='ebvcube'),"extdata","entities.csv")
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF using the 4D cube representation
@@ -376,7 +376,7 @@ definition.
 
 ``` r
 #path to tif with data
-root <- system.file(file.path('extdata'), package="ebvnetcdf") 
+root <- system.file(file.path('extdata'), package="ebvcube") 
 tifs <- c('entity1.tif', 'entity2.tif', 'entity3.tif')
 tif_paths <- file.path(root, tifs)
 #adding the data
@@ -416,24 +416,25 @@ for more info.
 ## 4. Cite package
 
 ``` r
-citation('ebvnetcdf')
+citation('ebvcube')
 #> 
-#> To cite ebvnetcdf in publications use:
+#> To cite ebvcube in publications use:
 #> 
-#> Quoß L, Pereira H, Fernández N (2021). _ebvnetcdf: Working with netCDF
-#> for Essential Biodiversity Variables_. German Centre for Integrative
-#> Biodiversity Research (iDiv) Halle-Jena-Leipzig, Germany. R package
-#> version 0.0.1, <URL: https://git.idiv.de/lq39quba/ebvnetcdf>.
+#> Quoß L, Langer C, Pereira H, Fernández N, Valdez J (2021). _ebvcube:
+#> Working with netCDF for Essential Biodiversity Variables_. German
+#> Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig,
+#> Germany. R package version 0.0.1, <URL:
+#> https://github.com/LuiseQuoss/ebvcube>.
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
 #>   @Manual{,
-#>     title = {ebvnetcdf: Working with netCDF for Essential Biodiversity Variables},
-#>     author = {Luise Quoß and Henrique Miguel Pereira and Néstor Fernández},
+#>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
+#>     author = {Luise Quoß and Christian Langer and Henrique Miguel Pereira and Néstor Fernández and José Valdez},
 #>     year = {2021},
 #>     note = {R package version 0.0.1},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
 #>     address = {Germany},
-#>     url = {https://git.idiv.de/lq39quba/ebvnetcdf},
+#>     url = {https://github.com/LuiseQuoss/ebvcube},
 #>   }
 ```
