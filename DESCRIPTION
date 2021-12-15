@@ -45,7 +45,6 @@ Imports:
     checkmate,
     colorspace,
     gdalUtils,
-    graphics,
     HDF5Array,
     jsonlite,
     lattice,
@@ -56,9 +55,7 @@ Imports:
     rhdf5,
     rgdal,
     sp,
-    stats,
     stringr,
-    utils,
     withr,
     ncmeta
 Suggests:
