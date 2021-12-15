@@ -69,8 +69,7 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-          install.packages("BiocManager")
+          install.packages("BiocManager", repos="http://cran.r-project.org")
           BiocManager::install('rhdf5')
           BiocManager::install('HDF5Array')
 
