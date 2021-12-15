@@ -42,6 +42,16 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libudunits2-dev libgdal-dev libgeos-dev libproj-dev
+
+      - name: Install system dependencies (MacOS)
+        if: runner.os == 'MacOS'
+        run: brew install gdal proj udunits pkg-config
+
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
           extra-packages: rcmdcheck
@@ -52,16 +62,6 @@ jobs:
         if: always()
         run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
-
-      - name: Install system dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libudunits2-dev libgdal-dev libgeos-dev libproj-dev
-
-      - name: Install system dependencies (MacOS)
-        if: runner.os == 'MacOS'
-        run: brew install gdal proj udunits pkg-config
 
       - name: Upload check results
         if: failure()
