@@ -74,7 +74,6 @@ jobs:
           BiocManager::install('rhdf5')
           BiocManager::install('HDF5Array')
 
-BiocManager::install("rhdf5")
         shell: Rscript {0}
 
       - name: Check
