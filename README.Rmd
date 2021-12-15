@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 # ebvcube package
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/LuiseQuoss/ebvcube/workflows/R-CMD-check/badge.svg)](https://github.com/LuiseQuoss/ebvcube/actions)
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV netCDFs which can be downloaded from the
