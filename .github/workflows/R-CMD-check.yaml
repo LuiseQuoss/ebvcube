@@ -60,7 +60,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libudunits2-dev libgdal-dev libgeos-dev libproj-dev
-          setx PROJ_LIB "/usr/share/proj"
+          export PROJ_LIB=/usr/share/proj
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'MacOS'
