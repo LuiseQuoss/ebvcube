@@ -65,7 +65,6 @@ jobs:
       - name: Install system dependencies (MacOS)
         if: runner.os == 'MacOS'
         run: brew install pkg-config gdal #proj udunits
-        export PROJ_LIB=/usr/share/proj
 
       - name: Install dependencies
         run: |
