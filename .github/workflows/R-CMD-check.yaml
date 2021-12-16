@@ -55,16 +55,15 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      #libudunits2-dev libgeos-dev libproj-dev export PROJ_LIB=/usr/share/proj
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install libgdal-dev
+          sudo apt-get install gdal-bin proj-bin libgdal-dev libproj-dev
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'MacOS'
-        run: brew install pkg-config gdal #proj udunits
+        run: brew install pkg-config gdal proj
 
       - name: Install dependencies
         run: |
@@ -73,7 +72,14 @@ jobs:
           install.packages("BiocManager", repos="http://cran.r-project.org")
           BiocManager::install('rhdf5')
           BiocManager::install('HDF5Array')
+        shell: Rscript {0}
 
+      - name: Install rgdal MacOS
+        if: runner.os == 'MacOS'
+        run: |
+        install.packages("rgdal", type = "source", repos="http://cran.r-project.org",
+        configure.args = c("--with-proj-include=/usr/local/include",
+        "--with-proj-lib=/usr/local/lib")
         shell: Rscript {0}
 
       - name: Check
