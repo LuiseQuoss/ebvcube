@@ -60,7 +60,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install gdal-bin proj-bin libgdal-dev libproj-dev
-          export PROJ_LIB=/usr/local/lib/
+          export PROJ_LIB=/usr/local/share/proj/
 
       - name: Install system dependencies (MacOS)
         if: runner.os == 'MacOS'
@@ -78,7 +78,7 @@ jobs:
       - name: Install rgdal MacOS
         if: runner.os == 'MacOS'
         run: |
-          install.packages("rgdal", type = "source", repos="http://cran.r-project.org", configure.args = c("--with-proj-include=/usr/local/include", "--with-proj-lib=/usr/local/lib"))
+          install.packages("rgdal", type = "source", repos="http://cran.r-project.org", configure.args = "--with-proj-lib=/usr/local/lib/ --with-proj-include=/usr/local/include/ --with-proj-share=/usr/local/share/proj/")
         shell: Rscript {0}
 
       - name: Check
