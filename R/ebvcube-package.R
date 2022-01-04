@@ -14,3 +14,4 @@
 #' @docType package
 #' @name ebvcube
 NULL
+globalVariables(c("world_boundaries"))
