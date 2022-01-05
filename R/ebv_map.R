@@ -30,6 +30,7 @@
 #' @importFrom colorspace diverging_hcl sequential_hcl
 #'
 #' @examples
+#' \dontrun{
 #' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
@@ -38,6 +39,7 @@
 #' #plot a map for the 9th timestep, divide into 7 classes
 #' ebv_map(filepath = file, datacubepath = datacubes[1,1], entity = NULL,
 #'         timestep = 9, classes = 7)
+#' }
 ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =TRUE,
                     col_rev=TRUE, classes = 5, ignore_RAM=FALSE, verbose=FALSE){
   # start initial tests ----
