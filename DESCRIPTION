@@ -29,11 +29,11 @@ Authors@R:
            email = "henrique.pereira@idiv.de",
            comment = c(ORCID = "0000-0003-1043-1675"))
            )
-Author: Luise Quoss [aut, cre],
-	Nestor Fernandez [aut],
-    Christian Langer [aut],
-    Jose Valdez [aut],
-	Henrique Miguel Pereira [aut]
+Author: Luise Quoss [aut, cre] (<https://orcid.org/0000-0002-9910-1252>),
+	Nestor Fernandez [aut] (<https://orcid.org/0000-0002-9645-8571>),
+    Christian Langer [aut] (<https://orcid.org/0000-0003-1446-3527>),
+    Jose Valdez [aut] (<https://orcid.org/0000-0003-2690-9952>),
+	Henrique Miguel Pereira [aut] (<https://orcid.org/0000-0003-1043-1675>)
 Maintainer: Luise Quoss <luise.quoss@idiv.de>
 Description: Functions to easily access the data of the EBV netCDFs which can be 
     downloaded here: <portal.geobon.org>. Also some basic visualization of the data is provided. 
@@ -68,4 +68,4 @@ Suggests:
 SystemRequirements: GDAL binaries
 Depends: 
     R (>= 3.5.0) 
-VignetteBuilder: knitr, rmarkdown
+
