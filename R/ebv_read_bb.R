@@ -35,15 +35,15 @@
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+#' # file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' # datacubes <- ebv_datacubepaths(file)
 #'
 #' #set outputpath
-#' out <- file.path(system.file(package='ebvcube'),"extdata","subset_bb.tif")
+#' # out <- file.path(system.file(package='ebvcube'),"extdata","subset_bb.tif")
 #' #define two different bounding boxes based on different EPSG codes
-#' bb_wgs84 <- c(5,15,47,55)
-#' bb_utm32 <- c(271985, 941837, 5232640, 6101151)
+#' # bb_wgs84 <- c(5,15,47,55)
+#' # bb_utm32 <- c(271985, 941837, 5232640, 6101151)
 #'
 #'
 #' #read bb (based on EPSG 4326) - return Raster
