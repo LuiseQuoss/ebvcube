@@ -34,6 +34,7 @@
 #' @seealso [ebvcube::ebv_read_shp()] for subsetting via shapefile.
 #'
 #' @examples
+#' \dontrun{
 #' #set path to EBV netCDF
 #' # file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
@@ -59,6 +60,7 @@
 #' # path  <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
 #' #                      entity = NULL, timestep = 1:3, bb = bb_utm32,
 #' #                      epsg = 32632, outputpath = out, overwrite = TRUE)
+#' }
 ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
                         outputpath=NULL, epsg = 4326, overwrite=FALSE,
                         ignore_RAM = FALSE, verbose = FALSE){
