@@ -390,9 +390,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #get units of metric ----
   units <- c()
-  for (j in 1:(metrics_no)){
+  for (j in 0:(metrics_no-1)){
     #metric units list
-    units <- c(units,eval(parse(text=paste0('json$ebv_metric$ebv_metric_',j,'$`:units`'))))
+    units <- c(units,eval(parse(text=paste0('json$ebv_metric$metric',j,'$unit'))))
   }
 
   var_list_nc <- list()
