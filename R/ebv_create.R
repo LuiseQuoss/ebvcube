@@ -657,12 +657,12 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # add metric and scenario attributes ----
   # 1. metric, no scenario (entities are not relevant)
   if(scenarios_no==0){
-    for (i in 1:(metrics_no)){
+    for (i in 0:(metrics_no-1)){
       mgid <- rhdf5::H5Gopen(hdf, paste0('metric_', i))
       #add metric attributes
-      standard_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:standard_name`')))
-      long_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:long_name`')))
-      unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:units`')))
+      standard_name <- eval(parse(text=paste0('json$ebv_metric$metric',i,'$name')))
+      long_name <- eval(parse(text=paste0('json$ebv_metric$metric',i,'$description')))
+      unit.m <- eval(parse(text=paste0('json$ebv_metric$metric',i,'$unit')))
       ebv_i_char_att(mgid, 'standard_name', standard_name)
       ebv_i_char_att(mgid, 'long_name', long_name)
       #close data handle
@@ -679,13 +679,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       ebv_i_char_att(sgid, 'standard_name', standard_name)
       ebv_i_char_att(sgid, 'long_name', long_name)
       rhdf5::H5Gclose(sgid)
-      for (i in 1:(metrics_no)){
+      for (i in 0:(metrics_no-1)){
         #open metric group
         mgid <- rhdf5::H5Gopen(hdf, paste0('scenario_', j, '/metric_', i))
         #add metric attributes
-        standard_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:standard_name`')))
-        long_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:long_name`')))
-        unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:units`')))
+        standard_name <- eval(parse(text=paste0('json$ebv_metric$metric',i,'$name')))
+        long_name <- eval(parse(text=paste0('json$ebv_metric$metric',i,'$description')))
+        unit.m <- eval(parse(text=paste0('json$ebv_metric$metric',i,'$unit')))
         ebv_i_char_att(mgid, 'standard_name', standard_name)
         ebv_i_char_att(mgid, 'long_name', long_name)
         #close datahandle
