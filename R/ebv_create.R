@@ -427,7 +427,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         metric.str <- stringr::str_split(var, '/')[[1]][stringr::str_detect(stringr::str_split(var, '/')[[1]], 'metric')]
         metric.digit <- as.numeric(regmatches(metric.str, gregexpr("[[:digit:].]+", metric.str))[[1]])
         name <- paste0('var', enum)
-        assign(name, ncdf4::ncvar_def(var, units[metric.digit], dim= list(lon_dim, lat_dim, time_dim, entity_dim), missval=fillvalue, compression=2, prec=prec, verbose=verbose))
+        assign(name, ncdf4::ncvar_def(var, as.character(units[metric.digit]), dim= list(lon_dim, lat_dim, time_dim, entity_dim), missval=fillvalue, compression=2, prec=prec, verbose=verbose))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -436,7 +436,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         metric.str <- stringr::str_split(var, '/')[[1]][stringr::str_detect(stringr::str_split(var, '/')[[1]], 'metric')]
         metric.digit <- as.numeric(regmatches(metric.str, gregexpr("[[:digit:].]+", metric.str))[[1]])
         name <- paste0('var', enum)
-        assign(name, ncdf4::ncvar_def(var, units[metric.digit], dim= list(lon_dim, lat_dim, time_dim, entity_dim), compression=2, prec=prec, verbose=verbose))
+        assign(name, ncdf4::ncvar_def(var, as.character(units[metric.digit]), dim= list(lon_dim, lat_dim, time_dim, entity_dim), compression=2, prec=prec, verbose=verbose))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
