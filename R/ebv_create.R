@@ -540,6 +540,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     ebv_i_char_att(hdf, names(global.att[i]), att.txt)
   }
 
+  #double check id - final jsons don't have 'preliminary_id' att
+  id <- json$preliminary_id
+  if(is.null(id)){
+    id <- json$id
+    ebv_i_char_att(hdf, 'id', id)
+  }
+
   #geospatial attributes
   #bounds
   xmin <- min(lon_data) - res[1]/2
