@@ -9,8 +9,9 @@
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
 #' @param outputpath Character. Set path where the NetCDF file should be
 #'   created.
-#' @param entities Character. Csv table holding the entity names. Should have
-#'   only one column, each row is the name of one entity.
+#' @param entities Character. Csv table holding the entity names. Default:
+#'   comma-separated delimiter, else change the 'sep'-argument accordingly.
+#'   Should have only one column, each row is the name of one entity.
 #' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
 #'   system via the corresponding epsg code.
 #' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
@@ -19,8 +20,10 @@
 #'   mandatory but should be defined!
 #' @param prec Character. Default: 'double'. Precision of the data set. Valid
 #'   options: 'short' 'integer' 'float' 'double' 'char' 'byte'.
-#' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
-#'   outputfile defined by 'outputpath'.
+#' @param sep Character. Default: ','. If the delimiter of the csv specifying
+#'   the entity-names differs from the default, indicate here.
+#' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the output
+#'   file defined by 'outputpath'.
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
 #' @param resolution Numerical. Vector of two numerical values defining the
@@ -53,7 +56,8 @@
 #' #            fillvalue=-3.4E38)
 ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
                        extent= c(-180,180,-90,90), resolution=c(1,1), fillvalue = NULL,
-                       prec = 'double', force_4D=TRUE, overwrite=FALSE,verbose=FALSE){
+                       prec = 'double', sep=',', force_4D=TRUE, overwrite=FALSE,
+                       verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -177,7 +181,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #read csv ----
   # check if data inside
   tryCatch({
-    entity_csv <- utils::read.csv(entities, header=F)
+    entity_csv <- utils::read.csv(entities, sep=sep, header=F)
     },
     error=function(e){
     if(stringr::str_detect(as.character(e), 'no lines available')){
