@@ -674,12 +674,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   rhdf5::H5Dclose(entity.id)
 
-  print(metrics_no)
   # add metric and scenario attributes ----
   # 1. metric, no scenario (entities are not relevant)
   if(scenarios_no==0){
     for (i in 1:(metrics_no)){
-      print(i)
       mgid <- rhdf5::H5Gopen(hdf, paste0('metric_', i))
       #add metric attributes
       standard_name <- eval(parse(text=paste0('json$ebv_metric$metric',i-1,'$name')))
