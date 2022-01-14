@@ -288,7 +288,6 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       timestep <- s+add
       timesteps <- c(timesteps, timestep)
     }
-    #print('only implemented for yearly timesteps - not months')
   }else if (mapply(grepl,'day',t_res,ignore.case=TRUE)){
     start <- as.Date(t_start)
     end   <- as.Date(t_end)
@@ -299,11 +298,21 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       timestep <- s+add
       timesteps <- c(timesteps, timestep)
     }
-    #print('only implemented for yearly timesteps - not days')
   } else if (mapply(grepl,'decad',t_res,ignore.case=TRUE)){
     start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
     end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
     intervall <- 10
+    sequence <- seq(start, end, intervall)
+    timesteps <- c()
+    for (s in sequence){
+      date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
+      timestep <- date+add
+      timesteps <- c(timesteps, timestep)
+    }
+  } else if (mapply(grepl,'annually',t_res,ignore.case=TRUE)){
+    start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
+    end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
+    intervall <- 1
     sequence <- seq(start, end, intervall)
     timesteps <- c()
     for (s in sequence){
@@ -470,14 +479,14 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
                                           dim=list(dimchar,entity_dim),
                                           prec='char', verbose = verbose)
 
-  # add all entity vars ----
+  # add all vars ----
   # also creates groups
   nc <- ncdf4::nc_create(outputpath, var_list_nc, force_v4 = T, verbose = verbose)
 
   # close file
   ncdf4::nc_close(nc)
 
-  # use hdf5 to add all attributes ----
+  # use hdf5 to add all attributes
   # open file
   hdf <- rhdf5::H5Fopen(outputpath)
 
@@ -669,6 +678,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # 1. metric, no scenario (entities are not relevant)
   if(scenarios_no==0){
     for (i in 1:(metrics_no)){
+      warning(paste0('metric_', i))
       mgid <- rhdf5::H5Gopen(hdf, paste0('metric_', i))
       #add metric attributes
       standard_name <- eval(parse(text=paste0('json$ebv_metric$metric',i-1,'$name')))
