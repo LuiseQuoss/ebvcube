@@ -229,7 +229,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   metrics_no <- length(json$ebv_metric)
   entities_no <- nrow(entity_csv)
   scenarios_no <- length(json$ebv_scenario)
-  if (scenarios_no<0){
+  if (scenarios_no==1){
+    if(ebv_i_empty(file$data$ebv_scenario[[1]]))
     scenarios_no <- 0
   }
 
