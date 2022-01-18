@@ -228,7 +228,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # get basic hierarchy info ----
   metrics_no <- length(json$ebv_metric)
   entities_no <- nrow(entity_csv)
-  scenarios_no <- length(json$ebv_scenario)-3
+  scenarios_no <- length(json$ebv_scenario)
   if (scenarios_no<0){
     scenarios_no <- 0
   }
@@ -694,8 +694,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       #scenario path
       sgid <- rhdf5::H5Gopen(hdf, paste0('scenario_', j))
       #add attributes
-      standard_name <- eval(parse(text=paste0('json$ebv_scenario$ebv_scenario_',j,'$`:standard_name`')))
-      long_name <- eval(parse(text=paste0('json$ebv_scenario$ebv_scenario_',j,'$`:long_name`')))
+      standard_name <- eval(parse(text=paste0('json$ebv_scenario$scenario',j-1,'$name')))
+      long_name <- eval(parse(text=paste0('json$ebv_scenario$scenario',j-1,'$description')))
       ebv_i_char_att(sgid, 'standard_name', standard_name)
       ebv_i_char_att(sgid, 'long_name', long_name)
       rhdf5::H5Gclose(sgid)
