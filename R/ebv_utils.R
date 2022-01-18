@@ -303,7 +303,7 @@ ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
 #' @noRd
 ebv_i_check_ram <- function(dims, timestep, entity, type){
   #amount of pixels
-  size <- dims[1]*dims[2]*length(timestep)*length(entity)
+  size <- as.numeric(dims[1])*dims[2]*length(timestep)*length(entity)
   if(!is.na(ebv_i_type_r(type))){
     if(ebv_i_type_r(type)=='integer'){
       ###integer: size*4 = bytes
