@@ -121,7 +121,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #check if json exists
   if (checkmate::checkCharacter(jsonpath) != TRUE){
-    stop('Filepath must be of type character.')
+    stop('Filepath (JSON) must be of type character.')
   }
   if (checkmate::checkFileExists(jsonpath) != TRUE){
     stop(paste0('Json file does not exist.\n', jsonpath))
@@ -228,9 +228,11 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # get basic hierarchy info ----
   metrics_no <- length(json$ebv_metric)
   entities_no <- nrow(entity_csv)
-  scenarios_no <- length(json$ebv_scenario)
+  scenarios_no <- length(json$ebv_scenario)-3
   if (scenarios_no==1){
-    if(ebv_i_empty(file$data$ebv_scenario[[1]]))
+    if(ebv_i_empty(file$data$ebv_scenario[[1]]) || file$data$ebv_scenario[[1]]=='N/A')
+    scenarios_no <- 0
+  } else if(scenarios_no<0){
     scenarios_no <- 0
   }
 
@@ -353,7 +355,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # create dimensions ----
   lat_dim <- ncdf4::ncdim_def('lat', crs_unit , vals = lat_data)
   lon_dim <- ncdf4::ncdim_def('lon', crs_unit, vals = lon_data)
-  time_dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)
+  time_dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)#HERE
   entity_dim <- ncdf4::ncdim_def('entity', '', vals = 1:entities_no, create_dimvar=FALSE)
 
   # create list of vars 3D ----
@@ -404,9 +406,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #get units of metric ----
   units <- c()
-  for (j in 0:(metrics_no-1)){
+  for (j in 1:(metrics_no)){
     #metric units list
-    units <- c(units,eval(parse(text=paste0('json$ebv_metric$metric',j,'$unit'))))
+    units <- c(units,eval(parse(text=paste0('json$ebv_metric$ebv_metric_',j,'$`:units`'))))
   }
 
   var_list_nc <- list()
@@ -420,7 +422,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         metric.str <- stringr::str_split(var, '/')[[1]][stringr::str_detect(stringr::str_split(var, '/')[[1]], 'metric')]
         metric.digit <- as.numeric(regmatches(metric.str, gregexpr("[[:digit:].]+", metric.str))[[1]])
         name <- paste0('var', enum)
-        assign(name, ncdf4::ncvar_def(var, units[metric.digit], dim= list(lon_dim, lat_dim, time_dim), missval=fillvalue, compression=2, prec=prec, verbose=verbose))
+        assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
+                                      dim= list(lon_dim, lat_dim, time_dim),
+                                      missval=fillvalue, compression=9,
+                                      prec=prec, verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -429,7 +434,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         metric.str <- stringr::str_split(var, '/')[[1]][stringr::str_detect(stringr::str_split(var, '/')[[1]], 'metric')]
         metric.digit <- as.numeric(regmatches(metric.str, gregexpr("[[:digit:].]+", metric.str))[[1]])
         name <- paste0('var', enum)
-        assign(name, ncdf4::ncvar_def(var, units[metric.digit], dim= list(lon_dim, lat_dim, time_dim), compression=2, prec=prec, verbose=verbose))
+        assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
+                                      dim= list(lon_dim, lat_dim, time_dim),
+                                      compression=9, prec=prec,
+                                      verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -441,7 +449,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         metric.str <- stringr::str_split(var, '/')[[1]][stringr::str_detect(stringr::str_split(var, '/')[[1]], 'metric')]
         metric.digit <- as.numeric(regmatches(metric.str, gregexpr("[[:digit:].]+", metric.str))[[1]])
         name <- paste0('var', enum)
-        assign(name, ncdf4::ncvar_def(var, as.character(units[metric.digit]), dim= list(lon_dim, lat_dim, time_dim, entity_dim), missval=fillvalue, compression=2, prec=prec, verbose=verbose))
+        assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
+                                      dim= list(lon_dim, lat_dim, time_dim, entity_dim),
+                                      missval=fillvalue, compression=9, prec=prec,
+                                      verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -450,7 +461,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         metric.str <- stringr::str_split(var, '/')[[1]][stringr::str_detect(stringr::str_split(var, '/')[[1]], 'metric')]
         metric.digit <- as.numeric(regmatches(metric.str, gregexpr("[[:digit:].]+", metric.str))[[1]])
         name <- paste0('var', enum)
-        assign(name, ncdf4::ncvar_def(var, as.character(units[metric.digit]), dim= list(lon_dim, lat_dim, time_dim, entity_dim), compression=2, prec=prec, verbose=verbose))
+        assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
+                                      dim= list(lon_dim, lat_dim, time_dim, entity_dim),
+                                      compression=9, prec=prec,
+                                      verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -459,7 +473,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
 
   #add crs variable ----
-  var_list_nc[[enum]] <- ncdf4::ncvar_def('crs', '', dim= list(), compression=2, prec='char', verbose=verbose)
+  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'crs', units = '',
+                                          dim= list(), compression=9,
+                                          prec='char', verbose=verbose)
   enum <- enum+1
   #check for special characters
   sz <- c()
@@ -476,13 +492,16 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #add entities variable ----
   max_char <- max(nchar(entity_csv[,1]))
   dimchar <- ncdf4::ncdim_def("nchar", "", 1:max_char, create_dimvar=FALSE )
-  var_list_nc[[enum]] <- ncdf4::ncvar_def('entities', unit='adimensional',
+  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='adimensional', #HERE
                                           dim=list(dimchar,entity_dim),
                                           prec='char', verbose = verbose)
 
   # add all vars ----
   # also creates groups
-  nc <- ncdf4::nc_create(outputpath, var_list_nc, force_v4 = T, verbose = verbose)
+  nc <- ncdf4::nc_create(filename = outputpath,
+                         vars = var_list_nc,
+                         force_v4 = T,
+                         verbose = verbose)
 
   # close file
   ncdf4::nc_close(nc)
@@ -664,7 +683,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     }
     entity.values <- c(entity.values, new_values)
   }
-  entity.id <- rhdf5::H5Dopen(hdf, 'entities')
+  entity.id <- rhdf5::H5Dopen(hdf, 'entity')#HERE
   rhdf5::H5Dwrite(entity.id, entity.values)
 
   # acdd terms
@@ -681,9 +700,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     for (i in 1:(metrics_no)){
       mgid <- rhdf5::H5Gopen(hdf, paste0('metric_', i))
       #add metric attributes
-      standard_name <- eval(parse(text=paste0('json$ebv_metric$metric',i-1,'$name')))
-      long_name <- eval(parse(text=paste0('json$ebv_metric$metric',i-1,'$description')))
-      unit.m <- eval(parse(text=paste0('json$ebv_metric$metric',i-1,'$unit')))
+      standard_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:standard_name`')))
+      long_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:long_name`')))
+      unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:units`')))
       ebv_i_char_att(mgid, 'standard_name', standard_name)
       ebv_i_char_att(mgid, 'long_name', long_name)
       #close data handle
@@ -695,8 +714,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       #scenario path
       sgid <- rhdf5::H5Gopen(hdf, paste0('scenario_', j))
       #add attributes
-      standard_name <- eval(parse(text=paste0('json$ebv_scenario$scenario',j-1,'$name')))
-      long_name <- eval(parse(text=paste0('json$ebv_scenario$scenario',j-1,'$description')))
+      standard_name <- eval(parse(text=paste0('json$ebv_scenario$ebv_scenario_',j,'$`:standard_name`')))
+      long_name <- eval(parse(text=paste0('json$ebv_scenario$ebv_scenario_',j,'$`:long_name`')))
       ebv_i_char_att(sgid, 'standard_name', standard_name)
       ebv_i_char_att(sgid, 'long_name', long_name)
       rhdf5::H5Gclose(sgid)
@@ -704,9 +723,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         #open metric group
         mgid <- rhdf5::H5Gopen(hdf, paste0('scenario_', j, '/metric_', i))
         #add metric attributes
-        standard_name <- eval(parse(text=paste0('json$ebv_metric$metric',i-1,'$name')))
-        long_name <- eval(parse(text=paste0('json$ebv_metric$metric',i-1,'$description')))
-        unit.m <- eval(parse(text=paste0('json$ebv_metric$metric',i-1,'$unit')))
+        standard_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:standard_name`')))
+        long_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:long_name`')))
+        unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:units`')))
         ebv_i_char_att(mgid, 'standard_name', standard_name)
         ebv_i_char_att(mgid, 'long_name', long_name)
         #close datahandle
@@ -721,7 +740,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     for(var in var_list){
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
-      ebv_i_char_att(did, 'coordinate', '/entities')
+      ebv_i_char_att(did, 'coordinate', '/entity')#HERE
       ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse='; '))
       ebv_i_char_att(did, 'standard_name', entity_csv[enum,1])
       #close dh
@@ -734,7 +753,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     for(var in var_list){
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
-      ebv_i_char_att(did, 'coordinate', '/entities')
+      ebv_i_char_att(did, 'coordinate', '/entity')#HERE
       ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse='; '))
       #close dh
       rhdf5::H5Dclose(did)
