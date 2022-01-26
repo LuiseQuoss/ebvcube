@@ -34,22 +34,21 @@
 #' @seealso [ebvcube::ebv_read_shp()] for subsetting via shapefile.
 #'
 #' @examples
-#' \dontrun{
 #' #set path to EBV netCDF
-#' # file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
-#' # datacubes <- ebv_datacubepaths(file)
+#' datacubes <- ebv_datacubepaths(file)
 #'
 #' #set outputpath
-#' # out <- file.path(system.file(package='ebvcube'),"extdata","subset_bb.tif")
+#' out <- file.path(system.file(package='ebvcube'),"extdata","subset_bb.tif")
 #' #define two different bounding boxes based on different EPSG codes
-#' # bb_wgs84 <- c(5,15,47,55)
-#' # bb_utm32 <- c(271985, 941837, 5232640, 6101151)
+#' bb_wgs84 <- c(5,15,47,55)
+#' bb_utm32 <- c(271985, 941837, 5232640, 6101151)
 #'
 #'
 #' #read bb (based on EPSG 4326) - return Raster
-#' # cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#' #                             entity = NULL, timestep = c(1,4,12), bb = bb_wgs84)
+#' cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
+#'                              entity = NULL, timestep = c(1,4,12), bb = bb_wgs84)
 #'
 #' #read bb (based on EPSG 4326) - write to GeoTiff
 #' # path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
@@ -60,7 +59,6 @@
 #' # path  <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
 #' #                      entity = NULL, timestep = 1:3, bb = bb_utm32,
 #' #                      epsg = 32632, outputpath = out, overwrite = TRUE)
-#' }
 ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
                         outputpath=NULL, epsg = 4326, overwrite=FALSE,
                         ignore_RAM = FALSE, verbose = FALSE){
