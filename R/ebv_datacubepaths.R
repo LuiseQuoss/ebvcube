@@ -65,6 +65,9 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
     new <- FALSE
   }
 
+  #check 4D or 3D
+  is_4D <- ebv_i_4D(filepath)
+
   #get all datasets ----
   remove <- c('crs', 'dim_entity', 'lat', 'lon', 'crs', 'time', 'var_entity',
               'entities', 'entity', 'nchar')
@@ -92,77 +95,37 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
     subgroups <- c()
   }
 
-
-  #build result ----
-  entity_names <- c()
-  #scenario and metric ----
-  if(('scenario' %in% subgroups )| stringr::str_detect(datacubepaths[1], 'scenario')){
-    scenario_names <- c()
-    metric_names <- c()
-    for (p in datacubepaths){
-      #entity longname
-      dh <- hdf&p
-      if (rhdf5::H5Aexists(dh, 'label')){
-        e <- ebv_i_read_att(dh, 'label')
-      } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
-        e <- ebv_i_read_att(dh, 'standard_name')
-      } else {
-        e <- 'not defined'
-      }
-      rhdf5::H5Dclose(dh)
-      #scenario longname
-      scenario <- stringr::str_split(p, '/')[[1]][1]
-      dh <- hdf&scenario
-      if (rhdf5::H5Aexists(dh, 'label')){
-        s <- ebv_i_read_att(dh, 'label')
-      } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
-        s <- ebv_i_read_att(dh, 'standard_name')
-      } else {
-        s <- 'not defined'
-      }
-      rhdf5::H5Gclose(dh)
-      #metric longname
-      metric <- paste0(scenario, '/', stringr::str_split(p, '/')[[1]][2])
-      dh <- hdf&metric
-      if (rhdf5::H5Aexists(dh, 'label')){
-        m <- ebv_i_read_att(dh, 'label')
-      } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
-        m <- ebv_i_read_att(dh, 'standard_name')
-      } else {
-        m <- 'not defined'
-      }
-      rhdf5::H5Gclose(dh)
-      #collect infos
-      scenario_names <- c(scenario_names, s)
-      metric_names <- c(metric_names, m)
-      entity_names <- c(entity_names, e)
-    }
-    #build result data.frame
-    if(!new | !any(entity_names=='not defined')){
-      result = data.frame(datacubepaths, scenario_names, metric_names, entity_names)
-    } else{
-      result = data.frame(datacubepaths, scenario_names, metric_names)
-    }
-  } else{
-    # only metric ----
-    metric_names <- c()
-    for (p in datacubepaths){
-      #entity longname
-      dh <- hdf&p
-      if (rhdf5::H5Aexists(dh, 'label')){
-        e <- ebv_i_read_att(dh, 'label')
-      } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
-        e <- ebv_i_read_att(dh, 'standard_name')
-      } else {
-        e <- 'not defined'
-      }
-      rhdf5::H5Dclose(dh)
-      #metric longname
-      metric <- stringr::str_split(p, '/')[[1]][1]
-      #delete 'if' when hennekens is corrected! - all datasets must have a metric!
-      if (metric == ''){
-        m <- 'none'
-      }else{
+  if(!is_4D){
+    #process 3D----
+    entity_names <- c()
+    #scenario and metric ----
+    if(('scenario' %in% subgroups )| stringr::str_detect(datacubepaths[1], 'scenario')){
+      scenario_names <- c()
+      metric_names <- c()
+      for (p in datacubepaths){
+        #entity longname
+        dh <- hdf&p
+        if (rhdf5::H5Aexists(dh, 'label')){
+          e <- ebv_i_read_att(dh, 'label')
+        } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+          e <- ebv_i_read_att(dh, 'standard_name')
+        } else {
+          e <- 'not defined'
+        }
+        rhdf5::H5Dclose(dh)
+        #scenario longname
+        scenario <- stringr::str_split(p, '/')[[1]][1]
+        dh <- hdf&scenario
+        if (rhdf5::H5Aexists(dh, 'label')){
+          s <- ebv_i_read_att(dh, 'label')
+        } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+          s <- ebv_i_read_att(dh, 'standard_name')
+        } else {
+          s <- 'not defined'
+        }
+        rhdf5::H5Gclose(dh)
+        #metric longname
+        metric <- paste0(scenario, '/', stringr::str_split(p, '/')[[1]][2])
         dh <- hdf&metric
         if (rhdf5::H5Aexists(dh, 'label')){
           m <- ebv_i_read_att(dh, 'label')
@@ -172,19 +135,121 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
           m <- 'not defined'
         }
         rhdf5::H5Gclose(dh)
+        #collect infos
+        scenario_names <- c(scenario_names, s)
+        metric_names <- c(metric_names, m)
+        entity_names <- c(entity_names, e)
       }
-      entity_names <- c(entity_names, e)
-      metric_names <- c(metric_names, m)
-
-    }
-    #build result data.frame
-    if(!new | ! any(entity_names=='not defined')){
-      result = data.frame(datacubepaths, metric_names, entity_names)
+      #build result data.frame
+      if(!new | !any(entity_names=='not defined')){
+        result = data.frame(datacubepaths, scenario_names, metric_names, entity_names)
+      } else{
+        result = data.frame(datacubepaths, scenario_names, metric_names)
+      }
     } else{
-      result = data.frame(datacubepaths, metric_names)
-    }
+      # only metric ----
+      metric_names <- c()
+      for (p in datacubepaths){
+        #entity longname
+        dh <- hdf&p
+        if (rhdf5::H5Aexists(dh, 'label')){
+          e <- ebv_i_read_att(dh, 'label')
+        } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+          e <- ebv_i_read_att(dh, 'standard_name')
+        } else {
+          e <- 'not defined'
+        }
+        rhdf5::H5Dclose(dh)
+        #metric longname
+        metric <- stringr::str_split(p, '/')[[1]][1]
+        #delete 'if' when hennekens is corrected! - all datasets must have a metric!
+        if (metric == ''){
+          m <- 'none'
+        }else{
+          dh <- hdf&metric
+          if (rhdf5::H5Aexists(dh, 'label')){
+            m <- ebv_i_read_att(dh, 'label')
+          } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+            m <- ebv_i_read_att(dh, 'standard_name')
+          } else {
+            m <- 'not defined'
+          }
+          rhdf5::H5Gclose(dh)
+        }
+        entity_names <- c(entity_names, e)
+        metric_names <- c(metric_names, m)
 
+      }
+      #build result data.frame
+      if(!new | ! any(entity_names=='not defined')){
+        result = data.frame(datacubepaths, metric_names, entity_names)
+      } else{
+        result = data.frame(datacubepaths, metric_names)
+      }
+
+    }
+  } else{
+    #process 4D----
+
+    #scenario and metric ----
+    if(('scenario' %in% subgroups )| stringr::str_detect(datacubepaths[1], 'scenario')){
+      scenario_names <- c()
+      metric_names <- c()
+        #scenario longname
+        scenario <- stringr::str_split(p, '/')[[1]][1]
+        dh <- hdf&scenario
+        if (rhdf5::H5Aexists(dh, 'label')){
+          s <- ebv_i_read_att(dh, 'label')
+        } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+          s <- ebv_i_read_att(dh, 'standard_name')
+        } else {
+          s <- 'not defined'
+        }
+        rhdf5::H5Gclose(dh)
+        #metric longname
+        metric <- paste0(scenario, '/', stringr::str_split(p, '/')[[1]][2])
+        dh <- hdf&metric
+        if (rhdf5::H5Aexists(dh, 'label')){
+          m <- ebv_i_read_att(dh, 'label')
+        } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+          m <- ebv_i_read_att(dh, 'standard_name')
+        } else {
+          m <- 'not defined'
+        }
+        rhdf5::H5Gclose(dh)
+        #collect infos
+        scenario_names <- c(scenario_names, s)
+        metric_names <- c(metric_names, m)
+        #build result data.frame
+        result = data.frame(datacubepaths, scenario_names, metric_names)
+      } else{
+      # only metric ----
+      metric_names <- c()
+      for (p in datacubepaths){
+        #metric longname
+        metric <- stringr::str_split(p, '/')[[1]][1]
+        #delete 'if' when hennekens is corrected! - all datasets must have a metric!
+        if (metric == ''){
+          m <- 'none'
+        }else{
+          dh <- hdf&metric
+          if (rhdf5::H5Aexists(dh, 'label')){
+            m <- ebv_i_read_att(dh, 'label')
+          } else if (rhdf5::H5Aexists(dh, 'standard_name')) {
+            m <- ebv_i_read_att(dh, 'standard_name')
+          } else {
+            m <- 'not defined'
+          }
+          rhdf5::H5Gclose(dh)
+        }
+        metric_names <- c(metric_names, m)
+
+      }
+      #build result data.frame
+        result = data.frame(datacubepaths, metric_names)
+    }
   }
+
 
   #close file
   rhdf5::H5Fclose(hdf)
