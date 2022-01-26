@@ -54,6 +54,7 @@ Speficy a directory for these setting via
 options('ebv_temp'='/path/to/temp/directory').
 }
 \examples{
+\dontrun{
 #set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
@@ -62,4 +63,5 @@ datacubes <- ebv_datacubepaths(file)
 #plot a map for the 9th timestep, divide into 7 classes
 ebv_map(filepath = file, datacubepath = datacubes[1,1], entity = NULL,
         timestep = 9, classes = 7)
+}
 }

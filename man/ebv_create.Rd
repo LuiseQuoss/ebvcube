@@ -13,6 +13,7 @@ ebv_create(
   resolution = c(1, 1),
   fillvalue = NULL,
   prec = "double",
+  sep = ",",
   force_4D = TRUE,
   overwrite = FALSE,
   verbose = FALSE
@@ -25,8 +26,9 @@ ebv_create(
 \item{outputpath}{Character. Set path where the NetCDF file should be
 created.}
 
-\item{entities}{Character. Csv table holding the entity names. Should have
-only one column, each row is the name of one entity.}
+\item{entities}{Character. Csv table holding the entity names. Default:
+comma-separated delimiter, else change the 'sep'-argument accordingly.
+Should have only one column, each row is the name of one entity.}
 
 \item{epsg}{Integer. Default: 4326 (WGS84). Defines the coordinate reference
 system via the corresponding epsg code.}
@@ -43,6 +45,9 @@ mandatory but should be defined!}
 \item{prec}{Character. Default: 'double'. Precision of the data set. Valid
 options: 'short' 'integer' 'float' 'double' 'char' 'byte'.}
 
+\item{sep}{Character. Default: ','. If the delimiter of the csv specifying
+the entity-names differs from the default, indicate here.}
+
 \item{force_4D}{Logical. Default is TRUE. If the argument is TRUE, there will
 be 4D cubes (lon, lat, time, entity) per metric. If this argument is
 changed to FALSE, there will be 3D cubes (lon, lat, time) per entity (per
@@ -50,8 +55,8 @@ metric). So the latter yields a higher amount of cubes and does not bundle
 all information per metric. In the future the standard will be restricted
 to the 4D version. Recommendation: go with the 4D cubes!}
 
-\item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
-outputfile defined by 'outputpath'.}
+\item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the output
+file defined by 'outputpath'.}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
 TRUE.}

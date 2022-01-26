@@ -73,11 +73,10 @@ out <- file.path(system.file(package='ebvcube'),"extdata","subset_bb.tif")
 bb_wgs84 <- c(5,15,47,55)
 bb_utm32 <- c(271985, 941837, 5232640, 6101151)
 
-print(gdalUtils::gdalsrsinfo(paste0("EPSG:", 32632)))
 
 #read bb (based on EPSG 4326) - return Raster
-# cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#                             entity = NULL, timestep = c(1,4,12), bb = bb_wgs84)
+cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
+                             entity = NULL, timestep = c(1,4,12), bb = bb_wgs84)
 
 #read bb (based on EPSG 4326) - write to GeoTiff
 # path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
