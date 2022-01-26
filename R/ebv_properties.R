@@ -121,7 +121,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
   #check dimensions
   ls <- rhdf5::h5ls(filepath)
-  if('entities' %in% ls$name){
+  if('entity' %in% ls$name){#HERE
     new <- TRUE
   } else{
     new <- FALSE
@@ -445,16 +445,22 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
   }else{
     #ACDD STANDARD----
     #get all entity names ----
-    entity_data <- rhdf5::h5read(hdf, 'entities')
+    entity_data <- rhdf5::h5read(hdf, 'entity')#HERE
     entity_names <- c()
-    for (col in 1:ncol(entity_data)){
-      name <- paste0(entity_data[,col], collapse = '')
-      entity_names <- c(entity_names, name)
+    if(!is.na(ncol(entity_data))){#HERE!
+      for (col in 1:ncol(entity_data)){
+        name <- paste0(entity_data[,col], collapse = '')
+        entity_names <- c(entity_names, name)
+      }
+      #trim whitespaces
+      entity_names <- gsub(pattern = "(^ +| +$)",
+                           replacement = "",
+                           x = entity_names)
+    } else{
+      entity_names <- entity_data
     }
-    #trim whitespaces
-    entity_names <- gsub(pattern = "(^ +| +$)",
-         replacement = "",
-         x = entity_names)
+
+
 
     time_data <- rhdf5::h5read(hdf, 'time')
 
@@ -486,7 +492,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     license <- ebv_i_read_att(hdf, 'license')
 
     #entities info
-    did <- rhdf5::H5Dopen(hdf, 'entities')
+    did <- rhdf5::H5Dopen(hdf, 'entity')#HERE
     ebv_entity_type <- ebv_i_read_att(did, 'ebv_entity_type')
     ebv_entity_scope <- ebv_i_read_att(did, 'ebv_entity_scope')
     ebv_entity_classification_name <- ebv_i_read_att(did, 'ebv_entity_classification_name')
@@ -508,7 +514,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
     #get dims
     if(ebv_i_4D(filepath)){
-      dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time), dim(hdf$entity))
+      dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time), dim(hdf$entity)[2])#HERE [2]
     } else{
       dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time))
     }
