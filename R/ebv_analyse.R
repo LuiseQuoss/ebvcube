@@ -41,8 +41,8 @@
 #' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
 #'
 #' #get measurements for full extent and all timesteps
-#' data_global <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
-#'                            entity = NULL, timestep = 1:12)
+#' # data_global <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
+#' #                           entity = NULL, timestep = 1:12)
 #'
 #' #get measurements for germany only (using bounding box) and one timestep
 #' # data_bb_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
