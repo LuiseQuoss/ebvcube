@@ -424,7 +424,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         name <- paste0('var', enum)
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
-                                      missval=fillvalue, compression=9,
+                                      missval=fillvalue, compression=5,
                                       prec=prec, verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -436,7 +436,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         name <- paste0('var', enum)
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
-                                      compression=9, prec=prec,
+                                      compression=5, prec=prec,
                                       verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -451,7 +451,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         name <- paste0('var', enum)
         assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
                                       dim= list(lon_dim, lat_dim, time_dim, entity_dim),
-                                      missval=fillvalue, compression=9, prec=prec,
+                                      missval=fillvalue, compression=5, prec=prec,
                                       verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -463,7 +463,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         name <- paste0('var', enum)
         assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
                                       dim= list(lon_dim, lat_dim, time_dim, entity_dim),
-                                      compression=9, prec=prec,
+                                      compression=5, prec=prec,
                                       verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -474,7 +474,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #add crs variable ----
   var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'crs', units = '',
-                                          dim= list(), compression=9,
+                                          dim= list(),
                                           prec='char', verbose=verbose)
   enum <- enum+1
   #check for special characters
@@ -612,7 +612,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(crs.id, 'GeoTransform', geo_trans)
 
   #get grid mapping
-  grid_mapping <- ncmeta::nc_prj_to_gridmapping(sp::CRS(SRS_string = crs_ref)) #paste0('EPSG:',epsg)
+  #utm not supported by ncmeta, replace by alternative: tmerc
+  crs_grid <- as.character(sp::CRS(SRS_string = crs_ref))
+  if(stringr::str_detect(crs_grid, 'utm')){
+    crs_grid <- stringr::str_replace(crs_grid, 'utm', 'tmerc')
+  }
+  #get grid mapping attributes
+  grid_mapping <- ncmeta::nc_prj_to_gridmapping(crs_grid) #paste0('EPSG:',epsg)
 
   #add grid mapping name and remove from tibble
   ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
