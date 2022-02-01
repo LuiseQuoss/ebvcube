@@ -492,7 +492,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #add entities variable ----
   max_char <- max(nchar(entity_csv[,1]))
   dimchar <- ncdf4::ncdim_def("nchar", "", 1:max_char, create_dimvar=FALSE )
-  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entities', unit='1', #HERE adimensional
+  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entities', unit='adimensional', #HERE adimensional
                                           dim=list(dimchar,entity_dim),
                                           prec='char', verbose = verbose)
 
@@ -751,8 +751,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #add entity attributes 3D ----
   if(force_4D==FALSE){
-    enum <-1
+    #enum <- 1
     for(var in var_list){
+      part <- stringr::str_split(var, '/')[[1]][2]
+      enum <- as.integer(paste0(stringr::str_extract_all(part, '\\d')[[1]], collapse=''))
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
       ebv_i_char_att(did, 'coordinate', '/entities')#HERE
@@ -760,7 +762,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       ebv_i_char_att(did, 'standard_name', entity_csv[enum,1])
       #close dh
       rhdf5::H5Dclose(did)
-      enum <- enum +1
+      #enum <- enum +1
     }
   }else{
   #add entity attributes 4D ----
