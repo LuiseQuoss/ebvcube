@@ -492,7 +492,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #add entities variable ----
   max_char <- max(nchar(entity_csv[,1]))
   dimchar <- ncdf4::ncdim_def("nchar", "", 1:max_char, create_dimvar=FALSE )
-  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='adimensional', #HERE
+  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entities', unit='1', #HERE adimensional
                                           dim=list(dimchar,entity_dim),
                                           prec='char', verbose = verbose)
 
@@ -512,15 +512,15 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   # global attributes ----
   #static attributes
-  ebv_i_char_att(hdf, 'Conventions', 'CF-1.8; ACDD-1.3; EBV-1.0')
+  ebv_i_char_att(hdf, 'Conventions', 'CF-1.8, ACDD-1.3, EBV-1.0')
   ebv_i_char_att(hdf, 'naming_authority', 'iDiv')
   ebv_i_char_att(hdf, 'date_issued', 'pending')
   ebv_i_char_att(hdf, 'history', paste0('EBV netCDF created using ebvcube, ', Sys.Date()))
   ebv_i_char_att(hdf, 'ebv_vocabulary', 'https://portal.geobon.org/api/v1/ebv')
   if(force_4D){
-    ebv_i_char_att(hdf, 'ebv_cube_dimensions', 'lon; lat; time; entity')
+    ebv_i_char_att(hdf, 'ebv_cube_dimensions', 'lon, lat, time, entity')
   } else{
-    ebv_i_char_att(hdf, 'ebv_cube_dimensions', 'lon; lat; time')
+    ebv_i_char_att(hdf, 'ebv_cube_dimensions', 'lon, lat, time')
   }
 
   #dynamic attributes
@@ -552,7 +552,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #keywords
   keywords <- paste0('ebv_class: ', json$ebv$ebv_class, ', ebv_name: ', json$ebv$ebv_name,
-                     ', ebv_domain: ', paste0(json$ebv_domain, collapse='; '), ', ebv_spatial_scope: ',
+                     ', ebv_domain: ', paste0(json$ebv_domain, collapse=', '), ', ebv_spatial_scope: ',
                      json$ebv_spatial$ebv_spatial_scope, ', ebv_entity_type: ',
                      json$ebv_entity$ebv_entity_type)
 
@@ -569,7 +569,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #add global.att to netcdf
   for (i in 1:length(global.att)){
     att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
-    att.txt <- paste(att.txt, collapse = '; ')
+    att.txt <- paste(att.txt, collapse = ', ')
     ebv_i_char_att(hdf, names(global.att[i]), att.txt)
   }
 
@@ -628,6 +628,11 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   for (name in grid_mapping$name){
     ebv_i_num_att(crs.id, name, grid_mapping$value[grid_mapping$name==name][[1]])
   }
+
+  # #add standard_name and long_name
+  # ebv_i_char_att(crs.id, 'standard_name', 'CRS')
+  # ebv_i_char_att(crs.id, 'long_name', 'CRS definition')
+
 
   #close ds
   rhdf5::H5Dclose(crs.id)
@@ -689,7 +694,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     }
     entity.values <- c(entity.values, new_values)
   }
-  entity.id <- rhdf5::H5Dopen(hdf, 'entity')#HERE
+  entity.id <- rhdf5::H5Dopen(hdf, 'entities')#HERE
   rhdf5::H5Dwrite(entity.id, entity.values)
 
   # acdd terms
@@ -697,6 +702,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(entity.id, 'ebv_entity_scope', json$ebv_entity$ebv_entity_scope)
   ebv_i_char_att(entity.id, 'ebv_entity_classification_name', json$ebv_entity$ebv_entity_classification_name)
   ebv_i_char_att(entity.id, 'ebv_entity_classification_url', json$ebv_entity$ebv_entity_classification_url)
+
+  #add long_name and standard_name
+  #ebv_i_char_att(entity.id, 'standard_name', 'Entity variable')
+  ebv_i_char_att(entity.id, 'long_name', 'Entity variable. Stores string values describing the entities of the ebv_cube.')
 
   rhdf5::H5Dclose(entity.id)
 
@@ -746,8 +755,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     for(var in var_list){
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
-      ebv_i_char_att(did, 'coordinate', '/entity')#HERE
-      ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse='; '))
+      ebv_i_char_att(did, 'coordinate', '/entities')#HERE
+      ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse=', '))
       ebv_i_char_att(did, 'standard_name', entity_csv[enum,1])
       #close dh
       rhdf5::H5Dclose(did)
@@ -759,8 +768,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     for(var in var_list){
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
-      ebv_i_char_att(did, 'coordinate', '/entity')#HERE
-      ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse='; '))
+      ebv_i_char_att(did, 'coordinate', '/entities')#HERE
+      ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse=', '))
       #close dh
       rhdf5::H5Dclose(did)
     }
