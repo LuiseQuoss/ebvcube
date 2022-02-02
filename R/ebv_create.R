@@ -662,7 +662,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(lat.id, 'axis', 'Y')
 
   # :units = 'degrees_north';
-  ebv_i_char_att(lat.id, 'units', paste0(crs_unit, '_north'))
+  ebv_i_char_att(lat.id, 'units', 'degrees_north')#paste0(crs_unit, '_north'))
 
   #close dataset
   rhdf5::H5Dclose(lat.id)
@@ -685,7 +685,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(lon.id, 'axis', 'X')
 
   # :units = 'degrees_east';
-  ebv_i_char_att(lon.id, 'units', paste0(crs_unit, '_east'))
+  ebv_i_char_att(lon.id, 'units', 'degrees_east')#paste0(crs_unit, '_east'))
 
   #close dataset
   rhdf5::H5Dclose(lon.id)
