@@ -592,10 +592,15 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #lat and lon
   ebv_i_char_att(hdf, 'geospatial_bounds_crs', paste0('EPSG:', epsg))
   ebv_i_char_att(hdf, 'geospatial_bounds', bounds)
-  ebv_i_char_att(hdf, 'geospatial_lat_units', 'degrees_north')#paste0(crs_unit, '_north'))
   ebv_i_char_att(hdf, 'geospatial_lat_resolution', paste0(res[2], ' ', crs_unit))
   ebv_i_char_att(hdf, 'geospatial_lon_resolution', paste0(res[1], ' ', crs_unit))
-  ebv_i_char_att(hdf, 'geospatial_lon_units', 'degrees_east')#paste0(crs_unit, '_east'))
+  if(crs_unit == 'meters'){
+    ebv_i_char_att(hdf, 'geospatial_lon_units', 'meters')
+    ebv_i_char_att(hdf, 'geospatial_lat_units', 'meters')
+  }else{
+    ebv_i_char_att(hdf, 'geospatial_lon_units', 'degrees_east')
+    ebv_i_char_att(hdf, 'geospatial_lat_units', 'degrees_north')
+  }
 
   #temporal attributes
   # acdd terms
@@ -662,7 +667,12 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(lat.id, 'axis', 'Y')
 
   # :units = 'degrees_north';
-  ebv_i_char_att(lat.id, 'units', 'degrees_north')#paste0(crs_unit, '_north'))
+  if(crs_proj){
+    ebv_i_char_att(lat.id, 'units', 'meters')#paste0(crs_unit, '_north'))
+  }else{
+    ebv_i_char_att(lat.id, 'units', 'degrees_north')#paste0(crs_unit, '_north'))
+  }
+
 
   #close dataset
   rhdf5::H5Dclose(lat.id)
@@ -685,7 +695,11 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(lon.id, 'axis', 'X')
 
   # :units = 'degrees_east';
-  ebv_i_char_att(lon.id, 'units', 'degrees_east')#paste0(crs_unit, '_east'))
+  if(crs_proj){
+    ebv_i_char_att(lon.id, 'units', 'meters')#paste0(crs_unit, '_north'))
+  }else{
+    ebv_i_char_att(lon.id, 'units', 'degrees_east')#paste0(crs_unit, '_east'))
+  }
 
   #close dataset
   rhdf5::H5Dclose(lon.id)

@@ -503,10 +503,10 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     #get resolution, units
     resolution <- c()
     crs_units <- stringr::str_split(ebv_i_read_att(hdf, 'geospatial_lon_units'), '_')[[1]][1]
-    resolution <- c(resolution, ebv_i_read_att(hdf, 'geospatial_lon_resolution'))
+    resolution <- as.numeric(stringr::str_remove_all(c(resolution, ebv_i_read_att(hdf, 'geospatial_lon_resolution')),'[A-Za-z _-]'))
 
     #did <- rhdf5::H5Dopen(hdf, 'lat')
-    resolution <- c(resolution, ebv_i_read_att(hdf, 'geospatial_lat_resolution'))
+    #resolution <- c(resolution, ebv_i_read_att(hdf, 'geospatial_lat_resolution'))
 
     #global spatial atts
     ebv_spatial_scope <- ebv_i_read_att(hdf, 'ebv_spatial_scope')
