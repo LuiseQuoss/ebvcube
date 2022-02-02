@@ -492,7 +492,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #add entities variable ----
   max_char <- max(nchar(entity_csv[,1]))
   dimchar <- ncdf4::ncdim_def("nchar", "", 1:max_char, create_dimvar=FALSE )
-  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entities', unit='adimensional', #HERE adimensional
+  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='adimensional', #HERE adimensional
                                           dim=list(dimchar,entity_dim),
                                           prec='char', verbose = verbose)
 
@@ -694,7 +694,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     }
     entity.values <- c(entity.values, new_values)
   }
-  entity.id <- rhdf5::H5Dopen(hdf, 'entities')#HERE
+  entity.id <- rhdf5::H5Dopen(hdf, 'entity')#HERE
   rhdf5::H5Dwrite(entity.id, entity.values)
 
   # acdd terms
@@ -757,7 +757,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       enum <- as.integer(paste0(stringr::str_extract_all(part, '\\d')[[1]], collapse=''))
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
-      ebv_i_char_att(did, 'coordinate', '/entities')#HERE
+      ebv_i_char_att(did, 'coordinate', '/entity')#HERE
       ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse=', '))
       ebv_i_char_att(did, 'standard_name', entity_csv[enum,1])
       #close dh
@@ -770,7 +770,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     for(var in var_list){
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
-      ebv_i_char_att(did, 'coordinate', '/entities')#HERE
+      ebv_i_char_att(did, 'coordinate', '/entity')#HERE
       ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse=', '))
       #close dh
       rhdf5::H5Dclose(did)
