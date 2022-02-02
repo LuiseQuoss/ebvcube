@@ -800,7 +800,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #add long_name and standard_name
   #ebv_i_char_att(entity.id, 'standard_name', 'Entity variable')
-  ebv_i_char_att(entity.id, 'long_name', 'Biological entity')
+  ebv_i_char_att(entity.id, 'long_name', 'biological entity')
 
   rhdf5::H5Dclose(entity.id)
 
