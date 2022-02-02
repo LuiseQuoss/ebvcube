@@ -492,7 +492,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #add entities variable ----
   max_char <- max(nchar(entity_csv[,1]))
   dimchar <- ncdf4::ncdim_def("nchar", "", 1:max_char, create_dimvar=FALSE )
-  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='adimensional', #HERE adimensional
+  var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='1', #HERE adimensional
                                           dim=list(dimchar,entity_dim),
                                           prec='char', verbose = verbose)
 
@@ -593,8 +593,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(hdf, 'geospatial_bounds_crs', paste0('EPSG:', epsg))
   ebv_i_char_att(hdf, 'geospatial_bounds', bounds)
   ebv_i_char_att(hdf, 'geospatial_lat_units', paste0(crs_unit, '_north'))
-  ebv_i_num_att(hdf, 'geospatial_lat_resolution', res[2])
-  ebv_i_num_att(hdf, 'geospatial_lon_resolution', res[1])
+  ebv_i_char_att(hdf, 'geospatial_lat_resolution', paste0(res[2], ' ', crs_unit))
+  ebv_i_char_att(hdf, 'geospatial_lon_resolution', paste0(res[1], ' ', crs_unit))
   ebv_i_char_att(hdf, 'geospatial_lon_units', paste0(crs_unit, '_east'))
 
   #temporal attributes
@@ -639,7 +639,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   # #add standard_name and long_name
   # ebv_i_char_att(crs.id, 'standard_name', 'CRS')
-  # ebv_i_char_att(crs.id, 'long_name', 'CRS definition')
+  ebv_i_char_att(crs.id, 'long_name', 'CRS definition')
 
   #close ds
   rhdf5::H5Dclose(crs.id)
