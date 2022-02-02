@@ -424,7 +424,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         name <- paste0('var', enum)
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
-                                      missval=fillvalue, compression=5,
+                                      missval=fillvalue, compression=9,
                                       prec=prec, verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -436,7 +436,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         name <- paste0('var', enum)
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
-                                      compression=5, prec=prec,
+                                      compression=9, prec=prec,
                                       verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -451,7 +451,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         name <- paste0('var', enum)
         assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
                                       dim= list(lon_dim, lat_dim, time_dim, entity_dim),
-                                      missval=fillvalue, compression=5, prec=prec,
+                                      missval=fillvalue, compression=9, prec=prec,
                                       verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -463,7 +463,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         name <- paste0('var', enum)
         assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
                                       dim= list(lon_dim, lat_dim, time_dim, entity_dim),
-                                      compression=5, prec=prec,
+                                      compression=9, prec=prec,
                                       verbose=verbose, shuffle=TRUE))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
