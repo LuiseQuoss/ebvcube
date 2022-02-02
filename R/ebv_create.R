@@ -620,6 +620,14 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #get grid mapping attributes
   grid_mapping <- ncmeta::nc_prj_to_gridmapping(crs_grid) #paste0('EPSG:',epsg)
 
+  #check grid mapping name
+  #change standard_name of lat and lon accordingly
+  if(grid_mapping[which(grid_mapping$name=='grid_mapping_name'),]$value[[1]]=='latitude_longitude'){
+    crs_proj <- FALSE
+  }else{
+    crs_proj<- TRUE
+  }
+
   #add grid mapping name and remove from tibble
   ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
   grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name',]
@@ -633,7 +641,6 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # ebv_i_char_att(crs.id, 'standard_name', 'CRS')
   # ebv_i_char_att(crs.id, 'long_name', 'CRS definition')
 
-
   #close ds
   rhdf5::H5Dclose(crs.id)
 
@@ -643,6 +650,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   # :long_name = "longitude";
   ebv_i_char_att(lat.id, 'long_name', 'latitude')
+
+  #if CRS is projected, add different standard_name
+  if(crs_proj){
+    ebv_i_char_att(lat.id, 'standard_name', 'projection_y_coordinate')
+  }else{
+    ebv_i_char_att(lat.id, 'standard_name', 'latitude')
+  }
 
   # :axis = "Y";
   ebv_i_char_att(lat.id, 'axis', 'Y')
@@ -659,6 +673,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   # :long_name = "longitude";
   ebv_i_char_att(lon.id, 'long_name', 'longitude')
+
+  #if CRS is projected, add different standard_name
+  if(crs_proj){
+    ebv_i_char_att(lon.id, 'standard_name', 'projection_x_coordinate')
+  }else{
+    ebv_i_char_att(lon.id, 'standard_name', 'longitude')
+  }
 
   # :axis = "X";
   ebv_i_char_att(lon.id, 'axis', 'X')
