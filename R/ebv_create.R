@@ -592,10 +592,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #lat and lon
   ebv_i_char_att(hdf, 'geospatial_bounds_crs', paste0('EPSG:', epsg))
   ebv_i_char_att(hdf, 'geospatial_bounds', bounds)
-  ebv_i_char_att(hdf, 'geospatial_lat_units', paste0(crs_unit, '_north'))
+  ebv_i_char_att(hdf, 'geospatial_lat_units', 'degrees_north')#paste0(crs_unit, '_north'))
   ebv_i_char_att(hdf, 'geospatial_lat_resolution', paste0(res[2], ' ', crs_unit))
   ebv_i_char_att(hdf, 'geospatial_lon_resolution', paste0(res[1], ' ', crs_unit))
-  ebv_i_char_att(hdf, 'geospatial_lon_units', paste0(crs_unit, '_east'))
+  ebv_i_char_att(hdf, 'geospatial_lon_units', 'degrees_east')#paste0(crs_unit, '_east'))
 
   #temporal attributes
   # acdd terms
