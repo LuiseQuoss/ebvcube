@@ -3,7 +3,9 @@
 #' @description Create the core structure of the EBV NetCDF based on the json
 #'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
 #'   and attributes will be added afterwards. Use [ebvcube::ebv_add_data()] to
-#'   add the missing attributes.
+#'   add the missing attributes. This functions writes a temporary file on your
+#'   disk. Specify a directory for these setting via
+#'   options('ebv_temp'='/path/to/temp/directory').
 #'
 #' @param jsonpath Character. Path to the json file downloaded from the
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
@@ -44,6 +46,8 @@
 #' @importFrom utils capture.output
 #'
 #' @examples
+#' #define temp directory
+#' options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #' #set path to JSON file
 #' json <- system.file(file.path("extdata","metadata.json"), package="ebvcube")
 #' #set output path of the new EBV netCDF
@@ -65,7 +69,6 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
-
   gids <- c('mgid', 'sgid')
   withr::defer(
     for (id in gids){
@@ -87,6 +90,20 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   withr::defer(
     if(exists('nc')){
       tryCatch(l <- utils::capture.output(ncdf4::nc_close(nc)))
+    }
+  )
+  withr::defer(
+    if(exists('nc_test')){
+      tryCatch(l <- utils::capture.output(ncdf4::nc_close(nc_test)))
+    }
+  )
+
+  #ensure that all tempfiles are deleted on exit
+  withr::defer(
+    if(exists('temp')){
+      if(file.exists(temp)){
+        file.remove(temp)
+      }
     }
   )
 
@@ -211,6 +228,19 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #check resolution
   if (checkmate::checkNumeric(resolution, len = 2) != TRUE){
     stop('resolution needs to be a list of 2 numeric values.')
+  }
+
+  #get temp directory
+  temp_path <- getOption('ebv_temp')[[1]]
+  if (is.null(temp_path)){
+    stop('This function creates a temporary file. Please specify a temporary directory via options.')
+  } else {
+    if (checkmate::checkCharacter(temp_path) != TRUE){
+      stop('The temporary directory must be of type character.')
+    }
+    if (checkmate::checkDirectoryExists(temp_path) != TRUE){
+      stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+    }
   }
 
   # end initial tests ----
@@ -414,6 +444,32 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   var_list_nc <- list()
   enum = 1
 
+  #define chunksize----
+  #create one 3D var to detect default chunksize
+  #aim: do not chunk along entities but time!
+  if(force_4D){
+    #create temporary 3D file
+    temp <- file.path(temp_path, 'ebv_chunksize_3d_test.nc')
+    test_def <- ncdf4::ncvar_def(name = 'test_var', units = 'some units',
+                                 dim= list(lon_dim, lat_dim, time_dim),
+                                 compression=9, prec=prec,
+                                 verbose=F, shuffle=TRUE)
+    nc_test <- ncdf4::nc_create(filename = temp,
+                           vars = test_def,
+                           force_v4 = T,
+                           verbose = F)
+    ncdf4::nc_close(nc_test)
+    #read out chunksize definition
+    nc_test <- ncdf4::nc_open(temp)
+    chunksizes_old <- nc_test$var$test_var$chunksizes
+    ncdf4::nc_close(nc_test)
+    #define chunksize
+    chunksizes_new <- c(chunksizes_old,1)
+    #remove temp file
+    if(file.exists(temp)){
+      file.remove(temp)
+    }
+  }
 
   # create all vars 3D ----
   if(force_4D==FALSE){
@@ -425,7 +481,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
                                       missval=fillvalue, compression=9,
-                                      prec=prec, verbose=verbose, shuffle=TRUE))
+                                      prec=prec, verbose=verbose, shuffle=TRUE,
+                                      chunksizes=chunksizes_new))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -437,7 +494,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
                                       compression=9, prec=prec,
-                                      verbose=verbose, shuffle=TRUE))
+                                      verbose=verbose, shuffle=TRUE,
+                                      chunksizes=chunksizes_new))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -452,7 +510,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
                                       dim= list(lon_dim, lat_dim, time_dim, entity_dim),
                                       missval=fillvalue, compression=9, prec=prec,
-                                      verbose=verbose, shuffle=TRUE))
+                                      verbose=verbose, shuffle=TRUE,
+                                      chunksizes=chunksizes_new))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -464,7 +523,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
                                       dim= list(lon_dim, lat_dim, time_dim, entity_dim),
                                       compression=9, prec=prec,
-                                      verbose=verbose, shuffle=TRUE))
+                                      verbose=verbose, shuffle=TRUE,
+                                      chunksizes=chunksizes_new))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
