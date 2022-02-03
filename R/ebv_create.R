@@ -704,21 +704,23 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     #set TRUE (lon&lat standard_name)
     crs_proj<- TRUE
   } else{
-    #add grid mapping name and remove from tibble
+    #get grid mapping attributes
     grid_mapping <- ncmeta::nc_prj_to_gridmapping(crs_grid) #paste0('EPSG:',epsg)
-    ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
-    grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name',]
-
-    #additional attributes
-    for (name in grid_mapping$name){
-      ebv_i_num_att(crs.id, name, grid_mapping$value[grid_mapping$name==name][[1]])
-    }
 
     #check name: change standard_name of lat and lon accordingly
     if(grid_mapping[which(grid_mapping$name=='grid_mapping_name'),]$value[[1]]=='latitude_longitude'){
       crs_proj <- FALSE
     }else{
       crs_proj<- TRUE
+    }
+
+    #add grid mapping name and remove from tibble
+    ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
+    grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name',]
+
+    #additional attributes
+    for (name in grid_mapping$name){
+      ebv_i_num_att(crs.id, name, grid_mapping$value[grid_mapping$name==name][[1]])
     }
 
   }
