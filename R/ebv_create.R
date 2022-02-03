@@ -713,8 +713,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # open dataset
   lat.id <- rhdf5::H5Dopen(hdf, 'lat')
 
-  # :long_name = "longitude";
-  ebv_i_char_att(lat.id, 'long_name', 'latitude')
+  # # :long_name = "longitude";
+  # ebv_i_char_att(lat.id, 'long_name', 'latitude')
 
   #if CRS is projected, add different standard_name
   if(crs_proj){
@@ -741,8 +741,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #open dataset
   lon.id <- rhdf5::H5Dopen(hdf, 'lon')
 
-  # :long_name = "longitude";
-  ebv_i_char_att(lon.id, 'long_name', 'longitude')
+  # # :long_name = "longitude";
+  # ebv_i_char_att(lon.id, 'long_name', 'longitude')
 
   #if CRS is projected, add different standard_name
   if(crs_proj){
