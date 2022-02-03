@@ -481,8 +481,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
                                       missval=fillvalue, compression=9,
-                                      prec=prec, verbose=verbose, shuffle=TRUE,
-                                      chunksizes=chunksizes_new))
+                                      prec=prec, verbose=verbose, shuffle=TRUE
+                                      ))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
@@ -494,8 +494,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
                                       compression=9, prec=prec,
-                                      verbose=verbose, shuffle=TRUE,
-                                      chunksizes=chunksizes_new))
+                                      verbose=verbose, shuffle=TRUE
+                                      ))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
       }
