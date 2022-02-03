@@ -273,7 +273,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   # :spatial_ref
   #crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", epsg))
-  crs_ref <- paste(crs[5:length(crs)], collapse = ' ')
+  crs_wkt <- crs[5:length(crs)]
+  crs_ref <- paste(crs_wkt, collapse = ' ')
 
   # unit
   if(stringr::str_detect(crs_ref,'PROJCRS')){
@@ -677,30 +678,49 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   ebv_i_char_att(crs.id, 'spatial_ref', crs_ref)
   ebv_i_char_att(crs.id, 'GeoTransform', geo_trans)
 
-  #get grid mapping
-  #utm not supported by ncmeta, replace by alternative: tmerc
-  crs_grid <- as.character(sp::CRS(SRS_string = crs_ref))
-  if(stringr::str_detect(crs_grid, 'utm')){
-    crs_grid <- stringr::str_replace(crs_grid, 'utm', 'tmerc')
-  }
   #get grid mapping attributes
-  grid_mapping <- ncmeta::nc_prj_to_gridmapping(crs_grid) #paste0('EPSG:',epsg)
+  crs_grid <- as.character(sp::CRS(SRS_string = crs_ref))
 
-  #check grid mapping name
-  #change standard_name of lat and lon accordingly
-  if(grid_mapping[which(grid_mapping$name=='grid_mapping_name'),]$value[[1]]=='latitude_longitude'){
-    crs_proj <- FALSE
-  }else{
+  if(stringr::str_detect(crs_grid, 'utm')){
+    #add grid mapping for UTM (not supported by ncmeta)
+    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'Latitude of natural origin'))]
+    lat_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'Longitude of natural origin'))]
+    lon_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'Scale factor at natural origin'))]
+    scale_fac <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'False easting'))]
+    f_east <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'False northing'))]
+    f_north <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+
+    ebv_i_char_att(crs.id, 'grid_mapping_name', 'transverse_mercator')
+    ebv_i_num_att(crs.id, 'latitude_of_projection_origin',lat_proj)
+    ebv_i_num_att(crs.id, 'longitude_of_projection_origin',lon_proj)
+    ebv_i_num_att(crs.id, 'scale_factor_at_projection_origin', scale_fac)
+    ebv_i_num_att(crs.id, 'false_easting',f_east)
+    ebv_i_num_att(crs.id, 'false_northing',f_north)
+
+    #set TRUE (lon&lat standard_name)
     crs_proj<- TRUE
-  }
+  } else{
+    #add grid mapping name and remove from tibble
+    grid_mapping <- ncmeta::nc_prj_to_gridmapping(crs_grid) #paste0('EPSG:',epsg)
+    ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
+    grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name',]
 
-  #add grid mapping name and remove from tibble
-  ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
-  grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name',]
+    #additional attributes
+    for (name in grid_mapping$name){
+      ebv_i_num_att(crs.id, name, grid_mapping$value[grid_mapping$name==name][[1]])
+    }
 
-  #additional attributes
-  for (name in grid_mapping$name){
-    ebv_i_num_att(crs.id, name, grid_mapping$value[grid_mapping$name==name][[1]])
+    #check name: change standard_name of lat and lon accordingly
+    if(grid_mapping[which(grid_mapping$name=='grid_mapping_name'),]$value[[1]]=='latitude_longitude'){
+      crs_proj <- FALSE
+    }else{
+      crs_proj<- TRUE
+    }
+
   }
 
   # #add standard_name and long_name
@@ -713,9 +733,6 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # change lat variable ----
   # open dataset
   lat.id <- rhdf5::H5Dopen(hdf, 'lat')
-
-  # # :long_name = "longitude";
-  # ebv_i_char_att(lat.id, 'long_name', 'latitude')
 
   #if CRS is projected, add different standard_name
   if(crs_proj){
@@ -741,9 +758,6 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # change lon variable ----
   #open dataset
   lon.id <- rhdf5::H5Dopen(hdf, 'lon')
-
-  # # :long_name = "longitude";
-  # ebv_i_char_att(lon.id, 'long_name', 'longitude')
 
   #if CRS is projected, add different standard_name
   if(crs_proj){
