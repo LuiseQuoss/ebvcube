@@ -574,7 +574,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   # global attributes ----
   #static attributes
   ebv_i_char_att(hdf, 'Conventions', 'CF-1.8, ACDD-1.3, EBV-1.0')
-  ebv_i_char_att(hdf, 'naming_authority', 'iDiv')
+  ebv_i_char_att(hdf, 'naming_authority', 'The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig')
   ebv_i_char_att(hdf, 'date_issued', 'pending')
   ebv_i_char_att(hdf, 'history', paste0('EBV netCDF created using ebvcube, ', Sys.Date()))
   ebv_i_char_att(hdf, 'ebv_vocabulary', 'https://portal.geobon.org/api/v1/ebv')
