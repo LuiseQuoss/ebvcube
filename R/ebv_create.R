@@ -631,7 +631,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #add global.att to netcdf
   for (i in 1:length(global.att)){
     att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
-    att.txt <- paste(att.txt, collapse = ', ')
+    att.txt <- paste0(att.txt[[1]], collapse = ', ')
     ebv_i_char_att(hdf, names(global.att[i]), att.txt)
   }
 
