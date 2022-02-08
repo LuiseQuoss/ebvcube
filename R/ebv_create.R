@@ -2,9 +2,9 @@
 #'
 #' @description Create the core structure of the EBV NetCDF based on the json
 #'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
-#'   and attributes will be added afterwards. Use [ebvcube::ebv_add_data()] to
-#'   add the missing attributes. This functions writes a temporary file on your
-#'   disk. Specify a directory for these setting via
+#'   will be added afterwards. Use [ebvcube::ebv_add_data()] to add the missing
+#'   data. This functions writes a temporary file on your disk. Specify a
+#'   directory for these setting via
 #'   options('ebv_temp'='/path/to/temp/directory').
 #'
 #' @param jsonpath Character. Path to the json file downloaded from the
