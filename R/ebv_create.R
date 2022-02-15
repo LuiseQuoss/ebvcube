@@ -314,7 +314,15 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     }else if(as.numeric(d)!= 0){
       sequence <- seq.Date(from = as.Date(t_start),
                            to = as.Date(t_end),
-                           by = paste0(m, ' day'))
+                           by = paste0(d, ' day'))
+    }
+
+    #timestep values
+    timesteps <- c()
+    for (s in sequence){
+      date <- as.numeric(s)
+      timestep <- date+add
+      timesteps <- c(timesteps, timestep)
     }
 
   }else{
