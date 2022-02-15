@@ -298,66 +298,90 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #create timesteps
   add <- 40177
-  if (mapply(grepl,'year',t_res,ignore.case=TRUE)){
-    start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
-    end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
-    intervall <- as.numeric(regmatches(t_res, gregexpr("[[:digit:]]+", t_res))[[1]][1])
-    if(is.na(intervall)){ #yearly
+  #process ISO standard PYYYY-MM-YY or short PYYYY
+  if(grepl('^P\\d{4}-?\\d{0,2}-?\\d{0,2}$', t_res)){
+    y <- stringr::str_split(stringr::str_remove(t_res, 'P')[[1]], '-')[[1]][1]
+    m <- stringr::str_split(stringr::str_remove(t_res, 'P')[[1]], '-')[[1]][2]
+    d <- stringr::str_split(stringr::str_remove(t_res, 'P')[[1]], '-')[[1]][3]
+    if(as.numeric(y)!= 0){
+      sequence <- seq.Date(from = as.Date(t_start),
+               to = as.Date(t_end),
+               by = paste0(y, ' year'))
+    } else if(as.numeric(m)!= 0){
+      sequence <- seq.Date(from = as.Date(t_start),
+                           to = as.Date(t_end),
+                           by = paste0(m, ' month'))
+    }else if(as.numeric(d)!= 0){
+      sequence <- seq.Date(from = as.Date(t_start),
+                           to = as.Date(t_end),
+                           by = paste0(m, ' day'))
+    }
+
+  }else{
+    #process old standard
+    if (mapply(grepl,'year',t_res,ignore.case=TRUE)){
+      start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
+      end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
+      intervall <- as.numeric(regmatches(t_res, gregexpr("[[:digit:]]+", t_res))[[1]][1])
+      if(is.na(intervall)){ #yearly
+        intervall <- 1
+      }
+      sequence <- seq(start, end, intervall)
+      timesteps <- c()
+      for (s in sequence){
+        date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
+        timestep <- date+add
+        timesteps <- c(timesteps, timestep)
+      }
+    } else if (mapply(grepl,'month',t_res,ignore.case=TRUE)){
+      start <- as.Date(t_start)
+      end   <- as.Date(t_end)
+      sequence <- seq(from=start, to=end,by='month' )
+      timesteps <- c()
+      for (s in sequence){
+        date <- as.numeric(as.Date(s,origin=as.Date("1970-01-01")))
+        timestep <- s+add
+        timesteps <- c(timesteps, timestep)
+      }
+    }else if (mapply(grepl,'day',t_res,ignore.case=TRUE)){
+      start <- as.Date(t_start)
+      end   <- as.Date(t_end)
+      sequence <- seq(from=start, to=end,by='days' )
+      timesteps <- c()
+      for (s in sequence){
+        date <- as.numeric(as.Date(s,origin=as.Date("1970-01-01")))
+        timestep <- s+add
+        timesteps <- c(timesteps, timestep)
+      }
+    } else if (mapply(grepl,'decad',t_res,ignore.case=TRUE)){
+      start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
+      end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
+      intervall <- 10
+      sequence <- seq(start, end, intervall)
+      timesteps <- c()
+      for (s in sequence){
+        date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
+        timestep <- date+add
+        timesteps <- c(timesteps, timestep)
+      }
+    } else if (mapply(grepl,'annually',t_res,ignore.case=TRUE)){
+      start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
+      end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
       intervall <- 1
+      sequence <- seq(start, end, intervall)
+      timesteps <- c()
+      for (s in sequence){
+        date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
+        timestep <- date+add
+        timesteps <- c(timesteps, timestep)
+      }
+    } else {
+      warning('could not detect delta time. empty time dataset created')
+      timesteps <- c(0)
     }
-    sequence <- seq(start, end, intervall)
-    timesteps <- c()
-    for (s in sequence){
-      date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
-      timestep <- date+add
-      timesteps <- c(timesteps, timestep)
-    }
-  } else if (mapply(grepl,'month',t_res,ignore.case=TRUE)){
-    start <- as.Date(t_start)
-    end   <- as.Date(t_end)
-    sequence <- seq(from=start, to=end,by='month' )
-    timesteps <- c()
-    for (s in sequence){
-      date <- as.numeric(as.Date(s,origin=as.Date("1970-01-01")))
-      timestep <- s+add
-      timesteps <- c(timesteps, timestep)
-    }
-  }else if (mapply(grepl,'day',t_res,ignore.case=TRUE)){
-    start <- as.Date(t_start)
-    end   <- as.Date(t_end)
-    sequence <- seq(from=start, to=end,by='days' )
-    timesteps <- c()
-    for (s in sequence){
-      date <- as.numeric(as.Date(s,origin=as.Date("1970-01-01")))
-      timestep <- s+add
-      timesteps <- c(timesteps, timestep)
-    }
-  } else if (mapply(grepl,'decad',t_res,ignore.case=TRUE)){
-    start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
-    end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
-    intervall <- 10
-    sequence <- seq(start, end, intervall)
-    timesteps <- c()
-    for (s in sequence){
-      date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
-      timestep <- date+add
-      timesteps <- c(timesteps, timestep)
-    }
-  } else if (mapply(grepl,'annually',t_res,ignore.case=TRUE)){
-    start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
-    end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
-    intervall <- 1
-    sequence <- seq(start, end, intervall)
-    timesteps <- c()
-    for (s in sequence){
-      date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
-      timestep <- date+add
-      timesteps <- c(timesteps, timestep)
-    }
-  } else {
-    warning('could not detect delta time. empty time dataset created')
-    timesteps <- c(0)
   }
+
+
 
   # lat ----
   res <- as.numeric(res)
