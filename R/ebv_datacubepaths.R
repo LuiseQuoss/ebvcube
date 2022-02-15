@@ -196,6 +196,7 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
       scenario_names <- c()
       metric_names <- c()
         #scenario longname
+      for (p in datacubepaths){
         scenario <- stringr::str_split(p, '/')[[1]][1]
         dh <- hdf&scenario
         if (rhdf5::H5Aexists(dh, 'label')){
@@ -220,6 +221,7 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
         #collect infos
         scenario_names <- c(scenario_names, s)
         metric_names <- c(metric_names, m)
+      }
         #build result data.frame
         result = data.frame(datacubepaths, scenario_names, metric_names)
       } else{
