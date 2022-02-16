@@ -143,7 +143,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   if (checkmate::checkFileExists(jsonpath) != TRUE){
     stop(paste0('Json file does not exist.\n', jsonpath))
   }
-  if (!endsWith(jsonpath, '.json')){
+  if (!(endsWith(jsonpath, '.json') | endsWith(jsonpath, '.js'))){
     stop(paste0('Json file ending is wrong. File cannot be processed.'))
   }
 
@@ -849,7 +849,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #add long_name and standard_name
   #ebv_i_char_att(entity.id, 'standard_name', 'Entity variable')
-  ebv_i_char_att(entity.id, 'long_name', 'biological entity')
+  ebv_i_char_att(entity.id, 'long_name', 'entity')
 
   rhdf5::H5Dclose(entity.id)
 
