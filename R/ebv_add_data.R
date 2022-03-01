@@ -249,17 +249,17 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   # #check if dims of tif data correspond to lat and lon in netcdf
   lat.len <- dims[1]
   lon.len <- dims[2]
-  # if ((size.int[1] != lon.len) & (size.int[2] != lat.len)){
-  #   stop(paste0('The size of your GeoTiff does not correspond to the latitude and longitude coordinates.
-  # Size should be: ', lon.len, ', ', lat.len, '. But is: ', size.int[1], ', ', size.int[2]))
-  # }
-  # if (size.int[1] != lon.len) {
-  #   stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
-  # Size sould be: ', lon.len, '. But size is: ', size.int[1]))
-  # } else if (size.int[2] != lat.len){
-  #   stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
-  # Size sould be: ', lat.len, '. But size is: ', size.int[2]))
-  # } #HERE---- alter the error message
+  if ((size.int[1] != lon.len) & (size.int[2] != lat.len)){
+    stop(paste0('The size of your GeoTiff does not correspond to the latitude and longitude coordinates.
+  Size should be: ', lon.len, ', ', lat.len, '. But is: ', size.int[1], ', ', size.int[2]))
+  }
+  if (size.int[1] != lon.len) {
+    stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
+  Size sould be: ', lon.len, '. But size is: ', size.int[1]))
+  } else if (size.int[2] != lat.len){
+    stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
+  Size sould be: ', lat.len, '. But size is: ', size.int[2]))
+  } #HERE---- alter the error message
 
   ### end initial test ----
 
