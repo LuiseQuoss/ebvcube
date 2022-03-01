@@ -658,6 +658,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
                        json$ebv_scenario$ebv_scenario_classification_name)
   }
 
+
   ebv_i_char_att(hdf, 'keywords', keywords)
 
   #add global.att to netcdf
@@ -684,7 +685,12 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
                    xmax, ' ' , ymax, ', ', xmax, ' ' , ymin, ', ',
                    xmin, ' ' , ymin,'))')
   #lat and lon
-  ebv_i_char_att(hdf, 'geospatial_bounds_crs', paste0('EPSG:', epsg))
+  if(stringr::str_detect(epsg, 'ESRI')){
+    ebv_i_char_att(hdf, 'geospatial_bounds_crs', epsg)
+  }else{
+    ebv_i_char_att(hdf, 'geospatial_bounds_crs', paste0('EPSG:', epsg))
+  }
+
   ebv_i_char_att(hdf, 'geospatial_bounds', bounds)
   ebv_i_char_att(hdf, 'geospatial_lat_resolution', paste0(res[2], ' ', crs_unit))
   ebv_i_char_att(hdf, 'geospatial_lon_resolution', paste0(res[1], ' ', crs_unit))
