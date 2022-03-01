@@ -522,7 +522,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
     #get extent
     extent <- c(min(hdf$lon)-resolution[1]/2, max(hdf$lon)+resolution[1]/2,
-                min(hdf$lat)-resolution[2]/2, max(hdf$lat)+resolution[2]/2)
+                min(hdf$lat)-resolution[1]/2, max(hdf$lat)+resolution[1]/2)
 
   #get extent, epsg, crs
   did <- rhdf5::H5Dopen(hdf, 'crs')
