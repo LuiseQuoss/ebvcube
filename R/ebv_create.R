@@ -660,7 +660,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
 
   #terranova datasets
   if(!is.null(json$terranova_type)){
-    keywords <- paste0(keywords, ', ', json$terranova_type)
+    keywords <- paste0(keywords, ', terranova_type: ', json$terranova_type)
   }
 
   ebv_i_char_att(hdf, 'keywords', keywords)
