@@ -9,7 +9,7 @@ ebv_add_data(
   datacubepath,
   entity = NULL,
   timestep = 1,
-  filepath_tif,
+  data,
   band = 1,
   ignore_RAM = FALSE,
   verbose = FALSE
@@ -30,8 +30,9 @@ netCDFs.}
 the data should be added. If several timesteps are given they have to be in
 a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
 
-\item{filepath_tif}{Character. Path to the GeoTiff file containing the data.
-Ending needs to be *.tif.}
+\item{data}{Character OR matrix OR array. If character: Path to the GeoTiff
+file containing the data. Ending needs to be *.tif. If marix OR array:
+in-memory object holding the data.}
 
 \item{band}{Integer. Default: 1. Define which band(s) to read from GeoTiff.
 Can be several. Don't have to be in order as the timesteps definition
@@ -65,5 +66,5 @@ tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvcube
 
 # add data to the timestep 2, 3 and 4 using the first three bands of the GeoTiff
 #ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
-#             entity = NULL, timestep = 2:4, filepath_tif = tif, band = 1:3)
+#             entity = NULL, timestep = 2:4, data = tif, band = 1:3)
 }

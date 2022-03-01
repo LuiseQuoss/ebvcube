@@ -3,8 +3,9 @@
 #' @description Add data to the self-created EBV netCDF from GeoTiffs.
 #'
 #' @param filepath_nc Character. Path to the self-created netCDF file.
-#' @param filepath_tif Character. Path to the GeoTiff file containing the data.
-#'   Ending needs to be *.tif.
+#' @param data Character OR matrix OR array. If character: Path to the GeoTiff
+#'   file containing the data. Ending needs to be *.tif. If marix OR array:
+#'   in-memory object holding the data.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvcube::ebv_datacubepaths()]).
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
@@ -42,9 +43,9 @@
 #'
 #' # add data to the timestep 2, 3 and 4 using the first three bands of the GeoTiff
 #' #ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
-#' #             entity = NULL, timestep = 2:4, filepath_tif = tif, band = 1:3)
+#' #             entity = NULL, timestep = 2:4, data = tif, band = 1:3)
 ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
-                         filepath_tif, band=1, ignore_RAM=FALSE,
+                         data, band=1, ignore_RAM=FALSE,
                          verbose=FALSE){
   ### start initial tests ----
   # ensure file and all datahandles are closed on exit
@@ -68,8 +69,8 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   if(missing(filepath_nc)){
     stop('Filepath_nc argument is missing.')
   }
-  if(missing(filepath_tif)){
-    stop('Filepath_tif argument is missing.')
+  if(missing(data)){
+    stop('Data argument is missing.')
   }
   if(missing(datacubepath)){
     stop('Datacubepath argument is missing.')
@@ -101,16 +102,33 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     stop(paste0('NetCDF file ending is wrong. File cannot be processed.'))
   }
 
-  #check if tif file exists
-  if (checkmate::checkCharacter(filepath_tif) != TRUE){
-    stop('GeoTiff Filepath must be of type character.')
+  #if data is character
+  character <- FALSE
+  matrix <- FALSE
+  array <- FALSE
+  if(checkmate::test_character(data)){
+    character <- TRUE
+    #check if tif file exists
+    if (checkmate::checkFileExists(data) != TRUE){
+      stop(paste0('GeoTiff does not exist.\n', data))
+    }
+    if (!endsWith(data, '.tif')){
+      stop(paste0('GeoTiff file ending is wrong. File cannot be processed.'))
+    }
+  } else if(class(data)[1]=='array'){
+    array <- TRUE
+  } else if('matrix' %in% class(data)){
+    matrix <- TRUE
+  } else{
+    stop('Your data argument is not of type character, array or matrix.')
   }
-  if (checkmate::checkFileExists(filepath_tif) != TRUE){
-    stop(paste0('GeoTiff does not exist.\n', filepath_tif))
+
+  #already rotate data for tests etc.
+  if(matrix | array){
+    data <- t(data)
+
   }
-  if (!endsWith(filepath_tif, '.tif')){
-    stop(paste0('GeoTiff file ending is wrong. File cannot be processed.'))
-  }
+
 
   #file closed?
   ebv_i_file_opened(filepath_nc)
@@ -176,85 +194,102 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   if (length(band) != length(timestep)){
     stop('The amount of bands to read from Tiff and the amount of timesteps to write to NetCDF differ. Have to be the same.')
   }
+
   #check if timesteps and tif have the same length/amount of bands
-  tif_info <- gdalUtils::gdalinfo(filepath_tif)
-  b.count <- stringr::str_count(tif_info, 'Band')
-  b.sum <- sum(b.count, na.rm=T)
-  if (b.sum < length(timestep)){
-    stop('The amount of timesteps to write to NetCDF is longer than the available bands in Tiff.')
+  if(character){
+    tif_info <- gdalUtils::gdalinfo(data)
+    b.count <- stringr::str_count(tif_info, 'Band')
+    b.sum <- sum(b.count, na.rm=T)
+    if (b.sum < length(timestep)){
+      stop('The amount of timesteps to write to NetCDF is longer than the available bands in Tiff.')
+    }
+    #check if band available in Tif
+    if (max(band) > b.sum){
+      stop('The highest band that should be used exceeds the amount of bands in GeoTiff File.')
+    }
+  }else if (matrix | array){
+    #HERE----
   }
-  #check if band available in Tif
-  if (max(band) > b.sum){
-    stop('The highest band that should be used exceeds the amount of bands in GeoTiff File.')
-  }
+
 
   #check needed RAM to read tif info
-  #get dims
-  index <- stringr::str_detect(tif_info, 'Size is')
-  size.chr <- tif_info[index]
-  size.int <- as.integer(regmatches(size.chr, gregexpr("[[:digit:]]+", size.chr))[[1]])
-  #get type
-  index <- stringr::str_detect(tif_info, 'Type=')
-  type.chr <- tif_info[index][1]
-  if (stringr::str_detect(type.chr, 'Float')){
-    type.long <- 'xx_xx_Float'
-  } else if (stringr::str_detect(type.chr, 'CFloat')){
-    type.long <- 'xx_xx_Float'
-  } else if (stringr::str_detect(type.chr, 'Int')){
-    type.long <- 'xx_xx_Int'
-  } else if (stringr::str_detect(type.chr, 'UInt')){
-    type.long <- 'xx_xx_Int'
-  } else if (stringr::str_detect(type.chr, 'CInt')){
-    type.long <- 'xx_xx_Int'
+  if(character){
+    #get dims
+    index <- stringr::str_detect(tif_info, 'Size is')
+    size.chr <- tif_info[index]
+    size.int <- as.integer(regmatches(size.chr, gregexpr("[[:digit:]]+", size.chr))[[1]])
+    #get type
+    index <- stringr::str_detect(tif_info, 'Type=')
+    type.chr <- tif_info[index][1]
+    if (stringr::str_detect(type.chr, 'Float')){
+      type.long <- 'xx_xx_Float'
+    } else if (stringr::str_detect(type.chr, 'CFloat')){
+      type.long <- 'xx_xx_Float'
+    } else if (stringr::str_detect(type.chr, 'Int')){
+      type.long <- 'xx_xx_Int'
+    } else if (stringr::str_detect(type.chr, 'UInt')){
+      type.long <- 'xx_xx_Int'
+    } else if (stringr::str_detect(type.chr, 'CInt')){
+      type.long <- 'xx_xx_Int'
+    }
+
+    if (!ignore_RAM){
+      ebv_i_check_ram(size.int,timestep,entity,type.long)
+    } else{
+      message('RAM capacities are ignored.')
+    } #move down if tests are written for else if
+
+  } else if(matrix | array){
+    #HERE----
+    size.int <- dim(data)
   }
 
-  if (!ignore_RAM){
-    ebv_i_check_ram(size.int,timestep,entity,type.long)
-  } else{
-    message('RAM capacities are ignored.')
-  }
 
-  #check if dims of tif data correspond to lat and lon in netcdf
+
+  # #check if dims of tif data correspond to lat and lon in netcdf
   lat.len <- dims[1]
   lon.len <- dims[2]
-  if ((size.int[1] != lon.len) & (size.int[2] != lat.len)){
-    stop(paste0('The size of your GeoTiff does not correspond to the latitude and longitude coordinates.
-  Size should be: ', lon.len, ', ', lat.len, '. But is: ', size.int[1], ', ', size.int[2]))
-  }
-  if (size.int[1] != lon.len) {
-    stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
-  Size sould be: ', lon.len, '. But size is: ', size.int[1]))
-  } else if (size.int[2] != lat.len){
-    stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
-  Size sould be: ', lat.len, '. But size is: ', size.int[2]))
-  }
+  # if ((size.int[1] != lon.len) & (size.int[2] != lat.len)){
+  #   stop(paste0('The size of your GeoTiff does not correspond to the latitude and longitude coordinates.
+  # Size should be: ', lon.len, ', ', lat.len, '. But is: ', size.int[1], ', ', size.int[2]))
+  # }
+  # if (size.int[1] != lon.len) {
+  #   stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
+  # Size sould be: ', lon.len, '. But size is: ', size.int[1]))
+  # } else if (size.int[2] != lat.len){
+  #   stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
+  # Size sould be: ', lat.len, '. But size is: ', size.int[2]))
+  # } #HERE---- alter the error message
 
   ### end initial test ----
 
   #get data from tif ----
-  if (length(timestep) > 1){
-    raster <- raster::brick(filepath_tif)[[band]]
-    raster <- raster::brick(raster) #convert raster stack to raster brick
-  } else{
-    raster <- raster::raster(filepath_tif, band)
-  }
+  if(character){
 
-  #get fill value from tif
-  nodata <- raster@file@nodatavalue
-  if(!is.na(nodata)&!is.na(fillvalue)){
-    if (nodata != fillvalue){
-      message(paste0('The fillvalue of the GeoTiff (value: ',nodata,') differs from
+    if (length(timestep) > 1){
+      raster <- raster::brick(data)[[band]]
+      raster <- raster::brick(raster) #convert raster stack to raster brick
+    } else{
+      raster <- raster::raster(data, band)
+    }
+
+    #get fill value from tif
+    nodata <- raster@file@nodatavalue
+    if(!is.na(nodata)&!is.na(fillvalue)){
+      if (nodata != fillvalue){
+        message(paste0('The fillvalue of the GeoTiff (value: ',nodata,') differs from
                    the fillvalue of the datacube: ', fillvalue, '.'))
+      }
+    }
+
+    #transform into array/matrix----
+    if (length(timestep) > 1){
+      data <- array(raster, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
+    } else {
+      data <- matrix(raster, nrow=dim(raster)[2], ncol=dim(raster)[1])
     }
   }
 
-
-  #rotate data ----
-  if (length(timestep) > 1){
-    data <- array(raster, dim=c(dim(raster)[2], dim(raster)[1], dim(raster)[3]))
-  } else {
-    data <- matrix(raster, nrow=dim(raster)[2], ncol=dim(raster)[1])
-  }
 
 
   #open file
