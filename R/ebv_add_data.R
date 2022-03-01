@@ -244,9 +244,7 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     size.int <- dim(data)
   }
 
-
-
-  # #check if dims of tif data correspond to lat and lon in netcdf
+  #check if dims of tif data correspond to lat and lon in netcdf
   lat.len <- dims[1]
   lon.len <- dims[2]
   if ((size.int[1] != lon.len) & (size.int[2] != lat.len)){
