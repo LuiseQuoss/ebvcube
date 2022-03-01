@@ -75,6 +75,8 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     stop('Datacubepath argument is missing.')
   }
 
+  #test
+
 
   #turn off local warnings if verbose=TRUE
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
