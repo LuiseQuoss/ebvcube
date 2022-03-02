@@ -874,6 +874,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
       unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:units`')))
       ebv_i_char_att(mgid, 'standard_name', standard_name)
       ebv_i_char_att(mgid, 'long_name', long_name)
+      ebv_i_char_att(mgid, 'units', unit.m)
       #close data handle
       rhdf5::H5Gclose(mgid)
     }
@@ -897,6 +898,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
         unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:units`')))
         ebv_i_char_att(mgid, 'standard_name', standard_name)
         ebv_i_char_att(mgid, 'long_name', long_name)
+        ebv_i_char_att(mgid, 'units', unit.m)
         #close datahandle
         rhdf5::H5Gclose(mgid)
       }
