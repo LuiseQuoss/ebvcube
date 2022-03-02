@@ -12,7 +12,9 @@
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
-#'   netCDFs.
+#'   netCDFs. The character string can be obtained using
+#'   [ebvcube::ebv_properties()]. Choose the entity you are interested in from
+#'   the slot general and the list item entity_names.
 #' @param timestep Integer. Default: 1. Define to which timestep or timesteps
 #'   the data should be added. If several timesteps are given they have to be in
 #'   a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
