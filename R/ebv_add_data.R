@@ -31,7 +31,8 @@
 #'   more capacities if needed.
 #'
 #' @return Adds data to the EBV netCDF. Check your results using
-#'   [ebvcube::ebv_read()] and/or [ebvcube::ebv_analyse()].
+#'   [ebvcube::ebv_read()] and/or [ebvcube::ebv_analyse()] and/or
+#'   [ebvcube::ebv_map()] and/or [ebvcube::ebv_indicator()].
 #' @export
 #'
 #' @importFrom utils capture.output
