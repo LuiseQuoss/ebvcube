@@ -22,7 +22,9 @@
 #'   Can be several. Don't have to be in order as the timesteps definition
 #'   requires.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
-#'   your memory to read the data. Can be switched off (set to TRUE).
+#'   your memory to read the data. Can be switched off (set to TRUE). Ignore
+#'   this argument when you give an array or a matrix for 'data' (it will do
+#'   nothing).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
 #'
@@ -195,9 +197,12 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   }
 
   #check if timesteps and bands have the same length
-  if (length(band) != length(timestep)){
-    stop('The amount of bands to read from Tiff and the amount of timesteps to write to NetCDF differ. Have to be the same.')
+  if(character){
+    if (length(band) != length(timestep)){
+      stop('The amount of bands to read from Tiff and the amount of timesteps to write to NetCDF differ. Have to be the same.')
+    }
   }
+
 
   #check if timesteps and tif have the same length/amount of bands
   if(character){
@@ -205,16 +210,21 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     b.count <- stringr::str_count(tif_info, 'Band')
     b.sum <- sum(b.count, na.rm=T)
     if (b.sum < length(timestep)){
-      stop('The amount of timesteps to write to NetCDF is longer than the available bands in Tiff.')
+      stop('The amount of timesteps to write to the netCDF is longer than the available bands in Tiff.')
     }
     #check if band available in Tif
     if (max(band) > b.sum){
       stop('The highest band that should be used exceeds the amount of bands in GeoTiff File.')
     }
   }else if (matrix | array){
-    #HERE----
+    if(matrix & length(timestep)>1){
+      stop('You are trying to write several timesteps to the netCDF even though you handed over data in a matrix and one timestep only can be filled.')
+    }else if (array){
+      if(dim(data)[3]< length(timestep)){
+        stop('The amount of timesteps to write to the netCDF is longer than the available layers in your data array.')
+      }
+    }
   }
-
 
   #check needed RAM to read tif info
   if(character){
@@ -236,17 +246,24 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     } else if (stringr::str_detect(type.chr, 'CInt')){
       type.long <- 'xx_xx_Int'
     }
-
+    #check RAM
     if (!ignore_RAM){
       ebv_i_check_ram(size.int,timestep,entity,type.long)
     } else{
       message('RAM capacities are ignored.')
-    } #move down if tests are written for else if
+    }
 
   } else if(matrix | array){
-    #HERE----
+    #DOING NOTHING - ELEMENT ALREADY IN MEMORY
+    # if(is.double(data)){
+    #   type.long <- 'double'
+    # }else{
+    #   type.long <-'integer'
+    # }
     size.int <- dim(data)
   }
+
+
 
   #check if dims of tif data correspond to lat and lon in netcdf
   lat.len <- dims[1]
