@@ -283,12 +283,12 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
     crs_unit <- 'degrees'
   }
   #compare geospatial unit from EPSG and json
-  json_unit <- json$geospatial_lat_units
-  if (!stringr::str_detect(json_unit, crs_unit)){
-    message(paste0('Geospatial unit detected from json (',stringr::str_split(json_unit,'_')[[1]][1],
-                   ') and detected from given EPSG (',crs_unit,') differ. NetCDF will',
-                   ' be created using the unit detected from EPSG.'))
-  }
+  # json_unit <- json$geospatial_lat_units
+  # if (!stringr::str_detect(json_unit, crs_unit)){
+  #   message(paste0('Geospatial unit detected from json (',stringr::str_split(json_unit,'_')[[1]][1],
+  #                  ') and detected from given EPSG (',crs_unit,') differ. NetCDF will',
+  #                  ' be created using the unit detected from EPSG.'))
+  # }
 
   # get dimensions ----
   # time ----
