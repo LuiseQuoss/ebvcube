@@ -1,10 +1,11 @@
 #' Add data to a self-created EBV netCDF
 #'
-#' @description Add data to the self-created EBV netCDF from GeoTiffs.
+#' @description Add data to the self-created EBV netCDF from GeoTiffs. First,
+#'   create a new EBV netCDF using [ebvcube::ebv_create()].
 #'
 #' @param filepath_nc Character. Path to the self-created netCDF file.
-#' @param data Character OR matrix OR array. If character: Path to the GeoTiff
-#'   file containing the data. Ending needs to be *.tif. If marix OR array:
+#' @param data Character or matrix or array. If character: Path to the GeoTiff
+#'   file containing the data. Ending needs to be *.tif. If matrix or array:
 #'   in-memory object holding the data.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvcube::ebv_datacubepaths()]).
@@ -25,7 +26,7 @@
 #'
 #' @note If the data exceeds your memory the RAM check will throw an error. No
 #'   block-processing or other method implemented so far. Move to a machine with
-#'   more capacities for the moment if needed.
+#'   more capacities if needed.
 #'
 #' @return Adds data to the EBV netCDF. Check your results using
 #'   [ebvcube::ebv_read()] and/or [ebvcube::ebv_analyse()].
