@@ -638,8 +638,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   global.att['comment'] <- 'comment'
   global.att['ebv_class']<-'ebv$ebv_class'
   global.att['ebv_name']<-'ebv$ebv_name'
-  global.att['ebv_spatial_scope']<-'ebv_spatial$ebv_spatial_scope'
-  global.att['ebv_spatial_description']<-'ebv_spatial$ebv_spatial_description'
+  global.att['ebv_spatial_scope']<-'ebv_geospatial$ebv_geospatial_scope'
+  global.att['ebv_spatial_description']<-'ebv_geospatial$ebv_geospatial_description'
   global.att['ebv_domain']<-'ebv_domain'
   global.att['processing_level']<-'processing_level'
   }
