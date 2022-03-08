@@ -28,10 +28,10 @@ The EBV netCDF standard is designed to hold Essential Biodiversity Variables. Th
 An important core element of the EBV netCDFs is their nested structure. All datacubes in the netCDF are assigned to one metric. But this metric can have several entities. On top of this hierarchy there can be several scenarios. The following block displays an abstract exhausted hierarchy.
 
 ### 3D structure
-The datacubes have the dimensions longitude, latitude and time.
+The datacubes have the dimensions longitude, latitude and time (will most likely be deprecated).
 
 ```bash
-├── scenari_1
+├── scenario_1
 │   └── metric_1
 │       ├── entity_1
 │       ├── entity_2
@@ -49,7 +49,7 @@ The datacubes have the dimensions longitude, latitude and time.
 The datacubes have the dimensions longitude, latitude, time and entity.
 
 ```bash
-├── scenari_1
+├── scenario_1
 │   └── metric_1
 │       └── ebv_cube
 └── scenario_2
@@ -92,7 +92,7 @@ devtools::install_github('https://github.com/LuiseQuoss/ebvcube')
 ```
 This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL installation on your machine. 
 One possibility to install GDAL is the [OSGeo4W Network installer](https://trac.osgeo.org/osgeo4w/). Check GDAL when running the installation! If you have QGIS on your machine, GDAL should be included. To check that, install the gdalUtils package in R and run gdalUtils::gdal_setInstallation(). It takes quite a while the first time as it looks for a GDAL installation. Now getOption('gdalUtils_gdalPath') should return the GDAL installation.
-If you have problems you can set the GDAL related paths by hand using the following lines of code. Your paths may differ! First check your GDAL installation.
+If you have problems you can set the GDAL related paths by hand using the following lines of code. Your paths will differ! First check your GDAL installation.
 ```{r echo=TRUE}
 # #add GDAL path to the existing paths
 # Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
@@ -114,13 +114,16 @@ Sys.getenv("GDAL_DRIVER_PATH")
 
 ### 3.1 Take a very first look at the file
 
-With the following two functions you get the core information about the data from a specific EBV netCDF.
-First we take a look at some basic metadata of that file.
+With the following two functions you get the core information about the data of a specific EBV netCDF.
+First we take a look at some basic metadata of that file. The properties encompass much more information!
 
 ```{r example}
 library(ebvcube)
 
+#set the path to the file
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+
+#read the properties of the file
 prop.file <- ebv_properties(file)
 
 #take a look at the general properties of the dataset - there are more properties to discover!
@@ -130,7 +133,7 @@ slotNames(prop.file)
 
 ```
 
-Now let's get the paths to all possible datacubes. The resulting dataframe includes the paths and also descriptions of the metric and/or scenario and/or entity.
+Now let's get the paths to all possible datacubes. The resulting dataframe includes the paths and also descriptions of the metric and/or scenario and/or entity. The paths basically consist of the nested structure of scenario, metric and the datacube.
 
 ```{r}
 datacubes <- ebv_datacubepaths(file)
@@ -146,7 +149,7 @@ prop.dc@ebv_cube
 
 
 ### 3.2 Plot the data to get a better impression
-To discover the spatial distribution of the data you can plot a map of the datacube that we just looked at. It has 12 timesteps. Here we look at the sixth one.
+To discover the spatial distribution of the data, you can plot a map of the datacube that we just looked at. It has 12 timesteps. Here we look at the sixth one.
 
 ```{r}
 #plot the global map
@@ -219,9 +222,9 @@ Imagine you have a very large dataset but only limited memory. The package provi
 
 ### 3.4 Take a peek on the creation of an EBV netCDF
 #### a. Create an empty EBV netCDF (with metadata)
-This process is still work in progress. Right now you'll have to insert all the metadata in the Geobon Portal and then use the resulting json file to create an empty netCDF file which complies to the EBV netCDF standard. It has the correct structure and holds the metadata. Additionally to that json file the function needs the amount of entities the netCDF will encompass and the coordinate reference system.
+This process is still work in progress. Right now you'll have to insert all the metadata in the [EBV Portal](https://portal.geobon.org/home) and then use the resulting text file (json format) to create an empty netCDF which complies to the EBV netCDF standard. It has the correct structure and holds the metadata. Additionally to that (json) text file the function needs a list of all entities the netCDF (csv list, see help page for detailed information) will encompass and geospatial information such as the coordinate reference system.
 
-The example is based on the [Global habitat availability for mammals ](https://portal.geobon.org/ebv-detail?id=5). As its ID in the geoportal is 5 the json file is just called 5.
+The example is based on the [Global habitat availability for mammals](https://portal.geobon.org/ebv-detail?id=5). As its ID in the geoportal is 5 the json file is just called 5.
 
 ```{r}
 #paths
@@ -234,16 +237,18 @@ fv <- -3.4e+38
 ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
            fillvalue = fv, prec='float', force_4D = TRUE)
 
-#check out some general propeties of our newly created file
-print(ebv_properties(newNc)@general[1:5])
-#check out the (still empty) datacubes
+#needless to say: check the properties of your newly created file to see if you get what you want
+#especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
+print(ebv_properties(newNc)@general[1])
+
+#check out the (still empty) datacubes that are available
 dc.new <- ebv_datacubepaths(newNc)
 print(dc.new)
 ```
 Hint: You can always take a look at your netCDF in [Panoply](https://www.giss.nasa.gov/tools/panoply/) provided by NASA. That's very helpful to understand the structure.
 
 #### b. Add your data to the EBV NetCDF
-In the next step you can add your data to the netCDF from GeoTiff files. You need to indicate the datacubepath the data belongs to. You can add your data timestep per timestep, in slices or all at once. You can simply add more data to the same datacube by changing the timestep definition.
+In the next step you can add your data to the netCDF from GeoTiff files or in-memory objects (matrix/array). You need to indicate the datacubepath the data belongs to. You can add your data timestep per timestep, in slices or all at once. You can simply add more data to the same datacube by changing the timestep definition.
 
 ```{r}
 #path to tif with data
@@ -254,7 +259,7 @@ tif_paths <- file.path(root, tifs)
 entity <- 1
 for (tif in tif_paths){
   ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
-              timestep=1:3, filepath_tif = tif, band=1:3)
+              timestep=1:3, data = tif, band=1:3)
   entity <- entity + 1
 }
 
@@ -262,8 +267,7 @@ for (tif in tif_paths){
 ```
 
 #### c. Add missing attributes to datacube
-Now there are still a information missing about the data you just added: the standard_name and description of each entity. The following function makes it possible to add the information.
-Ups! So you did a mistake and want to change the attribute?! No problem. Just use the same function to change it again.
+Ups! So you did a mistake and want to change the attribute?! No problem. Just use the upcoming function to change it.
 ```{r}
 ebv_attribute(newNc, attribute_name='units', value='percentage', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!

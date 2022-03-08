@@ -4,6 +4,8 @@
 # ebvcube package
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/LuiseQuoss/ebvcube/workflows/R-CMD-check/badge.svg)](https://github.com/LuiseQuoss/ebvcube/actions)
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV netCDFs
@@ -24,10 +26,11 @@ following block displays an abstract exhausted hierarchy.
 
 ### 3D structure
 
-The datacubes have the dimensions longitude, latitude and time.
+The datacubes have the dimensions longitude, latitude and time (will
+most likely be deprecated).
 
 ``` bash
-├── scenari_1
+├── scenario_1
 │   └── metric_1
 │       ├── entity_1
 │       ├── entity_2
@@ -46,7 +49,7 @@ The datacubes have the dimensions longitude, latitude and time.
 The datacubes have the dimensions longitude, latitude, time and entity.
 
 ``` bash
-├── scenari_1
+├── scenario_1
 │   └── metric_1
 │       └── ebv_cube
 └── scenario_2
@@ -100,7 +103,7 @@ and run gdalUtils::gdal_setInstallation(). It takes quite a while the
 first time as it looks for a GDAL installation. Now
 getOption(‘gdalUtils_gdalPath’) should return the GDAL installation. If
 you have problems you can set the GDAL related paths by hand using the
-following lines of code. Your paths may differ! First check your GDAL
+following lines of code. Your paths will differ! First check your GDAL
 installation.
 
 ``` r
@@ -113,7 +116,7 @@ installation.
 
 #you can always check your GDAL path settings using
 Sys.getenv("PATH")
-#> [1] "C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.0.3\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_16854906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Users\\lq39quba\\AppData\\Local\\Pandoc"
+#> [1] "C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\OSGeo4W64\\bin;C:\\rtools40\\usr\\bin;C:\\Users\\lq39quba\\Documents\\R\\R-4.1.2\\bin\\x64;C:\\Program Files\\Common Files\\Oracle\\Java\\javapath_target_7100531;C:\\Program Files (x86)\\Common Files\\Oracle\\Java\\javapath_target_8241906;C:\\Windows\\System32;C:\\Windows;C:\\Windows\\System32\\wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0;C:\\Windows\\System32\\OpenSSH;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64;C:\\Program Files\\RStudio\\bin\\pandoc;C:\\Program Files\\netCDF 4.8.0\\bin;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39\\Scripts;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\Python\\Python39;C:\\Users\\lq39quba\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\lq39quba\\AppData\\Local\\Programs\\MiKTeX\\miktex\\bin\\x64"
 Sys.getenv("PROJ_LIB") 
 #> [1] "C:\\OSGeo4W64\\share\\proj"
 Sys.getenv("GDAL_DATA") 
@@ -127,13 +130,16 @@ Sys.getenv("GDAL_DRIVER_PATH")
 ### 3.1 Take a very first look at the file
 
 With the following two functions you get the core information about the
-data from a specific EBV netCDF. First we take a look at some basic
-metadata of that file.
+data of a specific EBV netCDF. First we take a look at some basic
+metadata of that file. The properties encompass much more information!
 
 ``` r
 library(ebvcube)
 
+#set the path to the file
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+
+#read the properties of the file
 prop.file <- ebv_properties(file)
 
 #take a look at the general properties of the dataset - there are more properties to discover!
@@ -161,7 +167,8 @@ slotNames(prop.file)
 
 Now let’s get the paths to all possible datacubes. The resulting
 dataframe includes the paths and also descriptions of the metric and/or
-scenario and/or entity.
+scenario and/or entity. The paths basically consist of the nested
+structure of scenario, metric and the datacube.
 
 ``` r
 datacubes <- ebv_datacubepaths(file)
@@ -196,7 +203,7 @@ prop.dc@ebv_cube
 
 ### 3.2 Plot the data to get a better impression
 
-To discover the spatial distribution of the data you can plot a map of
+To discover the spatial distribution of the data, you can plot a map of
 the datacube that we just looked at. It has 12 timesteps. Here we look
 at the sixth one.
 
@@ -260,6 +267,7 @@ measurements$n
 #> [1] 64800
 measurements$mean
 #> [1] 0.436336
+
 #info for a subset defined by a bounding box (roughly(!) Germany)
 bb <- c(5,15,47,55)
 measurements.bb <- ebv_analyse(file, dc, subset = bb)
@@ -298,7 +306,7 @@ dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 shp.data <- rgdal::readOGR(shp)
 #> OGR data source with driver: ESRI Shapefile 
-#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpQpjcnr\temp_libpath375053f66c62\ebvcube\extdata\subset_germany.shp", layer: "subset_germany"
+#> Source: "C:\Users\lq39quba\AppData\Local\Temp\RtmpSicWjb\temp_libpath46d4733157da\ebvcube\extdata\subset_germany.shp", layer: "subset_germany"
 #> with 1 features
 #> It has 94 fields
 #> Integer64 fields read as strings:  POP_EST NE_ID
@@ -316,11 +324,13 @@ into the manual to obtain more information.
 #### a. Create an empty EBV netCDF (with metadata)
 
 This process is still work in progress. Right now you’ll have to insert
-all the metadata in the Geobon Portal and then use the resulting json
-file to create an empty netCDF file which complies to the EBV netCDF
-standard. It has the correct structure and holds the metadata.
-Additionally to that json file the function needs the amount of entities
-the netCDF will encompass and the coordinate reference system.
+all the metadata in the [EBV Portal](https://portal.geobon.org/home) and
+then use the resulting text file (json format) to create an empty netCDF
+which complies to the EBV netCDF standard. It has the correct structure
+and holds the metadata. Additionally to that (json) text file the
+function needs a list of all entities the netCDF (csv list, see help
+page for detailed information) will encompass and geospatial information
+such as the coordinate reference system.
 
 The example is based on the [Global habitat availability for
 mammals](https://portal.geobon.org/ebv-detail?id=5). As its ID in the
@@ -336,24 +346,16 @@ fv <- -3.4e+38
 #create the netCDF using the 4D cube representation
 ebv_create(jsonpath = json, outputpath = newNc, entities = entities, overwrite=T,
            fillvalue = fv, prec='float', force_4D = TRUE)
+#> [1] "Warning: shuffle is turned on for variable test_var but that var is of precision float and shuffle ONLY has an effect for integer variables."
+#> [1] "Warning: shuffle is turned on for variable scenario_1/metric_1/ebv_cube but that var is of precision float and shuffle ONLY has an effect for integer variables."
 
-#check out some general propeties of our newly created file
-print(ebv_properties(newNc)@general[1:5])
+#needless to say: check the properties of your newly created file to see if you get what you want
+#especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
+print(ebv_properties(newNc)@general[1])
 #> $title
 #> [1] "Local bird diversity (cSAR/BES-SIM)"
-#> 
-#> $description
-#> [1] "Changes in bird diversity at 1-degree resolution caused by land use, estimated by the cSAR model for 1900-2015 using LUH2.0 historical reconstruction of land-use."
-#> 
-#> $ebv_class
-#> [1] "Community composition"
-#> 
-#> $ebv_name
-#> [1] "Taxonomic and phylogenetic diversity"
-#> 
-#> $ebv_domain
-#> [1] "Terrestrial"
-#check out the (still empty) datacubes
+
+#check out the (still empty) datacubes that are available
 dc.new <- ebv_datacubepaths(newNc)
 print(dc.new)
 #>                  datacubepaths    scenario_names
@@ -368,11 +370,11 @@ That’s very helpful to understand the structure.
 
 #### b. Add your data to the EBV NetCDF
 
-In the next step you can add your data to the netCDF from GeoTiff files.
-You need to indicate the datacubepath the data belongs to. You can add
-your data timestep per timestep, in slices or all at once. You can
-simply add more data to the same datacube by changing the timestep
-definition.
+In the next step you can add your data to the netCDF from GeoTiff files
+or in-memory objects (matrix/array). You need to indicate the
+datacubepath the data belongs to. You can add your data timestep per
+timestep, in slices or all at once. You can simply add more data to the
+same datacube by changing the timestep definition.
 
 ``` r
 #path to tif with data
@@ -383,7 +385,7 @@ tif_paths <- file.path(root, tifs)
 entity <- 1
 for (tif in tif_paths){
   ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
-              timestep=1:3, filepath_tif = tif, band=1:3)
+              timestep=1:3, data = tif, band=1:3)
   entity <- entity + 1
 }
 #> The fillvalue of the GeoTiff (value: -Inf) differs from
@@ -396,11 +398,8 @@ for (tif in tif_paths){
 
 #### c. Add missing attributes to datacube
 
-Now there are still a information missing about the data you just added:
-the standard_name and description of each entity. The following function
-makes it possible to add the information. Ups! So you did a mistake and
-want to change the attribute?! No problem. Just use the same function to
-change it again.
+Ups! So you did a mistake and want to change the attribute?! No problem.
+Just use the upcoming function to change it.
 
 ``` r
 ebv_attribute(newNc, attribute_name='units', value='percentage', levelpath=dc.new[1,1])
@@ -420,17 +419,17 @@ citation('ebvcube')
 #> 
 #> To cite ebvcube in publications use:
 #> 
-#> Quoß L, Langer C, Pereira H, Fernández N, Valdez J (2021). _ebvcube:
+#> Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2021). _ebvcube:
 #> Working with netCDF for Essential Biodiversity Variables_. German
 #> Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig,
 #> Germany. R package version 0.0.1, <URL:
 #> https://github.com/LuiseQuoss/ebvcube>.
 #> 
-#> A BibTeX entry for LaTeX users is
+#> Ein BibTeX-Eintrag für LaTeX-Benutzer ist
 #> 
 #>   @Manual{,
 #>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
-#>     author = {Luise Quoß and Christian Langer and Henrique Miguel Pereira and Néstor Fernández and José Valdez},
+#>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
 #>     year = {2021},
 #>     note = {R package version 0.0.1},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
