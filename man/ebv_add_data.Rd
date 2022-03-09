@@ -24,14 +24,16 @@ ebv_add_data(
 \item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
 the entity argument is set to NULL. Else, a character string or single
 integer value must indicate the entity of the 4D structure of the EBV
-netCDFs.}
+netCDFs. The character string can be obtained using
+\code{\link[=ebv_properties]{ebv_properties()}}. Choose the entity you are interested in from
+the slot general and the list item entity_names.}
 
 \item{timestep}{Integer. Default: 1. Define to which timestep or timesteps
 the data should be added. If several timesteps are given they have to be in
 a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
 
-\item{data}{Character OR matrix OR array. If character: Path to the GeoTiff
-file containing the data. Ending needs to be *.tif. If marix OR array:
+\item{data}{Character or matrix or array. If character: Path to the GeoTiff
+file containing the data. Ending needs to be *.tif. If matrix or array:
 in-memory object holding the data.}
 
 \item{band}{Integer. Default: 1. Define which band(s) to read from GeoTiff.
@@ -39,22 +41,26 @@ Can be several. Don't have to be in order as the timesteps definition
 requires.}
 
 \item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
-your memory to read the data. Can be switched off (set to TRUE).}
+your memory to read the data. Can be switched off (set to TRUE). Ignore
+this argument when you give an array or a matrix for 'data' (it will do
+nothing).}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
 TRUE.}
 }
 \value{
 Adds data to the EBV netCDF. Check your results using
-\code{\link[=ebv_read]{ebv_read()}} and/or \code{\link[=ebv_analyse]{ebv_analyse()}}.
+\code{\link[=ebv_read]{ebv_read()}} and/or \code{\link[=ebv_analyse]{ebv_analyse()}} and/or
+\code{\link[=ebv_map]{ebv_map()}} and/or \code{\link[=ebv_indicator]{ebv_indicator()}}.
 }
 \description{
-Add data to the self-created EBV netCDF from GeoTiffs.
+Add data to the self-created EBV netCDF from GeoTiffs. First,
+create a new EBV netCDF using \code{\link[=ebv_create]{ebv_create()}}.
 }
 \note{
 If the data exceeds your memory the RAM check will throw an error. No
 block-processing or other method implemented so far. Move to a machine with
-more capacities for the moment if needed.
+more capacities if needed.
 }
 \examples{
 #set path to EBV netCDF
