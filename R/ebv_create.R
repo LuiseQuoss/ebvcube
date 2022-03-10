@@ -299,7 +299,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg=4326,
   #create timesteps
   add <- 40177
   #process ISO standard PYYYY-MM-YY or short PYYYY
-  if(grepl('^P\\d{4}-?\\d{0,2}-?\\d{0,2}$', t_res)){
+  if(t_res=="P0000-00-00"){
+    date <- as.numeric(as.Date(t_start))
+    timesteps <- date+add
+  }else if(grepl('^P\\d{4}-?\\d{0,2}-?\\d{0,2}$', t_res)){
     y <- stringr::str_split(stringr::str_remove(t_res, 'P')[[1]], '-')[[1]][1]
     m <- stringr::str_split(stringr::str_remove(t_res, 'P')[[1]], '-')[[1]][2]
     d <- stringr::str_split(stringr::str_remove(t_res, 'P')[[1]], '-')[[1]][3]
