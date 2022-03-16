@@ -11,6 +11,7 @@ ebv_create(
   epsg = 4326,
   extent = c(-180, 180, -90, 90),
   resolution = c(1, 1),
+  timesteps = NULL,
   fillvalue = NULL,
   prec = "double",
   sep = ",",
@@ -39,6 +40,12 @@ data: c(xmin, xmax, ymin, ymax).}
 \item{resolution}{Numerical. Vector of two numerical values defining the
 longitudinal and latitudinal resolution of the pixel: c(lon,lat).}
 
+\item{timesteps}{Character. Vector of the timesteps in the dataset. Default:
+NULL - in this case the time will be calculated from the start-, endpoint
+and temporal resolution given in the metadata file (json). Else, the dates
+must be given in in ISO format 'YYYY-MM-DD' or shortened 'YYYY' in case of
+yearly timesteps.}
+
 \item{fillvalue}{Numeric. Value of the missing data in the array. Not
 mandatory but should be defined!}
 
@@ -62,7 +69,7 @@ file defined by 'outputpath'.}
 TRUE.}
 }
 \value{
-Creates the NetCDF file at the 'outputpath' location.
+Creates the netCDF file at the 'outputpath' location.
 }
 \description{
 Create the core structure of the EBV NetCDF based on the json
