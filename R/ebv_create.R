@@ -113,6 +113,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     }
   )
 
+  #set UTF8 encoding
+  withr::local_options(list(encoding = "UTF-8"))
+
   #are all arguments given?
   if(missing(jsonpath)){
     stop('Jsonpath argument is missing.')

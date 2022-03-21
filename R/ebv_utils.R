@@ -512,6 +512,7 @@ ebv_i_char_att <- function(h5obj, name, data){
     aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
     rhdf5::H5Sclose(sid)
   }
+  data <- enc2utf8(data)
   rhdf5::H5Awrite(aid, data)
   rhdf5::H5Aclose(aid)
 }
