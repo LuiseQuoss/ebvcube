@@ -75,7 +75,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
-  gids <- c('mgid', 'sgid')
+  gids <- c('mgid', 'sgid', 'mid')
   withr::defer(
     for (id in gids){
       if(exists(id)){
@@ -970,7 +970,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   #add entity attributes 4D ----
     enum <-1
     for(var in var_list){
+      parts <- stringr::str_split(var, '/')[[1]]
+      m <- paste0(parts[1:(length(parts)-1)], collapse='/')
+      mid <- rhdf5::H5Gopen(hdf, m)
+      long_name <- ebv_i_read_att(mid, 'standard_name')
+      rhdf5::H5Gclose(mid)
       did <- rhdf5::H5Dopen(hdf, var)
+      ebv_i_char_att(did, 'long_name', long_name)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
       ebv_i_char_att(did, 'coordinate', '/entity')#HERE
       ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type[[1]], collapse=', '))
