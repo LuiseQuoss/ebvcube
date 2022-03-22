@@ -124,7 +124,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   dims <- prop@spatial$dimensions
   #label
   ls <- rhdf5::h5ls(filepath)
-  if('entities' %in% ls$name){
+  if('entity' %in% ls$name){
     new <- TRUE
   } else{
     new <- FALSE
