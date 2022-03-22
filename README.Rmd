@@ -169,7 +169,7 @@ It's nice to see the global distribution, but how is the change of that datacube
 
 ```{r}
 #get the averages and plot
-averages <- ebv_indicator(file, dc)
+averages <- ebv_trend(file, dc)
 averages
 ```
 

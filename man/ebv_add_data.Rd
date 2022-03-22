@@ -51,7 +51,7 @@ TRUE.}
 \value{
 Adds data to the EBV netCDF. Check your results using
 \code{\link[=ebv_read]{ebv_read()}} and/or \code{\link[=ebv_analyse]{ebv_analyse()}} and/or
-\code{\link[=ebv_map]{ebv_map()}} and/or \code{\link[=ebv_indicator]{ebv_indicator()}}.
+\code{\link[=ebv_map]{ebv_map()}} and/or \code{\link[=ebv_trend]{ebv_trend()}}.
 }
 \description{
 Add data to the self-created EBV netCDF from GeoTiffs. First,

@@ -30,8 +30,8 @@
 #' datacubes <- ebv_datacubepaths(file)
 #'
 #' #plot the change of the mean over time of the first datacube
-#' ebv_indicator(filepath = file, datacubepath = datacubes[1,1], entity = NULL)
-ebv_indicator <- function(filepath, datacubepath, entity=NULL,
+#' ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = NULL)
+ebv_trend <- function(filepath, datacubepath, entity=NULL,
                           color="dodgerblue4", verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
