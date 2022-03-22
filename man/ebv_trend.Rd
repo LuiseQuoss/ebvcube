@@ -8,6 +8,7 @@ ebv_trend(
   filepath,
   datacubepath,
   entity = NULL,
+  method = "mean",
   color = "dodgerblue4",
   verbose = FALSE
 )
@@ -28,15 +29,24 @@ netCDFs.}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
 TRUE.}
+
+\item{method.}{Character. Default: mean. Choose one of the following options
+for different plots: mean, boxplot. See \strong{Note} for more information.}
 }
 \value{
-Plots a line plot and returns a vector of the average. If the data
-encompasses only one timestep a single mean is returned.
+Returns plots and eventually values based on the \code{method} argument. See \strong{Note}
+for more information
 }
 \description{
 Plot the average (y-axis) of one datacube of a EBV NetCDF over
 time (x-axis). If the datacube has only one timestep a single mean value is
 returned.
+}
+\note{
+More information on the \code{method} argument: using \code{mean} will result in
+a plot of the mean over time, additionally a vector of the mean values is
+returned. If the data encompasses only one timestep a single mean is
+returned. The \code{boxplot} option results in boxplots over time.
 }
 \examples{
 #set path to EBV netCDF

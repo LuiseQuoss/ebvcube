@@ -11,13 +11,20 @@
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
 #'   netCDFs.
+#' @param method. Character. Default: mean. Choose one of the following options
+#'   for different plots: mean, boxplot. See **Note** for more information.
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
 #'
-#' @return Plots a line plot and returns a vector of the average. If the data
-#'   encompasses only one timestep a single mean is returned.
+#' @note More information on the `method` argument: using `mean` will result in
+#'   a plot of the mean over time, additionally a vector of the mean values is
+#'   returned. If the data encompasses only one timestep a single mean is
+#'   returned. The `boxplot` option results in boxplots over time.
+#'
+#' @return Returns plots and eventually values based on the `method` argument. See **Note**
+#'   for more information
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom graphics par plot
@@ -31,7 +38,7 @@
 #'
 #' #plot the change of the mean over time of the first datacube
 #' ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = NULL)
-ebv_trend <- function(filepath, datacubepath, entity=NULL,
+ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
                           color="dodgerblue4", verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
@@ -135,78 +142,90 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL,
     entity_index <- 1
   }
 
-  #check if only one timestep
-  if (dims[3]==1){
-    message('Dataset has only one timestep. Single mean will be returned.')
-    #data.all
-    data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
-                                     type = type.short)
-    values <- mean(data.all)
-  }else{
-    #data.all
-    data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
-                                     type = type.short)
-
-    #mask out fillvalue
-    data.all <- replace(data.all, data.all==fillvalue, c(NA))
-
-    # warning for longer calculation
-    if(is_4D){
-      size <- dims[1]*dims[2]*dims[3]*dims[4]
-    }else{
-      size <- dims[1]*dims[2]*dims[3]
-    }
-    if (size > 100000000){
-      message('Wow that is huge! Maybe get a tea...')
-    }
-
-    #calculate mean values ----
-    false <- c()
-    values <- c(1:time)
-    print('calculating timesteps...')
-    pb <- utils::txtProgressBar(min = 1, max = dims[3], initial = 1)
-    for (t in 1:time){
-      utils::setTxtProgressBar(pb,t)
-      f <- tryCatch(
-        {
-          if(is_4D){
-            data <- data.all[,,t,entity_index]
-          }else{
-            data <- data.all[,,t]
-          }
-          mean <- mean(data, na.rm=TRUE)
-          f <- 0
-        },
-        error = function(e){
-          message(paste0('No mean value for timestep ', t,
-                         '. Substituted with mean value of timestep ', t-1, '.'))
-          mean <- mean
-          return(t)
-        }
-      )
-
-      values[t] <- mean
-      false <- c(false, f)
-    }
-
-    #derive years
-    timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
-
-    #plot ----
-    withr::local_par(mar=c(7,5,3,1))
-    plot(timevalues, values, xlab = 'time', ylab='average', type = 'b',
-         main = paste(strwrap(
-           title,
-           width = 80
-         ), collapse = "\n"),
-         col.main = 'grey', cex.main = 1.2, font.main=2,
-         sub =label, col.sub = 'grey', cex.sub=0.8, font.sub=2,
-         lwd = 2,
-         col = ifelse(1:time %in% as.integer(false), 'red', color)
-    )
+  #check method values
+  if(! method %in% c('mean', 'boxplot')){
+    stop('The method argument is invalid. Please check the help page for all available method values.')
   }
 
-  #return mean values
-  return(values)
+  if(method=='mean'){
+    #method == mean----
+    #check if only one timestep
+    if (dims[3]==1){
+      message('Dataset has only one timestep. Single mean will be returned.')
+      #data.all
+      data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
+                                       type = type.short)
+      values <- mean(data.all)
+    }else{
+      #data.all
+      data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
+                                       type = type.short)
+
+      #mask out fillvalue
+      data.all <- replace(data.all, data.all==fillvalue, c(NA))
+
+      # warning for longer calculation
+      if(is_4D){
+        size <- dims[1]*dims[2]*dims[3]*dims[4]
+      }else{
+        size <- dims[1]*dims[2]*dims[3]
+      }
+      if (size > 100000000){
+        message('Wow that is huge! Maybe get a tea...')
+      }
+
+      #calculate mean values
+      false <- c()
+      values <- c(1:time)
+      print('calculating timesteps...')
+      pb <- utils::txtProgressBar(min = 1, max = dims[3], initial = 1)
+      for (t in 1:time){
+        utils::setTxtProgressBar(pb,t)
+        f <- tryCatch(
+          {
+            if(is_4D){
+              data <- data.all[,,t,entity_index]
+            }else{
+              data <- data.all[,,t]
+            }
+            mean <- mean(data, na.rm=TRUE)
+            f <- 0
+          },
+          error = function(e){
+            message(paste0('No mean value for timestep ', t,
+                           '. Substituted with mean value of timestep ', t-1, '.'))
+            mean <- mean
+            return(t)
+          }
+        )
+
+        values[t] <- mean
+        false <- c(false, f)
+      }
+
+      #derive years
+      timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
+
+      #plot
+      withr::local_par(mar=c(7,5,3,1))
+      plot(timevalues, values, xlab = 'time', ylab='average', type = 'b',
+           main = paste(strwrap(
+             title,
+             width = 80
+           ), collapse = "\n"),
+           col.main = 'grey', cex.main = 1.2, font.main=2,
+           sub =label, col.sub = 'grey', cex.sub=0.8, font.sub=2,
+           lwd = 2,
+           col = ifelse(1:time %in% as.integer(false), 'red', color)
+      )
+    }
+
+    #return mean values
+    return(values)
+  } else if(method=='boxplot'){
+    #method == boxplot----
+    stop('Method boxplot is not yet implemented.')
+  }
+
 
 }
