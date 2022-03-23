@@ -24,14 +24,15 @@ the entity argument is set to NULL. Else, a character string or single
 integer value must indicate the entity of the 4D structure of the EBV
 netCDFs.}
 
+\item{method}{Character. Default: mean. Choose one of the following options
+for different plots: mean, min, max, boxplot. See \strong{Note} for more
+information.}
+
 \item{color}{Character. Default: dodgerblue4. Change to any color known by R
 \code{\link[grDevices:colors]{grDevices::colors()}}}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
 TRUE.}
-
-\item{method.}{Character. Default: mean. Choose one of the following options
-for different plots: mean, boxplot. See \strong{Note} for more information.}
 }
 \value{
 Returns plots and eventually values based on the \code{method} argument.
@@ -45,7 +46,8 @@ Plot the trend of one datacube of a EBV NetCDF over time
 More information on the \code{method} argument: using \code{mean} will result in
 a plot of the mean over time, additionally a vector of the mean values is
 returned. If the data encompasses only one timestep a single mean is
-returned. The \code{boxplot} option results in boxplots over time.
+returned. Corresponding behavior can be expected for \code{min} and \code{max}. The
+\code{boxplot} option results in boxplots over time (no values are returned).
 }
 \examples{
 #set path to EBV netCDF

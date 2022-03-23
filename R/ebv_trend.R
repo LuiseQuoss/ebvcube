@@ -10,7 +10,7 @@
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
 #'   netCDFs.
-#' @param method. Character. Default: mean. Choose one of the following options
+#' @param method Character. Default: mean. Choose one of the following options
 #'   for different plots: mean, min, max, boxplot. See **Note** for more
 #'   information.
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
@@ -26,10 +26,12 @@
 #'
 #' @return Returns plots and eventually values based on the `method` argument.
 #'   See **Note** for more information
+#'
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom graphics par plot
 #' @importFrom grDevices colors
+#' @importFrom graphics boxplot points
 #'
 #' @examples
 #' #set path to EBV netCDF
@@ -253,7 +255,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       message('Dataset has only one timestep. Single boxplot will be returned.')
 
       #plot boxplot
-      boxplot(c(as.array(data.all)),
+      graphics::boxplot(c(as.array(data.all)),
               xlab = 'time',
               main = paste(strwrap(
                 title,
@@ -270,7 +272,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       )
 
       meanval <- by(df$input,df$ts, mean)
-      points(meanval, col = "lightblue", pch = 3, cex = 1)
+      graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
 
     }else{
       #multiple timesteps, create boxplot
@@ -306,24 +308,26 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
       print('boxplot')
       #plot boxplot
-      boxplot(df$input~df$ts,
-              xlab = 'time',
-              main = paste(strwrap(
-                title,
-                width = 80
-              ), collapse = "\n"),
-              ylab=units,
-              col.main = 'darkgrey', cex.main = 1.2, font.main=2,
-              sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
-              lwd=1,
-              las=1,
-              names=timevalues,
-              col =color,
-              outline=F
+      graphics::boxplot(df$input~df$ts#,
+              # xlab = 'time',
+              # main = paste(strwrap(
+              #   title,
+              #   width = 80
+              # ), collapse = "\n"),
+              # ylab=units,
+              # col.main = 'darkgrey', cex.main = 1.2, font.main=2,
+              # sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
+              # lwd=1,
+              # las=1,
+              # names=timevalues,
+              # col =color,
+              # outline=F
               )
 
+      print('meanvals')
+
       meanval <- by(df$input,df$ts, mean)
-      points(meanval, col = "lightblue", pch = 3, cex = 1)
+      graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
 
     }
   }
