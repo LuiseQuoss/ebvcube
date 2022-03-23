@@ -11,9 +11,12 @@
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
 #' @param outputpath Character. Set path where the NetCDF file should be
 #'   created.
-#' @param entities Character. Csv table holding the entity names. Default:
-#'   comma-separated delimiter, else change the 'sep'-argument accordingly.
-#'   Should have only one column, each row is the name of one entity.
+#' @param entities Character string or vector of character strings. In case of
+#'   single character string: Path to the csv table holding the entity names.
+#'   Default: comma-separated delimiter, else change the `sep`-argument
+#'   accordingly. Should have only one column, each row is the name of one
+#'   entity. In case of vector of character strings: Vector holding the entity
+#'   names.
 #' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
 #'   system via the corresponding epsg code.
 #' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
@@ -194,32 +197,52 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     stop('extent needs to be a list of 4 numeric values.')
   }
 
-  #check entities csv
+  #check entities
   if (checkmate::checkCharacter(entities) != TRUE){
     stop('Entities must be of type character.')
   }
-  if (checkmate::checkFileExists(entities) != TRUE){
-    stop(paste0('Entities csv file does not exist.\n', entities))
+  if(checkmate::checkCharacter(entities, len=1) != TRUE){
+    #length longer than 1 -> list of entities
+    csv <- FALSE
+  }else{
+    #length exactly 1 - either csv or vector
+    #test if it is a file that can be opened
+    csv <- tryCatch({file(entities, open='rt')
+                  csv <- TRUE},
+                  error=function(e){
+                    #it is a character vector
+                    csv <- FALSE
+                  })
   }
-  if (!endsWith(entities, '.csv')){
-    stop(paste0('Entities file ending is wrong. File cannot be processed.'))
-  }
-  #read csv ----
-  # check if data inside
-  tryCatch({
-    entity_csv <- utils::read.csv(entities, sep=sep, header=F, fileEncoding="UTF-8-BOM")
+  #if csv, make tests:
+  if(csv){
+    if (checkmate::checkFileExists(entities) != TRUE){
+      stop(paste0('Entities csv file does not exist.\n', entities))
+    }
+    if (!endsWith(entities, '.csv')){
+      stop(paste0('Entities file ending is wrong. File cannot be processed.'))
+    }
+    #read csv---
+    # check if data inside
+    tryCatch({
+      entity_csv <- utils::read.csv(entities, sep=sep, header=F, fileEncoding="UTF-8-BOM")
     },
     error=function(e){
-    if(stringr::str_detect(as.character(e), 'no lines available')){
-      stop('Empty csv table given for entities.')
-    } else {
-      stop('Could not read csv (entities).')
-    }
+      if(stringr::str_detect(as.character(e), 'no lines available')){
+        stop('Empty csv table given for entities.')
+      } else {
+        stop('Could not read csv (entities).')
+      }
     })
-  #check
-  if(length(names(entity_csv))>1){
-    warning(paste0('The entity csv given by you has more than one column. ',
-                   'The first column will be used.'))
+    #check
+    if(length(names(entity_csv))>1){
+      warning(paste0('The entity csv given by you has more than one column. ',
+                     'The first column will be used.'))
+    }
+
+  }else{
+  #get entities from vector
+    entity_csv <-data.frame(entities)
   }
 
   #check prec

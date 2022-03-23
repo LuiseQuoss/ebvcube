@@ -27,9 +27,12 @@ ebv_create(
 \item{outputpath}{Character. Set path where the NetCDF file should be
 created.}
 
-\item{entities}{Character. Csv table holding the entity names. Default:
-comma-separated delimiter, else change the 'sep'-argument accordingly.
-Should have only one column, each row is the name of one entity.}
+\item{entities}{Character string or vector of character strings. In case of
+single character string: Path to the csv table holding the entity names.
+Default: comma-separated delimiter, else change the \code{sep}-argument
+accordingly. Should have only one column, each row is the name of one
+entity. In case of vector of character strings: Vector holding the entity
+names.}
 
 \item{epsg}{Integer. Default: 4326 (WGS84). Defines the coordinate reference
 system via the corresponding epsg code.}
