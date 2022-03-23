@@ -11,7 +11,8 @@
 #'   integer value must indicate the entity of the 4D structure of the EBV
 #'   netCDFs.
 #' @param method. Character. Default: mean. Choose one of the following options
-#'   for different plots: mean, boxplot. See **Note** for more information.
+#'   for different plots: mean, min, max, boxplot. See **Note** for more
+#'   information.
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -20,7 +21,8 @@
 #' @note More information on the `method` argument: using `mean` will result in
 #'   a plot of the mean over time, additionally a vector of the mean values is
 #'   returned. If the data encompasses only one timestep a single mean is
-#'   returned. The `boxplot` option results in boxplots over time.
+#'   returned. Corresponding behavior can be expected for `min` and `max`. The
+#'   `boxplot` option results in boxplots over time.
 #'
 #' @return Returns plots and eventually values based on the `method` argument.
 #'   See **Note** for more information
@@ -91,6 +93,9 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     stop('color not known. Choose a different one!')
   }
 
+  #get properties
+  prop <- ebv_properties(filepath, datacubepath, verbose)
+
   #check file structure
   is_4D <- ebv_i_4D(filepath)
   if(is_4D){
@@ -114,7 +119,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   # end initial tests ----
 
   # basic attributes ----
-  prop <- ebv_properties(filepath, datacubepath, verbose)
   time <- prop@spatial$dimensions[3]
   timevalues <- prop@temporal$timesteps_natural
   title <- prop@general$title
@@ -142,19 +146,26 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   }
 
   #check method values
-  if(! method %in% c('mean', 'boxplot')){
+  if(! method %in% c('mean', 'boxplot', 'min', 'max')){
     stop('The method argument is invalid. Please check the help page for all available method values.')
   }
 
-  if(method=='mean'){
+  if(method=='mean' | method=='min' | method=='max'){
     #method == mean----
     #check if only one timestep
     if (dims[3]==1){
-      message('Dataset has only one timestep. Single mean will be returned.')
+      message('Dataset has only one timestep. Single value will be returned.')
       #data.all
       data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
                                        type = type.short)
-      values <- mean(data.all)
+      if(method=='mean'){
+        values <- mean(data.all, na.rm =T)
+      } else if(method=='min'){
+        values <- min(data.all, na.rm =T)
+      } else if(method=='max'){
+        values <- max(data.all, na.rm =T)
+      }
+
     }else{
       #data.all
       data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
@@ -173,7 +184,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
         message('Wow that is huge! Maybe get a tea...')
       }
 
-      #calculate mean values
+      #calculate mean/min/max values
       false <- c()
       values <- c(1:time)
       print('calculating timesteps...')
@@ -187,18 +198,24 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
             }else{
               data <- data.all[,,t]
             }
-            mean <- mean(data, na.rm=TRUE)
+            if(method=='mean'){
+              v <- mean(data, na.rm =T)
+            } else if(method=='min'){
+              v <- min(data, na.rm =T)
+            } else if(method=='max'){
+              v <- max(data, na.rm =T)
+            }
             f <- 0
           },
           error = function(e){
-            message(paste0('No mean value for timestep ', t,
-                           '. Substituted with mean value of timestep ', t-1, '.'))
-            mean <- mean
+            message(paste0('No data in netCDF for timestep ', t,
+                           '. Substituted with value of timestep ', t-1, '.'))
+            mean <- v
             return(t)
           }
         )
 
-        values[t] <- mean
+        values[t] <- v
         false <- c(false, f)
       }
 
@@ -207,7 +224,8 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
       #plot
       withr::local_par(mar=c(7,5,3,1))
-      plot(timevalues, values, xlab = 'time', ylab='average', type = 'b',
+
+      plot(timevalues, values, xlab = 'time', ylab=method, type = 'b',
            main = paste(strwrap(
              title,
              width = 80
