@@ -503,7 +503,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     #get resolution, units
     resolution <- c()
     crs_units <- stringr::str_split(ebv_i_read_att(hdf, 'geospatial_lon_units'), '_')[[1]][1]
-    resolution <- as.numeric(stringr::str_remove_all(c(resolution, ebv_i_read_att(hdf, 'geospatial_lon_resolution')),'[A-Za-z _-]'))
+    resolution <- c(as.numeric(stringr::str_remove_all(c(resolution, ebv_i_read_att(hdf, 'geospatial_lon_resolution')),'[A-Za-z _-]')),
+                    as.numeric(stringr::str_remove_all(c(resolution, ebv_i_read_att(hdf, 'geospatial_lat_resolution')),'[A-Za-z _-]')))
 
     #did <- rhdf5::H5Dopen(hdf, 'lat')
     #resolution <- c(resolution, ebv_i_read_att(hdf, 'geospatial_lat_resolution'))
@@ -522,7 +523,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
     #get extent
     extent <- c(min(hdf$lon)-resolution[1]/2, max(hdf$lon)+resolution[1]/2,
-                min(hdf$lat)-resolution[1]/2, max(hdf$lat)+resolution[1]/2)
+                min(hdf$lat)-resolution[2]/2, max(hdf$lat)+resolution[2]/2)
 
   #get extent, epsg, crs
   did <- rhdf5::H5Dopen(hdf, 'crs')
