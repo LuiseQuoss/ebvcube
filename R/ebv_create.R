@@ -13,7 +13,7 @@
 #'   created.
 #' @param entities Character string or vector of character strings. In case of
 #'   single character string: Path to the csv table holding the entity names.
-#'   Default: comma-separated delimiter, else change the `sep`-argument
+#'   Default: comma-separated delimiter, else change the `sep` argument
 #'   accordingly. Should have only one column, each row is the name of one
 #'   entity. In case of vector of character strings: Vector holding the entity
 #'   names.
@@ -211,6 +211,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
                   csv <- TRUE},
                   error=function(e){
                     #it is a character vector
+                    csv <- FALSE
+                  },
+                  warning = function(w){
                     csv <- FALSE
                   })
   }

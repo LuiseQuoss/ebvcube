@@ -29,7 +29,7 @@ created.}
 
 \item{entities}{Character string or vector of character strings. In case of
 single character string: Path to the csv table holding the entity names.
-Default: comma-separated delimiter, else change the \code{sep}-argument
+Default: comma-separated delimiter, else change the \code{sep} argument
 accordingly. Should have only one column, each row is the name of one
 entity. In case of vector of character strings: Vector holding the entity
 names.}
