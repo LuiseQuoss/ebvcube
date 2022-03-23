@@ -22,7 +22,7 @@
 #'   a plot of the mean over time, additionally a vector of the mean values is
 #'   returned. If the data encompasses only one timestep a single mean is
 #'   returned. Corresponding behavior can be expected for `min` and `max`. The
-#'   `boxplot` option results in boxplots over time.
+#'   `boxplot` option results in boxplots over time (no values are returned).
 #'
 #' @return Returns plots and eventually values based on the `method` argument.
 #'   See **Note** for more information
@@ -121,10 +121,14 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   # basic attributes ----
   time <- prop@spatial$dimensions[3]
   timevalues <- prop@temporal$timesteps_natural
+  #derive years
+  timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
   title <- prop@general$title
   fillvalue <- prop@ebv_cube$fillvalue
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
   dims <- prop@spatial$dimensions
+  units <- prop@ebv_cube$units
+
   #label
   ls <- rhdf5::h5ls(filepath)
   if('entity' %in% ls$name){
@@ -219,9 +223,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
         false <- c(false, f)
       }
 
-      #derive years
-      timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
-
       #plot
       withr::local_par(mar=c(7,5,3,1))
 
@@ -230,18 +231,101 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
              title,
              width = 80
            ), collapse = "\n"),
-           col.main = 'grey', cex.main = 1.2, font.main=2,
-           sub =label, col.sub = 'grey', cex.sub=0.8, font.sub=2,
+           col.main = 'darkgrey', cex.main = 1.2, font.main=2,
+           sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
            lwd = 2,
            col = ifelse(1:time %in% as.integer(false), 'red', color)
       )
     }
 
-    #return mean values
+    #return values
     return(values)
+
   } else if(method=='boxplot'){
     #method == boxplot----
-    stop('Method boxplot is not yet implemented.')
+
+    #check if only one timestep
+    if (dims[3]==1){
+      message('Dataset has only one timestep. Single summary will be returned.')
+      #data.all
+      data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
+                                       type = type.short)
+      message('Dataset has only one timestep. Single boxplot will be returned.')
+
+      #plot boxplot
+      boxplot(c(as.array(data.all)),
+              xlab = 'time',
+              main = paste(strwrap(
+                title,
+                width = 80
+              ), collapse = "\n"),
+              ylab=units,
+              col.main = 'darkgrey', cex.main = 1.2, font.main=2,
+              sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
+              lwd=1,
+              las=1,
+              names=timevalues,
+              col =color,
+              outline=F
+      )
+
+      meanval <- by(df$input,df$ts, mean)
+      points(meanval, col = "lightblue", pch = 3, cex = 1)
+
+    }else{
+      #multiple timesteps, create boxplot
+      #data.all
+      data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
+                                       type = type.short)
+
+      data.all <- data.all[,,,entity_index]
+
+      #mask out fillvalue
+      data.all <- replace(data.all, data.all==fillvalue, c(NA))
+
+      # warning for longer calculation
+      if(is_4D){
+        size <- dims[1]*dims[2]*dims[3]*dims[4]
+      }else{
+        size <- dims[1]*dims[2]*dims[3]
+      }
+      if (size > 100000000){
+        message('Wow that is huge! Maybe get a tea...')
+      }
+
+      #rearrange data into data frame
+      print('df')
+      df <- matrix(nrow = 0, ncol=2)
+      for(ts in 1:dims[3]){
+        input <- c(as.array(data.all[,,ts]))
+        input <- input[!is.na(input)]#remove NAs
+        part <- cbind(ts, input)
+        df <- rbind(df, part)
+      }
+      df <- as.data.frame(df)
+
+      print('boxplot')
+      #plot boxplot
+      boxplot(df$input~df$ts,
+              xlab = 'time',
+              main = paste(strwrap(
+                title,
+                width = 80
+              ), collapse = "\n"),
+              ylab=units,
+              col.main = 'darkgrey', cex.main = 1.2, font.main=2,
+              sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
+              lwd=1,
+              las=1,
+              names=timevalues,
+              col =color,
+              outline=F
+              )
+
+      meanval <- by(df$input,df$ts, mean)
+      points(meanval, col = "lightblue", pch = 3, cex = 1)
+
+    }
   }
 
 
