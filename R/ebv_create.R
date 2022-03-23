@@ -271,7 +271,14 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   #overwrite --> delete file
   if (file.exists(outputpath) & overwrite==TRUE){
-    file.remove(outputpath)
+    t <- tryCatch(file.remove(outputpath),
+                  warning = function(w){
+                    temp <- stringr::str_remove(as.character(w), '\\\\')
+                    if(stringr::str_detect(temp,'cannot remove file')){
+                      stop('Outputpath file already exists and you enabled overwrite, but file cannot be overwritten. Most likely the file is opened in another application.')
+                    }
+                  })
+
   }
 
   #read json ----
