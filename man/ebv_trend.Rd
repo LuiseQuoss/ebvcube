@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_trend.R
 \name{ebv_trend}
 \alias{ebv_trend}
-\title{Plot the average over time of one datacube of an EBV NetCDF}
+\title{Plot the trend of an EBV NetCDF}
 \usage{
 ebv_trend(
   filepath,
@@ -34,13 +34,12 @@ TRUE.}
 for different plots: mean, boxplot. See \strong{Note} for more information.}
 }
 \value{
-Returns plots and eventually values based on the \code{method} argument. See \strong{Note}
-for more information
+Returns plots and eventually values based on the \code{method} argument.
+See \strong{Note} for more information
 }
 \description{
-Plot the average (y-axis) of one datacube of a EBV NetCDF over
-time (x-axis). If the datacube has only one timestep a single mean value is
-returned.
+Plot the trend of one datacube of a EBV NetCDF over time
+(x-axis). Different options can be chosen based on the \code{method} argument.
 }
 \note{
 More information on the \code{method} argument: using \code{mean} will result in

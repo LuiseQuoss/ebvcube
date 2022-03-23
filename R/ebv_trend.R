@@ -1,8 +1,7 @@
-#' Plot the average over time of one datacube of an EBV NetCDF
+#' Plot the trend of an EBV NetCDF
 #'
-#' @description Plot the average (y-axis) of one datacube of a EBV NetCDF over
-#'   time (x-axis). If the datacube has only one timestep a single mean value is
-#'   returned.
+#' @description Plot the trend of one datacube of a EBV NetCDF over time
+#'   (x-axis). Different options can be chosen based on the `method` argument.
 #'
 #' @param filepath Character. Path to the NetCDF file.
 #' @param datacubepath Character. Path to the datacube (use
@@ -23,8 +22,8 @@
 #'   returned. If the data encompasses only one timestep a single mean is
 #'   returned. The `boxplot` option results in boxplots over time.
 #'
-#' @return Returns plots and eventually values based on the `method` argument. See **Note**
-#'   for more information
+#' @return Returns plots and eventually values based on the `method` argument.
+#'   See **Note** for more information
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom graphics par plot
