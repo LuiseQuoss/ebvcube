@@ -29,9 +29,8 @@
 #'
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
-#' @importFrom graphics par plot
+#' @importFrom graphics par plot boxplot points
 #' @importFrom grDevices colors
-#' @importFrom graphics boxplot points
 #'
 #' @examples
 #' #set path to EBV netCDF
@@ -305,23 +304,24 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
         df <- rbind(df, part)
       }
       df <- as.data.frame(df)
+      print(head(df))
 
       print('boxplot')
-      #plot boxplot
-      graphics::boxplot(df$input~df$ts#,
-              # xlab = 'time',
-              # main = paste(strwrap(
-              #   title,
-              #   width = 80
-              # ), collapse = "\n"),
-              # ylab=units,
-              # col.main = 'darkgrey', cex.main = 1.2, font.main=2,
-              # sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
-              # lwd=1,
-              # las=1,
-              # names=timevalues,
-              # col =color,
-              # outline=F
+      # plot boxplot
+      graphics::boxplot(df$input~df$ts,
+              xlab = 'time',
+              main = paste(strwrap(
+                title,
+                width = 80
+              ), collapse = "\n"),
+              ylab=units,
+              col.main = 'darkgrey', cex.main = 1.2, font.main=2,
+              sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
+              lwd=1,
+              las=1,
+              names=timevalues,
+              col =color,
+              outline=F
               )
 
       print('meanvals')
