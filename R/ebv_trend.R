@@ -194,6 +194,13 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
     #mask out fillvalue
     data.all <- replace(data.all, data.all==fillvalue, c(NA))
+
+    #data.all
+    if(is_4D){
+      data.all <- data.all[,,,entity_index]
+    }
+
+
   }
 
   #2. check method ----
@@ -215,11 +222,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
     }else{
       #several timesteps----
-
-      #data.all
-      if(is_4D){
-        data.all <- data.all[,,,entity_index]
-      }
 
       # warning for longer calculation
       if(is_4D){
@@ -316,11 +318,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
     }else{
       #multiple timesteps----
-
-      #data.all
-      if(is_4D){
-        data.all <- data.all[,,,entity_index]
-      }
 
       # warning for longer calculation
       if(is_4D){
