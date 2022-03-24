@@ -524,6 +524,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     #get extent
     extent <- c(min(hdf$lon)-resolution[1]/2, max(hdf$lon)+resolution[1]/2,
                 min(hdf$lat)-resolution[2]/2, max(hdf$lat)+resolution[2]/2)
+<<<<<<< HEAD
 
   #get extent, epsg, crs
   did <- rhdf5::H5Dopen(hdf, 'crs')
@@ -589,53 +590,120 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       description_m <- ebv_i_read_att(gid, 'long_name')
       rhdf5::H5Gclose(gid)
       metric <- list('name' = name_m, 'description'=description_m)
+=======
+>>>>>>> dev
 
-    } else{
-      # 2. metric only
-      scenario <- list('status'='This dataset has no scenario.')
-      # get metric info
-      path_m <- stringr::str_split(datacubepath, '/')[[1]][1]
-      gid <- rhdf5::H5Gopen(hdf, path_m)
-      name_m <- ebv_i_read_att(gid, 'standard_name')
-      description_m <- ebv_i_read_att(gid, 'long_name')
-      rhdf5::H5Gclose(gid)
-      metric <- list('name' = name_m, 'description'=description_m)
-    }
-
-    #cube info ----
-    # open datacube
-    did <- rhdf5::H5Dopen(hdf, datacubepath)
-    fillvalue <- ebv_i_read_att(did, '_FillValue')
-    coverage_content_type <- ebv_i_read_att(did, 'coverage_content_type')
-    units_d <- ebv_i_read_att(did, 'units')
-    #get type
-    info <- utils::capture.output(did)
+    #get extent, epsg, crs
+    did <- rhdf5::H5Dopen(hdf, 'crs')
+    #extent <- ebv_i_read_att(did, 'geospatial_bounds')
+    epsg <- stringr::str_split(ebv_i_read_att(hdf, 'geospatial_bounds_crs'),':')[[1]][2]
+    crs <-ebv_i_read_att(did, 'spatial_ref')
     rhdf5::H5Dclose(did)
-    indices <- stringr::str_locate(info, ' type')
-    for (row in 1:dim(indices)[1]){
-      if (!is.na(indices[row,1])){
-        i <- c(row, indices[row,])
+
+    # temporal ----
+    did <- rhdf5::H5Dopen(hdf, 'time')
+    t_res <- ebv_i_read_att(hdf, 'time_coverage_resolution')
+    t_units <- ebv_i_read_att(did, 'units')
+    add <- 40177
+    time_natural <- as.Date(time_data-add, origin='1970-01-01')
+
+    rhdf5::H5Dclose(did)
+
+    general <- list('title'=title, 'description' = description, 'ebv_class'= ebv_class,
+                    'ebv_name'=ebv_name, 'ebv_domain'=ebv_domain,
+                    'references'=references, 'source'=source, 'project'=project,
+                    'creator_name'=creator_name, 'creator_institution'=creator_institution,
+                    'creator_email'=creator_email, 'contributor_name'=contributor_name,
+                    'publisher_name'=publisher_name, 'publisher_institution'=publisher_institution,
+                    'publisher_email'=publisher_email, 'comment'=comment, 'keywords'=keywords,
+                    'id'=id, 'history'=history, 'licence'=licence, 'conventions'=conventions,
+                    'naming_authority'=naming_authority, 'date_created'=date_created,
+                    'date_issued'=date_issued, 'entity_names'=entity_names,
+                    'entity_type' = ebv_entity_type, 'entity_scope'=ebv_entity_scope,
+                    'entity_classification_name'=ebv_entity_classification_name,
+                    'entity_classification_url' =ebv_entity_classification_url)
+    spatial <- list('wkt2'=crs, 'epsg'=epsg, 'extent'=extent, 'resolution'=resolution,
+                    'crs_units'=crs_units, 'dimensions'=dims,'scope'=ebv_spatial_scope,
+                    'description'=ebv_spatial_description)
+    temporal <- list('resolution'=t_res, 'units'=t_units,
+                     'timesteps'= time_data, 'timesteps_natural'=time_natural)
+
+    # FILE AND DATACUBE ----
+    if(!is.null(datacubepath)){
+      #info about scenario, metric, cube
+      # 1. scenario and metric
+      if (stringr::str_detect(datacubepath,'scenario')){
+        # get scenario info
+        path_s <- stringr::str_split(datacubepath, '/')[[1]][1]
+        gid <- rhdf5::H5Gopen(hdf, path_s)
+        #global info
+        ebv_scenario_classification_name <- ebv_i_read_att(hdf, 'ebv_scenario_classification_name')
+        ebv_scenario_classification_url <- ebv_i_read_att(hdf, 'ebv_scenario_classification_url')
+        ebv_scenario_classification_version <- ebv_i_read_att(hdf, 'ebv_scenario_classification_version')
+        #group info
+        name_s <- ebv_i_read_att(gid, 'standard_name')
+        description_s <- ebv_i_read_att(gid, 'long_name')
+        rhdf5::H5Gclose(gid)
+        scenario <- list('name' = name_s, 'description'=description_s,
+                         'scenario_classification_name' = ebv_scenario_classification_name,
+                         'scenario_classification_url' = ebv_scenario_classification_url,
+                         'scenario_classification_version' = ebv_scenario_classification_version)
+
+        # get metric info
+        path_m <- paste0(stringr::str_split(datacubepath, '/')[[1]][1],'/',
+                         stringr::str_split(datacubepath, '/')[[1]][2])
+        gid <- rhdf5::H5Gopen(hdf, path_m)
+        name_m <- ebv_i_read_att(gid, 'standard_name')
+        description_m <- ebv_i_read_att(gid, 'long_name')
+        rhdf5::H5Gclose(gid)
+        metric <- list('name' = name_m, 'description'=description_m)
+
+      } else{
+        # 2. metric only
+        scenario <- list('status'='This dataset has no scenario.')
+        # get metric info
+        path_m <- stringr::str_split(datacubepath, '/')[[1]][1]
+        gid <- rhdf5::H5Gopen(hdf, path_m)
+        name_m <- ebv_i_read_att(gid, 'standard_name')
+        description_m <- ebv_i_read_att(gid, 'long_name')
+        rhdf5::H5Gclose(gid)
+        metric <- list('name' = name_m, 'description'=description_m)
       }
+
+      #cube info ----
+      # open datacube
+      did <- rhdf5::H5Dopen(hdf, datacubepath)
+      fillvalue <- ebv_i_read_att(did, '_FillValue')
+      coverage_content_type <- ebv_i_read_att(did, 'coverage_content_type')
+      units_d <- ebv_i_read_att(did, 'units')
+      #get type
+      info <- utils::capture.output(did)
+      rhdf5::H5Dclose(did)
+      indices <- stringr::str_locate(info, ' type')
+      for (row in 1:dim(indices)[1]){
+        if (!is.na(indices[row,1])){
+          i <- c(row, indices[row,])
+        }
+      }
+      type <- as.vector(info)[i[1]]
+      type <- stringr::str_remove(type, 'type')
+      type <- stringr::str_replace_all(type, stringr::fixed(" "), "")
+      ebv_cube <- list('units'=units_d, 'coverage_content_type'=coverage_content_type,
+                       'fillvalue'=fillvalue, 'type'=type)
+
+    }else{
+      scenario <- list('status'='Only available with datacube argument.')
+      metric <- list('status'='Only available with datacube argument.')
+      ebv_cube <- list('status'='Only available with datacube argument.')
     }
-    type <- as.vector(info)[i[1]]
-    type <- stringr::str_remove(type, 'type')
-    type <- stringr::str_replace_all(type, stringr::fixed(" "), "")
-    ebv_cube <- list('units'=units_d, 'coverage_content_type'=coverage_content_type,
-                     'fillvalue'=fillvalue, 'type'=type)
 
-  }else{
-    scenario <- list('status'='Only available with datacube argument.')
-    metric <- list('status'='Only available with datacube argument.')
-    ebv_cube <- list('status'='Only available with datacube argument.')
-  }
-
-  prop <-  methods::new('EBV netCDF properties',
-                        general = general,
-                        spatial=spatial,
-                        temporal=temporal,
-                        metric=metric,
-                        scenario=scenario,
-                        ebv_cube=ebv_cube)
+    prop <-  methods::new('EBV netCDF properties',
+                          general = general,
+                          spatial=spatial,
+                          temporal=temporal,
+                          metric=metric,
+                          scenario=scenario,
+                          ebv_cube=ebv_cube)
 
   }
 

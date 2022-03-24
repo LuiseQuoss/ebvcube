@@ -34,7 +34,7 @@
 #'
 #' @return Adds data to the EBV netCDF. Check your results using
 #'   [ebvcube::ebv_read()] and/or [ebvcube::ebv_analyse()] and/or
-#'   [ebvcube::ebv_map()] and/or [ebvcube::ebv_indicator()].
+#'   [ebvcube::ebv_map()] and/or [ebvcube::ebv_trend()].
 #' @export
 #'
 #' @importFrom utils capture.output

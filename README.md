@@ -234,7 +234,7 @@ The function returns the values, catch them!
 
 ``` r
 #get the averages and plot
-averages <- ebv_indicator(file, dc)
+averages <- ebv_trend(file, dc)
 #> [1] "calculating timesteps..."
 #> ================================================================================
 ```
