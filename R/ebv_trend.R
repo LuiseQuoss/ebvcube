@@ -192,9 +192,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
                                      type = type.short)
 
-    #data.all
-    data.all <- data.all[,,,entity_index]
-
     #mask out fillvalue
     data.all <- replace(data.all, data.all==fillvalue, c(NA))
   }
@@ -218,6 +215,11 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
     }else{
       #several timesteps----
+
+      #data.all
+      if(is_4D){
+        data.all <- data.all[,,,entity_index]
+      }
 
       # warning for longer calculation
       if(is_4D){
@@ -315,6 +317,11 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     }else{
       #multiple timesteps----
 
+      #data.all
+      if(is_4D){
+        data.all <- data.all[,,,entity_index]
+      }
+
       # warning for longer calculation
       if(is_4D){
         size <- dims[1]*dims[2]*dims[3]*dims[4]
@@ -335,7 +342,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
         df <- rbind(df, part)
       }
       df <- as.data.frame(df)
-      print(head(df))
+      #print(head(df))
 
       print('boxplot')
       # plot boxplot

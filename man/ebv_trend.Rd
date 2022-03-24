@@ -9,6 +9,7 @@ ebv_trend(
   datacubepath,
   entity = NULL,
   method = "mean",
+  subset = NULL,
   color = "dodgerblue4",
   verbose = FALSE
 )
@@ -27,6 +28,10 @@ netCDFs.}
 \item{method}{Character. Default: mean. Choose one of the following options
 for different plots: mean, min, max, boxplot. See \strong{Note} for more
 information.}
+
+\item{subset}{Character. Default: NULL. If you want to look at the trend for
+a spatial subset, define the path to the shapefile encompassing the area.
+Ending needs to be *.shp.}
 
 \item{color}{Character. Default: dodgerblue4. Change to any color known by R
 \code{\link[grDevices:colors]{grDevices::colors()}}}
