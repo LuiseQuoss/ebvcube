@@ -97,7 +97,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     stop('color not known. Choose a different one!')
   }
 
-  #get properties
+  #get properties----
   prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #check file structure
@@ -191,6 +191,12 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     #1. get data for spatial extent
     data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
                                      type = type.short)
+
+    #data.all
+    data.all <- data.all[,,,entity_index]
+
+    #mask out fillvalue
+    data.all <- replace(data.all, data.all==fillvalue, c(NA))
   }
 
   #2. check method ----
@@ -213,9 +219,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     }else{
       #several timesteps----
 
-      #mask out fillvalue
-      data.all <- replace(data.all, data.all==fillvalue, c(NA))
-
       # warning for longer calculation
       if(is_4D){
         size <- dims[1]*dims[2]*dims[3]*dims[4]
@@ -236,7 +239,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
         f <- tryCatch(
           {
             if(is_4D){
-              data <- data.all[,,t,entity_index]
+              data <- data.all[,,t]
             }else{
               data <- data.all[,,t]
             }
@@ -308,11 +311,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
     }else{
       #multiple timesteps----
-      #data.all
-      data.all <- data.all[,,,entity_index]
-
-      #mask out fillvalue
-      data.all <- replace(data.all, data.all==fillvalue, c(NA))
 
       # warning for longer calculation
       if(is_4D){
