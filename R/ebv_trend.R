@@ -156,7 +156,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   }
 
   if(method=='mean' | method=='min' | method=='max'){
-    #method == mean----
+    #method == mean, min, max----
     #check if only one timestep
     if (dims[3]==1){
       message('Dataset has only one timestep. Single value will be returned.')
@@ -227,13 +227,13 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       #plot
       withr::local_par(mar=c(7,5,3,1))
 
-      plot(timevalues, values, xlab = 'time', ylab=method, type = 'b',
+      plot(timevalues, values, xlab = 'time', ylab=paste0(method, '\n(',units,')'), type = 'b',
            main = paste(strwrap(
              title,
              width = 80
            ), collapse = "\n"),
-           col.main = 'darkgrey', cex.main = 1.2, font.main=2,
-           sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
+           col.main = 'darkgrey', cex.main = 1.3, font.main=2,
+           sub =label, col.sub = 'darkgrey', cex.sub=1, font.sub=2,
            lwd = 2,
            col = ifelse(1:time %in% as.integer(false), 'red', color)
       )
@@ -260,8 +260,8 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
                 width = 80
               ), collapse = "\n"),
               ylab=units,
-              col.main = 'darkgrey', cex.main = 1.2, font.main=2,
-              sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
+              col.main = 'darkgrey', cex.main = 1.3, font.main=2,
+              sub =label, col.sub = 'darkgrey', cex.sub=1, font.sub=2,
               lwd=1,
               las=1,
               names=timevalues,
@@ -314,8 +314,8 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
                 width = 80
               ), collapse = "\n"),
               ylab=units,
-              col.main = 'darkgrey', cex.main = 1.2, font.main=2,
-              sub =label, col.sub = 'darkgrey', cex.sub=0.8, font.sub=2,
+              col.main = 'darkgrey', cex.main = 1.3, font.main=2,
+              sub =label, col.sub = 'darkgrey', cex.sub=1, font.sub=2,
               lwd=1,
               las=1,
               names=timevalues,
