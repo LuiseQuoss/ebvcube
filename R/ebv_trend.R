@@ -13,6 +13,9 @@
 #' @param method Character. Default: mean. Choose one of the following options
 #'   for different plots: mean, min, max, boxplot. See **Note** for more
 #'   information.
+#' @param subset Character. Default: NULL. If you want to look at the trend for
+#'   a spatial subset, define the path to the shapefile encompassing the area.
+#'   Ending needs to be *.shp.
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -41,7 +44,7 @@
 #' #plot the change of the mean over time of the first datacube
 #' ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = NULL)
 ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
-                          color="dodgerblue4", verbose=FALSE){
+                      subset=NULL, color="dodgerblue4", verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -117,6 +120,24 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     }
   }
 
+  # only basic shp filepath check - leave the rest of the checks to ebv_read_shp
+  if(!is.null(subset)){
+    if (checkmate::checkCharacter(subset) != TRUE){
+      stop('Shapefilepath must be of type character.')
+    }
+    if (checkmate::checkFileExists(subset) != TRUE){
+      stop(paste0('Shapefile does not exist.\n', subset))
+    }
+    if (!endsWith(subset, '.shp')){
+      stop(paste0('File ending of subset is wrong. File cannot be processed.'))
+    }
+  }
+
+  #check method values
+  if(! method %in% c('mean', 'boxplot', 'min', 'max')){
+    stop('The method argument is invalid. Please check the help page for all available method values.')
+  }
+
   # end initial tests ----
 
   # basic attributes ----
@@ -150,14 +171,32 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     entity_index <- 1
   }
 
-  #check method values
-  if(! method %in% c('mean', 'boxplot', 'min', 'max')){
-    stop('The method argument is invalid. Please check the help page for all available method values.')
+  #1. check subset or not -> get data accordingly
+  #2. check method
+  #3. check timestep in data
+
+  #1. check subset or not and get data ----
+  if(!is.null(subset)){
+    data.all.raster <- ebv_read_shp(filepath = filepath,
+                             datacubepath = datacubepath,
+                             entity = entity,
+                             timestep = 1:dims[3],#get all timesteps
+                             shp = subset)
+    #turn into array
+    #DelayedArray::DelayedArray(data.all.raster)
+    data.all <- raster::as.array(data.all.raster)
+    rm(data.all.raster)
+
+  }else{
+    #1. get data for spatial extent
+    data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
+                                     type = type.short)
   }
 
+  #2. check method ----
   if(method=='mean' | method=='min' | method=='max'){
     #method == mean, min, max----
-    #check if only one timestep
+    #only one timestep----
     if (dims[3]==1){
       message('Dataset has only one timestep. Single value will be returned.')
       #data.all
@@ -172,9 +211,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       }
 
     }else{
-      #data.all
-      data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
-                                       type = type.short)
+      #several timesteps----
 
       #mask out fillvalue
       data.all <- replace(data.all, data.all==fillvalue, c(NA))
@@ -245,12 +282,9 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   } else if(method=='boxplot'){
     #method == boxplot----
 
-    #check if only one timestep
+    #only one timestep----
     if (dims[3]==1){
-      message('Dataset has only one timestep. Single summary will be returned.')
-      #data.all
-      data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
-                                       type = type.short)
+      message('Dataset has only one timestep. Single boxplot will be returned.')
 
       #plot boxplot
       graphics::boxplot(c(as.array(data.all)),
@@ -273,11 +307,8 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
 
     }else{
-      #multiple timesteps, create boxplot
+      #multiple timesteps----
       #data.all
-      data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
-                                       type = type.short)
-
       data.all <- data.all[,,,entity_index]
 
       #mask out fillvalue
