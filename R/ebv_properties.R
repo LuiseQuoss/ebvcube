@@ -470,7 +470,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     description <- ebv_i_read_att(hdf, 'summary')
     references <- ebv_i_read_att(hdf, 'references')
     source <- ebv_i_read_att(hdf, 'source')
-    project <- ebv_i_read_att(hdf, 'project')
+    project <- ebv_i_read_att(hdf, 'project_name')
     creator_name <- ebv_i_read_att(hdf, 'creator_name')
     creator_institution <- ebv_i_read_att(hdf, 'creator_institution')
     creator_email <- ebv_i_read_att(hdf, 'creator_email')
