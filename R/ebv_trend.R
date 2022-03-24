@@ -251,7 +251,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       #data.all
       data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
                                        type = type.short)
-      message('Dataset has only one timestep. Single boxplot will be returned.')
 
       #plot boxplot
       graphics::boxplot(c(as.array(data.all)),
@@ -321,7 +320,10 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
               las=1,
               names=timevalues,
               col =color,
-              outline=F
+              outline=T,
+              outcol='grey',
+              pch='.',
+              cex=2
               )
 
       print('meanvals')
