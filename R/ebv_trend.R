@@ -303,7 +303,10 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
               las=1,
               names=timevalues,
               col =color,
-              outline=F
+              outline=T,
+              outcol='grey',
+              pch='.',
+              cex=2
       )
 
       meanval <- by(df$input,df$ts, mean)
