@@ -209,9 +209,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     #only one timestep----
     if (dims[3]==1){
       message('Dataset has only one timestep. Single value will be returned.')
-      #data.all
-      data.all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath,
-                                       type = type.short)
+
       if(method=='mean'){
         values <- mean(data.all, na.rm =T)
       } else if(method=='min'){
