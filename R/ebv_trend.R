@@ -313,11 +313,12 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
               cex=2
       )
 
-      meanval <- by(df$input,df$ts, mean)
+      meanval <- mean(as.array(data.all), na.rm=T)
       graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
 
     }else{
       #multiple timesteps----
+      stop('Boxplot for multiple timesteps is still under development.')
 
       # warning for longer calculation
       if(is_4D){
@@ -339,11 +340,13 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
         df <- rbind(df, part)
       }
       df <- as.data.frame(df)
-      #print(head(df))
+      print(df$input[10000])
+      print(df$ts[10000])
 
       print('boxplot')
       # plot boxplot
       graphics::boxplot(df$input~df$ts,
+              data=df,
               xlab = 'time',
               main = paste(strwrap(
                 title,
@@ -365,7 +368,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       print('meanvals')
 
       meanval <- by(df$input,df$ts, mean)
-      graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
+      #graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
 
     }
   }

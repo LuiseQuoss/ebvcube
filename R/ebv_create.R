@@ -331,6 +331,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   # :spatial_ref
   #crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", epsg))
   crs_wkt <- crs[5:length(crs)]
+
+  #remove additional whitespaces
+  for(i in 1:length(crs_wkt)){
+    crs_wkt[i] <- stringr::str_remove_all(crs_wkt[i], ' ')
+  }
+
+  #paste with simple withespace
   crs_ref <- paste(crs_wkt, collapse = ' ')
 
   # unit
