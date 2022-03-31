@@ -333,12 +333,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   crs_wkt <- crs[5:length(crs)]
 
   #remove additional whitespaces
+  crs_temp <- crs_wkt
   for(i in 1:length(crs_wkt)){
-    crs_wkt[i] <- stringr::str_remove_all(crs_wkt[i], ' ')
+    crs_temp[i] <- stringr::str_remove_all(crs_wkt[i], ' ')
   }
 
   #paste with simple withespace
-  crs_ref <- paste(crs_wkt, collapse = ' ')
+  crs_ref <- paste(crs_temp, collapse = ' ')
 
   # unit
   if(stringr::str_detect(crs_ref,'PROJCRS')){
