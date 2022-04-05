@@ -297,7 +297,7 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     if(!is.na(nodata)&!is.na(fillvalue)){
       if (nodata != fillvalue){
         message(paste0('The fillvalue of the GeoTiff (value: ',nodata,') differs from
-                   the fillvalue of the datacube: ', fillvalue, '.'))
+                   the fillvalue of the netCDF: ', fillvalue, '.'))
       }
     }
 
