@@ -103,7 +103,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
   #timestep check
   #check if timestep is valid type
-  if (checkmate::checkInt(timestep)!=TRUE){
+  if (checkmate::checkInt(timestep, len=1)!=TRUE){
     stop('The argument timestep must be of type "single integerish value"')
   }
 
