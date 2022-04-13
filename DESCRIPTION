@@ -66,5 +66,5 @@ Suggests:
     rmarkdown
 SystemRequirements: GDAL binaries
 Depends: 
-    R (>= 3.5.0) 
+    R (>= 4.0.0) 
 
