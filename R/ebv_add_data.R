@@ -129,15 +129,14 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     stop('Your data argument is not of type character, array or matrix.')
   }
 
+  #file closed?
+  ebv_i_file_opened(filepath_nc)
+
   #already rotate data for tests etc.
   if(matrix | array){
     data <- t(data)
 
   }
-
-
-  #file closed?
-  ebv_i_file_opened(filepath_nc)
 
   # open file
   hdf <- rhdf5::H5Fopen(filepath_nc)
