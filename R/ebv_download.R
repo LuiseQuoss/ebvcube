@@ -40,7 +40,7 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
   })
 
   if(internet!=TRUE){
-    stop('It seems that you are not connected to the internet and therefore cannot download any files. Please check your connection. If you are sure you are connected, it could be that https://portal.geobon.org is down. Check in your browser.')
+    stop('It seems that you are not connected to the internet and therefore cannot download any files. Please check your connection. If you are sure you are connected, it could also be that https://portal.geobon.org is down. Check in your browser.')
   }
 
   #end initial tests----
@@ -99,7 +99,7 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
     #get netcdf path and name
     nc_path <- metadata$data$dataset$download
     nc_url <- paste0('https://', nc_path)
-    name <- basename(nc_path)
+    name_nc <- basename(nc_path)
 
     #check if netCDF file already exists
     if(file.exists(file.path(outputdir, name)) & overwrite==FALSE ){
@@ -108,25 +108,21 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
 
     #download netcdf
     print('Downloading file... Please wait.')
-    utils::download.file(url = nc_url,
-                  destfile = file.path(outputdir, name),
-                  quiet = !verbose
-                  )
 
-    myfile <- getURL(nc_url,
-                     ssl.verifyhost=FALSE, ssl.verifypeer=FALSE)
+    curl::curl_download(nc_url,
+                        destfile = file.path(outputdir, name_nc),
+                        quiet = FALSE)
 
     #download json
-    name_js <- paste0(stringr::str_remove(name, '.nc'), '_metadata.json')
+    name_js <- paste0(stringr::str_remove(name_nc, '.nc'), '_metadata.json')
 
-    utils::download.file(url = json_path,
-                         destfile = file.path(outputdir, name_js),
-                         quiet = !verbose
-    )
+    curl::curl_download(json_path,
+                        destfile = file.path(outputdir, name_js),
+                        quiet = FALSE)
 
 
   }
 
-
+print(paste0('Check out your files: ', file.path(outputdir, name_nc)))
 
 }
