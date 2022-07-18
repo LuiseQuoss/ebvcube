@@ -12,6 +12,7 @@
 #' @param outputdir Character. Output directory of the downloaded files.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE if you want to
 #'   overwrite the netCDF and json.
+#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.
 #'
 #' @return Downloades a netCDF and json file to the given output directory.
 #' @export
@@ -20,8 +21,8 @@
 #' #get all available datasets
 #' datasets <- ebv_download()
 #'
-#' ebv_download(id = datasets$id[1],
-#' outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
+#' # ebv_download(id = datasets$id[1]),
+#' # outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
 #'
 ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
 
@@ -41,6 +42,16 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
 
   if(internet!=TRUE){
     stop('It seems that you are not connected to the internet and therefore cannot download any files. Please check your connection. If you are sure you are connected, it could also be that https://portal.geobon.org is down. Check in your browser.')
+  }
+
+  #turn off local warnings if verbose=TRUE
+  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+    stop('Verbose must be of type logical.')
+  }
+  if(verbose){
+    withr::local_options(list(warn = 0))
+  }else{
+    withr::local_options(list(warn = -1))
   }
 
   #end initial tests----
@@ -102,7 +113,7 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
     name_nc <- basename(nc_path)
 
     #check if netCDF file already exists
-    if(file.exists(file.path(outputdir, name)) & overwrite==FALSE ){
+    if(file.exists(file.path(outputdir, name_nc)) & overwrite==FALSE ){
       stop('NetCDF already downloaded to this directory. Set overwrite to TRUE to replace the older version.')
     }
 
@@ -111,14 +122,14 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
 
     curl::curl_download(nc_url,
                         destfile = file.path(outputdir, name_nc),
-                        quiet = FALSE)
+                        quiet = !verbose)
 
     #download json
     name_js <- paste0(stringr::str_remove(name_nc, '.nc'), '_metadata.json')
 
     curl::curl_download(json_path,
                         destfile = file.path(outputdir, name_js),
-                        quiet = FALSE)
+                        quiet = !verbose)
 
 
   }

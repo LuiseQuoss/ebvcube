@@ -16,6 +16,8 @@ list of data sets available and their title and ID.}
 
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE if you want to
 overwrite the netCDF and json.}
+
+\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.}
 }
 \value{
 Downloades a netCDF and json file to the given output directory.
@@ -30,7 +32,7 @@ output directory.
 #get all available datasets
 datasets <- ebv_download()
 
-ebv_download(id = datasets$id[1],
-outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
+# ebv_download(id = datasets$id[1]),
+# outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
 
 }
