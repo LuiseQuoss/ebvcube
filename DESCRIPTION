@@ -47,6 +47,7 @@ RoxygenNote: 7.1.2
 Imports: 
     checkmate,
     colorspace,
+    curl,
     gdalUtils,
     HDF5Array,
     jsonlite,
