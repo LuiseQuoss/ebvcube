@@ -47,6 +47,7 @@ RoxygenNote: 7.1.2
 Imports: 
     checkmate,
     colorspace,
+    curl,
     gdalUtils,
     HDF5Array,
     jsonlite,
@@ -66,5 +67,5 @@ Suggests:
     rmarkdown
 SystemRequirements: GDAL binaries
 Depends: 
-    R (>= 3.5.0) 
+    R (>= 4.0.0) 
 

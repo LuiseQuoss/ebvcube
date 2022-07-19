@@ -512,7 +512,7 @@ ebv_i_char_att <- function(h5obj, name, data){
     aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
     rhdf5::H5Sclose(sid)
   }
-  data <- enc2utf8(data)
+  #data <- enc2utf8(data)
   rhdf5::H5Awrite(aid, data)
   rhdf5::H5Aclose(aid)
 }
@@ -540,6 +540,10 @@ ebv_i_read_att <-  function(h5obj, name){
     aid <- rhdf5::H5Aopen(h5obj, name)
     attribute <- rhdf5::H5Aread(aid)
     rhdf5::H5Aclose(aid)
+    #ensure utf-8encoding for string attributes
+    if(checkmate::check_character(attribute)==TRUE){
+      attribute <- stringr::str_conv(attribute ,"UTF-8")
+    }
     return(attribute)
   }
 }
