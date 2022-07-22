@@ -144,7 +144,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   time <- prop@spatial$dimensions[3]
   timevalues <- prop@temporal$timesteps_natural
   #derive years
-  timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
+  #timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
   title <- prop@general$title
   fillvalue <- prop@ebv_cube$fillvalue
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
@@ -177,6 +177,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
   #1. check subset or not and get data ----
   if(!is.null(subset)){
+    print('Getting subset of the data')
     data.all.raster <- ebv_read_shp(filepath = filepath,
                              datacubepath = datacubepath,
                              entity = entity,
@@ -316,7 +317,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
     }else{
       #multiple timesteps----
-      stop('Boxplot for multiple timesteps is still under development.')
+      #stop('Boxplot for multiple timesteps is still under development.')
 
       # warning for longer calculation
       if(is_4D){
@@ -331,41 +332,29 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       #rearrange data into data frame
       print('df')
       df <- matrix(nrow = 0, ncol=2)
+      print('calculating boxplots')
       for(ts in 1:dims[3]){
+        print(ts)
         input <- c(as.array(data.all[,,ts]))
         input <- input[!is.na(input)]#remove NAs
         part <- cbind(ts, input)
         df <- rbind(df, part)
       }
       df <- as.data.frame(df)
-      print(df$input[10000])
-      print(df$ts[10000])
 
-      print('boxplot')
-      # plot boxplot
-      graphics::boxplot(df$input~df$ts,
-              data=df,
-              xlab = 'time',
-              main = paste(strwrap(
-                title,
-                width = 80
-              ), collapse = "\n"),
-              ylab=units,
-              col.main = 'darkgrey', cex.main = 1.3, font.main=2,
-              sub =label, col.sub = 'darkgrey', cex.sub=1, font.sub=2,
-              lwd=1,
-              las=1,
-              names=timevalues,
-              col =color,
-              outline=T,
-              outcol='grey',
-              pch='.',
-              cex=2
-              )
+      ggp <- ggplot2::ggplot(data = df, ggplot2::aes(x=factor(ts), y=input)) +
+        ggplot2::geom_boxplot() +
+        ggplot2::scale_x_discrete('time',  breaks=unique(df$ts), labels= timevalues)+
+        ggplot2::ylab(units) +
+        ggplot2::ggtitle(title) +
+        ggplot2::theme_minimal() +
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90)) #turn axis labels by 90 degrees
 
-      print('meanvals')
+      print(ggp)
 
-      meanval <- by(df$input,df$ts, mean)
+      #print('meanvals')
+
+      #meanval <- by(df$input,df$ts, mean)
       #graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
 
     }
