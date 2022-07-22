@@ -334,7 +334,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       df <- matrix(nrow = 0, ncol=2)
       print('calculating boxplots')
       for(ts in 1:dims[3]){
-        print(ts)
         input <- c(as.array(data.all[,,ts]))
         input <- input[!is.na(input)]#remove NAs
         part <- cbind(ts, input)
