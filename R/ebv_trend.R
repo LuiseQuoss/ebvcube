@@ -144,7 +144,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   time <- prop@spatial$dimensions[3]
   timevalues <- prop@temporal$timesteps_natural
   #derive years
-  timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
+  #timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
   title <- prop@general$title
   fillvalue <- prop@ebv_cube$fillvalue
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
@@ -177,6 +177,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
   #1. check subset or not and get data ----
   if(!is.null(subset)){
+    print('Getting subset of the data')
     data.all.raster <- ebv_read_shp(filepath = filepath,
                              datacubepath = datacubepath,
                              entity = entity,
@@ -291,82 +292,59 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     if (dims[3]==1){
       message('Dataset has only one timestep. Single boxplot will be returned.')
 
-      #plot boxplot
-      graphics::boxplot(c(as.array(data.all)),
-              xlab = 'time',
-              main = paste(strwrap(
-                title,
-                width = 80
-              ), collapse = "\n"),
-              ylab=units,
-              col.main = 'darkgrey', cex.main = 1.3, font.main=2,
-              sub =label, col.sub = 'darkgrey', cex.sub=1, font.sub=2,
-              lwd=1,
-              las=1,
-              names=timevalues,
-              col =color,
-              outline=T,
-              outcol='grey',
-              pch='.',
-              cex=2
-      )
+      #data to data.frame
+      dataset <- as.data.frame(x = c(data.all))
+      colnames(dataset) <- 'V1'
 
-      meanval <- mean(as.array(data.all), na.rm=T)
-      graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
+      #return(dataset)
+      ggp <- ggplot2::ggplot(data = dataset, ggplot2::aes(x=factor(timevalues), y=dataset$V1,)) +
+        ggplot2::geom_boxplot(fill=color, outlier.size = 0.7, outlier.shape = 20) +
+        ggplot2::ylab(units) +
+        ggplot2::xlab('Time') +
+        ggplot2::ggtitle(label=title, subtitle=label) +
+        ggplot2::theme_minimal() +
+        ggplot2::stat_summary(fun = "mean", geom = "point", shape = 3,
+                              size = 1, color = "lightblue")
+      print(ggp)
 
     }else{
       #multiple timesteps----
-      stop('Boxplot for multiple timesteps is still under development.')
+      #stop('Boxplot for multiple timesteps is still under development.')
 
       # warning for longer calculation
       if(is_4D){
-        size <- dims[1]*dims[2]*dims[3]*dims[4]
+        size <- as.numeric(dims[1])*as.numeric(dims[2])*as.numeric(dims[3])*as.numeric(dims[4])
       }else{
-        size <- dims[1]*dims[2]*dims[3]
+        size <- as.numeric(dims[1])*as.numeric(dims[2])*as.numeric(dims[3])
       }
       if (size > 100000000){
         message('Wow that is huge! Maybe get a tea...')
       }
 
       #rearrange data into data frame
-      print('df')
-      df <- matrix(nrow = 0, ncol=2)
-      for(ts in 1:dims[3]){
-        input <- c(as.array(data.all[,,ts]))
-        input <- input[!is.na(input)]#remove NAs
-        part <- cbind(ts, input)
-        df <- rbind(df, part)
-      }
-      df <- as.data.frame(df)
-      print(df$input[10000])
-      print(df$ts[10000])
+      df <- reshape2::melt(as.array(data.all), na.rm = TRUE)
 
-      print('boxplot')
-      # plot boxplot
-      graphics::boxplot(df$input~df$ts,
-              data=df,
-              xlab = 'time',
-              main = paste(strwrap(
-                title,
-                width = 80
-              ), collapse = "\n"),
-              ylab=units,
-              col.main = 'darkgrey', cex.main = 1.3, font.main=2,
-              sub =label, col.sub = 'darkgrey', cex.sub=1, font.sub=2,
-              lwd=1,
-              las=1,
-              names=timevalues,
-              col =color,
-              outline=T,
-              outcol='grey',
-              pch='.',
-              cex=2
-              )
+      # df <- data.frame(V1 = c(1:(dims[2]*dims[1])))
+      # for (t in 1:dims[3]){
+      #   df[,t]<- c(data.all[,,t])
+      # }
+      #
+      # df <- reshape2::melt(df)
 
-      print('meanvals')
 
-      meanval <- by(df$input,df$ts, mean)
-      #graphics::points(meanval, col = "lightblue", pch = 3, cex = 1)
+
+      ggp <- ggplot2::ggplot(data = df, ggplot2::aes(x=factor(df$Var3), y=df$value)) +
+        ggplot2::geom_boxplot(fill=color, outlier.size = 0.7, outlier.shape = 20) +
+        ggplot2::scale_x_discrete('Time',  breaks=unique(df$Var3), labels= timevalues)+
+        ggplot2::ylab(units) +
+        ggplot2::ggtitle(label=title, subtitle=label) +
+        ggplot2::theme_minimal() +
+        ggplot2::stat_summary(fun = "mean", geom = "point", shape = 3,
+                              size = 1, color = "lightblue") +
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle=50)) #turn axis labels by 50 degrees
+
+
+      print(ggp)
 
     }
   }
