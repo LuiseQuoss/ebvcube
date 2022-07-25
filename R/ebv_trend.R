@@ -321,18 +321,16 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
       # warning for longer calculation
       if(is_4D){
-        size <- dims[1]*dims[2]*dims[3]*dims[4]
+        size <- as.numeric(dims[1])*as.numeric(dims[2])*as.numeric(dims[3])*as.numeric(dims[4])
       }else{
-        size <- dims[1]*dims[2]*dims[3]
+        size <- as.numeric(dims[1])*as.numeric(dims[2])*as.numeric(dims[3])
       }
       if (size > 100000000){
         message('Wow that is huge! Maybe get a tea...')
       }
 
       #rearrange data into data frame
-      print('df')
       df <- matrix(nrow = 0, ncol=2)
-      print('calculating boxplots')
       for(ts in 1:dims[3]){
         input <- c(as.array(data.all[,,ts]))
         input <- input[!is.na(input)]#remove NAs
@@ -342,12 +340,14 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       df <- as.data.frame(df)
 
       ggp <- ggplot2::ggplot(data = df, ggplot2::aes(x=factor(ts), y=input)) +
-        ggplot2::geom_boxplot() +
-        ggplot2::scale_x_discrete('time',  breaks=unique(df$ts), labels= timevalues)+
+        ggplot2::geom_boxplot(fill=color, outlier.size = 0.7, outlier.shape = 20) +
+        ggplot2::scale_x_discrete('Time',  breaks=unique(df$ts), labels= timevalues)+
         ggplot2::ylab(units) +
-        ggplot2::ggtitle(title) +
+        ggplot2::ggtitle(label=title, subtitle=label) +
         ggplot2::theme_minimal() +
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90)) #turn axis labels by 90 degrees
+        ggplot2::stat_summary(fun = "mean", geom = "point", shape = 3,
+                     size = 1, color = "lightblue") +
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle=50)) #turn axis labels by 50 degrees
 
       print(ggp)
 
