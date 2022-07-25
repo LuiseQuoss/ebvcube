@@ -49,19 +49,21 @@ Imports:
     colorspace,
     curl,
     gdalUtils,
+    ggplot2,
     HDF5Array,
     jsonlite,
     lattice,
     memuse,
     methods,
     ncdf4,
+    ncmeta,
     raster,
+    reshape2,
     rhdf5,
     rgdal,
     sp,
     stringr,
-    withr,
-    ncmeta
+    withr
 Suggests:
     knitr,
     rmarkdown
