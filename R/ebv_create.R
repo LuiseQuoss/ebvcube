@@ -748,6 +748,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
                        json$ebv_scenario$ebv_scenario_classification_name)
   }
 
+
   #terranova datasets
   if(!is.null(json$terranova_type)){
     keywords <- paste0(keywords, ', terranova_type: ', json$terranova_type)
@@ -758,7 +759,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   #add global.att to netcdf
   for (i in 1:length(global.att)){
     att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
-    att.txt <- paste0(att.txt[[1]], collapse = ', ')
+    att.txt <- paste0(trimws(att.txt), collapse = ', ')
     ebv_i_char_att(hdf, names(global.att[i]), att.txt)
   }
 
