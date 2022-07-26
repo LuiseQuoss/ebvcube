@@ -216,58 +216,6 @@ ebv_i_type_ot <- function(type.long){
   return(ot)
 }
 
-#' Turns hdf5 type of NetCDF into raster type
-#' @param type.long Character. Hdf5 type of NetCDF file - retrieved from
-#'   [ebvcube::ebv_properties()].
-#' @return Character. Raster type of raster package in R.
-#' @noRd
-ebv_i_type_raster <- function(datanotation, byteorder){
-  types.raster <- c('LOG1S', 'INT1S', 'INT2S', 'INT4S', 'INT8S', 'INT1U', 'INT2U', 'FLT4S', 'FLT8S')
-  type.hdf <- ''
-  #define FLOAT type
-  if (substr(datanotation, 1,3)=='FLT'){
-    type.hdf <- paste0(type.hdf, 'H5T_IEEE_F')
-    #check bytes
-    if (substr(datanotation, 4,4)=='4'){
-      type.hdf <- paste0(type.hdf,'32')
-    }else if (substr(datanotation, 4,4)=='8'){
-      type.hdf <- paste0(type.hdf,'64')
-    }
-    #define INT type e.g. "H5T_STD_I8BE" OR "H5T_STD_U8BE"
-  } else if (substr(datanotation, 1,3)=='INT'){
-    #check signed or unsigned
-    if (substr(datanotation, 5,5)=='S'){
-      type.hdf <- paste0(type.hdf, 'H5T_STD_I')
-    } else if (substr(datanotation, 5,5)=='U') {
-      type.hdf <- paste0(type.hdf, 'H5T_STD_U')
-    }
-    #check bytes
-    if (substr(datanotation, 4,4)=='1'){
-      type.hdf <- paste0(type.hdf,'8')
-    }else if (substr(datanotation, 4,4)=='2'){
-      type.hdf <- paste0(type.hdf,'16')
-    } else if (substr(datanotation, 4,4)=='4'){
-      type.hdf <- paste0(type.hdf,'32')
-    }else if (substr(datanotation, 4,4)=='8'){
-      type.hdf <- paste0(type.hdf,'64')
-    }
-  }
-  #check LE or BE
-  if(byteorder=='little'){
-    type.hdf <- paste0(type.hdf,'LE')
-  } else if(byteorder=='big'){
-    type.hdf <- paste0(type.hdf,'BE')
-  }
-  #check if type  is created correctly
-  if (!type.hdf %in% rhdf5::h5const("H5T")){
-    warning(paste0('Output type for HDF file not created correctly: ', type.hdf,
-                   '\nPlease contact developer of package.\nInput: ',
-                   datanotation, ' and ', byteorder, '\nDefault type will be used: H5T_NATIVE_DOUBLE.'))
-    type.hdf <- 'H5T_NATIVE_DOUBLE'
-  }
-  return(type.hdf)
-}
-
 #' Transforms the bounding boxs to another epsg. Used in
 #' [ebvcube::ebv_data_read_bb()].
 #' @param bb Bounding box corresponding to src_epsg.
