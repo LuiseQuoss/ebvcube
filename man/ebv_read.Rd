@@ -29,8 +29,9 @@ netCDFs.}
 \item{timestep}{Integer. Choose one or several timesteps (vector).}
 
 \item{type}{Character. Choose between 'a', 'r' and 'da'. The first returns an
-array or matrix object. The 'r' indicates raster as return class. The
-latter returns a DelayedArray object.}
+array or matrix object. The 'r' indicates that a SpatRaster object from the
+terra package will be returned. The latter ('da') returns a DelayedArray
+object.}
 
 \item{sparse}{Logical. Default: FALSE. Set to TRUE if the data contains a lot
 empty raster cells. Only relevant for DelayedMatrix. No further
@@ -48,9 +49,9 @@ corresponding datacube and timestep(s).
 }
 \description{
 Read one or more layers from one datacube of the netCDF file.
-Decide between in-memory array, in-memory raster or an array-like object
-(DelayedMatrix) pointing to the on-disk netCDF file. Latter is useful for
-data that exceeds your memory.
+Decide between in-memory array, in-memory SpatRaster or an array-like
+object (DelayedMatrix) pointing to the on-disk netCDF file. Latter is
+useful for data that exceeds your memory.
 }
 \note{
 For working with the DelayedMatrix take a look at

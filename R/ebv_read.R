@@ -1,9 +1,9 @@
 #' Read data from an EBV netCDF
 #'
 #' @description Read one or more layers from one datacube of the netCDF file.
-#'   Decide between in-memory array, in-memory raster or an array-like object
-#'   (DelayedMatrix) pointing to the on-disk netCDF file. Latter is useful for
-#'   data that exceeds your memory.
+#'   Decide between in-memory array, in-memory SpatRaster or an array-like
+#'   object (DelayedMatrix) pointing to the on-disk netCDF file. Latter is
+#'   useful for data that exceeds your memory.
 #'
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
@@ -14,8 +14,9 @@
 #'   netCDFs.
 #' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param type Character. Choose between 'a', 'r' and 'da'. The first returns an
-#'   array or matrix object. The 'r' indicates raster as return class. The
-#'   latter returns a DelayedArray object.
+#'   array or matrix object. The 'r' indicates that a SpatRaster object from the
+#'   terra package will be returned. The latter ('da') returns a DelayedArray
+#'   object.
 #' @param sparse Logical. Default: FALSE. Set to TRUE if the data contains a lot
 #'   empty raster cells. Only relevant for DelayedMatrix. No further
 #'   implementation by now.
@@ -27,6 +28,12 @@
 #' @note For working with the DelayedMatrix take a look at
 #'   [DelayedArray::DelayedArray()] and the
 #'   \href{https://www.rdocumentation.org/packages/HDF5Array/versions/1.0.2/topics/DelayedArray-utils}{DelayedArray-utils}.
+#'
+#'
+#'
+#'
+#'
+#'
 #'
 #' @return Array, Raster or DelayedMatrix object containing the data of the
 #'   corresponding datacube and timestep(s).
@@ -244,26 +251,15 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
     }
 
     if(type=='r'){
-      # return raster object ----
-      if(length(timestep)==1){
-        #matrix to raster
-        h5array <-raster::raster(
-          matrix(h5array, prop@spatial$dimensions[1], prop@spatial$dimensions[2]),
-          xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],
-          ymn=prop@spatial$extent[3], ymx=prop@spatial$extent[4],
-          crs=prop@spatial$srs
-        )
-      }else{
-        h5array <-raster::brick(
-          h5array,
-          xmn=prop@spatial$extent[1], xmx=prop@spatial$extent[2],
-          ymn=prop@spatial$extent[3], ymx=prop@spatial$extent[4],
-          crs=prop@spatial$srs
-        )
-      }
+      # return SpatRaster object ----
+
+        extent <- terra::ext(c(prop@spatial$extent[1], prop@spatial$extent[2],
+                    prop@spatial$extent[3], prop@spatial$extent[4]))
+        test <- terra::rast(h5array, crs=prop@spatial$wkt2, extent=extent)
+
 
       #set nodata value
-      h5array <- raster::reclassify(h5array, cbind(fillvalue, NA))
+        h5array <- terra::classify(test, cbind(fillvalue, NA))
     }
 
   } else {
