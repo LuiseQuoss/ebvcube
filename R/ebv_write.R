@@ -53,6 +53,8 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
                       type='FLT8S', overwrite=FALSE, verbose=FALSE){
   ####initial tests start ----
 
+  aslfhasdf
+
   #ensure that all tempfiles are deleted on exit
   withr::defer(
     if(exists('temps')){
