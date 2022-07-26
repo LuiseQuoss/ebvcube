@@ -305,12 +305,8 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
     }
 
     #array to raster
-    r <-raster::brick(
-      array3d,
-      xmn=xmin, xmx=xmax,
-      ymn=ymin, ymx=ymax,
-      crs=crs
-    )
+    extent <- terra::ext(c(xmin, xmax,ymin,ymax))
+    r <- terra::rast(array3d, crs=crs, extent=extent)
 
   }else{
     #get one timestep
@@ -334,21 +330,18 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
     }
 
     #array to raster
-    r <- raster::raster(
-      mat,
-      xmn=xmin, xmx=xmax,
-      ymn=ymin, ymx=ymax,
-      crs=crs
-    )
+    extent <- terra::ext(c(xmin, xmax,ymin,ymax))
+    r <- terra::rast(mat, crs=crs, extent=extent)
+
   }
 
   #set nodata value
-  r <- raster::reclassify(r, cbind(prop@ebv_cube$fillvalue, NA))
+  r <- terra::classify(r, cbind(prop@ebv_cube$fillvalue, NA))
 
   #return data ----
   if (!is.null(outputpath)){
     #write raster
-    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite)
+    terra::writeRaster(r, outputpath,  overwrite = overwrite, filetype="GTiff")
     return(outputpath)
   }
   else{
