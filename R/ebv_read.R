@@ -255,11 +255,11 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
 
         extent <- terra::ext(c(prop@spatial$extent[1], prop@spatial$extent[2],
                     prop@spatial$extent[3], prop@spatial$extent[4]))
-        test <- terra::rast(h5array, crs=prop@spatial$wkt2, extent=extent)
+        h5array <- terra::rast(h5array, crs=prop@spatial$wkt2, extent=extent)
 
 
       #set nodata value
-        h5array <- terra::classify(test, cbind(fillvalue, NA))
+        h5array <- terra::classify(h5array, cbind(fillvalue, NA))
     }
 
   } else {
