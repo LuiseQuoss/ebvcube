@@ -164,19 +164,8 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
     stop('epsg must be of type integer.')
   }
 
-  #create empty raster
-  dummy_raster <- terra::rast()
-  #assign epsg crs to check wether the epsg can be processed
-  tryCatch(terra::crs(dummy_raster) <- paste0('EPSG:',epsg),
-           warning = function(e){
-             warning <- as.character(e)
-             print(warning)
-               if(stringr::str_detect(warning, 'crs not found')){
-                 stop('The EPSG you provided cannot be found. Is the EPSG code correct? Or are you not properly connected to GDAL and the PROJ LIB?')
-               } else{
-                 stop(paste0('Could not process EPSG. See error from terra:\n', warning))
-               }
-             })
+  #check wether the epsg can be processed
+  ebv_i_eval_epsg(epsg)
 
   #check file structure
   is_4D <- ebv_i_4D(filepath)
