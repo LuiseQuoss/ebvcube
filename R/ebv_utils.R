@@ -547,3 +547,26 @@ ebv_i_entity <- function(entity, entity_names){
   }
 }
 
+
+#' Check if EPSG code is valid
+#'
+#' @param epsg. Integer. EPSG code.
+#'
+#' @return Nothing. Throws error, if EPSG cannot be processed.
+#' @export
+#'
+#' @examples
+ebv_i_eval_epsg <- function(epsg){
+  #create empty raster
+  dummy_raster <- terra::rast()
+  #assign epsg crs to check wether the epsg can be processed
+  tryCatch(terra::crs(dummy_raster) <- paste0('EPSG:',epsg),
+           warning = function(e){
+             warning <- as.character(e)
+             if(stringr::str_detect(warning, 'crs not found')){
+               stop('The EPSG you provided cannot be found. Is the EPSG code correct? Or are you not properly connected to GDAL and the PROJ LIB?')
+             } else{
+               stop(paste0('Could not process EPSG. See error from terra:\n', warning))
+             }
+           })
+}
