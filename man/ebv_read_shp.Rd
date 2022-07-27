@@ -11,7 +11,7 @@ ebv_read_shp(
   timestep = 1,
   shp,
   outputpath = NULL,
-  at = TRUE,
+  touches = TRUE,
   overwrite = FALSE,
   ignore_RAM = FALSE,
   verbose = FALSE
@@ -36,7 +36,7 @@ to be *.shp.}
 \item{outputpath}{Character. Default: NULL, returns the data as a raster
 object in memory. Optional: set path to write subset as GeoTiff on disk.}
 
-\item{at}{Logical. Default: TRUE, all pixels touched by the polygon(s) will
+\item{touches}{Logical. Default: TRUE, all pixels touched by the polygon(s) will
 be updated. Set to FALSE to only include pixels that are on the line render
 path or have center points inside the polygon(s).}
 
@@ -55,13 +55,9 @@ subset is written onto the disk and the ouputpath is returned.
 }
 \description{
 Read a subset of one or more layers from one datacube of the
-netCDF file. Subset definition by a shapefile. This functions writes
-temporary files on your disk. Specify a directory for these setting via
-options('ebv_temp'='/path/to/temp/directory').
+netCDF file. Subset definition by a shapefile.
 }
 \examples{
-#define temp directory
-options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF

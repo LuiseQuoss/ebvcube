@@ -10,7 +10,7 @@ ebv_analyse(
   entity = NULL,
   timestep = 1,
   subset = NULL,
-  at = TRUE,
+  touches = TRUE,
   epsg = 4326,
   numerical = TRUE,
   na_rm = TRUE,
@@ -35,7 +35,7 @@ via the path to a shapefile (character) or the indication of a bounding box
 (vector of four numeric values) defining the subset. Else the whole area is
 analysed.}
 
-\item{at}{Logical. Optional. Default: TRUE. Only relevant if the subset is
+\item{touches}{Logical. Optional. Default: TRUE. Only relevant if the subset is
 indicated by a shapefile. See \code{\link[=ebv_read_shp]{ebv_read_shp()}}.}
 
 \item{epsg}{Numeric. Optional. Only relevant if the subset is indicated by a
