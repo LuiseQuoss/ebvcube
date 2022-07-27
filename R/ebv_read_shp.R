@@ -1,9 +1,7 @@
 #' Read subset (shapefile) of one datacube of an EBV netCDF
 #'
 #' @description Read a subset of one or more layers from one datacube of the
-#'   netCDF file. Subset definition by a shapefile. This functions writes
-#'   temporary files on your disk. Specify a directory for these setting via
-#'   options('ebv_temp'='/path/to/temp/directory').
+#'   netCDF file. Subset definition by a shapefile.
 #'
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
@@ -17,7 +15,7 @@
 #' @param outputpath Character. Default: NULL, returns the data as a raster
 #'   object in memory. Optional: set path to write subset as GeoTiff on disk.
 #' @param timestep Integer. Choose one or several timesteps (vector).
-#' @param at Logical. Default: TRUE, all pixels touched by the polygon(s) will
+#' @param touches Logical. Default: TRUE, all pixels touched by the polygon(s) will
 #'   be updated. Set to FALSE to only include pixels that are on the line render
 #'   path or have center points inside the polygon(s).
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
@@ -33,8 +31,6 @@
 #' @seealso [ebvcube::ebv_read_bb()] for subsetting via bounding box.
 #'
 #' @examples
-#' #define temp directory
-#' options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
@@ -48,27 +44,13 @@
 #' #                              entity = NULL, timestep = 1, shp = shp_path,
 #' #                              outputpath = NULL)
 ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
-                         shp, outputpath=NULL, at = TRUE, overwrite=FALSE,
+                         shp, outputpath=NULL, touches = TRUE, overwrite=FALSE,
                          ignore_RAM=FALSE, verbose = FALSE){
   ####start initial checks ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
-    }
-  )
-
-  #ensure that all tempfiles are deleted on exit
-  withr::defer(
-    if(exists('tempshp')){
-      unlink(tempshp, recursive = TRUE)
-    }
-  )
-  withr::defer(
-    if(exists('tempraster')){
-      if(file.exists(tempraster)){
-        file.remove(tempraster)
-      }
     }
   )
 
@@ -101,8 +83,8 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
   if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
     stop('overwrite must be of type logical.')
   }
-  if(checkmate::checkLogical(at, len=1, any.missing=F) != TRUE){
-    stop('at must be of type logical.')
+  if(checkmate::checkLogical(touches, len=1, any.missing=F) != TRUE){
+    stop('touches must be of type logical.')
   }
 
   #nc filepath check
@@ -175,19 +157,6 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
     }
   }
 
-  #get temp directory
-  temp_path <- getOption('ebv_temp')[[1]]
-  if (is.null(temp_path)){
-    stop('This function creates a temporary file. Please specify a temporary directory via options.')
-  } else {
-    if (checkmate::checkCharacter(temp_path) != TRUE){
-      stop('The temporary directory must be of type character.')
-    }
-    if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-      stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
-    }
-  }
-
   #check file structure
   is_4D <- ebv_i_4D(filepath)
   if(is_4D){
@@ -211,103 +180,64 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
   ####end initial checks ----
 
   #read shapefile
-  subset <- rgdal::readOGR(shp, verbose=FALSE)
+  subset <- terra::vect(shp)
 
   #get_epsg of shp ----
-  temp_epsg <- gdalUtils::gdalsrsinfo(shp)
-  temp_epsg <- rgdal::showEPSG(paste0(temp_epsg[5:length(temp_epsg)],collapse=' '))
+  temp_epsg <- terra::crs(subset)
+  temp_epsg <- ebv_i_get_epsg(temp_epsg)
 
+  #check if empty -> error
   if(is.na(as.integer(temp_epsg))){
-    stop(paste0('The given crs of the shapefile is not supported.\n',
-                'See error from gdalUtils:\n',
-                as.character(paste0(temp_epsg, collapse = '\n'))))
+    stop(paste0('The crs of the shapefile could not be processed. Did you assign a CRS to your shapefile? Or are you incorrectly connected to GDAL and PROJ LIB?'))
   } else {
+    #if not empty: check if valid
+    ebv_i_eval_epsg(temp_epsg)
     epsg.shp <- as.integer(temp_epsg)
   }
 
   #get epsg of ncdf
   epsg.nc <- as.integer(prop@spatial$epsg)
-  crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", epsg.nc))
-  crs.nc <- sp::CRS(stringr::str_remove(paste(crs[2], collapse = ' '), 'PROJ.4 : '))
+  crs.nc <- prop@spatial$wkt2
 
   #original extent
-  extent.org <- raster::extent(subset)
+  extent.org <- terra::ext(subset)
 
   #reproject shp if necessary to epsg of ncdf ----
   if (epsg.shp != epsg.nc){
-    subset <- sp::spTransform(subset, crs.nc)
-    tempshp <- file.path(temp_path, 'temp_EBV_shp_subset')
-    if (dir.exists(tempshp)){
-      unlink(tempshp, recursive = TRUE)
-    }
-    rgdal::writeOGR(subset, tempshp, layer = 'temp', driver='ESRI Shapefile')
-    shp <- file.path(tempshp, 'temp.shp')
+    subset <- terra::project(subset, crs.nc)
   }
 
   #get extent of shp
-  extent.shp <- raster::extent(subset)
+  extent.shp <- terra::ext(subset)
 
   #get extent of ncdf file
   ext <- prop@spatial$extent
 
   #get subset of ncdf #checks for RAM
   subset.nc <- ebv_read_bb(filepath, datacubepath, entity=entity,
-                           bb=c(extent.shp@xmin, extent.shp@xmax, extent.shp@ymin, extent.shp@ymax),
+                           bb=c(extent.shp[1], extent.shp[2], extent.shp[3], extent.shp[4]),
                            timestep=timestep, epsg=epsg.nc, ignore_RAM = ignore_RAM, verbose=verbose)
 
   #get extent of raster
-  extent.raster <- raster::extent(subset.nc)
+  extent.raster <- terra::ext(subset.nc)
 
   #get resolution of ncdf
-  resolution.nc <- raster::res(subset.nc)
+  resolution.nc <- terra::res(subset.nc)
 
   #rasterize shp ----
-  #with resoultion of ncdf, burn value 1 (temp rasterlayer --> mask)
-  #check ram
-  dim.subset <- dim(subset.nc)
-  #check needed RAM
-  if (!ignore_RAM){
-    ebv_i_check_ram(dim.subset, timestep, entity, 'H5T_STD_I8BE') #type=placeholder for integer
-  } else{
-    message('RAM capacities are ignored.')
-  }
-
-
-  #define output
-  tempraster <- file.path(temp_path, 'temp_EBV_shp_subset.tif')
-  #remove file in case it exists, as gdal_rasterize has no overwrite option
-  if(file.exists(tempraster)){
-    file.remove(tempraster)
-  }
-  temp.raster <- gdalUtils::gdal_rasterize(shp, tempraster, at = at, burn = 1,
-                                te = c(extent.raster@xmin, extent.raster@ymin,
-                                       extent.raster@xmax, extent.raster@ymax),
-                                tr = resolution.nc, ot ='Byte',
-                                co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                output_Raster = TRUE)
+  #with resoultion of ncdf, burn value 1 (temp.raster --> mask)
+  #rasterize shapefile and align to netCDF resolution
+  temp.raster <- terra::rasterize(subset, subset.nc, touches=touches)
 
   #mask the subset ----
-  #check needed RAM
-  if (!ignore_RAM){
-    ebv_i_check_ram(dim.subset, timestep, entity, 'H5T_NATIVE_FLOAT') #type=placeholder for double
-  } else{
-    message('RAM capacities are ignored.')
-  }
-  subset.raster <- raster::mask(subset.nc, temp.raster, maskvalue=0, overwrite=TRUE)
+  subset.raster <- terra::mask(subset.nc, temp.raster)
 
   #set nodata value
-  subset.raster <- raster::reclassify(subset.raster, cbind(prop@ebv_cube$fillvalue, NA))
-  raster::crs(subset.raster) <- crs.nc
-
-  #remove temp shp
-  if (epsg.shp != epsg.nc){
-    unlink(tempshp, recursive = TRUE)
-  }
+  subset.raster <- terra::classify(subset.raster, cbind(prop@ebv_cube$fillvalue, NA))
 
   #return raster or tif
   if(!is.null(outputpath)){
-    raster::writeRaster(subset.raster, outputpath, format = "GTiff",
-                        overwrite = overwrite)
+    terra::writeRaster(subset.raster, outputpath,overwrite = overwrite, filetype = "GTiff")
     return(outputpath)
   } else {
     return(subset.raster)
