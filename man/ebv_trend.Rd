@@ -11,6 +11,7 @@ ebv_trend(
   method = "mean",
   subset = NULL,
   color = "dodgerblue4",
+  touches = TRUE,
   verbose = FALSE
 )
 }
@@ -35,6 +36,9 @@ Ending needs to be *.shp.}
 
 \item{color}{Character. Default: dodgerblue4. Change to any color known by R
 \code{\link[grDevices:colors]{grDevices::colors()}}}
+
+\item{touches}{Logical. Optional. Default: TRUE. Only relevant if the subset is
+indicated by a shapefile. See \code{\link[=ebv_read_shp]{ebv_read_shp()}}.}
 
 \item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
 TRUE.}

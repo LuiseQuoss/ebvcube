@@ -16,6 +16,8 @@
 #' @param subset Character. Default: NULL. If you want to look at the trend for
 #'   a spatial subset, define the path to the shapefile encompassing the area.
 #'   Ending needs to be *.shp.
+#' @param touches Logical. Optional. Default: TRUE. Only relevant if the subset is
+#'   indicated by a shapefile. See [ebvcube::ebv_read_shp()].
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -44,7 +46,8 @@
 #' #plot the change of the mean over time of the first datacube
 #' ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = NULL)
 ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
-                      subset=NULL, color="dodgerblue4", verbose=FALSE){
+                      subset=NULL, color="dodgerblue4", touches=TRUE,
+                      verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -182,10 +185,11 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
                              datacubepath = datacubepath,
                              entity = entity,
                              timestep = 1:dims[3],#get all timesteps
-                             shp = subset)
+                             shp = subset,
+                             touches = touches)
     #turn into array
     #DelayedArray::DelayedArray(data.all.raster)
-    data.all <- raster::as.array(data.all.raster)
+    data.all <- terra::as.array(data.all.raster)
     rm(data.all.raster)
 
   }else{
