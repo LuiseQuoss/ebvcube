@@ -14,7 +14,7 @@
 #'   (vector of four numeric values) defining the subset. Else the whole area is
 #'   analysed.
 #' @param timestep Integer. Choose one or several timesteps (vector).
-#' @param at Logical. Optional. Default: TRUE. Only relevant if the subset is
+#' @param touches Logical. Optional. Default: TRUE. Only relevant if the subset is
 #'   indicated by a shapefile. See [ebvcube::ebv_read_shp()].
 #' @param epsg Numeric. Optional. Only relevant if the subset is indicated by a
 #'   bounding box and the coordinate reference system differs from WGS84. See
@@ -53,7 +53,7 @@
 #' #                              entity = NULL, timestep = 1:12, subset = shp_path)
 
 ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
-                        subset=NULL, at=TRUE, epsg = 4326, numerical=TRUE,
+                        subset=NULL, touches=TRUE, epsg = 4326, numerical=TRUE,
                         na_rm=TRUE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
@@ -128,8 +128,8 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
   if(checkmate::checkLogical(numerical, len=1, any.missing=F) != TRUE){
     stop('numerical must be of type logical.')
   }
-  if(checkmate::checkLogical(at, len=1, any.missing=F) != TRUE){
-    stop('at must be of type logical.')
+  if(checkmate::checkLogical(touches, len=1, any.missing=F) != TRUE){
+    stop('touches must be of type logical.')
   }
 
   #check file structure
@@ -175,15 +175,15 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
     subset.raster <- ebv_read_bb(filepath, datacubepath, entity=entity, bb=subset,
                                  timestep=timestep, epsg=epsg, verbose=verbose)
     #raster to array
-    subset.array <- raster::as.array(subset.raster)
+    subset.array <- terra::as.array(subset.raster)
     #less ram
     rm(subset.raster)
   } else if(endsWith(subset, '.shp')){
     #process shp subset ----
     subset.raster <- ebv_read_shp(filepath, datacubepath, entity=entity,
-                                  shp=subset, timestep=timestep, at=at, verbose=verbose)
+                                  shp=subset, timestep=timestep, touches=touches, verbose=verbose)
     #raster to array
-    subset.array <- raster::as.array(subset.raster)
+    subset.array <- terra::as.array(subset.raster)
     #less ram
     rm(subset.raster)
   } else {
