@@ -195,7 +195,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     rhdf5::H5Dclose(srs.ds)
 
     #get epsg
-    epsg <- as.integer(rgdal::showEPSG(srs))
+    epsg <- as.numeric(ebv_i_get_epsg(srs))
 
     #get dims
     dims <- c(dim(hdf$lat), dim(hdf$lon), dim(hdf$time))
