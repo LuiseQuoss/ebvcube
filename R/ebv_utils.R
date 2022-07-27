@@ -553,9 +553,7 @@ ebv_i_entity <- function(entity, entity_names){
 #' @param epsg. Integer. EPSG code.
 #'
 #' @return Nothing. Throws error, if EPSG cannot be processed.
-#' @export
-#'
-#' @examples
+#' @noRd
 ebv_i_eval_epsg <- function(epsg){
   #create empty raster
   dummy_raster <- terra::rast()
@@ -569,4 +567,18 @@ ebv_i_eval_epsg <- function(epsg){
                stop(paste0('Could not process EPSG. See error from terra:\n', warning))
              }
            })
+}
+
+#' Get WKT, return EPSG code
+#'
+#' @param wkt. Character. WKT representation of the CRS.
+#'
+#' @return Numerical. EPSG code of the CRS
+#' @noRd
+ebv_i_get_epsg <- function(wkt){
+  parts <- stringr::str_split(wkt, '\\[')[[1]]
+  index <- length(parts)
+  epsg_dirty <- parts[index]
+  epsg <- as.numeric(regmatches(epsg_dirty, gregexpr("[[:digit:].]+", epsg_dirty))[[1]])
+  return(epsg)
 }
