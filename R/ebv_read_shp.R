@@ -184,6 +184,9 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
 
   #get_epsg of shp ----
   temp_epsg <- terra::crs(subset)
+  if(temp_epsg==''){
+    stop('The crs of the shapefile could not be detected. Did you assign a CRS to your shapefile? (Or are you incorrectly connected to GDAL and PROJ LIB?)')
+  }
   temp_epsg <- ebv_i_get_epsg(temp_epsg)
 
   #check if empty -> error
@@ -192,10 +195,6 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
   } else {
     #if not empty: check if valid
     ebv_i_eval_epsg(temp_epsg)
-    epsg.shp <- as.integer(temp_epsg)
-  }
-
-  #get epsg of ncdf
   epsg.nc <- as.integer(prop@spatial$epsg)
   crs.nc <- prop@spatial$wkt2
 
