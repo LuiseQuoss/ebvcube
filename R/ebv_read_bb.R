@@ -164,7 +164,7 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
     stop('epsg must be of type integer.')
   }
 
-  #check wether the epsg can be processed
+  #check whether the epsg can be processed
   ebv_i_eval_epsg(epsg)
 
   #check file structure
