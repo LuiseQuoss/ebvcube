@@ -195,6 +195,7 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
   } else {
     #if not empty: check if valid
     ebv_i_eval_epsg(temp_epsg)
+    epsg.shp <- temp_epsg
   }
 
   #get epsg of ncdf
