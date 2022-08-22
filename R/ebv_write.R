@@ -3,26 +3,21 @@
 #'   this function gives you the possibility to write it to disk as a GeoTiff.
 #'   This functions writes temporary files on your disk. Specify a directory for
 #'   these setting via options('ebv_temp'='/path/to/temp/directory').
-#' @note Not yet implemented for subsets of the data (only whole spatial
-#'   coverage of the corresponding EBV netCDF).
 #'
-#' @param data Your data object. May be raster, array, DelayedMatrix or list of
+#' @param data Your data object. May be SpatRaster, array, DelayedMatrix or list of
 #'   DelayedMatrix (see return values of [ebvcube::ebv_read()])
 #' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
 #'   system via the corresponding epsg code.
 #' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
 #'   data: c(xmin, xmax, ymin, ymax).
 #' @param type Character. Default is FLT8S Indicate the datatype of the GeoTiff
-#'   file. Possible values: LOG1S, INT1S, INT1S, INT2S, INT2U, INT4S, INT4U,
-#'   FLT4S, FLT8S.
+#'   file. Possible values: INT1S, INT2S, INT2U, INT4S, INT4U, FLT4S, FLT8S.
 #' @param outputpath Character. Set the path where you want to write the data to
 #'   disk as a GeoTiff. Ending needs to be *.tif.
 #' @param overwrite Locigal. Default: FALSE. Set to TRUE to overwrite the
 #'   outputfile defined by 'outputpath'.
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
-#'
-#' @note For more info on the datatype definition see [raster::dataType()].
 #'
 #' @return Returns the outputpath.
 #' @export
@@ -115,16 +110,13 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   if(checkmate::checkIntegerish(epsg) != TRUE){
     stop('epsg must be of type integer.')
   }
-  crs <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg))
-  if(any(stringr::str_detect(as.character(crs), 'crs not found'))){
-    stop('Given EPSG code is not in PROJ library. Did you give a wrong EPSG code?')
-  } else if (any(stringr::str_detect(as.character(crs), '(?i)error'))){
-    stop(paste0('Could not process EPSG. See error from gdalUtils:\n', as.character(paste0(crs, collapse = '\n'))))
-  }
+
+  #eval epsg, retrieve wkt crs
+  crs <- ebv_i_eval_epsg(epsg)
 
   #check type
-  if(! type %in% c('LOG1S', 'INT1S', 'INT1S', 'INT2S', 'INT2U', 'INT4S', 'INT4U', 'FLT4S', 'FLT8S')){
-    stop('The type needs to be one of the following values: LOG1S, INT1S, INT1S, INT2S, INT2U, INT4S, INT4U, FLT4S, FLT8S.')
+  if(! type %in% c("INT1U", "INT2U", "INT2S", "INT4U", "INT4S", "FLT4S", "FLT8S")){
+    stop('The type needs to be one of the following values: INT1S, INT2S, INT2U, INT4S, INT4U, FLT4S, FLT8S.')
   }
 
   #######initial test end ----
@@ -172,7 +164,6 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     ot <- ebv_i_type_ot(type.long)
 
     a_srs <- paste0('EPSG:', epsg)
-    #a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
 
     #add CRS, shift to -180,90, add nodata value
     if(!is.null(ot)){
@@ -215,7 +206,6 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
 
-    #a_srs <- sp::CRS(SRS_string = paste0('EPSG:', prop@spatial$epsg))
     a_srs <- paste0('EPSG:', epsg)
     temps <- c()
     #turn listed DelayedArrays into tif
@@ -300,41 +290,19 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   }else if (class(data)=="array"| class(data)=="matrix"){
     #data from array/matrix - in memory
 
-    crs <- paste(crs[5:length(crs)], collapse = ' ')
-
-    if(length(dim(data))==2){
-      #convert to raster
-      r <- raster::raster(
-        data,
-        xmn=extent[1], xmx=extent[2],
-        ymn=extent[3], ymx=extent[4],
-        crs=crs
-      )
-    } else {
-      #convert to raster
-      r <-raster::brick(
-        data,
-        xmn=extent[1], xmx=extent[2],
-        ymn=extent[3], ymx=extent[4],
-        crs=crs
-      )
-    }
-
-    #NAvalue(r) <- prop@ebv_cube_information@fillvalue
-    #r<- raster::mask(r, r, maskvalue=prop@ebv_cube$fillvalue)
+    #array/matrix to raster
+    extent <- terra::ext(extent)
+    r <- terra::rast(data, crs=crs, extent=extent)
 
     #write raster to disk
-    raster::writeRaster(r, outputpath, format = "GTiff", overwrite = overwrite,
+    terra::writeRaster(r, outputpath, filetype = "GTiff", overwrite = overwrite,
                         datatype=type)
     return(outputpath)
   # write raster ----
-  } else if(class(data)=="RasterLayer"|class(data)=='RasterBrick'){
-    #mask out fillvalue
-    #r<- raster::mask(data, data, maskvalue=prop@ebv_cube$fillvalue)
+  } else if(class(data)=="SpatRaster"){
     #write raster to disk
-    crs <- paste(crs[5:length(crs)], collapse = ' ')
-    raster::crs(data) <- crs
-    raster::writeRaster(data, outputpath, format = "GTiff", overwrite = overwrite,
+    terra::crs(data) <- crs #ensure crs
+    terra::writeRaster(data, outputpath, filetype = "GTiff", overwrite = overwrite,
                         datatype=type)
     return(outputpath)
   }else{
