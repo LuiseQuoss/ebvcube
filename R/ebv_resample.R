@@ -14,16 +14,17 @@
 #' @param resolution Either the path to an EBV netCDF file that determines the
 #'   resolution (character) or the resolution defined directly (numeric). The
 #'   vector defining the resolution directly must contain three elements: the
-#'   x-resolution, the y-resolution and the corresponding EPSG code.
+#'   x-resolution, the y-resolution and the corresponding EPSG code, e.g.
+#'   c(0.25, 0.25, 4326).
 #' @param outputpath Character. Set path to write data as GeoTiff on disk.
 #' @param timestep_src Integer. Choose one or several timesteps (vector).
 #' @param method Character. Default: bilinear. Define resampling method. Choose
 #'   from: "near","bilinear","cubic" and "cubicspline". For categorical data,
 #'   use 'near'. Based on [terra::project].
 #' @param return_raster Logical. Default: FALSE. Set to TRUE to directly get the
-#'   corresponding raster object.
+#'   corresponding SpatRast object.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
-#'   outputfile defined by 'outputpath'.
+#'   output file defined by 'outputpath'.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -53,7 +54,7 @@
 #' #resample defining the resolution and EPSG code by hand - return Raster
 #' # data_raster <- ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
 #' #                             entity_src=NULL, timestep_src = 1, resolution = res1,
-#' #                             outputpath = out, method='max', return_raster=TRUE)
+#' #                             outputpath = out, method='near', return_raster=TRUE)
 ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timestep_src = 1,
                          resolution, outputpath, method='bilinear', return_raster=FALSE,
                          overwrite = FALSE, ignore_RAM=FALSE, verbose=FALSE){

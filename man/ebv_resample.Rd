@@ -35,7 +35,8 @@ netCDFs.}
 \item{resolution}{Either the path to an EBV netCDF file that determines the
 resolution (character) or the resolution defined directly (numeric). The
 vector defining the resolution directly must contain three elements: the
-x-resolution, the y-resolution and the corresponding EPSG code.}
+x-resolution, the y-resolution and the corresponding EPSG code, e.g.
+c(0.25, 0.25, 4326).}
 
 \item{outputpath}{Character. Set path to write data as GeoTiff on disk.}
 
@@ -44,10 +45,10 @@ from: "near","bilinear","cubic" and "cubicspline". For categorical data,
 use 'near'. Based on \link[terra:project]{terra::project}.}
 
 \item{return_raster}{Logical. Default: FALSE. Set to TRUE to directly get the
-corresponding raster object.}
+corresponding SpatRast object.}
 
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
-outputfile defined by 'outputpath'.}
+output file defined by 'outputpath'.}
 
 \item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
@@ -83,5 +84,5 @@ out <- file.path(system.file(package='ebvcube'),"extdata","changeRes.tif")
 #resample defining the resolution and EPSG code by hand - return Raster
 # data_raster <- ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
 #                             entity_src=NULL, timestep_src = 1, resolution = res1,
-#                             outputpath = out, method='max', return_raster=TRUE)
+#                             outputpath = out, method='near', return_raster=TRUE)
 }
