@@ -567,6 +567,8 @@ ebv_i_eval_epsg <- function(epsg){
                stop(paste0('Could not process EPSG. See error from terra:\n', warning))
              }
            })
+  crs <- terra::crs(dummy_raster)
+  return(crs)
 }
 
 #' Get WKT, return EPSG code
