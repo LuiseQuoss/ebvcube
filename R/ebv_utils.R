@@ -216,6 +216,37 @@ ebv_i_type_ot <- function(type.long){
   return(ot)
 }
 
+#' Turns ot (gdal) type of NetCDF into terra type
+#' @param ot_type Character. ot type of NetCDF file - retrieved from
+#'   [ebvcube::ebv_i_type_ot()].
+#' @return Character. terra type
+#' @noRd
+ebv_i_type_terra <- function(ot_type){
+  #all gdal types
+  ot.list <-c('Byte', 'UInt16', 'Int16', 'UInt32', 'Int32', 'Float32', 'Float64', 'CInt16', 'CInt32', 'CFloat32', 'CFloat64')
+  #all terra types
+  terra.list  <- c('INT1S', 'INT2S', 'INT2U', 'INT4S', 'INT4U', 'FLT4S', 'FLT8S')
+
+  if (ot_type %in% c('Byte')){
+    terra_type <- 'INT1S'
+  }else if (ot_type%in% c('Int16','CInt16')){
+    terra_type <- 'INT2S'
+  }else if (ot_type%in% c('UInt16')){
+    terra_type <- 'INT2U'
+  }else if (ot_type%in% c('Int32','CInt32')){
+    terra_type <- 'INT4S'
+  }else if (ot_type%in% c('UInt32')){
+    terra_type <- 'INT4U'
+  }else if (ot_type%in% c('Float32','CFloat32')){
+    terra_type <- 'FLT4S'
+  }else if (ot_type%in% c('Float64','CFloat64')){
+    terra_type <- 'FLT8S'
+  }
+
+  return(terra_type)
+
+}
+
 #' Transforms the bounding boxs to another epsg. Used in
 #' [ebvcube::ebv_data_read_bb()].
 #' @param bb Bounding box corresponding to src_epsg.
