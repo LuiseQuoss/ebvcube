@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_resample.R
 \name{ebv_resample}
 \alias{ebv_resample}
-\title{Change the resolution of the data of an EBV NetCDF}
+\title{Change the resolution of the data of an EBV netCDF}
 \usage{
 ebv_resample(
   filepath_src,
@@ -11,7 +11,7 @@ ebv_resample(
   timestep_src = 1,
   resolution,
   outputpath,
-  method = "average",
+  method = "bilinear",
   return_raster = FALSE,
   overwrite = FALSE,
   ignore_RAM = FALSE,
@@ -19,31 +19,29 @@ ebv_resample(
 )
 }
 \arguments{
-\item{filepath_src}{Character. Path to the NetCDF file whose resolution
+\item{filepath_src}{Character. Path to the netCDF file whose resolution
 should be changed.}
 
 \item{datacubepath_src}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}) whose resolution should be changed.}
 
-\item{entity_src}{Character or Integer. Default is NULL. If the structure is 3D,
-the entity argument is set to NULL. Else, a character string or single
+\item{entity_src}{Character or Integer. Default is NULL. If the structure is
+3D, the entity argument is set to NULL. Else, a character string or single
 integer value must indicate the entity of the 4D structure of the EBV
 netCDFs.}
 
 \item{timestep_src}{Integer. Choose one or several timesteps (vector).}
 
-\item{resolution}{Either the path to an EBV NetCDF file that determines the
+\item{resolution}{Either the path to an EBV netCDF file that determines the
 resolution (character) or the resolution defined directly (numeric). The
 vector defining the resolution directly must contain three elements: the
-x-resolution, the y-resolution and the corresponding epsg.}
+x-resolution, the y-resolution and the corresponding EPSG code.}
 
 \item{outputpath}{Character. Set path to write data as GeoTiff on disk.}
 
-\item{method}{Character. Default: Average. Define resampling method. Choose
-from:
-"near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1"
-and "q3". For detailed information see:
-\href{https://gdal.org/programs/gdalwarp.html}{gdalwarp}.}
+\item{method}{Character. Default: bilinear. Define resampling method. Choose
+from: "near","bilinear","cubic" and "cubicspline". For categorical data,
+use 'near'. Based on \link[terra:project]{terra::project}.}
 
 \item{return_raster}{Logical. Default: FALSE. Set to TRUE to directly get the
 corresponding raster object.}
@@ -62,14 +60,10 @@ Default: returns the outputpath of the GeoTiff with the new
 resolution. Optional: return the raster object with the new resolution.
 }
 \description{
-Change the resolution of one datacube of a EBV NetCDF based on
-another EBV NetCDF or a given resolution. This functions writes temporary
-files on your disk. Specify a directory for these setting via
-options('ebv_temp'='/path/to/temp/directory').
+Change the resolution of one datacube of a EBV netCDF based on
+another EBV netCDF or a given resolution.
 }
 \examples{
-#define temp directory
-options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #set path to EBV netCDF
 file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF

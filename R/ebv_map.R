@@ -1,11 +1,11 @@
-#' Map plot of an EBV NetCDF
+#' Map plot of an EBV netCDF
 #'
 #' @description Map plot of the data of one timestep in one datacube of an EBV
 #'   NetCDF. This functions sometimes writes temporary files on your disk.
 #'   Speficy a directory for these setting via
 #'   options('ebv_temp'='/path/to/temp/directory').
 #'
-#' @param filepath Character. Path to the NetCDF file.
+#' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Path to the datacube (use
 #'   [ebvcube::ebv_datacubepaths()]).
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
