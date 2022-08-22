@@ -1,29 +1,25 @@
-#' Change the resolution of the data of an EBV NetCDF
+#' Change the resolution of the data of an EBV netCDF
 #'
-#' @description Change the resolution of one datacube of a EBV NetCDF based on
-#'   another EBV NetCDF or a given resolution. This functions writes temporary
-#'   files on your disk. Specify a directory for these setting via
-#'   options('ebv_temp'='/path/to/temp/directory').
+#' @description Change the resolution of one datacube of a EBV netCDF based on
+#'   another EBV netCDF or a given resolution.
 #'
-#' @param filepath_src Character. Path to the NetCDF file whose resolution
+#' @param filepath_src Character. Path to the netCDF file whose resolution
 #'   should be changed.
 #' @param datacubepath_src Character. Path to the datacube (use
 #'   [ebvcube::ebv_datacubepaths()]) whose resolution should be changed.
-#' @param entity_src Character or Integer. Default is NULL. If the structure is 3D,
-#'   the entity argument is set to NULL. Else, a character string or single
+#' @param entity_src Character or Integer. Default is NULL. If the structure is
+#'   3D, the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
 #'   netCDFs.
-#' @param resolution Either the path to an EBV NetCDF file that determines the
+#' @param resolution Either the path to an EBV netCDF file that determines the
 #'   resolution (character) or the resolution defined directly (numeric). The
 #'   vector defining the resolution directly must contain three elements: the
-#'   x-resolution, the y-resolution and the corresponding epsg.
+#'   x-resolution, the y-resolution and the corresponding EPSG code.
 #' @param outputpath Character. Set path to write data as GeoTiff on disk.
 #' @param timestep_src Integer. Choose one or several timesteps (vector).
-#' @param method Character. Default: Average. Define resampling method. Choose
-#'   from:
-#'   "near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1"
-#'    and "q3". For detailed information see:
-#'   \href{https://gdal.org/programs/gdalwarp.html}{gdalwarp}.
+#' @param method Character. Default: bilinear. Define resampling method. Choose
+#'   from: "near","bilinear","cubic" and "cubicspline". For categorical data,
+#'   use 'near'. Based on [terra::project].
 #' @param return_raster Logical. Default: FALSE. Set to TRUE to directly get the
 #'   corresponding raster object.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
@@ -38,8 +34,6 @@
 #' @export
 #'
 #' @examples
-#' #define temp directory
-#' options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
@@ -61,28 +55,13 @@
 #' #                             entity_src=NULL, timestep_src = 1, resolution = res1,
 #' #                             outputpath = out, method='max', return_raster=TRUE)
 ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timestep_src = 1,
-                         resolution, outputpath, method='average', return_raster=FALSE,
+                         resolution, outputpath, method='bilinear', return_raster=FALSE,
                          overwrite = FALSE, ignore_RAM=FALSE, verbose=FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
-    }
-  )
-  #ensure that all tempfiles are deleted on exit
-  withr::defer(
-    if(exists('temp')){
-      if(file.exists(temp)){
-        file.remove(temp)
-      }
-    }
-  )
-  withr::defer(
-    if(exists('temp_2')){
-      if(file.exists(temp_2)){
-        file.remove(temp_2)
-      }
     }
   )
 
@@ -141,6 +120,10 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
       epsg_dest <- resolution[3]
       res <- resolution[1:2]
       filepath_dest <- NULL
+
+      #check epsg code
+      wkt_dest <- ebv_i_eval_epsg(epsg_dest)
+
     } else {
       stop('Resolution must be a vector of length 3 containing numerics.')
     }
@@ -246,22 +229,9 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   if (checkmate::checkCharacter(method) != TRUE){
     stop('Method must be of type character.')
   }
-  methods <- c("near","bilinear","cubic","cubicspline","lanczos","average","mode","max","min","med","q1","q3")
+  methods <- c("near","bilinear","cubic","cubicspline")
   if (! method %in% methods){
     stop('Given method is not valid.\n', method)
-  }
-
-  #get temp directory
-  temp_path <- getOption('ebv_temp')[[1]]
-  if (is.null(temp_path)){
-    stop('This function creates a temporary file. Please specify a temporary directory via options.')
-  } else {
-    if (checkmate::checkCharacter(temp_path) != TRUE){
-      stop('The temporary directory must be of type character.')
-    }
-    if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-      stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
-    }
   }
 
   #check ram, if raster should be returned
@@ -277,202 +247,59 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   #get epsg
   epsg_src <- prop_src@spatial$epsg
 
-  #check if both epsg are valid
-  gdal_return <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg_dest))
-  if(any(stringr::str_detect(gdal_return, 'ERROR'))){
-    stop(paste0('The given target epsg (',epsg_dest,') is not valid or not supported by your GDAL installation.',
-                '\nSee GDAL error message:\n', paste(gdal_return, collapse=' ')))
-  }
-  gdal_return <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg_src))
-  if(any(stringr::str_detect(gdal_return, 'ERROR'))){
-    stop(paste0('The given source epsg (',epsg_src,') is not valid or not supported by your GDAL installation.',
-                '\nSee GDAL error message:\n', paste(gdal_return, collapse=' ')))
-  }
-
   #######initial test end ----
 
   #srs defintion from epsg
-  srs_src <- paste0('EPSG:',epsg_src) #paste(gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg_src)), collapse=' ')
-  srs_dest <- paste0('EPSG:',epsg_dest) # paste(gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg_dest)), collapse=' ')
+  srs_src <- paste0('EPSG:',epsg_src)
+  srs_dest <- paste0('EPSG:',epsg_dest)
 
   #get output type ot for gdal
-  #type.long <- prop_src@ebv_cube_information@type
-  ot <- ebv_i_type_ot(type.long)
+  type_ot <- ebv_i_type_ot(type.long)
 
-  #set path to variable in netcdf for gdal
-  filepath <- paste0('NETCDF:', filepath_src,':',datacubepath_src)
+  #get data ----
+  #get only relevant timesteps
+  data_ts <- ebv_read(filepath = filepath_src,
+                      datacubepath = datacubepath_src,
+                      entity = entity_src,
+                      timestep = timestep_src,
+                      type = 'r'
+  )
 
-  if(is_4D){
-    #define bands
-    #listed by: entity1 - all timesteps, entity2 - all timesteps
-    bands <- (entity_index-1) * prop_src@spatial$dimensions[3] + timestep_src
+  #create dummy terra SpatRast for projection
+  dummy <- terra::rast()
+  terra::crs(dummy) <- paste0('EPSG:', epsg_dest)
+  #set extent
+  if(!is.null(filepath_dest)){
+    #BASED ON EBV NETCDF FILE
+    extent <- terra::ext(terra::rast(filepath_dest))
+    terra::ext(dummy) <- extent
   } else{
-    bands <- timestep_src
-  }
-
-  #check if src dataset has several timesteps ----
-  if (prop_src@spatial$dimensions[3] > 1){
-    #define output parameters
-    name <- 'temp_EBV_change_res_time.tif'
-    temp <- file.path(temp_path, name)
-    #select given timesteps, write tempfile
-    if (!is.null(ot)){
-      gt <- gdalUtils::gdal_translate(filepath, temp, b = bands,
-                                      ot = ot,
-                                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                      overwrite=TRUE,
-                                      a_srs = srs_src,
-                                      a_ullr = c(extent_src[1],extent_src[4],extent_src[2],extent_src[3]),
-                                      verbose=verbose)
-    } else {
-      gt <- gdalUtils::gdal_translate(filepath, temp, b = bands,
-                                      co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                      overwrite=TRUE,
-                                      a_srs = srs_src,
-                                      a_ullr = c(extent_src[1],extent_src[4],extent_src[2],extent_src[3]),
-                                      verbose=verbose)
+    #BASED ON RES and CRS
+    #if epsg differ, transform src_ext
+    #else just assign src extent
+    if(epsg_src != epsg_dest){
+      dummy2 <- terra::rast()
+      terra::crs(dummy2) <- paste0('EPSG:', epsg_src)
+      terra::ext(dummy2) <-  extent_src
+      dummy_proj <- terra::project(dummy2, wkt_dest)
+      extent_src <-terra::ext(dummy_proj)
     }
-    #change filepath
-    filepath <- temp
-  } else{
-    filepath <- filepath_src
+    terra::ext(dummy) <- extent_src
   }
+  #set resolution
+  terra::res(dummy) <- res
 
+  #align to origin of the destination file
+  data_proj <- terra::project(data_ts, y = dummy, align=T, method=method)
 
-  if(!file.exists(filepath)){
-    stop('1 GDAL did not work properly. Did you install GDAL correctly? You can
-    check and set the correct GDAL paths with the following lines of code:
-    #check out which GDAL installation is used currently by gdalUtils:
-    getOption("gdalUtils_gdalPath")[[1]]$python_utilities
-    #your paths may differ! check your GDAL installation
-    #add GDAL path to the existing paths
-    Sys.getenv("PATH")
-    Sys.setenv(PATH = paste0("C:\\OSGeo4W64\\bin;",Sys.getenv("PATH")))
-    #check and change path for proj_lib, gdal_data and gdal_driver_path
-    Sys.getenv("PROJ_LIB")
-    Sys.getenv("GDAL_DATA")
-    Sys.getenv("GDAL_DRIVER_PATH")
-    Sys.setenv(PROJ_LIB = "C:\\OSGeo4W64\\share\\proj")
-    Sys.setenv(GDAL_DATA = "C:\\OSGeo4W64\\share\\gdal")
-    Sys.setenv(GDAL_DRIVER_PATH = "C:\\OSGeo4W64\\bin\\gdalplugins")
-        ')
-  }
-
-
-
-  #check if epsgs differ ----
-  if(epsg_src != epsg_dest){
-    #define output parameters
-    name <- 'temp_EBV_change_res_epsg.tif'
-    temp_2 <- file.path(temp_path, name)
-    if (!is.null(ot)){
-      gw <- gdalUtils::gdalwarp(srcfile = filepath,
-                                dstfile = temp_2,
-                                s_srs=srs_src,
-                                t_srs=srs_dest,
-                                ot = ot,
-                                co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                overwrite=TRUE)
-    } else {
-      gw <- gdalUtils::gdalwarp(filepath, temp_2,
-                                s_srs=srs_src,
-                                t_srs=srs_dest,
-                                co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                                overwrite=TRUE)
-    }
-    filepath <- temp_2
-  }
-
-  if(!file.exists(filepath)){
-    stop('GDAL did not work properly. Did you install GDAL correctly? You can
-    check and set the correct GDAL paths with the following lines of code:
-    #check out which GDAL installation is used currently by gdalUtils
-    getOption("gdalUtils_gdalPath")[[1]]$python_utilities
-    #your paths may differ! check your GDAL installation
-    #add GDAL path to the existing paths
-    Sys.getenv("PATH")
-    Sys.setenv(PATH = paste0("C:\\OSGeo4W64\\bin;",Sys.getenv("PATH")))
-    #check and change path for proj_lib, gdal_data and gdal_driver_path
-    Sys.getenv("PROJ_LIB")
-    Sys.getenv("GDAL_DATA")
-    Sys.getenv("GDAL_DRIVER_PATH")
-    Sys.setenv(PROJ_LIB = "C:\\OSGeo4W64\\share\\proj")
-    Sys.setenv(GDAL_DATA = "C:\\OSGeo4W64\\share\\gdal")
-    Sys.setenv(GDAL_DRIVER_PATH = "C:\\OSGeo4W64\\bin\\gdalplugins")
-        ')
-  }
-
-  #get extent to align pixels ----
-  if(!is.null(filepath_dest) & (epsg_src != epsg_dest)){
-    extent <- raster::extent(raster::raster(filepath))
-    lat.data <- rhdf5::h5read(filepath_dest, 'lat')
-    lon.data <- rhdf5::h5read(filepath_dest, 'lon')
-    lat.data <- sort(lat.data - res[1]/2)
-    lon.data <- sort(lon.data - res[2]/2)
-    xmin <-lat.data[min(which(extent@xmin < lat.data))]
-    xmax <-lat.data[min(which(extent@xmax < lat.data))]
-    ymin <-lon.data[min(which(extent@ymin < lon.data))]
-    ymax <-lon.data[max(which(extent@xmax < lon.data))]
-    te <- c(xmin, ymin, xmax, ymax)
-  } else {
-    te <- NULL
-  }
-
-  #write tif with new resolution ----
-  if (!is.null(ot) & !is.null(te)){
-    r <- gdalUtils::gdalwarp(filepath, outputpath,
-                             tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
-                             ot=ot,r = method, te = te,
-                             overwrite=overwrite,
-                             co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                             t_srs = srs_dest,
-                             output_Raster = return_raster,
-                             verbose=verbose)
-  } else if (is.null(ot) & !is.null(te)) {
-    r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                              tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
-                              r = method, te = te,
-                              overwrite=overwrite,
-                              co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                              t_srs = srs_dest,
-                              output_Raster = return_raster,
-                              verbose=verbose)
-  } else if(!is.null(ot) & is.null(te)){
-    r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                              tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
-                              r = method, ot = ot,
-                              overwrite=overwrite,
-                              co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                              t_srs = srs_dest,
-                              output_Raster = return_raster,
-                              verbose=verbose)
-  } else {
-    r <-  gdalUtils::gdalwarp(filepath, outputpath,
-                              tr=res,srcnodata=prop_src@ebv_cube$fillvalue,
-                              r = method,
-                              overwrite=overwrite,
-                              co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                              t_srs = srs_dest,
-                              output_Raster = return_raster,
-                              verbose=verbose)
-  }
-
-  #remove tempfiles ----
-  if (exists('temp')){
-    if (file.exists(temp)){
-      file.remove(temp)
-    }
-  }
-  if (exists('temp_2')){
-    if (file.exists(temp_2)){
-      file.remove(temp_2)
-    }
-  }
+  #write data to file
+  type_terra <- ebv_i_type_terra(type_ot)
+  terra::writeRaster(data_proj, outputpath, filetype = "GTiff", overwrite = overwrite,
+                     datatype=type_terra)
 
   #return array ----
   if (return_raster){
-    #r <- raster::reclassify(r, cbind(prop_src@ebv_cube$fillvalue, NA))
-    return(r)
+    return(data_proj)
   } else{
     return(outputpath)
   }
