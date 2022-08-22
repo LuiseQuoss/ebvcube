@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_map.R
 \name{ebv_map}
 \alias{ebv_map}
-\title{Map plot of an EBV NetCDF}
+\title{Map plot of an EBV netCDF}
 \usage{
 ebv_map(
   filepath,
@@ -17,7 +17,7 @@ ebv_map(
 )
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
 \item{datacubepath}{Character. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
