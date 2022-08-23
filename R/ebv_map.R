@@ -19,6 +19,11 @@
 #'   ramp to be the other way around.
 #' @param classes Integer. Default: 5. Define the amount of classes (quantiles)
 #'   for the symbology. Currently restricted to maximum 15 classes.
+#' @param all_data Logical. Default: FALSE. The quantiles are based on the one
+#'   timestep you chose (default). If you want include the full data of the
+#'   datacube to produce several maps that are based on the same color scale,
+#'   set this argument to TRUE (to allow for viusual comparison between entities
+#'   or timesteps. Does not cover different datacubes.)
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -41,7 +46,8 @@
 #'         timestep = 9, classes = 7)
 #' }
 ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =TRUE,
-                    col_rev=TRUE, classes = 5, ignore_RAM=FALSE, verbose=FALSE){
+                    col_rev=TRUE, classes = 5, all_data = FALSE, ignore_RAM=FALSE,
+                    verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -53,9 +59,10 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   #ensure that all tempfiles are deleted on exit
   withr::defer(
     if(exists('temp.map')){
-      if(file.exists(temp.map)){
-        file.remove(temp.map)
-      }
+      # if(file.exists(temp.map)){
+      #   file.remove(temp.map)
+      # }
+      unlink(temp.map)
     }
   )
 
@@ -141,7 +148,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
   title <- prop@general$title
   epsg <- prop@spatial$epsg
-  dims <- as.numeric(prop@spatial$dimensions)
+  #dims <- as.numeric(prop@spatial$dimensions)
   timestep.nat <- prop@temporal$timesteps_natural[timestep]
 
   #check file structure
@@ -172,83 +179,68 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
   subtitle <- paste0(label, ' (', timestep.nat,')')
 
-  #get raster data - ram check included
+  #read the data necessary for the quantiles----
+  data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
+                                   type = type.short)
+
+  #choose data of timestep only if chosen by user
+  if(!all_data){
+    if(is_4D){
+      data.all <- data.all[,,timestep,entity_index]
+    }else{
+      data.all <- data.all[,,timestep]
+    }
+  }
+
+  #get the raster for plotting----
+  #in case the raster is too big for memory -> resample and plot at lower resolution
   results <- tryCatch(
-    #try reading whole data----
+    #try reading whole data
     {
       data.raster <- ebv_read(filepath, datacubepath, entity=entity, timestep = timestep,
                               type='r', ignore_RAM=ignore_RAM,
                               verbose=verbose) #if this throws an error the data is going to plotted in lower res
-      hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-      data.all <- tryCatch(
-        {
-          if (ebv_i_empty(ebv_i_check_data(hdf, datacubepath, entity, is_4D))){
-            message('Quantiles based on all layers.')
-            data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
-                                             type = type.short)
-          }else{
-            message('Quantiles only based on current layer because not all layers hold data.')
-            data.all <- raster::as.matrix(data.raster)
-          }
-        },
-        error = function(cond){
-          message('Quantiles only based on current layer because not all layers hold data.')
-          data.all <- raster::as.matrix(data.raster)
-        })
+      results <- list(data.raster, NULL)
 
-      rhdf5::H5Fclose(hdf)
-
-      #mask out fillvalue ----
-      data.all <- replace(data.all, data.all==fillvalue, c(NA))
-      results <- list(data.raster, data.all, 'NULL')
-    },
-    #change res if data is too big----
-    error = function(cond){
+    },error = function(cond){
       if (!stringr::str_detect(cond, 'memory')){
         stop(cond)
       }
       message(paste0('Data will be displayed in a lower resolution. May take up to a few minutes. Original resolution: ',
-                     prop@spatial$resolution[1] , ', displayed resoultion: 1 degree.'))
-      message('Quantiles only based on current layer.')
-      #check temp directory
-      temp_path <- getOption('ebv_temp')[[1]]
-      if (is.null(temp_path)){
-        stop('This function creates a temporary file. Please specify a temporary directory via options.')
-      } else {
-        if (checkmate::checkCharacter(temp_path) != TRUE){
-          stop('The temporary directory must be of type character.')
-        }
-        if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-          stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
-        }
-      }
-      #define temp file
-      name <- 'temp_EBV_change_res_plot_map.tif'
-      temp.map <- file.path(temp_path, name)
+                     prop@spatial$resolution[1] , ', displayed resoultion: 1 degree (WGS84).'))
+      #resample data -> temporary file
+      temp.map <- tempfile(fileext = '.tif')
       if (file.exists(temp.map)){
         file.remove(temp.map)
       }
       data.raster <- ebv_resample(filepath_src=filepath, datacubepath_src=datacubepath,
                                   entity_src=entity, resolution=c(1,1, 4326),
                                   outputpath=temp.map, timestep_src = timestep,
-                                  method='average', return_raster=TRUE, overwrite = FALSE,
+                                  method='near', return_raster=TRUE, overwrite = TRUE,
                                   ignore_RAM=ignore_RAM, verbose=verbose)
-      data.raster <- data.raster[[1]] #get first layer of brick --> class = raster
-      data.all <- raster::as.array(data.raster) #use only one layer for quantile analysis
-      results <- list(data.raster, data.all, temp.map)
-      return(results)
+      results <- list(data.raster, temp.map)
     }
+
   )
+
   data.raster <- results[[1]]
-  data.all <- results[[2]]
-  temp.map <- results[[3]]
+  temp.map <- results[[2]]
+
+  #reduce data.all if resampling took place and not all timesteps are needed for quantiles
+  if(!is.null(temp.map) & !all_data){
+    data.all <- terra::as.array(terra::rast(temp.map))
+  }
+  #get dimensions of array
+  dims <- dim(data.all)
 
   #check if huge data
   # warning for longer calculation
-  if(is_4D){
+  if(length(dims)==4){
     size <- dims[1]*dims[2]*dims[3]*dims[4]
-  }else{
+  }else if(length(dims)==3){
     size <- dims[1]*dims[2]*dims[3]
+  }else if(length(dims)==2){
+    size <- dims[1]*dims[2]
   }
   if (size > 100000000){
     message('Wow that is huge! Maybe get a tea, the caluculation will take a while...')
@@ -318,7 +310,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   }
 
   #remove temporary file ----
-  if (temp.map!= 'NULL'){
+  if (!is.null(temp.map)){
     if (file.exists(temp.map)){
       file.remove(temp.map)
     }

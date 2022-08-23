@@ -12,6 +12,7 @@ ebv_map(
   countries = TRUE,
   col_rev = TRUE,
   classes = 5,
+  all_data = FALSE,
   ignore_RAM = FALSE,
   verbose = FALSE
 )
@@ -37,6 +38,12 @@ ramp to be the other way around.}
 
 \item{classes}{Integer. Default: 5. Define the amount of classes (quantiles)
 for the symbology. Currently restricted to maximum 15 classes.}
+
+\item{all_data}{Logical. Default: FALSE. The quantiles are based on the one
+timestep you chose (default). If you want include the full data of the
+datacube to produce several maps that are based on the same color scale,
+set this argument to TRUE (to allow for viusual comparison between entities
+or timesteps. Does not cover different datacubes.)}
 
 \item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
