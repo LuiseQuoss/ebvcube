@@ -254,17 +254,17 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   srs_src <- paste0('EPSG:',epsg_src)
   srs_dest <- paste0('EPSG:',epsg_dest)
 
-  #get output type ot for gdal
+  #get output type
   type_ot <- ebv_i_type_ot(type.long)
+  type_terra <- ebv_i_type_terra(type_ot)
 
   #get data ----
-  #get only relevant timesteps
-  data_ts <- ebv_read(filepath = filepath_src,
-                      datacubepath = datacubepath_src,
-                      entity = entity_src,
-                      timestep = timestep_src,
-                      type = 'r'
-  )
+  #open netCDF with terra
+  data_raw <- terra::rast(filepath, subds = paste0('/', datacubepath))
+
+  #get the index depending on the amount of entities and timesteps
+  terra_index <- (entity_index-1)*max_time + timestep_src
+  data_ts <- data_raw[[terra_index]]
 
   #create dummy terra SpatRast for projection
   dummy <- terra::rast()
@@ -294,7 +294,6 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   data_proj <- terra::project(data_ts, y = dummy, align=T, method=method)
 
   #write data to file
-  type_terra <- ebv_i_type_terra(type_ot)
   terra::writeRaster(data_proj, outputpath, filetype = "GTiff", overwrite = overwrite,
                      datatype=type_terra)
 
