@@ -147,7 +147,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     terra::ext(temp_raster) <- extent
     terra::crs(temp_raster) <- crs
 
-    terra::writeRaster(temp_raster, outputpath, datatype=type )
+    terra::writeRaster(temp_raster, outputpath, datatype=type, overwrite = overwrite)
 
     #delete temp file
     if (file.exists(temp.tif)){
