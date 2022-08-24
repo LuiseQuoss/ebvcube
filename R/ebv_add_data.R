@@ -284,21 +284,8 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   #get data from tif ----
   if(character){
 
-    if (length(timestep) > 1){
-      raster <- raster::brick(data)[[band]]
-      raster <- raster::brick(raster) #convert raster stack to raster brick
-    } else{
-      raster <- raster::raster(data, band)
-    }
-
-    #get fill value from tif
-    nodata <- raster@file@nodatavalue
-    if(!is.na(nodata)&!is.na(fillvalue)){
-      if (nodata != fillvalue){
-        message(paste0('The fillvalue of the GeoTiff (value: ',nodata,') differs from
-                   the fillvalue of the netCDF: ', fillvalue, '.'))
-      }
-    }
+    #open tif file, get raster data
+    raster <- terra::rast(data)[[band]]
 
     #transform into array/matrix----
     if (length(timestep) > 1){
@@ -307,8 +294,6 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
       data <- matrix(raster, nrow=dim(raster)[2], ncol=dim(raster)[1])
     }
   }
-
-
 
   #open file
   hdf <- rhdf5::H5Fopen(filepath_nc)
