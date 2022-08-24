@@ -298,15 +298,20 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
         ggplot2::coord_sf(expand = FALSE)+
         ggplot2::ggtitle(title, subtitle = subtitle) +
         ggplot2::theme_classic() +
-        ggplot2::labs(fill = units) +
         ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
-                                      guide = ggplot2::guide_coloursteps(even.steps = FALSE,
-                                                                         show.limits = TRUE),
-                                      direction = direction)+
+                                      label = round(as.numeric(s),2),
+                                      direction = direction,
+                                      guide=ggplot2::guide_bins(title=units,
+                                                                #even.steps = FALSE,
+                                                                show.limits = TRUE,
+                                                                reverse=!col_rev,
+                                                                axis=F
+                                      )
+                                      # guide = ggplot2::guide_coloursteps(even.steps = FALSE
+                                      #                                    ),
+                                      )+
         ggplot2::ylab(ylab) +
         ggplot2::xlab(xlab)
-
-
     )
 
   } else{
@@ -317,11 +322,18 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
         ggplot2::coord_sf(expand = FALSE)+
         ggplot2::ggtitle(title, subtitle = subtitle) +
         ggplot2::theme_classic() +
-        ggplot2::labs(fill = units) +
         ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
-                                      guide = ggplot2::guide_coloursteps(even.steps = FALSE,
-                                                                         show.limits = TRUE),
-                                      direction = direction)+
+                                      label = round(as.numeric(s),2),
+                                      direction = direction,
+                                      guide=ggplot2::guide_bins(title=units,
+                                                                #even.steps = FALSE,
+                                                                show.limits = TRUE,
+                                                                reverse=!col_rev,
+                                                                axis=F
+                                      )
+                                      # guide = ggplot2::guide_coloursteps(even.steps = FALSE
+                                      #                                    ),
+        )+
         ggplot2::ylab(ylab) +
         ggplot2::xlab(xlab)
     )
