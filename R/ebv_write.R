@@ -120,26 +120,12 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   # write DelayedMatrix ----
   if (class(data) == "DelayedMatrix"){
 
-    #check temp directory
-    temp_path <- tempdir()
-    # temp_path <- getOption('ebv_temp')[[1]]
-    # if (is.null(temp_path)){
-    #   stop('This function creates a temporary file. Please specify a temporary directory via options.')
-    # } else {
-    #   if (checkmate::checkCharacter(temp_path) != TRUE){
-    #     stop('The temporary directory must be of type character.')
-    #   }
-    #   if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-    #     stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
-    #   }
-    # }
-
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
 
     #derive other variables
     name <- stringr::str_remove(basename(outputpath),'.tif')
-    temp.tif <- file.path(temp_path, 'temp_EBV_write_data.tif')
+    temp.tif <- tempfile(fileext = '.tif')
 
     #temp.tif must be new file, remove tempfile
     if (file.exists(temp.tif)){
@@ -156,28 +142,12 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
       name = name
     )
 
-    #get output type ot for gdal
-    type.long <- type
-    ot <- ebv_i_type_ot(type.long)
+    #read with terra and add missing georefence data ----
+    temp_raster <- suppressWarnings(terra::rast(temp.tif)) #warning about missing extent
+    terra::ext(temp_raster) <- extent
+    terra::crs(temp_raster) <- crs
 
-    a_srs <- paste0('EPSG:', epsg)
-
-    #add CRS, shift to -180,90, add nodata value
-    if(!is.null(ot)){
-      gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
-                     a_ullr = c(extent[1], extent[4], extent[2], extent[3]),
-                     a_srs = a_srs,
-                     co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED'),
-                     #a_nodata=prop@ebv_cube$fillvalue,
-                     ot = ot)
-    } else{
-      gdalUtils::gdal_translate(temp.tif, outputpath, overwrite = overwrite,
-                     a_ullr = c(extent[1], extent[4], extent[2], extent[3]),
-                     a_srs = a_srs,
-                     co = c('COMPRESS=DEFLATE', 'BIGTIFF=IF_NEEDED')
-                     #a_nodata=prop@ebv_cube$fillvalue
-                     )
-    }
+    terra::writeRaster(temp_raster, outputpath, datatype=type )
 
     #delete temp file
     if (file.exists(temp.tif)){
@@ -188,17 +158,17 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   } else if(class(data)=='list'){
 
     #check temp directory
-    temp_path <- getOption('ebv_temp')[[1]]
-    if (is.null(temp_path)){
-      stop('This function creates a temporary file. Please specify a temporary directory via options.')
-    } else {
-      if (checkmate::checkCharacter(temp_path) != TRUE){
-        stop('The temporary directory must be of type character.')
-      }
-      if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-        stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
-      }
-    }
+    temp_path <- tempdir()
+    # if (is.null(temp_path)){
+    #   stop('This function creates a temporary file. Please specify a temporary directory via options.')
+    # } else {
+    #   if (checkmate::checkCharacter(temp_path) != TRUE){
+    #     stop('The temporary directory must be of type character.')
+    #   }
+    #   if (checkmate::checkDirectoryExists(temp_path) != TRUE){
+    #     stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
+    #   }
+    # }
 
     #data from H5Array - on disk
     message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
@@ -249,8 +219,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
                                    extent[2], extent[4]))
 
     #get output type ot for gdal
-    type.long <- type
-    ot <- ebv_i_type_ot(type.long)
+    ot <- ebv_i_type_ot(type)
 
     #gdal translate: add fillvalue, add ot if given, output final tif
     if(!is.null(ot)){
