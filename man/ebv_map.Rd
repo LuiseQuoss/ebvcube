@@ -10,7 +10,7 @@ ebv_map(
   entity = NULL,
   timestep = 1,
   countries = TRUE,
-  col_rev = TRUE,
+  col_rev = FALSE,
   classes = 5,
   all_data = FALSE,
   ignore_RAM = FALSE,
@@ -33,7 +33,7 @@ netCDFs.}
 \item{countries}{Logical. Default: TRUE. Simple country outlines will be
 plotted on top of the raster data. Disable by setting this option to FALSE.}
 
-\item{col_rev}{Logical. Default: TRUE. Set to FALSE if you want the color
+\item{col_rev}{Logical. Default: FALSE Set to TRUE if you want the color
 ramp to be the other way around.}
 
 \item{classes}{Integer. Default: 5. Define the amount of classes (quantiles)

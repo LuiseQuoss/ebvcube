@@ -64,6 +64,7 @@ Imports:
     sp,
     stringr,
     terra,
+    tidyterra,
     withr
 Suggests:
     knitr,

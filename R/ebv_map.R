@@ -15,7 +15,7 @@
 #' @param timestep Integer. Choose one timestep.
 #' @param countries Logical. Default: TRUE. Simple country outlines will be
 #'   plotted on top of the raster data. Disable by setting this option to FALSE.
-#' @param col_rev Logical. Default: TRUE. Set to FALSE if you want the color
+#' @param col_rev Logical. Default: FALSE Set to TRUE if you want the color
 #'   ramp to be the other way around.
 #' @param classes Integer. Default: 5. Define the amount of classes (quantiles)
 #'   for the symbology. Currently restricted to maximum 15 classes.
@@ -46,7 +46,7 @@
 #'         timestep = 9, classes = 7)
 #' }
 ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =TRUE,
-                    col_rev=TRUE, classes = 5, all_data = FALSE, ignore_RAM=FALSE,
+                    col_rev=FALSE, classes = 5, all_data = FALSE, ignore_RAM=FALSE,
                     verbose=FALSE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
@@ -143,12 +143,12 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
   # end initial tests ----
 
-  #get needed properties
+  #get properties ----
   fillvalue <- prop@ebv_cube$fillvalue[1]
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
   title <- prop@general$title
   epsg <- prop@spatial$epsg
-  #dims <- as.numeric(prop@spatial$dimensions)
+  units <- prop@ebv_cube$units
   timestep.nat <- prop@temporal$timesteps_natural[timestep]
 
   #check file structure
@@ -256,55 +256,76 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
     s <- unique(s)
   }
 
-  #get correct colors ----
-  if (min(s)<0 & max(s)>0){
-    diverging <- 'Blue-Red'
-    col.regions <- colorspace::diverging_hcl(classes, palette = diverging,
-                                             rev = col_rev)
-  } else {
-    single <- 'YlGn' # 'Greens'#
-    col.regions <- colorspace::sequential_hcl(classes, palette = single,
-                                              rev = col_rev)
+  #get reverses color----
+  if(col_rev){
+    direction <- 1
+  } else{
+    direction <- -1
   }
 
+  #get correct colors ----
+
+  if (min(s)<0 & max(s)>0){
+    palette <- 'RdYlBu'
+  } else {
+    palette <- 'YlGn'
+    direction <- direction * -1
+  }
+
+  #get x and y lab
+  if(stringr::str_starts(prop@spatial$wkt2, 'GEOGCRS')){
+    xlab <- 'latitude'
+    ylab <- 'longitude'
+  } else{
+    xlab <- 'x coordinate'
+    ylab <- 'y coordinate'
+  }
+
+
   #define display options ----
-  old.par <- lattice::trellis.par.get()
-  my.theme <- lattice::trellis.par.get()
-  my.theme$par.sub.text$cex <- 0.8
-  my.theme$par.sub.text$col <- 'grey'
-  my.theme$par.main.text$col <- 'grey'
-  my.theme$par.main.text$cex <- 1.2
-  lattice::trellis.par.set(my.theme)
-  withr::defer(lattice::trellis.par.set(old.par))
 
   #plot with country outlines ----
   if (countries){
+    #prepare data
+    world_boundaries <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
+
     if(epsg != 4326){
-      wrld_simpl <- sp::spTransform(world_boundaries,
-                                    sp::CRS(SRS_string = paste0('EPSG:', epsg)))
+      world_boundaries <- terra::project(world_boundaries, paste0('EPSG:', epsg))
     }
 
     print(
-      sp::spplot(data.raster, xlab='latitude', ylab='longitude',
-             scales=list(draw = TRUE), at = s,
-             col.regions=col.regions,
-             sp.layout = list(world_boundaries, first=F, col.regions=NA),
-             set = TRUE,
-             main = title,
-             sub = subtitle
-      )
+      ggplot2::ggplot() +
+        tidyterra::geom_spatraster(data = data.raster) +
+        tidyterra::geom_spatvector(data = world_boundaries, fill = NA) +
+        ggplot2::coord_sf(expand = FALSE)+
+        ggplot2::ggtitle(title, subtitle = subtitle) +
+        ggplot2::theme_classic() +
+        ggplot2::labs(fill = units) +
+        ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
+                                      guide = ggplot2::guide_coloursteps(even.steps = FALSE,
+                                                                         show.limits = TRUE),
+                                      direction = direction)+
+        ggplot2::ylab(ylab) +
+        ggplot2::xlab(xlab)
+
+
     )
 
   } else{
     #plot without country outlines ----
     print(
-      sp::spplot(data.raster, xlab='latitude', ylab='longitude',
-             scales=list(draw = TRUE), at = s,
-             col.regions=col.regions,
-             set = TRUE,
-             main = title,
-             sub = subtitle
-      )
+      ggplot2::ggplot() +
+        tidyterra::geom_spatraster(data = data.raster) +
+        ggplot2::coord_sf(expand = FALSE)+
+        ggplot2::ggtitle(title, subtitle = subtitle) +
+        ggplot2::theme_classic() +
+        ggplot2::labs(fill = units) +
+        ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
+                                      guide = ggplot2::guide_coloursteps(even.steps = FALSE,
+                                                                         show.limits = TRUE),
+                                      direction = direction)+
+        ggplot2::ylab(ylab) +
+        ggplot2::xlab(xlab)
     )
 
   }
