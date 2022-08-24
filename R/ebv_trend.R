@@ -34,7 +34,6 @@
 #'
 #' @export
 #' @importFrom utils txtProgressBar setTxtProgressBar
-#' @importFrom graphics par plot boxplot points
 #' @importFrom grDevices colors
 #'
 #' @examples
@@ -313,7 +312,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
     }else{
       #multiple timesteps----
-      #stop('Boxplot for multiple timesteps is still under development.')
 
       # warning for longer calculation
       if(is_4D){
@@ -327,15 +325,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
       #rearrange data into data frame
       df <- reshape2::melt(as.array(data.all), na.rm = TRUE)
-
-      # df <- data.frame(V1 = c(1:(dims[2]*dims[1])))
-      # for (t in 1:dims[3]){
-      #   df[,t]<- c(data.all[,,t])
-      # }
-      #
-      # df <- reshape2::melt(df)
-
-
 
       ggp <- ggplot2::ggplot(data = df, ggplot2::aes(x=factor(df$Var3), y=df$value)) +
         ggplot2::geom_boxplot(fill=color, outlier.size = 0.7, outlier.shape = 20) +
