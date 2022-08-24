@@ -20,7 +20,7 @@
 #' @param timestep_src Integer. Choose one or several timesteps (vector).
 #' @param method Character. Default: bilinear. Define resampling method. Choose
 #'   from: "near","bilinear","cubic" and "cubicspline". For categorical data,
-#'   use 'near'. Based on [terra::project].
+#'   use 'near'. Based on [terra::project()].
 #' @param return_raster Logical. Default: FALSE. Set to TRUE to directly get the
 #'   corresponding SpatRast object.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the

@@ -42,7 +42,7 @@ c(0.25, 0.25, 4326).}
 
 \item{method}{Character. Default: bilinear. Define resampling method. Choose
 from: "near","bilinear","cubic" and "cubicspline". For categorical data,
-use 'near'. Based on \link[terra:project]{terra::project}.}
+use 'near'. Based on \code{\link[terra:project]{terra::project()}}.}
 
 \item{return_raster}{Logical. Default: FALSE. Set to TRUE to directly get the
 corresponding SpatRast object.}
