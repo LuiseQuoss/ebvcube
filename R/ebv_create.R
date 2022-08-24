@@ -92,7 +92,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     for (id in dids){
       if(exists(id)){
         id <- eval(parse(text = id))
-        if(rhdf5::H5Iis_valid(id)==TRUE){rhdf5::H5Gclose(id)}
+        if(rhdf5::H5Iis_valid(id)==TRUE){rhdf5::H5Dclose(id)}
       }
     }
   )
@@ -178,19 +178,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   }
 
   #check if epsg is valid
-  if(stringr::str_detect(epsg, 'ESRI')){
-    crs <- gdalUtils::gdalsrsinfo(epsg)
-  } else if (!stringr::str_detect(epsg, 'ESRI') & checkmate::checkIntegerish(epsg) != TRUE){
-    stop('epsg must be of type integer.')
-  } else {
-    crs <- gdalUtils::gdalsrsinfo(paste0('EPSG:',epsg))
-  }
-
-  if(any(stringr::str_detect(as.character(crs), 'crs not found'))){
-    stop('Given EPSG code is not in PROJ library. Did you give a wrong EPSG code?')
-  } else if (any(stringr::str_detect(as.character(crs), '(?i)error'))){
-    stop(paste0('Could not process EPSG. See error from gdalUtils:\n', as.character(paste0(crs, collapse = '\n'))))
-  }
+  crs_wkt <- ebv_i_eval_epsg(epsg)
 
   #check extent
   if (checkmate::checkNumeric(extent, len = 4) != TRUE){
@@ -329,17 +317,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   geo_trans <- paste0(extent[1], " ",res[1]," 0.0 ", extent[4], " 0.0 -", res[2])
 
   # :spatial_ref
-  #crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", epsg))
-  crs_wkt <- crs[5:length(crs)]
-
   #remove additional whitespaces
-  crs_temp <- crs_wkt
-  for(i in 1:length(crs_wkt)){
-    crs_temp[i] <- stringr::str_remove_all(crs_wkt[i], ' ')
-  }
-
-  #paste with simple withespace
-  crs_ref <- paste(crs_temp, collapse = ' ')
+  crs_temp <- stringr::str_replace_all(crs_wkt, '\n', ' ')
+  crs_temp <- stringr::str_replace_all(crs_temp, '         ', ' ')
+  crs_ref <- stringr::str_replace_all(crs_temp, '     ', ' ')
 
   # unit
   if(stringr::str_detect(crs_ref,'PROJCRS')){
@@ -812,19 +793,28 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   ebv_i_char_att(crs.id, 'GeoTransform', geo_trans)
 
   #get grid mapping attributes
-  crs_grid <- as.character(sp::CRS(SRS_string = crs_ref))
+  crs_grid <- as.character(terra::crs(crs_wkt))
+  crs_wkt_list <- stringr::str_split(crs_wkt, '\n')[[1]]
+
+
+  #check name: change standard_name of lat and lon accordingly
+  if(stringr::str_detect(crs_wkt, 'PROJCRS')){
+    crs_proj <- TRUE
+  }else{
+    crs_proj<- FALSE
+  }
 
   if(stringr::str_detect(crs_grid, 'utm')){
     #add grid mapping for UTM (not supported by ncmeta)
-    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'Latitude of natural origin'))]
+    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Latitude of natural origin'))]
     lat_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
-    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'Longitude of natural origin'))]
+    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Longitude of natural origin'))]
     lon_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
-    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'Scale factor at natural origin'))]
+    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Scale factor at natural origin'))]
     scale_fac <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
-    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'False easting'))]
+    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'False easting'))]
     f_east <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
-    part <- crs_wkt[which(stringr::str_detect(crs_wkt, 'False northing'))]
+    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'False northing'))]
     f_north <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
 
     ebv_i_char_att(crs.id, 'grid_mapping_name', 'transverse_mercator')
@@ -834,26 +824,22 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     ebv_i_num_att(crs.id, 'false_easting',f_east)
     ebv_i_num_att(crs.id, 'false_northing',f_north)
 
-    #set TRUE (lon&lat standard_name)
-    crs_proj<- TRUE
   } else{
     #get grid mapping attributes
     grid_mapping <- ncmeta::nc_prj_to_gridmapping(crs_grid) #paste0('EPSG:',epsg)
 
-    #check name: change standard_name of lat and lon accordingly
-    if(grid_mapping[which(grid_mapping$name=='grid_mapping_name'),]$value[[1]]=='latitude_longitude'){
-      crs_proj <- FALSE
+    if(!nrow(grid_mapping)==0){
+
+      #add grid mapping name and remove from tibble
+      ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
+      grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name',]
+
+      #additional attributes
+      for (name in grid_mapping$name){
+        ebv_i_num_att(crs.id, name, grid_mapping$value[grid_mapping$name==name][[1]])
+      }
     }else{
-      crs_proj<- TRUE
-    }
-
-    #add grid mapping name and remove from tibble
-    ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
-    grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name',]
-
-    #additional attributes
-    for (name in grid_mapping$name){
-      ebv_i_num_att(crs.id, name, grid_mapping$value[grid_mapping$name==name][[1]])
+      warning('Simple georefencing done - without the CF conform gridmapping.')
     }
 
   }
