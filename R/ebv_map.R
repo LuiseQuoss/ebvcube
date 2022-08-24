@@ -31,8 +31,6 @@
 #'
 #' @return Plots a map.
 #' @export
-#' @importFrom utils data
-#' @importFrom colorspace diverging_hcl sequential_hcl
 #'
 #' @examples
 #' \dontrun{
