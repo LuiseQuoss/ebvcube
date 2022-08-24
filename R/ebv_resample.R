@@ -260,7 +260,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
 
   #get data ----
   #open netCDF with terra
-  data_raw <- terra::rast(filepath, subds = paste0('/', datacubepath))
+  data_raw <- terra::rast(filepath_src, subds = paste0('/', datacubepath_src))
 
   #get the index depending on the amount of entities and timesteps
   terra_index <- (entity_index-1)*max_time + timestep_src
