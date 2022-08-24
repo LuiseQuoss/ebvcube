@@ -46,13 +46,11 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Imports: 
     checkmate,
-    colorspace,
     curl,
     gdalUtils,
     ggplot2,
     HDF5Array,
     jsonlite,
-    lattice,
     memuse,
     methods,
     ncdf4,
