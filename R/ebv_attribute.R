@@ -62,7 +62,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
     if(exists('h5obj')){
       if(is.null(levelpath)){
         if(rhdf5::H5Iis_valid(h5obj)==TRUE){rhdf5::H5Fclose(h5obj)}
-      } else if(length(stringr::str_split(levelpath, '/')[[1]])==3){
+      } else if(length(stringr::str_split(levelpath, '/')[[1]])==2){
         if(rhdf5::H5Iis_valid(h5obj)==TRUE){rhdf5::H5Dclose(h5obj)}
       } else{
         if(rhdf5::H5Iis_valid(h5obj)==TRUE){rhdf5::H5Gclose(h5obj)}
@@ -249,7 +249,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
   if(is.null(levelpath)){
     if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     h5obj <- rhdf5::H5Fopen(filepath)
-  } else if(length(stringr::str_split(levelpath, '/')[[1]])==3){
+  } else if(length(stringr::str_split(levelpath, '/')[[1]])==2){
     h5obj <- rhdf5::H5Dopen(hdf, levelpath)
   } else{
     h5obj <- rhdf5::H5Gopen(hdf, levelpath)
@@ -278,7 +278,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
   #close handles ----
   if(is.null(levelpath)){
     rhdf5::H5Fclose(h5obj)
-  } else if(length(stringr::str_split(levelpath, '/')[[1]])==3){
+  } else if(length(stringr::str_split(levelpath, '/')[[1]])==2){
     rhdf5::H5Dclose(h5obj)
   } else{
     rhdf5::H5Gclose(h5obj)
