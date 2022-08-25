@@ -1,67 +1,83 @@
 {
     "code": 200,
-    "status": "Preliminary metadata",
-    "data": {
-        "preliminary_id": "6123759fc1fde",
-        "naming_authority": "German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig, Martin Luther University Halle-Wittenberg (MLU)",
-        "title": "Local bird diversity (cSAR\/BES-SIM)",
-        "date_created": "2021-08-03",
-        "summary": "Changes in bird diversity at 1-degree resolution caused by land use, estimated by the cSAR model for 1900-2015 using LUH2.0 historical reconstruction of land-use.",
-        "references": ["https:\/\/www.idiv.de\/en\/groups_and_people\/core_groups\/biodiversity_conservation\/projects.html"],
-        "source": "Uses the LUH 2.0 projections for land-use, and PREDICTS based coefficients for bird affinities to land-uses. See more details in associated publication (Pereira et al. 2020, doi.org\/10.1101\/2020.04.14.031716).",
-        "coverage_content_type": ["image"],
-        "processing_level": " ",
-        "project_url": "https:\/\/geobon.org",
-        "creator": {
-            "creator_name": "Ines Martins, Henrique Pereira",
-            "creator_email": "hpereira@idiv.de",
-            "creator_institution": "German Centre for Integrative Biodiversity Research (iDiv)"
-        },
-        "contributor_name": ["Ines Martins"],
-        "license": "https:\/\/creativecommons.org\/licenses\/by-nc-sa\/4.0",
-        "publisher": {
-            "publisher_name": "Ines Martins",
-            "publisher_email": "istmartins@gmail.com",
-            "publisher_institution": "German Centre for Integrative Biodiversity Research (iDiv)"
-        },
-        "ebv": {
-            "ebv_class": "Community composition",
-            "ebv_name": "Taxonomic and phylogenetic diversity"
-        },
-        "ebv_entity": {
-            "ebv_entity_type": "Functional species groups",
-            "ebv_entity_scope": "All birds, Non-forest birds, forest birds",
-            "ebv_entity_classification_name": "N\/A",
-            "ebv_entity_classification_url": "N\/A"
-        },
-        "ebv_metric": {
-            "ebv_metric_1": {
-                ":standard_name": "Relative change in the number of species (%)",
-                ":long_name": "Relative change in the number of species (S) using the year 1900 as reference (e.g. -50 corresponds to a decrease in 50% of the number of species in the cell since 1900, (S_year-S_1900)\/S_1900*100)",
-                ":units": "Percentage points"
+    "message": "List of dataset(s).",
+    "data": [
+        {
+            "id": "1",
+            "naming_authority": "The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig",
+            "title": "Local bird diversity (cSAR\/BES-SIM)",
+            "date_created": "2018-01-01",
+            "summary": "Changes in bird diversity at 1-degree resolution caused by land use, estimated by the cSAR model for 1900-2015 using LUH2.0 historical reconstruction of land-use.",
+            "references": [
+                "10.1101\/2020.04.14.031716"
+            ],
+            "source": "Uses the LUH 2.0 projections for land-use, and PREDICTS based coefficients for bird affinities to land-uses. See more details in associated publication (Pereira et al. 2020, doi.org\/10.1101\/2020.04.14.031716).",
+            "coverage_content_type": "modelResult",
+            "processing_level": "N\/A",
+            "project": "Local bird diversity (cSAR\/BES-SIM)",
+            "project_url": [
+                "https:\/\/www.idiv.de\/en\/groups_and_people\/core_groups\/biodiversity_conservation\/projects.html"
+            ],
+            "creator": {
+                "creator_name": "Ines Martins",
+                "creator_email": "istmartins@gmail.com",
+                "creator_institution": "German Centre for Integrative Biodiversity Research (iDiv)",
+                "creator_country": "Germany"
+            },
+            "contributor_name": "Henrique Pereira,Laetitia Navarro",
+            "license": "https:\/\/creativecommons.org\/licenses\/by\/4.0",
+            "publisher": {
+                "publisher_name": "Ines Martins",
+                "publisher_email": "istmartins@gmail.com",
+                "publisher_institution": "German Centre for Integrative Biodiversity Research (iDiv)",
+                "publisher_country": "Germany"
+            },
+            "ebv": {
+                "ebv_class": "Community composition",
+                "ebv_name": "Taxonomic and phylogenetic diversity"
+            },
+            "ebv_entity": {
+                "ebv_entity_type": "Communities",
+                "ebv_entity_scope": "Birds, Forest Birds, Non forest Birds",
+                "ebv_entity_classification_name": "N\/A",
+                "ebv_entity_classification_url": "N\/A"
+            },
+            "ebv_metric": {
+                "ebv_metric_1": {
+                    ":standard_name": "Relative change in the number of species (%)",
+                    ":long_name": "Relative change in the number of species (S) using the year 1900 as reference (e.g. -50 corresponds to a decrease in 50% of the number of species in the cell since 1900, (S_year-S_1900)\/S_1900*100)",
+                    ":units": "Percentage points"
+                },
+                "ebv_metric_2": {
+                    ":standard_name": "Absolute change in the number of species",
+                    ":long_name": "Absolute change in the number of species (S) using the year 1900 as reference (e.g. -50 corresponds to a decrease in 50 of the number of species in the cell since 1900, (S_year-S_1900))",
+                    ":units": "Number of species"
+                }
+            },
+            "ebv_scenario": "N\/A",
+            "ebv_spatial": {
+                "ebv_spatial_scope": "Global",
+                "ebv_spatial_description": "N\/A",
+                "ebv_spatial_resolution": null
+            },
+            "geospatial_lat_units": "degrees_north",
+            "geospatial_lon_units": "degrees_east",
+            "time_coverage": {
+                "time_coverage_resolution": "decadal",
+                "time_coverage_start": "1900",
+                "time_coverage_end": "2015"
+            },
+            "ebv_domain": "Terrestrial",
+            "comment": "N\/A",
+            "dataset": {
+                "pathname": "\/1\/public\/v1_cSAR_idiv_v1.nc",
+                "download": "portal.geobon.org\/data\/upload\/1\/public\/v1_cSAR_idiv_v1.nc",
+                "metadata_json": "portal.geobon.org\/data\/upload\/1\/public\/v1_metadata.js",
+                "metadata_xml": "portal.geobon.org\/data\/upload\/1\/public\/v1_metadata.xml"
+            },
+            "file": {
+                "download": "portal.geobon.org\/img\/1\/9823_csar.jpg"
             }
-        },
-        "ebv_scenario": {
-            "ebv_scenario_classification_name": "",
-            "ebv_scenario_classification_version": "",
-            "ebv_scenario_classification_url": "",
-            "ebv_scenario_1": {
-                ":standard_name": "past: 1900 - 2015",
-                ":long_name": "calculations where done per decade betrween 1900 and 2015"
-            }
-        },
-        "ebv_spatial": {
-            "ebv_spatial_scope": "Global",
-            "ebv_spatial_description": "N\/A"
-        },
-        "geospatial_lat_units": "degrees_north",
-        "geospatial_lon_units": "degrees_east",
-        "time_coverage": {
-            "time_coverage_resolution": "Decade",
-            "time_coverage_start": "1900",
-            "time_coverage_end": "2015"
-        },
-        "ebv_domain": ["Terrestrial"],
-        "comment": ""
-    }
+        }
+    ]
 }
