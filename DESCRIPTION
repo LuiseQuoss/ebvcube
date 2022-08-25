@@ -47,7 +47,6 @@ RoxygenNote: 7.2.1
 Imports: 
     checkmate,
     curl,
-    gdalUtils,
     ggplot2,
     HDF5Array,
     jsonlite,
@@ -55,11 +54,8 @@ Imports:
     methods,
     ncdf4,
     ncmeta,
-    raster,
     reshape2,
     rhdf5,
-    rgdal,
-    sp,
     stringr,
     terra,
     tidyterra,
@@ -69,5 +65,5 @@ Suggests:
     rmarkdown
 SystemRequirements: GDAL binaries
 Depends: 
-    R (>= 4.0.0) 
+    R (>= 4.2.0) 
 
