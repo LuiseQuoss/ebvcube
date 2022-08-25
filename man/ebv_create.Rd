@@ -78,9 +78,7 @@ Creates the netCDF file at the 'outputpath' location.
 Create the core structure of the EBV NetCDF based on the json
 from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
 will be added afterwards. Use \code{\link[=ebv_add_data]{ebv_add_data()}} to add the missing
-data. This functions writes a temporary file on your disk. Specify a
-directory for these setting via
-options('ebv_temp'='/path/to/temp/directory').
+data.
 }
 \note{
 To check out the results take a look at your netCDF file with
@@ -88,8 +86,6 @@ To check out the results take a look at your netCDF file with
 NASA.
 }
 \examples{
-#define temp directory
-options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #set path to JSON file
 json <- system.file(file.path("extdata","metadata.json"), package="ebvcube")
 #set output path of the new EBV netCDF

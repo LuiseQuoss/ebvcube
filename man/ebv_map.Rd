@@ -56,9 +56,7 @@ Plots a map.
 }
 \description{
 Map plot of the data of one timestep in one datacube of an EBV
-NetCDF. This functions sometimes writes temporary files on your disk.
-Speficy a directory for these setting via
-options('ebv_temp'='/path/to/temp/directory').
+netCDF.
 }
 \examples{
 \dontrun{
