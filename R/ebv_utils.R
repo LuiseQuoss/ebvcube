@@ -578,7 +578,7 @@ ebv_i_entity <- function(entity, entity_names){
 #'
 #' @return Nothing. Throws error, if EPSG cannot be processed.
 #' @noRd
-ebv_i_eval_epsg <- function(epsg){
+ebv_i_eval_epsg <- function(epsg, proj=F){
   #create empty raster
   dummy_raster <- terra::rast()
   #assign epsg crs to check wether the epsg can be processed
@@ -597,7 +597,11 @@ ebv_i_eval_epsg <- function(epsg){
        stop(paste0('Could not process EPSG. See error from terra:\n', warning))
      }
    })
-  crs <- terra::crs(dummy_raster)
+  if(proj){
+    crs <- terra::crs(dummy_raster, proj=T)
+  }else{
+    crs <- terra::crs(dummy_raster)
+  }
   return(crs)
 }
 
