@@ -2,8 +2,8 @@
 #' @description After you extracted data from the EBV netCDF and worked with it
 #'   this function gives you the possibility to write it to disk as a GeoTiff.
 #'
-#' @param data Your data object. May be SpatRaster, array, DelayedMatrix or list of
-#'   DelayedMatrix (see return values of [ebvcube::ebv_read()])
+#' @param data Your data object. May be SpatRaster, array, DelayedMatrix or list
+#'   of DelayedMatrix (see return values of [ebvcube::ebv_read()])
 #' @param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
 #'   system via the corresponding epsg code.
 #' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
@@ -16,6 +16,9 @@
 #'   outputfile defined by 'outputpath'.
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
 #'   TRUE.
+#'
+#' @note If the nodata value of your data is not detected correctly, this could
+#'   be due to the wrong choice of the datatype (type argument).
 #'
 #' @return Returns the outputpath.
 #' @export
@@ -61,6 +64,14 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
       }
     }
   )
+  withr::defer(
+    if(exists('temp.tif')){
+      if(file.exists(temp.tif)){
+        file.remove(temp.tif)
+      }
+    }
+  )
+
 
   #are all arguments given?
   if(missing(data)){
@@ -121,7 +132,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   if (class(data) == "DelayedMatrix"){
 
     #data from H5Array - on disk
-    message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
+    print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
 
     #derive other variables
     name <- stringr::str_remove(basename(outputpath),'.tif')
@@ -147,11 +158,12 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     terra::ext(temp_raster) <- extent
     terra::crs(temp_raster) <- crs
 
+    print('Delayed operations are finished, writing file to disk.')
     terra::writeRaster(temp_raster, outputpath, datatype=type, overwrite = overwrite)
 
     #delete temp file
     if (file.exists(temp.tif)){
-      file.remove(temp.tif)
+      t <- file.remove(temp.tif)
     }
 
     # write several DelayedMatrix (list) ----
@@ -159,19 +171,9 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
 
     #check temp directory
     temp_path <- tempdir()
-    # if (is.null(temp_path)){
-    #   stop('This function creates a temporary file. Please specify a temporary directory via options.')
-    # } else {
-    #   if (checkmate::checkCharacter(temp_path) != TRUE){
-    #     stop('The temporary directory must be of type character.')
-    #   }
-    #   if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-    #     stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
-    #   }
-    # }
 
     #data from H5Array - on disk
-    message('Note: Writing data from HDF5Array to disc. This may take a few minutes depending on the data dimensions.')
+    print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
 
     a_srs <- paste0('EPSG:', epsg)
     temps <- c()
