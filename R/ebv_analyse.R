@@ -170,7 +170,7 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
     }
     #give fillvalue as nodata value
     subset.array <- replace(subset.array, subset.array==prop@ebv_cube$fillvalue[1], c(NA))
-  }  else if(class(subset) == "numeric"){
+  }  else if(methods::is(subset, 'numeric')){
     #process bb subset ----
     subset.raster <- ebv_read_bb(filepath, datacubepath, entity=entity, bb=subset,
                                  timestep=timestep, epsg=epsg, verbose=verbose)
