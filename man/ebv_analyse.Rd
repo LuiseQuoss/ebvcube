@@ -60,7 +60,7 @@ sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
 #set path to shp file
@@ -68,15 +68,15 @@ shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvc
 
 #get measurements for full extent and all timesteps
 # data_global <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
-#                           entity = NULL, timestep = 1:12)
+#                           entity = 1, timestep = 1:12)
 
 #get measurements for germany only (using bounding box) and one timestep
 # data_bb_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
-#                             entity = NULL, timestep = 1:12, subset = c(5,15,47,55))
+#                             entity = 1, timestep = 1:12, subset = c(5,15,47,55))
 
 #get measurements for germany only (using shp) and one timestep
 # data_shp_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
-#                              entity = NULL, timestep = 1:12, subset = shp_path)
+#                              entity = 1, timestep = 1:12, subset = shp_path)
 }
 \seealso{
 \code{\link[=ebv_read_bb]{ebv_read_bb()}} and \code{\link[=ebv_read_shp]{ebv_read_shp()}}

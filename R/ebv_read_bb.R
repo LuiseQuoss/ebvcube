@@ -35,7 +35,7 @@
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
@@ -48,16 +48,16 @@
 #'
 #' #read bb (based on EPSG 4326) - return Raster
 #' cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#'                              entity = NULL, timestep = c(1,4,12), bb = bb_wgs84)
+#'                              entity = 1, timestep = c(1,4,12), bb = bb_wgs84)
 #'
 #' #read bb (based on EPSG 4326) - write to GeoTiff
 #' # path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#' #                     entity = NULL, timestep = 1, bb = bb_wgs84,
+#' #                     entity = 1, timestep = 1, bb = bb_wgs84,
 #' #                     outputpath = out, overwrite = TRUE)
 #'
 #' #read bb (based on EPSG 32632) - write to GeoTiff
 #' # path  <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#' #                      entity = NULL, timestep = 1:3, bb = bb_utm32,
+#' #                      entity = 1, timestep = 1:3, bb = bb_utm32,
 #' #                      epsg = 32632, outputpath = out, overwrite = TRUE)
 ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
                         outputpath=NULL, epsg = 4326, overwrite=FALSE,

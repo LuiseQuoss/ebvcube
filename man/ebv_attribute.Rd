@@ -46,7 +46,7 @@ change the ebv_class first. Don't forget to change the ebv_name accordingly!
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 
 #change the standard_name of the metric
 attribute1 <- 'standard_name'

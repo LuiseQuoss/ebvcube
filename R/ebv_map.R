@@ -33,12 +33,12 @@
 #' @examples
 #' \dontrun{
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
 #' #plot a map for the 9th timestep, divide into 7 classes
-#' ebv_map(filepath = file, datacubepath = datacubes[1,1], entity = NULL,
+#' ebv_map(filepath = file, datacubepath = datacubes[1,1], entity = 1,
 #'         timestep = 9, classes = 7)
 #' }
 ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =TRUE,

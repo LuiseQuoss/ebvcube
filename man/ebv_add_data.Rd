@@ -64,7 +64,7 @@ more capacities if needed.
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
 #set path to GeoTiff with data
@@ -72,5 +72,5 @@ tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvcube
 
 # add data to the timestep 2, 3 and 4 using the first three bands of the GeoTiff
 #ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
-#             entity = NULL, timestep = 2:4, data = tif, band = 1:3)
+#             entity = 1, timestep = 2:4, data = tif, band = 1:3)
 }

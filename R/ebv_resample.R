@@ -36,7 +36,7 @@
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
@@ -48,7 +48,7 @@
 #'
 #' #resample using a netCDF file - return GeoTiff
 #' # ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
-#' #              entity_src=NULL, timestep_src = 1, resolution = res1,
+#' #              entity_src=1, timestep_src = 1, resolution = res1,
 #' #              outputpath = out)
 #'
 #' #resample defining the resolution and EPSG code by hand - return Raster

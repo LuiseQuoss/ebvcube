@@ -49,12 +49,12 @@ be due to the wrong choice of the datatype (type argument).
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
 
 #read data
-data <- ebv_read(filepath = file, datacubepath = datacubes[1,1], timestep = 1)
+data <- ebv_read(filepath = file, datacubepath = datacubes[1,1], timestep = 1, entity = 1)
 # HERE YOU CAN WORK WITH YOUR DATA
 
 #write data to disk as GeoTiff
@@ -63,7 +63,7 @@ out <- system.file(file.path("extdata","write_data.tif"), package="ebvcube")
 
 #read a subset
 # data_bb <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#                        entity = NULL, timestep = 1:3, bb = c(5,15,47,55))
+#                        entity = 1, timestep = 1:3, bb = c(5,15,47,55))
 
 #write subset to disk as GeoTiff
 # ebv_write(data = data_bb, outputpath = out, extent = c(5,15,47,55), overwrite = TRUE)
