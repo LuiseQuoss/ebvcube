@@ -100,7 +100,7 @@ file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), pa
 prop.file <- ebv_properties(file)
 
 #take a look at the general properties of the dataset - there are more properties to discover!
-prop.file@general
+prop.file@general[1:4]
 #> $title
 #> [1] "Local bird diversity (cSAR/BES-SIM)"
 #> 
@@ -112,102 +112,6 @@ prop.file@general
 #> 
 #> $ebv_name
 #> [1] "Taxonomic and phylogenetic diversity"
-#> 
-#> $ebv_domain
-#> [1] "Terrestrial"
-#> 
-#> $references
-#> [1] "10.1101/2020.04.14.031716"
-#> 
-#> $source
-#> [1] "Uses the LUH 2.0 projections for land-use, and PREDICTS based coefficients for bird affinities to land-uses. See more details in associated publication (Pereira et al. 2020, doi.org/10.1101/2020.04.14.031716)."
-#> 
-#> $project
-#> [1] "Local bird diversity (cSAR/BES-SIM)"
-#> 
-#> $creator_name
-#> [1] "Ines Martins"
-#> 
-#> $creator_institution
-#> [1] "German Centre for Integrative Biodiversity Research (iDiv)"
-#> 
-#> $creator_email
-#> [1] "istmartins@gmail.com"
-#> 
-#> $contributor_name
-#> [1] "Henrique Pereira,Laetitia Navarro"
-#> 
-#> $publisher_name
-#> [1] "Ines Martins"
-#> 
-#> $publisher_institution
-#> [1] "German Centre for Integrative Biodiversity Research (iDiv)"
-#> 
-#> $publisher_email
-#> [1] "istmartins@gmail.com"
-#> 
-#> $comment
-#> [1] "N/A"
-#> 
-#> $keywords
-#> [1] "ebv_class: Community composition, ebv_name: Taxonomic and phylogenetic diversity, ebv_domain: Terrestrial, ebv_spatial_scope: Global, ebv_entity_type: Communities"
-#> 
-#> $id
-#> [1] "1"
-#> 
-#> $history
-#> [1] "EBV netCDF created using ebvcube, 2022-02-08"
-#> 
-#> $licence
-#> function () 
-#> {
-#>     cat("\nThis software is distributed under the terms of the GNU General\n")
-#>     cat("Public License, either Version 2, June 1991 or Version 3, June 2007.\n")
-#>     cat("The terms of version 2 of the license are in a file called COPYING\nwhich you should have received with\n")
-#>     cat("this software and which can be displayed by RShowDoc(\"COPYING\").\n")
-#>     cat("Version 3 of the license can be displayed by RShowDoc(\"GPL-3\").\n")
-#>     cat("\n")
-#>     cat("Copies of both versions 2 and 3 of the license can be found\n")
-#>     cat("at https://www.R-project.org/Licenses/.\n")
-#>     cat("\n")
-#>     cat("A small number of files (the API header files listed in\n")
-#>     cat("R_DOC_DIR/COPYRIGHTS) are distributed under the\n")
-#>     cat("LESSER GNU GENERAL PUBLIC LICENSE, version 2.1 or later.\n")
-#>     cat("This can be displayed by RShowDoc(\"LGPL-2.1\"),\n")
-#>     cat("or obtained at the URI given.\n")
-#>     cat("Version 3 of the license can be displayed by RShowDoc(\"LGPL-3\").\n")
-#>     cat("\n")
-#>     cat("'Share and Enjoy.'\n\n")
-#> }
-#> <bytecode: 0x000002604b21e2e0>
-#> <environment: namespace:base>
-#> 
-#> $conventions
-#> [1] "CF-1.8, ACDD-1.3, EBV-1.0"
-#> 
-#> $naming_authority
-#> [1] "The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig"
-#> 
-#> $date_created
-#> [1] "2018-01-01"
-#> 
-#> $date_issued
-#> [1] "pending"
-#> 
-#> $entity_names
-#> [1] "all birds"        "forest birds"     "non forest birds"
-#> 
-#> $entity_type
-#> [1] "Communities"
-#> 
-#> $entity_scope
-#> [1] "Birds, Forest Birds, Non forest Birds"
-#> 
-#> $entity_classification_name
-#> [1] "N/A"
-#> 
-#> $entity_classification_url
-#> [1] "N/A"
 slotNames(prop.file)
 #> [1] "general"  "spatial"  "temporal" "metric"   "scenario" "ebv_cube"
 ```

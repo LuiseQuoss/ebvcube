@@ -86,7 +86,7 @@ file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), pa
 prop.file <- ebv_properties(file)
 
 #take a look at the general properties of the dataset - there are more properties to discover!
-prop.file@general
+prop.file@general[1:4]
 slotNames(prop.file)
 
 
