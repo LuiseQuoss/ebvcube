@@ -41,7 +41,7 @@
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #' #set path to GeoTiff with data
@@ -49,7 +49,7 @@
 #'
 #' # add data to the timestep 2, 3 and 4 using the first three bands of the GeoTiff
 #' #ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
-#' #             entity = NULL, timestep = 2:4, data = tif, band = 1:3)
+#' #             entity = 1, timestep = 2:4, data = tif, band = 1:3)
 ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
                          data, band=1, ignore_RAM=FALSE,
                          verbose=FALSE){

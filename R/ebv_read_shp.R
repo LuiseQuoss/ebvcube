@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","cSAR_idiv_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
@@ -41,7 +41,7 @@
 #'
 #' #read subset - return Raster
 #' # cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
-#' #                              entity = NULL, timestep = 1, shp = shp_path,
+#' #                              entity = 1, timestep = 1, shp = shp_path,
 #' #                              outputpath = NULL)
 ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
                          shp, outputpath=NULL, touches = TRUE, overwrite=FALSE,
