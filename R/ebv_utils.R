@@ -257,20 +257,13 @@ ebv_i_type_terra <- function(ot_type){
 ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
   #src epsg: epsg given for the bb
   #dest epsg: epsg of the nc --> epsg of the returned bb
-  crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", src_epsg))
-  crs_src <- sp::CRS(stringr::str_remove(paste(crs[2], collapse = ' '), 'PROJ.4 : '))
-  crs <- gdalUtils::gdalsrsinfo(paste0("EPSG:", dest_epsg))
-  crs_dest <- sp::CRS(stringr::str_remove(paste(crs[2], collapse = ' '), 'PROJ.4 : '))
 
-  p1 <- matrix(data = c(bb[1],bb[3]), nrow = 1, ncol = 2)
-  sp1 <- sp::SpatialPoints(p1, proj4string=crs_src)
+  wkt_src <- ebv_i_eval_epsg(src_epsg)
+  wkt_dest <- ebv_i_eval_epsg(dest_epsg)
 
-  p2 <- matrix(data = c(bb[2],bb[4]), nrow = 1, ncol = 2)
-  sp2 <- sp::SpatialPoints(p2, proj4string=crs_src)
+  bb_mat <- terra::project(t(matrix(bb, ncol = 2)), wkt_src, wkt_dest)
 
-  sp1_new <- sp::spTransform(sp1, crs_dest)
-  sp2_new <- sp::spTransform(sp2, crs_dest)
-  bb_new <- c(sp1_new@coords[1], sp2_new@coords[1], sp1_new@coords[2], sp2_new@coords[2])
+  bb_new <- as.numeric(c(bb_mat[1,],bb_mat[2,]))
   return(bb_new)
 }
 
