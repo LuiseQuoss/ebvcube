@@ -2,7 +2,7 @@
 #'
 #' @description Read one or more layers from one datacube of the netCDF file.
 #'   Decide between in-memory array, in-memory SpatRaster or an array-like
-#'   object (DelayedMatrix) pointing to the on-disk netCDF file. Latter is
+#'   object (DelayedMatrix) pointing to the on-disk netCDF file. The latter is
 #'   useful for data that exceeds your memory.
 #'
 #' @param filepath Character. Path to the netCDF file.
@@ -15,11 +15,10 @@
 #' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param type Character. Choose between 'a', 'r' and 'da'. The first returns an
 #'   array or matrix object. The 'r' indicates that a SpatRaster object from the
-#'   terra package will be returned. The latter ('da') returns a DelayedArray
-#'   object.
+#'   terra package will be returned. The latter ('da') returns a DelayedArray or
+#'   DelayedMatrix object.
 #' @param sparse Logical. Default: FALSE. Set to TRUE if the data contains a lot
-#'   empty raster cells. Only relevant for DelayedMatrix. No further
-#'   implementation by now.
+#'   empty raster cells. Only relevant for DelayedArray return value.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
@@ -31,11 +30,7 @@
 #'
 #'
 #'
-#'
-#'
-#'
-#'
-#' @return Array, Raster or DelayedMatrix object containing the data of the
+#' @return Array, SpatRaster or DelayedArray object containing the data of the
 #'   corresponding datacube and timestep(s).
 #' @export
 #'
@@ -177,43 +172,34 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
     if(is_4D){
       # 4D structure
       if (length(timestep)>1){
-        part <- all[,,timestep,entity_index]
-        h5array <- c()
-        #rotate array
-        for (i in 1:length(timestep)){
-          temp <- t(part[,,i]) #,drop=FALSE
-          #temp <- temp[nrow(temp):1,]
-          temp <- replace(temp, temp==fillvalue, c(NA))
-          h5array <- c(h5array, temp)
-        }
-
+        #select entity cube
+        entity_part <- all[,,timestep,entity_index]
+        #rotate matrix
+        h5array <- DelayedArray::aperm(DelayedArray::aperm(entity_part, 3:1), c(2,3,1))
+        #replace NA value
+        h5array <- replace(h5array, h5array==fillvalue, c(NA))
       }
       else{
+        #select slice
         h5array <- all[,,timestep,entity_index]
         #rotate matrix
         h5array <- t(h5array[,,drop=FALSE])
-        #h5array <- h5array[,ncol(h5array):1,drop=FALSE]
+        #replace NA value
         h5array <- replace(h5array, h5array==fillvalue, c(NA))
       }
     } else{
       # 3D strucuture
       if (length(timestep)>1){
-        part <- all[,,timestep]
-        h5array <- c()
-        #rotate array
-        for (i in 1:length(timestep)){
-          temp <- t(part[,,i]) #,drop=FALSE
-          #temp <- temp[nrow(temp):1,]
-          temp <- replace(temp, temp==fillvalue, c(NA))
-          h5array <- c(h5array, temp)
-        }
-
+        #rotate matrix
+        h5array <- DelayedArray::aperm(DelayedArray::aperm(all, 3:1), c(2,3,1))
+        #replace NA value
+        h5array <- replace(h5array, h5array==fillvalue, c(NA))
       }
       else{
         h5array <- all[,,timestep]
         #rotate matrix
         h5array <- t(h5array[,,drop=FALSE])
-        #h5array <- h5array[,ncol(h5array):1,drop=FALSE]
+        #replace NA value
         h5array <- replace(h5array, h5array==fillvalue, c(NA))
       }
 
