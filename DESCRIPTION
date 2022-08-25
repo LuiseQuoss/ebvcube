@@ -47,6 +47,7 @@ RoxygenNote: 7.2.1
 Imports: 
     checkmate,
     curl,
+    DelayedArray,
     ggplot2,
     HDF5Array,
     jsonlite,

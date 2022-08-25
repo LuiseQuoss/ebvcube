@@ -30,12 +30,11 @@ netCDFs.}
 
 \item{type}{Character. Choose between 'a', 'r' and 'da'. The first returns an
 array or matrix object. The 'r' indicates that a SpatRaster object from the
-terra package will be returned. The latter ('da') returns a DelayedArray
-object.}
+terra package will be returned. The latter ('da') returns a DelayedArray or
+DelayedMatrix object.}
 
 \item{sparse}{Logical. Default: FALSE. Set to TRUE if the data contains a lot
-empty raster cells. Only relevant for DelayedMatrix. No further
-implementation by now.}
+empty raster cells. Only relevant for DelayedArray return value.}
 
 \item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
@@ -44,13 +43,13 @@ your memory to read the data. Can be switched off (set to TRUE).}
 TRUE.}
 }
 \value{
-Array, Raster or DelayedMatrix object containing the data of the
+Array, SpatRaster or DelayedArray object containing the data of the
 corresponding datacube and timestep(s).
 }
 \description{
 Read one or more layers from one datacube of the netCDF file.
 Decide between in-memory array, in-memory SpatRaster or an array-like
-object (DelayedMatrix) pointing to the on-disk netCDF file. Latter is
+object (DelayedMatrix) pointing to the on-disk netCDF file. The latter is
 useful for data that exceeds your memory.
 }
 \note{
