@@ -204,10 +204,9 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
 
   #check if timesteps and tif have the same length/amount of bands
   if(character){
-    #get amount of bands
-    temp_raster <- terra::rast(data)
-    b.sum <- dim(temp_raster)[3]
-    rm(temp_raster)
+    tif_info <- terra::describe(data)
+    b.count <- stringr::str_count(tif_info, 'Band')
+    b.sum <- sum(b.count, na.rm=T)
     if (b.sum < length(timestep)){
       stop('The amount of timesteps to write to the netCDF is longer than the available bands in Tiff.')
     }
