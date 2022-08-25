@@ -167,91 +167,33 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     }
 
     # write several DelayedMatrix (list) ----
-  } else if(class(data)=='list'){
-
-    #check temp directory
-    temp_path <- tempdir()
+  } else if(class(data)=='DelayedArray'){
 
     #data from H5Array - on disk
     print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
 
-    a_srs <- paste0('EPSG:', epsg)
-    temps <- c()
-    #turn listed DelayedArrays into tif
-    for (i in 1:length(data)){
-      #derive other variables
-      name <- paste0(stringr::str_remove(basename(outputpath),'.tif'), '_', i)
-      #change tempname
-      temp.tif <- file.path(temp_path, paste0('temp_EBV_write_data_', i, '.tif'))
-      #temp.tif must be new file, remove tempfile
-      if (file.exists(temp.tif)){
-        file.remove(temp.tif)
-      }
+    temp.tif <- tempfile(fileext = '.tif')
 
-      band <- data[[i]]
-      band <- t(band[nrow(band):1,])
-      band <- band[,ncol(band):1]
+    band <- DelayedArray::aperm(DelayedArray::aperm(data, 3:1), c(2,3,1))
 
-      #write temp tif per timestep
-      out <- HDF5Array::writeHDF5Array(
-        band,
-        filepath = temp.tif,
-        name = name
-      )
-      #add filename to list
-      temps <- c(temps, temp.tif)
+    #write temp tif - georeference missing
+    out <- HDF5Array::writeHDF5Array(
+      band,
+      filepath = temp.tif,
+      name = name
+    )
 
-      temp.vrt <- file.path(temp_path, paste0('temp_EBV_write_data_', i, '.vrt'))
+    #read with terra and add missing georefence data ----
+    temp_raster <- suppressWarnings(terra::rast(temp.tif)) #warning about missing extent
+    terra::ext(temp_raster) <- extent
+    terra::crs(temp_raster) <- crs
 
-      #add filename to list
-      temps <- c(temps, temp.vrt)
-
-      #add georeference, shift to -180,-90,
-      gdalUtils::gdal_translate(temp.tif, temp.vrt, of='VRT', overwrite=TRUE,
-                     a_ullr = c(extent[1], extent[4], extent[2],extent[3]),
-                     a_srs = a_srs)#,
-      #a_nodata=prop@ebv_cube_information@fillvalue)
-    }
-
-    #merge all vrts to one vrt
-    temp.vrt <- file.path(temp_path, 'temp_EBV_write_data.vrt')
-    gdalUtils::gdalbuildvrt(temps, temp.vrt, separate=TRUE, overwrite=TRUE,
-                            a_srs = a_srs,
-                            te = c(extent[1], extent[3],
-                                   extent[2], extent[4]))
-
-    #get output type ot for gdal
-    ot <- ebv_i_type_ot(type)
-
-    #gdal translate: add fillvalue, add ot if given, output final tif
-    if(!is.null(ot)){
-      gdalUtils::gdal_translate(temp.vrt, outputpath,
-                     #a_nodata=prop@ebv_cube$fillvalue,
-                     overwrite=overwrite,
-                     co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                     a_ullr = c(extent[1], extent[4],
-                            extent[2], extent[3]),
-                     a_srs = a_srs,
-                     ot=ot)
-    } else {
-      gdalUtils::gdal_translate(temp.vrt, outputpath,
-                     #a_nodata=prop@ebv_cube$fillvalue,
-                     co = c('COMPRESS=DEFLATE','BIGTIFF=IF_NEEDED'),
-                     a_ullr = c(extent[1], extent[4],
-                                extent[2], extent[3]),
-                     a_srs = a_srs,
-                     overwrite=overwrite)
-    }
+    print('Delayed operations are finished, writing file to disk.')
+    terra::writeRaster(temp_raster, outputpath, datatype=type, overwrite = overwrite)
 
     #delete temp file
-    for (f in temps){
-      if (file.exists(f)){
-        file.remove(f)
-      }
-    }
-    #remove multilayer vrt
-    if (file.exists(temp.vrt)){
-      file.remove(temp.vrt)
+    if (file.exists(temp.tif)){
+      t <- file.remove(temp.tif)
     }
 
   # write array or matrix ----
