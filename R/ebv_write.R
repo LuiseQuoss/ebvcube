@@ -112,7 +112,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   #######initial test end ----
 
   # write DelayedMatrix ----
-  if (class(data) == "DelayedMatrix"){
+  if (methods::is(data, "DelayedMatrix")){
 
     #data from H5Array - on disk
     print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
@@ -150,7 +150,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     }
 
     # write several DelayedMatrix (list) ----
-  } else if(class(data)=='DelayedArray'){
+  } else if(methods::is(data, "DelayedArray")){
 
     #data from H5Array - on disk
     print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
@@ -180,7 +180,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     }
 
   # write array or matrix ----
-  }else if (class(data)=="array"| class(data)=="matrix"){
+  }else if (methods::is(data, "array") |methods::is(data, "matrix")){
     #data from array/matrix - in memory
 
     #array/matrix to raster
@@ -192,7 +192,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
                         datatype=type)
     return(outputpath)
   # write raster ----
-  } else if(class(data)=="SpatRaster"){
+  } else if(methods::is(data, "SpatRaster")){
     #write raster to disk
     terra::crs(data) <- crs #ensure crs
     terra::writeRaster(data, outputpath, filetype = "GTiff", overwrite = overwrite,
