@@ -49,29 +49,12 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
 
   #ensure that all tempfiles are deleted on exit
   withr::defer(
-    if(exists('temps')){
-      for (t in temps){
-        if(file.exists(t)){
-          file.remove(t)
-        }
-      }
-    }
-  )
-  withr::defer(
-    if(exists('temp.vrt')){
-      if(file.exists(temp.vrt)){
-        file.remove(temp.vrt)
-      }
-    }
-  )
-  withr::defer(
     if(exists('temp.tif')){
       if(file.exists(temp.tif)){
         file.remove(temp.tif)
       }
     }
   )
-
 
   #are all arguments given?
   if(missing(data)){

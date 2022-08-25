@@ -15,8 +15,8 @@ ebv_write(
 )
 }
 \arguments{
-\item{data}{Your data object. May be SpatRaster, array, DelayedMatrix or list of
-DelayedMatrix (see return values of \code{\link[=ebv_read]{ebv_read()}})}
+\item{data}{Your data object. May be SpatRaster, array, DelayedMatrix or list
+of DelayedMatrix (see return values of \code{\link[=ebv_read]{ebv_read()}})}
 
 \item{outputpath}{Character. Set the path where you want to write the data to
 disk as a GeoTiff. Ending needs to be *.tif.}
@@ -42,6 +42,10 @@ Returns the outputpath.
 \description{
 After you extracted data from the EBV netCDF and worked with it
 this function gives you the possibility to write it to disk as a GeoTiff.
+}
+\note{
+If the nodata value of your data is not detected correctly, this could
+be due to the wrong choice of the datatype (type argument).
 }
 \examples{
 #set path to EBV netCDF
