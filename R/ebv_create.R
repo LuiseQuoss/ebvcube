@@ -779,7 +779,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   ebv_i_char_att(crs.id, 'GeoTransform', geo_trans)
 
   #get grid mapping attributes
-  crs_grid <- as.character(terra::crs(crs_wkt))
+  crs_grid <- ebv_i_eval_epsg(epsg, proj=T)
   crs_wkt_list <- stringr::str_split(crs_wkt, '\n')[[1]]
 
 
