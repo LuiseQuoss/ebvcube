@@ -3,9 +3,7 @@
 #' @description Create the core structure of the EBV NetCDF based on the json
 #'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
 #'   will be added afterwards. Use [ebvcube::ebv_add_data()] to add the missing
-#'   data. This functions writes a temporary file on your disk. Specify a
-#'   directory for these setting via
-#'   options('ebv_temp'='/path/to/temp/directory').
+#'   data.
 #'
 #' @param jsonpath Character. Path to the json file downloaded from the
 #'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
@@ -54,8 +52,6 @@
 #' @importFrom utils capture.output
 #'
 #' @examples
-#' #define temp directory
-#' options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 #' #set path to JSON file
 #' json <- system.file(file.path("extdata","metadata.json"), package="ebvcube")
 #' #set output path of the new EBV netCDF
@@ -254,17 +250,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   }
 
   #get temp directory
-  temp_path <- getOption('ebv_temp')[[1]]
-  if (is.null(temp_path)){
-    stop('This function creates a temporary file. Please specify a temporary directory via options.')
-  } else {
-    if (checkmate::checkCharacter(temp_path) != TRUE){
-      stop('The temporary directory must be of type character.')
-    }
-    if (checkmate::checkDirectoryExists(temp_path) != TRUE){
-      stop('The temporary directory given by you does not exist. Please change!\n', temp_path)
-    }
-  }
+  temp_path <- tempdir()
 
   #check timesteps
   if(!is.null(timesteps)){
