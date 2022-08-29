@@ -261,9 +261,9 @@ ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
   wkt_src <- ebv_i_eval_epsg(src_epsg)
   wkt_dest <- ebv_i_eval_epsg(dest_epsg)
 
-  bb_mat <- terra::project(t(matrix(bb, ncol = 2)), wkt_src, wkt_dest)
+  bb_mat <- terra::project(matrix(bb, ncol = 2), wkt_src, wkt_dest)
 
-  bb_new <- as.numeric(c(bb_mat[1,],bb_mat[2,]))
+  bb_new <- as.numeric(c(bb_mat[,1],bb_mat[,2]))
   return(bb_new)
 }
 
