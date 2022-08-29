@@ -146,7 +146,7 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     stop('Datacubepath must be of type character.')
   }
   if(!is.null(datacubepath)){
-    if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
+    if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
       stop(paste0('The given variable is not valid:\n', datacubepath))
     }
   }

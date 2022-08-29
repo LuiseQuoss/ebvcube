@@ -112,7 +112,7 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
     stop('Datacubepath must be of type character.')
   }
   hdf <- rhdf5::H5Fopen(filepath)
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)

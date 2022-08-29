@@ -113,7 +113,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     stop('Datacubepath must be of type character.')
   }
   if(!is.null(datacubepath)){
-    if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE){
+    if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
       stop(paste0('The given variable is not valid:\n', datacubepath))
     }
   }
