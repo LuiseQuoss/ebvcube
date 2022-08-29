@@ -41,10 +41,10 @@ scenario, if any are present.
 ``` bash
 ├── scenario_1
 │   └── metric_1
-│       └── ebv_cube
+│       └── ebv_cube [lon, lat, time, entity]
 └── scenario_2
     └── metric_2
-        └── ebv_cube
+        └── ebv_cube [lon, lat, time, entity]
 ```
 
 Just keep in mind: All EBV netCDF always have a metric. But they may or
@@ -168,8 +168,10 @@ ebv_map(file, dc, entity=1, timestep = 1)
 prop.dc@general$title
 #> [1] "Local bird diversity (cSAR/BES-SIM)"
 # And the datacube?
-prop.dc@ebv_cube$standard_name
-#> NULL
+prop.dc@metric$name
+#> [1] "Relative change in the number of species (%)"
+prop@general$entity_names[1]
+#> Error in eval(expr, envir, enclos): Objekt 'prop' nicht gefunden
 #What time is the sixth timestep representing?
 prop.dc@temporal$timesteps_natural[6]
 #> [1] "1950-01-01"
