@@ -242,4 +242,8 @@ In this case the levelpath corresponds to the datacube path. But you can also al
 citation('ebvcube')
 ```
 
+## List of all functions
+|Functionality|Function|Description|
+|---|---|---|
+||||
 
