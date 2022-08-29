@@ -375,9 +375,9 @@ citation('ebvcube')
 
 ## List of all functions
 
-| Functionality      | Function          | Description                                    |
+| :Functionality     | :Function         | :Description                                   |
 |--------------------|-------------------|------------------------------------------------|
-| Basics             | ebv_datacubepaths | Returns all available data cubes in the netCDF |
+| Basic access       | ebv_datacubepaths | Returns all available data cubes in the netCDF |
 |                    | ebv_properties    | Collects all the metadata terms of the netCDF  |
 |                    | ebv_download      | Downloads EBV netCDFs from the EBV Portal      |
 | Data access        | ebv_read          | Reads the data                                 |
