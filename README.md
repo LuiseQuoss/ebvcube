@@ -375,6 +375,8 @@ citation('ebvcube')
 
 ## List of all functions
 
-| Functionality | Function | Description |
-|---------------|----------|-------------|
-|               |          |             |
+| Functionality | Function          | Description |
+|---------------|-------------------|-------------|
+| Basics        | ebv_datacubepaths |             |
+| ^^            | ebv_properties    |             |
+| ^^            | ebv_download      |             |
