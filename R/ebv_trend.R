@@ -146,7 +146,12 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   time <- prop@spatial$dimensions[3]
   timevalues <- prop@temporal$timesteps_natural
   #derive years
-  #timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
+  if(prop@temporal$resolution != 'irregular'){
+    if(stringr::str_split(prop@temporal$resolution, '-')[[1]][2]=='00' &
+       stringr::str_split(prop@temporal$resolution, '-')[[1]][3]=='00'){
+      timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
+    }
+  }
   title <- prop@general$title
   fillvalue <- prop@ebv_cube$fillvalue
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
@@ -271,18 +276,30 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       }
 
       #plot
-      withr::local_par(mar=c(7,5,3,1))
+      timevalues <- as.character(timevalues)
+      dt <- as.data.frame(values)
+      dt <- cbind(dt, timevalues)
 
-      plot(timevalues, values, xlab = 'time', ylab=paste0(method, '\n(',units,')'), type = 'b',
-           main = paste(strwrap(
-             title,
-             width = 80
-           ), collapse = "\n"),
-           col.main = 'darkgrey', cex.main = 1.3, font.main=2,
-           sub =label, col.sub = 'darkgrey', cex.sub=1, font.sub=2,
-           lwd = 2,
-           col = ifelse(1:time %in% as.integer(false), 'red', color)
-      )
+      print(ggplot2::ggplot(data=dt, ggplot2::aes(x=timevalues, y=values))+
+        ggplot2::geom_point(color=color, shape=20, size=2) +
+        ggplot2::xlab('time') +
+        ggplot2::ggtitle(paste(strwrap(
+          title,
+          width = 80
+          ), collapse = "\n")) +
+        ggplot2::labs(subtitle=label)+
+        ggplot2::ylab(paste0(method, '\n(',units,')')) +
+        ggplot2::theme_classic() +
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle=90)) +
+        {if(length(timevalues)>15){
+          ggplot2::scale_x_discrete(breaks=timevalues[seq(1, length(timevalues), 5)])
+        } else{
+          ggplot2::scale_x_discrete(breaks=timevalues)
+        }}
+
+        )
+
+
     }
 
     #return values

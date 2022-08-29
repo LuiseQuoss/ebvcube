@@ -293,7 +293,12 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
         tidyterra::geom_spatraster(data = data.raster) +
         tidyterra::geom_spatvector(data = world_boundaries, fill = NA) +
         ggplot2::coord_sf(expand = FALSE)+
-        ggplot2::ggtitle(title, subtitle = subtitle) +
+        ggplot2::ggtitle(title=
+                           paste(strwrap(
+                             title,
+                             width = 80
+                             ), collapse = "\n"),
+                         subtitle = subtitle) +
         ggplot2::theme_classic() +
         ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
                                       label = round(as.numeric(s),2),
@@ -317,7 +322,12 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
       ggplot2::ggplot() +
         tidyterra::geom_spatraster(data = data.raster) +
         ggplot2::coord_sf(expand = FALSE)+
-        ggplot2::ggtitle(title, subtitle = subtitle) +
+        ggplot2::ggtitle(title=
+                           paste(strwrap(
+                             title,
+                             width = 80
+                           ), collapse = "\n"),
+                         subtitle = subtitle) +
         ggplot2::theme_classic() +
         ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
                                       label = round(as.numeric(s),2),
