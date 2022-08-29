@@ -120,8 +120,8 @@ prop.dc@general$title
 # And the datacube?
 prop.dc@metric$name
 prop@general$entity_names[1]
-#What time is the sixth timestep representing?
-prop.dc@temporal$timesteps_natural[6]
+#What timestep?
+prop.dc@temporal$timesteps_natural[1]
 
 ```
 

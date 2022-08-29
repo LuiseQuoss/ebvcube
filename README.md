@@ -172,9 +172,9 @@ prop.dc@metric$name
 #> [1] "Relative change in the number of species (%)"
 prop@general$entity_names[1]
 #> Error in eval(expr, envir, enclos): Objekt 'prop' nicht gefunden
-#What time is the sixth timestep representing?
-prop.dc@temporal$timesteps_natural[6]
-#> [1] "1950-01-01"
+#What timestep?
+prop.dc@temporal$timesteps_natural[1]
+#> [1] "1900-01-01"
 ```
 
 It’s nice to see the global distribution, but how is the change of that
@@ -192,8 +192,7 @@ averages <- ebv_trend(file, dc, entity=1)
 
 ``` r
 averages
-#>  [1] 0.3302859 0.6599264 0.9860116 1.3507915 1.7011865 2.1446662 2.3516938
-#>  [8] 2.5162151 2.6812587 2.8459879 2.9228303 2.9843266
+#> [1] 0.3302859 0.6599264 0.9860116
 ```
 
 It would be cool to have that for other indicators as well? Check out
@@ -358,7 +357,7 @@ citation('ebvcube')
 #>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2021). _ebvcube:
 #>   Working with netCDF for Essential Biodiversity Variables_. German
 #>   Centre for Integrative Biodiversity Research (iDiv)
-#>   Halle-Jena-Leipzig, Germany. R package version 0.0.1,
+#>   Halle-Jena-Leipzig, Germany. R package version 0.1.1,
 #>   <https://github.com/LuiseQuoss/ebvcube>.
 #> 
 #> Ein BibTeX-Eintrag für LaTeX-Benutzer ist
@@ -367,7 +366,7 @@ citation('ebvcube')
 #>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
 #>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
 #>     year = {2021},
-#>     note = {R package version 0.0.1},
+#>     note = {R package version 0.1.1},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
 #>     address = {Germany},
 #>     url = {https://github.com/LuiseQuoss/ebvcube},
