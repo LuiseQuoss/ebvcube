@@ -378,5 +378,5 @@ citation('ebvcube')
 | Functionality | Function          | Description |
 |---------------|-------------------|-------------|
 | Basics        | ebv_datacubepaths |             |
-| ^^            | ebv_properties    |             |
-| ^^            | ebv_download      |             |
+|               | ebv_properties    |             |
+|               | ebv_download      |             |
