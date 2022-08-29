@@ -375,8 +375,18 @@ citation('ebvcube')
 
 ## List of all functions
 
-| Functionality | Function          | Description |
-|---------------|-------------------|-------------|
-| Basics        | ebv_datacubepaths |             |
-|               | ebv_properties    |             |
-|               | ebv_download      |             |
+| Functionality      | Function          | Description                                    |
+|--------------------|-------------------|------------------------------------------------|
+| Basics             | ebv_datacubepaths | Returns all available data cubes in the netCDF |
+|                    | ebv_properties    | Collects all the metadata terms of the netCDF  |
+|                    | ebv_download      | Downloads EBV netCDFs from the EBV Portal      |
+| Data access        | ebv_read          | Reads the data                                 |
+|                    | ebv_read_bb       | Reads a spatial subset given by a bounding box |
+|                    | ebv_read_shp      | Reads a spatial subset given by a Shapefile    |
+|                    | ebv_analyse       | Returns basic measurements of the data         |
+|                    | ebv_write         | Writes manipulated data back to disc           |
+| Data visualization | ebv_map           | Plots a map of the specified data slice        |
+|                    | ebv_trend         | Plots the temporal trend                       |
+| Data creation      | ebv_create        | Creates a new EBV netCDF                       |
+|                    | ebv_add_data      | Adds data to the new netCDF                    |
+|                    | ebv_attribute     | Changes attribute values                       |
