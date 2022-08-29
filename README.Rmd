@@ -33,10 +33,10 @@ The first level (netCDF group) are scenarios, e.g., the modelling for different 
 ```bash
 ├── scenario_1
 │   └── metric_1
-│       └── ebv_cube
+│       └── ebv_cube [lon, lat, time, entity]
 └── scenario_2
     └── metric_2
-        └── ebv_cube
+        └── ebv_cube [lon, lat, time, entity]
 ```
 
 Just keep in mind: All EBV netCDF always have a metric. But they may or may not have a scenario. The resulting datacubes hold the data. These datacubes are 4D.
@@ -118,7 +118,8 @@ ebv_map(file, dc, entity=1, timestep = 1)
 # What was the data about again? Check the properties!
 prop.dc@general$title
 # And the datacube?
-prop.dc@ebv_cube$standard_name
+prop.dc@metric$name
+prop@general$entity_names[1]
 #What time is the sixth timestep representing?
 prop.dc@temporal$timesteps_natural[6]
 
