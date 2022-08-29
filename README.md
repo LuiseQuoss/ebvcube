@@ -294,9 +294,9 @@ ebv_create(jsonpath = json, outputpath = newNc, entities = entities,
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
-print(ebv_properties(newNc)@general[1])
-#> $title
-#> [1] "Local bird diversity (cSAR/BES-SIM)"
+print(ebv_properties(newNc)@general$entity_names)
+#> [1] "forest bird species"     "non-forest bird species"
+#> [3] "all bird species"
 
 #check out the (still empty) datacubes that are available
 dc.new <- ebv_datacubepaths(newNc)
