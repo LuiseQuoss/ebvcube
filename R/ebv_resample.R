@@ -164,7 +164,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
     stop('Datacubepath must be of type character.')
   }
   hdf <- rhdf5::H5Fopen(filepath_src, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath_src)==FALSE){
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
     stop(paste0('The given variable is not valid:\n', datacubepath_src))
   }
   rhdf5::H5Fclose(hdf)
