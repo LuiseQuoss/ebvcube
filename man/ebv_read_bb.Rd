@@ -76,7 +76,7 @@ bb_utm32 <- c(271985, 941837, 5232640, 6101151)
 
 #read bb (based on EPSG 4326) - return Raster
 cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-                             entity = 1, timestep = c(1,4,12), bb = bb_wgs84)
+                             entity = 1, timestep = 1:3, bb = bb_wgs84)
 
 #read bb (based on EPSG 4326) - write to GeoTiff
 # path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
@@ -85,7 +85,7 @@ cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
 
 #read bb (based on EPSG 32632) - write to GeoTiff
 # path  <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#                      entity = 1, timestep = 1:3, bb = bb_utm32,
+#                      entity = 1, timestep = 1:2, bb = bb_utm32,
 #                      epsg = 32632, outputpath = out, overwrite = TRUE)
 }
 \seealso{
