@@ -288,13 +288,16 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
       world_boundaries <- terra::project(world_boundaries, paste0('EPSG:', epsg))
     }
 
+    #crop world_boundaries to extent
+    extent <- terra::ext(data.raster)
+    world_boundaries <- terra::crop(world_boundaries, extent )
+
     print(
       ggplot2::ggplot() +
         tidyterra::geom_spatraster(data = data.raster) +
         tidyterra::geom_spatvector(data = world_boundaries, fill = NA) +
         ggplot2::coord_sf(expand = FALSE)+
-        ggplot2::ggtitle(title=
-                           paste(strwrap(
+        ggplot2::ggtitle(paste(strwrap(
                              title,
                              width = 80
                              ), collapse = "\n"),
@@ -322,8 +325,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
       ggplot2::ggplot() +
         tidyterra::geom_spatraster(data = data.raster) +
         ggplot2::coord_sf(expand = FALSE)+
-        ggplot2::ggtitle(title=
-                           paste(strwrap(
+        ggplot2::ggtitle(paste(strwrap(
                              title,
                              width = 80
                            ), collapse = "\n"),
