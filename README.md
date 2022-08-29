@@ -372,3 +372,9 @@ citation('ebvcube')
 #>     url = {https://github.com/LuiseQuoss/ebvcube},
 #>   }
 ```
+
+## List of all functions
+
+| Functionality | Function | Description |
+|---------------|----------|-------------|
+|               |          |             |
