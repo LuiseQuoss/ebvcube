@@ -540,6 +540,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   var_list_nc <- list()
   enum = 1
 
+  #check shuffle
+  if(prec=='integer' | prec=='short'){
+    shuffle <- TRUE
+  } else{
+    shuffle <- FALSE
+  }
+
   #define chunksize----
   #create one 3D var to detect default chunksize
   #aim: do not chunk along entities but time!
@@ -549,7 +556,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     test_def <- ncdf4::ncvar_def(name = 'test_var', units = 'some units',
                                  dim= list(lon_dim, lat_dim, time_dim),
                                  compression=9, prec=prec,
-                                 verbose=F, shuffle=TRUE)
+                                 verbose=F, shuffle=shuffle)
     nc_test <- ncdf4::nc_create(filename = temp,
                            vars = test_def,
                            force_v4 = T,
@@ -577,7 +584,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
                                       missval=fillvalue, compression=9,
-                                      prec=prec, verbose=verbose, shuffle=TRUE
+                                      prec=prec, verbose=verbose, shuffle=shuffle
                                       ))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -590,7 +597,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
         assign(name, ncdf4::ncvar_def(name = var, units = units[metric.digit],
                                       dim= list(lon_dim, lat_dim, time_dim),
                                       compression=9, prec=prec,
-                                      verbose=verbose, shuffle=TRUE
+                                      verbose=verbose, shuffle=shuffle
                                       ))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -606,7 +613,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
         assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
                                       dim= list(lon_dim, lat_dim, time_dim, entity_dim),
                                       missval=fillvalue, compression=9, prec=prec,
-                                      verbose=verbose, shuffle=TRUE,
+                                      verbose=verbose, shuffle=shuffle,
                                       chunksizes=chunksizes_new))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
@@ -619,7 +626,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
         assign(name, ncdf4::ncvar_def(name = var, units = as.character(units[metric.digit]),
                                       dim= list(lon_dim, lat_dim, time_dim, entity_dim),
                                       compression=9, prec=prec,
-                                      verbose=verbose, shuffle=TRUE,
+                                      verbose=verbose, shuffle=shuffle,
                                       chunksizes=chunksizes_new))
         var_list_nc[[enum]] <- eval(parse(text=name))
         enum = enum +1
