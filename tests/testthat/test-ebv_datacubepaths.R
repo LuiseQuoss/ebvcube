@@ -8,7 +8,7 @@ test_that("datacubepaths martins_comcom_id1_20220208_v1.nc", {
 })
 
 test_that("datacubepaths pereira_csar_bes_sim_20220830_4d.nc", {
-  file <- system.file(file.path("extdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
+  file <- system.file(file.path("tests/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   result <- data.frame(c('scenario_1/metric_1/ebv_cube', 'scenario_1/metric_2/ebv_cube',
                          'scenario_1/metric_3/ebv_cube',
                          'scenario_2/metric_1/ebv_cube', 'scenario_2/metric_2/ebv_cube',
