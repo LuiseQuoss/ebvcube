@@ -50,8 +50,8 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
     stop(paste0('File ending is wrong. File cannot be processed.'))
   }
 
-  #file closed?
-  ebv_i_file_opened(filepath)
+  # #file closed?
+  # ebv_i_file_opened(filepath)
 
   #######initial test end ----
 
