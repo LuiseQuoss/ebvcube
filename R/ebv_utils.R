@@ -616,5 +616,10 @@ ebv_i_get_epsg <- function(wkt){
   index <- length(parts)
   epsg_dirty <- parts[index]
   epsg <- as.numeric(regmatches(epsg_dirty, gregexpr("[[:digit:].]+", epsg_dirty))[[1]])
-  return(epsg)
+  if (stringr::str_detect(epsg_dirty, 'ESRI')){
+    return(paste0('ESRI:', epsg))
+  }else{
+    return(epsg)
+  }
+
 }
