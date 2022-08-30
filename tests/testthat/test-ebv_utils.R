@@ -1,7 +1,11 @@
+#transform bb test----
+
 test_that("test ebv_i_transform_bb", {
   new_bb <- ebv_i_transform_bb(c(-50,50,20,40), 4326, 3857)
   expect_equal(new_bb, c(-5565974.540,  5565974.540,  2273030.927,  4865942.280))
 })
+
+#CRS related tests----
 
 test_that("test ebv_i_eval_epsg 4326", {
   crs_wkt <- ebv_i_eval_epsg(4326)
@@ -31,4 +35,26 @@ test_that("test ebv_i_get_epsg 4326", {
 test_that("test ebv_i_get_epsg ESRI:54009", {
   crs_epsg <- ebv_i_get_epsg('PROJCRS[\"World_Mollweide\",\n    BASEGEOGCRS[\"WGS 84\",\n        DATUM[\"World Geodetic System 1984\",\n            ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n                LENGTHUNIT[\"metre\",1]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"Degree\",0.0174532925199433]]],\n    CONVERSION[\"World_Mollweide\",\n        METHOD[\"Mollweide\"],\n        PARAMETER[\"Longitude of natural origin\",0,\n            ANGLEUNIT[\"Degree\",0.0174532925199433],\n            ID[\"EPSG\",8802]],\n        PARAMETER[\"False easting\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8806]],\n        PARAMETER[\"False northing\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8807]]],\n    CS[Cartesian,2],\n        AXIS[\"(E)\",east,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1]],\n        AXIS[\"(N)\",north,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1]],\n    USAGE[\n        SCOPE[\"Not known.\"],\n        AREA[\"World.\"],\n        BBOX[-90,-180,90,180]],\n    ID[\"ESRI\",54009]]')
   expect_equal(crs_epsg, 'ESRI:54009')
+})
+
+#entity related test----
+test_that("test ebv_i_entity with integer", {
+  expect_null(ebv_i_entity(1, c("All birds", "Forest birds", "Non-forest birds")))
+})
+
+test_that("test ebv_i_entity with string", {
+  entity <- ebv_i_entity("Forest birds", c("All birds", "Forest birds", "Non-forest birds"))
+  expect_equal(entity, 2)
+})
+
+test_that("test ebv_i_entity wrong string", {
+  expect_error(ebv_i_entity("Forest birddds", c("All birds", "Forest birds", "Non-forest birds")), 'Given entity name is not valid.')
+})
+
+test_that("test ebv_i_entity wrong integer", {
+  expect_error(ebv_i_entity(4, c("All birds", "Forest birds", "Non-forest birds")), 'bigger than available entities')
+})
+
+test_that("test ebv_i_entity negative integer", {
+  expect_error(ebv_i_entity(-1, c("All birds", "Forest birds", "Non-forest birds")), 'negative value')
 })
