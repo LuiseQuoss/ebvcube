@@ -255,7 +255,6 @@ ebv_attribute <- function(filepath, attribute_name, value,
     h5obj <- rhdf5::H5Gopen(hdf, levelpath)
   }
 
-
   #check if attribute exists - written correct? ----
   if (! rhdf5::H5Aexists(h5obj, attribute_name)){
     if (attribute_name %in% att.chr){
@@ -266,23 +265,129 @@ ebv_attribute <- function(filepath, attribute_name, value,
     }
   }
 
+  #if file has scenarios and a metric or ebv_cube attribute is changed -> change in all scenarios
+  #CASE: FILE HAS SCENARIOS----
+  if(stringr::str_detect(levelpath,'scenario')){
+    #close current handle
+    if(is.null(levelpath)){
+      rhdf5::H5Fclose(h5obj)
+    } else if(stringr::str_detect(levelpath, 'ebv_cube')){
+      rhdf5::H5Dclose(h5obj)
+    } else{
+      rhdf5::H5Gclose(h5obj)
+    }
+    #get all scenarios----
+    datacubes <- ebv_datacubepaths(filepath)
+    parts <- unique(unlist(stringr::str_split(datacubes[,1], '/')))
+    index <- which(stringr::str_detect(parts, 'scenario'))
+    scenarios <- parts[index]
+    #if more than 1 scenario, inform user
+    if(length(scenarios)>1){
+      message('You are changing an attribute that is repeated over the different scenarios in your file. All of them will be changed.')
+      }
+    #change attribute in all scenarios ----
+    base <- paste0(stringr::str_split(levelpath, '/')[[1]][c(-1)], collapse = '/')
+    for(scenario in scenarios){
+      path <- paste0(scenario, '/', base)
+      #open path
+      if(stringr::str_detect(path, 'ebv_cube')){
+        h5obj <- rhdf5::H5Dopen(hdf, path)
+      } else{
+        h5obj <- rhdf5::H5Gopen(hdf, path)
+      }
+      #read att, change if different
+      att <- ebv_i_read_att(h5obj, attribute_name)
+      if(att==value){
+        message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
+      } else if (attribute_name %in% att.chr){
+        ebv_i_char_att(h5obj, attribute_name, value)
+      }
 
-  #read attribute, change if different ----
-  att <- ebv_i_read_att(h5obj, attribute_name)
-  if(att==value){
-    stop(paste0('Value of ', attribute_name, ' already is set to "', value, '".'))
-  } else if (attribute_name %in% att.chr){
-    ebv_i_char_att(h5obj, attribute_name, value)
-  }
+      #close handle
+      if(stringr::str_detect(path, 'ebv_cube')){
+        rhdf5::H5Dclose(h5obj)
+      } else{
+        rhdf5::H5Gclose(h5obj)
+      }
 
-  #close handles ----
-  if(is.null(levelpath)){
-    rhdf5::H5Fclose(h5obj)
-  } else if(stringr::str_detect(levelpath, 'ebv_cube')){
-    rhdf5::H5Dclose(h5obj)
+
+    }
   } else{
-    rhdf5::H5Gclose(h5obj)
+    #CASE: FILE HAS NO SCENARIOS----
+    #read single attribute, change if different ----
+    att <- ebv_i_read_att(h5obj, attribute_name)
+    if(att==value){
+      stop(paste0('Value of ', attribute_name, ' already is set to "', value, '".'))
+    } else if (attribute_name %in% att.chr){
+      ebv_i_char_att(h5obj, attribute_name, value)
+    }
+    #close handles ----
+    if(is.null(levelpath)){
+      rhdf5::H5Fclose(h5obj)
+    } else if(stringr::str_detect(levelpath, 'ebv_cube')){
+      rhdf5::H5Dclose(h5obj)
+    } else{
+      rhdf5::H5Gclose(h5obj)
+    }
+
+    path <- levelpath
+
   }
+
+  #cover redundant attributes in ebv_cube and metric----
+  if(attribute_name=='units'){
+    #change path to corresponding other component
+    if(stringr::str_detect(path, 'ebv_cube')){
+      path <- stringr::str_remove(path, '/ebv_cube')
+      h5obj <- rhdf5::H5Gopen(hdf, path)
+    }else{
+      path <- paste0(path, '/ebv_cube')
+      h5obj <- rhdf5::H5Dopen(hdf, path)
+    }
+    #change attribute
+    att <- ebv_i_read_att(h5obj, attribute_name)
+    if(att==value){
+      message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
+    } else if (attribute_name %in% att.chr){
+      ebv_i_char_att(h5obj, attribute_name, value)
+    }
+
+  }else if(attribute_name=='long_name' & stringr::str_detect(path, 'ebv_cube')){
+    #change path to corresponding other component
+    path <- stringr::str_remove(path, '/ebv_cube')
+    h5obj <- rhdf5::H5Gopen(hdf, path)
+
+    #change corresponding attribute - standard_name
+    att <- ebv_i_read_att(h5obj, 'standard_name')
+    if(att==value){
+      message(paste0('Value of standard_name in path ', path ,' already is set to "', value, '".'))
+    } else if (attribute_name %in% att.chr){
+      ebv_i_char_att(h5obj, 'standard_name', value)
+    }
+
+  }else if(attribute_name=='standard_name' & !stringr::str_detect(path, 'ebv_cube')){
+    #change path to corresponding other component
+    path <- paste0(path, '/ebv_cube')
+    h5obj <- rhdf5::H5Dopen(hdf, path)
+
+    #change corresponding attribute - long_name
+    att <- ebv_i_read_att(h5obj, 'long_name')
+    if(att==value){
+      message(paste0('Value of long_name in path ', path ,' already is set to "', value, '".'))
+    } else if (attribute_name %in% att.chr){
+      ebv_i_char_att(h5obj, 'long_name', value)
+    }
+
+  }
+  #close handle
+  if(rhdf5::H5Iis_valid(h5obj)){
+    if(stringr::str_detect(path, 'ebv_cube')){
+      rhdf5::H5Dclose(h5obj)
+    } else{
+      rhdf5::H5Gclose(h5obj)
+    }
+  }
+
 
   if(exists('hdf')){
     if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
