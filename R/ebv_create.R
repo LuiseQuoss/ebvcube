@@ -111,6 +111,11 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
       }
     }
   )
+  withr::defer(
+    if(exists('entity_csv')){
+      rm(entity_csv)
+    }
+  )
 
   #set UTF8 encoding
   withr::local_options(list(encoding = "UTF-8"))
