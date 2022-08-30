@@ -558,6 +558,9 @@ ebv_i_entity <- function(entity, entity_names){
       if(entity > length(entity_names)){
         stop(paste0('Given entity value (', entity,') bigger than available entities (',length(entity_names),').'))
       }
+      if(entity < 0){
+        stop('You cannot give a negative value for the entity argument.')
+      }
       #name correct?
     } else if (checkmate::checkCharacter(entity)==TRUE){
       if(!entity %in% entity_names){
