@@ -1,11 +1,12 @@
 #' EBV netCDF properties class (S4)
 #'
 #' @slot general Named list. Elements: title, description, ebv_class, ebv_name,
-#'   ebv_domain, references, source, project, creator_name, creator_institution,
-#'   creator_email, contributor_name, publisher_name, publisher_institution,
-#'   publisher_email, comment, keywords, id, history, licence, conventions,
-#'   naming_authority, date_created, date_issued, entity_names, entity_type,
-#'   entity_scope, entity_classification_name, entity_classification_url
+#'   ebv_domain, references, source, project_name, project_url, creator_name,
+#'   creator_institution, creator_email, contributor_name, publisher_name,
+#'   publisher_institution, publisher_email, comment, keywords, id, history,
+#'   licence, conventions, naming_authority, date_created, date_issued,
+#'   entity_names, entity_type, entity_scope, entity_classification_name,
+#'   entity_classification_url
 #' @slot spatial Named list. Elements: wkt2, epsg, extent, resolution,
 #'   crs_units, dimensions, scope, description
 #' @slot temporal Named list. Elements: resolution, units, timesteps,
@@ -461,7 +462,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     description <- ebv_i_read_att(hdf, 'summary')
     references <- ebv_i_read_att(hdf, 'references')
     source <- ebv_i_read_att(hdf, 'source')
-    project <- ebv_i_read_att(hdf, 'project_name')
+    project_name <- ebv_i_read_att(hdf, 'project_name')
+    project_url <- ebv_i_read_att(hdf, 'project_url')
     creator_name <- ebv_i_read_att(hdf, 'creator_name')
     creator_institution <- ebv_i_read_att(hdf, 'creator_institution')
     creator_email <- ebv_i_read_att(hdf, 'creator_email')
@@ -534,7 +536,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
     general <- list('title'=title, 'description' = description, 'ebv_class'= ebv_class,
                     'ebv_name'=ebv_name, 'ebv_domain'=ebv_domain,
-                    'references'=references, 'source'=source, 'project'=project,
+                    'references'=references, 'source'=source, 'project_name'=project_name,
+                    'project_url'=project_url,
                     'creator_name'=creator_name, 'creator_institution'=creator_institution,
                     'creator_email'=creator_email, 'contributor_name'=contributor_name,
                     'publisher_name'=publisher_name, 'publisher_institution'=publisher_institution,
