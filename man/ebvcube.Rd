@@ -6,7 +6,7 @@
 \title{Working with netCDF for Essential Biodiversity Variables}
 \description{
 This package can be used to easily access the data of the EBV netCDFs which
-can be downloaded from the \href{portal.geobon.org}{Geobon Portal}. It also
+can be downloaded from the \href{https://portal.geobon.org/home}{Geobon Portal}. It also
 provides some basic visualization of the data.  Advanced users can build
 their own netCDFs with the EBV standard using this package.
 }
