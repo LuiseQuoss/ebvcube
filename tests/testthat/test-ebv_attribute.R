@@ -53,3 +53,28 @@ test_that("test attribute: modification of scenario attribute", {
     expect_equal(prop$name, 'SSP3-RCP6.0 LU')  }
 })
 
+test_that("test attribute: modification of global attribute", {
+  file <- system.file(file.path("extdata/testdata","test_att.nc"), package="ebvcube")
+  title_old <- ebv_properties(file)@general$title
+  if(title_old=="Local bird diversity (cSAR/BES-SIM)"){
+    ebv_attribute(file, 'title', "Local birds diversity (cSAR/BES-SIM)")
+    prop <- ebv_properties(file)@general
+    expect_equal(prop$title, "Local birds diversity (cSAR/BES-SIM)")
+  }else{
+    ebv_attribute(file, 'title', "Local bird diversity (cSAR/BES-SIM)")
+    prop <- ebv_properties(file)@general
+    expect_equal(prop$title, "Local bird diversity (cSAR/BES-SIM)")  }
+})
+
+test_that("test attribute: modification of ebv_cube attribute", {
+  file <- system.file(file.path("extdata/testdata","test_att.nc"), package="ebvcube")
+  cct_old <- ebv_properties(file, 'metric_1/ebv_cube')@ebv_cube$coverage_content_type
+  if(cct_old=="modelResult"){
+    ebv_attribute(file, 'coverage_content_type', "modelsResult", 'metric_1/ebv_cube')
+    prop <- ebv_properties(file, 'metric_1/ebv_cube')@ebv_cube
+    expect_equal(prop$coverage_content_type, "modelsResult")
+  }else{
+    ebv_attribute(file, 'coverage_content_type', "modelResult", 'metric_1/ebv_cube')
+    prop <- ebv_properties(file, 'metric_1/ebv_cube')@ebv_cube
+    expect_equal(prop$coverage_content_type, "modelResult")  }
+})
