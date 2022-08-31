@@ -287,9 +287,6 @@ fv <- -3.4e+38
 ebv_create(jsonpath = json, outputpath = newNc, entities = entities, 
            epsg = 4326, extent = c(-180, 180, -90, 90), resolution = c(1, 1),
            fillvalue = fv, prec='float', force_4D = TRUE, overwrite=T)
-#> [1] "Warning: shuffle is turned on for variable test_var but that var is of precision float and shuffle ONLY has an effect for integer variables."
-#> [1] "Warning: shuffle is turned on for variable metric_1/ebv_cube but that var is of precision float and shuffle ONLY has an effect for integer variables."
-#> [1] "Warning: shuffle is turned on for variable metric_2/ebv_cube but that var is of precision float and shuffle ONLY has an effect for integer variables."
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
