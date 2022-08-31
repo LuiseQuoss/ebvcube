@@ -1,0 +1,94 @@
+{
+    "data": [
+        {
+            "id": "pending",
+            "naming_authority": "The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig",
+            "title": "BES-SIM cSAR-iDiv",
+            "date_created": "2022-02-16",
+            "summary": "Projections from the cSAR-iDiv model from 1900-2050 using LUH2 and SSPs-RCPs, done in the BES-SIM inter-model comparison for IPBES.",
+            "references": [
+				"N/A"
+			],
+            "source": "cSAR-iDiv model team, 14 December 2018",
+            "coverage_content_type": [
+				"modelResult"
+			],
+            "processing_level": "N/A",
+            "project": "BES-SIM",
+            "project_url": "https://ipbes.net/scenarios-models/expert-group-activities",
+            "creator": {
+                "creator_name": "Inês Martins",
+                "creator_email": "istmartins@gmail.com",
+                "creator_institution": "iDiv - German Centre for Integrative Biodiversity Research / Martin-Luther University of Halle-Wittenberg"
+            },
+            "contributor_name": [
+				"Henrique M. Pereira"
+			],
+            "license": "CC-BY",
+            "publisher": {
+                "publisher_name": "Henrique M. Pereira",
+                "publisher_email": "hpereira@idiv.de",
+                "publisher_institution": "iDiv"
+            },
+            "ebv": {
+                "ebv_class": "Community composition",
+                "ebv_name": "Taxonomic/phylogenetic diversity"
+            },
+            "ebv_entity": {
+                "ebv_entity_type": "Communities",
+                "ebv_entity_scope": "Bird species (forest and non-forest)",
+                "ebv_entity_classification_name": "N/A",
+                "ebv_entity_classification_url": "N/A"
+            },
+            "ebv_metric": {
+				"ebv_metric_1": {
+                    ":standard_name": "Species richness (S)",
+                    ":long_name": "Species richness per cell",
+                    ":units": "Number of species"
+				},
+				"ebv_metric_2": {
+                    ":standard_name": "Relative species richness change (Delta_S)",
+                    ":long_name": "Species richness change relative to previous time step, Delta_S=(S_t1-S_t0)/S_t0*100, where S_t is the number of species in year t. Periods are 1900-2015 and 2015-2050.",
+                    ":units": "Percentage points (%)"
+				},
+				"ebv_metric_3": {
+                    ":standard_name": "Diversity-weighted relative species richness change (Delta_SS)",
+                    ":long_name": "Species richness change relative to previous time weighted by the species richness of the cell, Delta_SS=Delta_S*S_2015/Mean(S_2015) where Mean() is the spatial mean.",
+                    ":units": "Percentage points (%)"
+				}
+			},
+			"ebv_scenario": {
+                "ebv_scenario_classification_name": "SSP-RCP",
+                "ebv_scenario_classification_version": "LUH2",
+                "ebv_scenario_classification_url": "https://en.wikipedia.org/wiki/Shared_Socioeconomic_Pathways",
+				"ebv_scenario_1": {
+                    ":standard_name": "SSP1-RCP1.5 LU",
+                    ":long_name": "Global Sustainability (SSP1-RCP1.5), with only effects of land-use."
+                },
+				"ebv_scenario_2": {
+                    ":standard_name": "SSP3-RCP6.0 LU",
+                    ":long_name": "Regional Rivalry (SSP3-RCP6.0), with only effects of land-use."
+                },
+				"ebv_scenario_3": {
+                    ":standard_name": "SSP5-RCP8.5 LU",
+                    ":long_name": "Fossil-Fuel Rivarly (SSP5-RCP8.5), with only effects of land-use."
+                }
+					},
+			"ebv_geospatial": {
+                "ebv_geospatial_scope": "Global",
+                "ebv_geospatial_description": "N/A"
+            },
+            "geospatial_lat_units": "degrees",
+            "geospatial_lon_units": "degrees",
+            "time_coverage": {
+                "time_coverage_resolution": "N/A",
+                "time_coverage_start": "1900-01-01",
+                "time_coverage_end": "2050-01-01"
+            },
+            "ebv_domain": [
+				"Terrestrial"
+			],
+            "comment": "Delta_S (original name: CC-DC) for the two time periods and S for 2015 (original name: Sp) were provided by cSAR team. Delta_SS and values of S for 1900 and 2050 calculated by H.M. Pereira on 20.3.2022."
+        }
+    ]
+}
