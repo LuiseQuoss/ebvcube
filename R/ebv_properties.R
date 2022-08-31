@@ -482,7 +482,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     id <- ebv_i_read_att(hdf, 'id')
     date_created <- ebv_i_read_att(hdf, 'date_created')
     date_issued <- ebv_i_read_att(hdf, 'date_issued')
-    license <- ebv_i_read_att(hdf, 'license')
+    licence <- ebv_i_read_att(hdf, 'license')
 
     #entities info
     did <- rhdf5::H5Dopen(hdf, 'entity')#HERE
