@@ -22,5 +22,8 @@ test_that("datacubepaths pereira_csar_bes_sim_20220830_4d.nc", {
                             'Diversity-weighted relative species richness change (Delta_SS)'))
   colnames(result) <- c('datacubepaths', 'scenario_names', 'metric_names')
   datacubes <- ebv_datacubepaths(file)
-  expect_equal(datacubes, result)
+  #compare results - leave out scenario 2 as its attributes get changed in another test
+  expect_equal(dim(datacubes), dim(result))
+  expect_equal(datacubes[1:3,], result[1:3,])
+  expect_equal(datacubes[7:9,], result[7:9,])
 })

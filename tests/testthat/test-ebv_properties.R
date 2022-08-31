@@ -38,7 +38,7 @@ test_that("properties: check general", {
   expect_equal(prop$comment,'Delta_S (original name: CC-DC) for the two time periods and S for 2015 (original name: Sp) were provided by cSAR team. Delta_SS and values of S for 1900 and 2050 calculated by H.M. Pereira on 20.3.2022.')
   expect_equal(prop$keywords,'ebv_class: Community composition, ebv_name: Taxonomic/phylogenetic diversity, ebv_domain: Terrestrial, ebv_spatial_scope: , ebv_entity_type: Communities, ebv_scenario_classification_name: SSP-RCP')
   expect_equal(prop$id,'pending')
-  expect_equal(prop$history,'EBV netCDF created using ebvcube, 2022-08-30')
+  expect_equal(prop$history,'EBV netCDF created using ebvcube, 2022-08-31')
   expect_equal(prop$licence,'CC-BY')
   expect_equal(prop$conventions,'CF-1.8, ACDD-1.3, EBV-1.0')
   expect_equal(prop$naming_authority,'The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig')
