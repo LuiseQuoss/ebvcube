@@ -168,6 +168,13 @@ ebv_attribute <- function(filepath, attribute_name, value,
     }else if(mapply(grepl,'time',levelpath,ignore.case=TRUE)){
       stop('Changes for the time dataset are blocked! Rebuild netCDF if you want a different time definition.')
     }
+    if(stringr::str_detect(levelpath,'scenario')){
+      scenarios=TRUE
+    }else{
+      scenarios=FALSE
+    }
+  }else{
+    scenarios=FALSE
   }
 
   #extra check for ebv_class and ebv_name ----
@@ -267,7 +274,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
 
   #if file has scenarios and a metric or ebv_cube attribute is changed -> change in all scenarios
   #CASE: FILE HAS SCENARIOS----
-  if(stringr::str_detect(levelpath,'scenario')){
+  if(scenarios){
     #close current handle
     if(is.null(levelpath)){
       rhdf5::H5Fclose(h5obj)
@@ -335,57 +342,89 @@ ebv_attribute <- function(filepath, attribute_name, value,
   }
 
   #cover redundant attributes in ebv_cube and metric----
-  if(attribute_name=='units'){
-    #change path to corresponding other component
-    if(stringr::str_detect(path, 'ebv_cube')){
+  if(scenarios){
+    if(attribute_name=='units'){
+      #change path to corresponding other component
+      if(stringr::str_detect(path, 'ebv_cube')){
+        path <- stringr::str_remove(path, '/ebv_cube')
+        h5obj <- rhdf5::H5Gopen(hdf, path)
+      }else{
+        path <- paste0(path, '/ebv_cube')
+        h5obj <- rhdf5::H5Dopen(hdf, path)
+      }
+      #change attribute
+      att <- ebv_i_read_att(h5obj, attribute_name)
+      if(att==value){
+        message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
+      } else if (attribute_name %in% att.chr){
+        ebv_i_char_att(h5obj, attribute_name, value)
+      }
+
+    }else if(attribute_name=='long_name' & stringr::str_detect(path, 'ebv_cube')){
+      #change path to corresponding other component
       path <- stringr::str_remove(path, '/ebv_cube')
       h5obj <- rhdf5::H5Gopen(hdf, path)
-    }else{
+
+      #change corresponding attribute - standard_name
+      att <- ebv_i_read_att(h5obj, 'standard_name')
+      if(att==value){
+        message(paste0('Value of standard_name in path ', path ,' already is set to "', value, '".'))
+      } else if (attribute_name %in% att.chr){
+        ebv_i_char_att(h5obj, 'standard_name', value)
+      }
+
+    }else if(attribute_name=='standard_name' & !stringr::str_detect(path, 'ebv_cube')){
+      #change path to corresponding other component
       path <- paste0(path, '/ebv_cube')
       h5obj <- rhdf5::H5Dopen(hdf, path)
+
+      #change corresponding attribute - long_name
+      att <- ebv_i_read_att(h5obj, 'long_name')
+      if(att==value){
+        message(paste0('Value of long_name in path ', path ,' already is set to "', value, '".'))
+      } else if (attribute_name %in% att.chr){
+        ebv_i_char_att(h5obj, 'long_name', value)
+      }
+
     }
-    #change attribute
-    att <- ebv_i_read_att(h5obj, attribute_name)
-    if(att==value){
-      message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
-    } else if (attribute_name %in% att.chr){
-      ebv_i_char_att(h5obj, attribute_name, value)
+    #close handle
+    if(rhdf5::H5Iis_valid(h5obj)){
+      if(stringr::str_detect(path, 'ebv_cube')){
+        rhdf5::H5Dclose(h5obj)
+      } else{
+        rhdf5::H5Gclose(h5obj)
+      }
     }
-
-  }else if(attribute_name=='long_name' & stringr::str_detect(path, 'ebv_cube')){
-    #change path to corresponding other component
-    path <- stringr::str_remove(path, '/ebv_cube')
-    h5obj <- rhdf5::H5Gopen(hdf, path)
-
-    #change corresponding attribute - standard_name
-    att <- ebv_i_read_att(h5obj, 'standard_name')
-    if(att==value){
-      message(paste0('Value of standard_name in path ', path ,' already is set to "', value, '".'))
-    } else if (attribute_name %in% att.chr){
-      ebv_i_char_att(h5obj, 'standard_name', value)
-    }
-
-  }else if(attribute_name=='standard_name' & !stringr::str_detect(path, 'ebv_cube')){
-    #change path to corresponding other component
-    path <- paste0(path, '/ebv_cube')
-    h5obj <- rhdf5::H5Dopen(hdf, path)
-
-    #change corresponding attribute - long_name
-    att <- ebv_i_read_att(h5obj, 'long_name')
-    if(att==value){
-      message(paste0('Value of long_name in path ', path ,' already is set to "', value, '".'))
-    } else if (attribute_name %in% att.chr){
-      ebv_i_char_att(h5obj, 'long_name', value)
-    }
-
   }
-  #close handle
-  if(rhdf5::H5Iis_valid(h5obj)){
-    if(stringr::str_detect(path, 'ebv_cube')){
-      rhdf5::H5Dclose(h5obj)
-    } else{
-      rhdf5::H5Gclose(h5obj)
+
+
+  #check if any attribute inside keywords is changed -> change keywords ----
+  if (attribute_name == 'ebv_class' | attribute_name == 'ebv_name' | attribute_name == 'ebv_domain' |
+      attribute_name == 'ebv_spatial_scope' | attribute_name == 'ebv_entity_type'){
+    #reopen file
+    hdf <- rhdf5::H5Fopen(filepath)
+    keywords_old = ebv_i_read_att(hdf, 'keywords')
+    #get part 1: before changed value
+    start_i = stringr::str_locate(keywords_old, attribute_name)[1]
+    end_i = start_i+nchar(attribute_name)+1 #1: for ': '
+    part_1 =stringr::str_sub(keywords_old, 1, end_i)
+    #get everything after changed values
+    if(attribute_name == 'ebv_class'){
+      start_j = stringr::str_locate(keywords_old, ', ebv_name')[1]
+    }else if(attribute_name == 'ebv_name'){
+      start_j = stringr::str_locate(keywords_old, ', ebv_domain')[1]
+    }else if(attribute_name == 'ebv_domain'){
+      start_j = stringr::str_locate(keywords_old, ', ebv_spatial_scope')[1]
+    }else if(attribute_name == 'ebv_spatial_scope'){
+      start_j = stringr::str_locate(keywords_old, ', ebv_entity_type')[1]
+    }else if(attribute_name == 'ebv_entity_type'){
+      start_j = nchar(keywords_old)+1
     }
+    part_2 = stringr::str_sub(keywords_old, start_j)
+    #put together new keywords
+    keywords_new = paste0(part_1, value, part_2)
+    #overwrite keywords
+    ebv_i_char_att(hdf, 'keywords', keywords_new)
   }
 
 
