@@ -168,13 +168,19 @@ ebv_attribute <- function(filepath, attribute_name, value,
     }else if(mapply(grepl,'time',levelpath,ignore.case=TRUE)){
       stop('Changes for the time dataset are blocked! Rebuild netCDF if you want a different time definition.')
     }
-    if(stringr::str_detect(levelpath,'scenario')){
-      scenarios=TRUE
+    if(stringr::str_detect(levelpath,'scenario') & stringr::str_detect(levelpath,'metric')){
+      scenario_exist=TRUE
     }else{
-      scenarios=FALSE
+      scenario_exist=FALSE
+    }
+    if (stringr::str_detect(levelpath,'metric')){
+      metric_exists = TRUE
+    }else{
+      metric_exists = FALSE
     }
   }else{
-    scenarios=FALSE
+    scenario_exist=FALSE
+    metric_exists = FALSE
   }
 
   #extra check for ebv_class and ebv_name ----
@@ -274,7 +280,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
 
   #if file has scenarios and a metric or ebv_cube attribute is changed -> change in all scenarios
   #CASE: FILE HAS SCENARIOS----
-  if(scenarios){
+  if(scenario_exist){
     #close current handle
     if(is.null(levelpath)){
       rhdf5::H5Fclose(h5obj)
@@ -342,7 +348,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
   }
 
   #cover redundant attributes in ebv_cube and metric----
-  if(scenarios){
+  if(metric_exists){
     if(attribute_name=='units'){
       #change path to corresponding other component
       if(stringr::str_detect(path, 'ebv_cube')){
@@ -396,6 +402,8 @@ ebv_attribute <- function(filepath, attribute_name, value,
       }
     }
   }
+
+
 
 
   #check if any attribute inside keywords is changed -> change keywords ----
