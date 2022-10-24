@@ -626,3 +626,17 @@ ebv_i_get_epsg <- function(wkt){
   }
 
 }
+
+#' Get WKT, return TRUE if it is OGC WKT2 (2019)
+#'
+#' @param wkt. Character. WKT representation of the CRS.
+#'
+#' @return Logocal. TRUE if it is OGC WKT2 (2019), else FALSE
+#' @noRd
+ebv_i_eval_wkt <- function(wkt){
+  if(stringr::str_detect(wkt, 'USAGE')){
+    return(T)
+  }else{
+    return(F)
+  }
+}
