@@ -54,9 +54,11 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
   #ensure that all tempfiles are deleted on exit
   withr::defer(
-    if(exists('temp.map')&!is.null(temp.map)){
+    if(exists('temp.map')){
       if(file.exists(temp.map)){
-        file.remove(temp.map)
+        if(!is.null(temp.map)){
+          file.remove(temp.map)
+        }
       }
     }
   )
