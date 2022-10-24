@@ -291,7 +291,19 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   terra::res(dummy) <- res
 
   #align to origin of the destination file
-  data_proj <- terra::project(data_ts, y = dummy, align=T, method=method)
+  data_proj <- tryCatch(
+    {
+      data_proj <- terra::project(data_ts, y = dummy, align=T, method=method, gdal=T)
+    },
+    error=function(e){
+      # if (!stringr::str_detect(e, 'cannot create dataset from source')){
+      #   stop(e)
+      # }
+      message(paste0('Slower algorithm needs to be used. Please be patient.'))
+      data_proj <- terra::project(data_ts, y = dummy, align=T, method=method, gdal=F)
+    }
+  )
+
 
   #write data to file
   terra::writeRaster(data_proj, outputpath, filetype = "GTiff", overwrite = overwrite,
