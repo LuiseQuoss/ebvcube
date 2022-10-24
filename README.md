@@ -158,6 +158,7 @@ at the sixth one.
 #plot the global map
 dc <- datacubes[1,1]
 ebv_map(file, dc, entity=1, timestep = 1)
+#> Error in file.exists(temp.map): ungültiges 'file' Argument
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
