@@ -804,17 +804,35 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   if(stringr::str_detect(crs_grid, 'utm')){
     #add grid mapping for UTM (not supported by ncmeta)
-    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Latitude of natural origin'))]
-    lat_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
-    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Longitude of natural origin'))]
-    lon_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
-    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Scale factor at natural origin'))]
-    scale_fac <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
-    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'False easting'))]
-    f_east <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
-    part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'False northing'))]
-    f_north <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+    #check WKT version and process accordingly
+    if(ebv_i_eval_wkt(crs_wkt)){
+      #process WKT2 (2019)
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Latitude of natural origin'))]
+      lat_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Longitude of natural origin'))]
+      lon_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'Scale factor at natural origin'))]
+      scale_fac <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'False easting'))]
+      f_east <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'False northing'))]
+      f_north <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+    }else{
+      #process WKT
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'latitude_of_origin'))]
+      lat_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'central_meridian'))]
+      lon_proj <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'scale_factor'))]
+      scale_fac <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'false_easting'))]
+      f_east <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
+      part <- crs_wkt_list[which(stringr::str_detect(crs_wkt_list, 'false_northing'))]
+      f_north <- regmatches(part, gregexpr("[[:digit:].]+", part))[[1]]
 
+    }
+
+    #add attributes
     ebv_i_char_att(crs.id, 'grid_mapping_name', 'transverse_mercator')
     ebv_i_num_att(crs.id, 'latitude_of_projection_origin',lat_proj)
     ebv_i_num_att(crs.id, 'longitude_of_projection_origin',lon_proj)
@@ -824,7 +842,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   } else{
     #get grid mapping attributes
-    grid_mapping <- ncmeta::nc_prj_to_gridmapping(crs_grid) #paste0('EPSG:',epsg)
+    grid_mapping <- ncmeta::nc_prj_to_gridmapping(crs_grid)
 
     if(!nrow(grid_mapping)==0){
 
