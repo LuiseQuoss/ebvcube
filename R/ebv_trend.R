@@ -43,7 +43,7 @@
 #' datacubes <- ebv_datacubepaths(file)
 #'
 #' #plot the change of the mean over time of the first datacube
-#' ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = 1)
+#' #ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = 1)
 ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
                       subset=NULL, color="dodgerblue4", touches=TRUE,
                       verbose=FALSE){
