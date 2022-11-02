@@ -35,10 +35,14 @@ Author: Luise Quoss [aut, cre] (<https://orcid.org/0000-0002-9910-1252>),
     Jose Valdez [aut] (<https://orcid.org/0000-0003-2690-9952>),
 	Henrique Miguel Pereira [aut] (<https://orcid.org/0000-0003-1043-1675>)
 Maintainer: Luise Quoss <luise.quoss@idiv.de>
-Description: Functions to easily access and visualise the data of the EBV netCDFs which can be 
-    downloaded here: portal.geobon.org. Users can also build their own netCDFs with the EBV standard using this package.
-URL: https://portal.geobon.org/ https://geobon.org/ebvs/what-are-ebvs/ https://github.com/LuiseQuoss/ebvcube
-BugReports: https://github.com/LuiseQuoss/ebvcube/issues
+Description: The concept of Essential Biodiversity Variables (EBV) comes with a 
+    data structure based on the Network Common Data Form (netCDF). 
+    The ebvcube R package provides functionality to easily create, access and 
+    visualise this data. The EBV netCDFs can be downloaded from the EBV Data 
+    Portal: Langer, Christian - iDiv (2022) <https://portal.geobon.org/>. 
+URL: <https://portal.geobon.org/> <https://geobon.org/ebvs/what-are-ebvs/> 
+    <https://github.com/LuiseQuoss/ebvcube>
+BugReports: <https://github.com/LuiseQuoss/ebvcube/issues>
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
