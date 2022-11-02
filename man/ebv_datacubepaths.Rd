@@ -4,13 +4,13 @@
 \alias{ebv_datacubepaths}
 \title{Get datacubepaths of EBV netCDF}
 \usage{
-ebv_datacubepaths(filepath, verbose = FALSE)
+ebv_datacubepaths(filepath, verbose = TRUE)
 }
 \arguments{
 \item{filepath}{Character. Path to the netCDF file.}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
-TRUE.}
+\item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
+it to FALSE.}
 }
 \value{
 Dataframe containing the paths to access the datacubes and

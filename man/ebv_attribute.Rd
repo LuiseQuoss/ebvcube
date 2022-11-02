@@ -9,7 +9,7 @@ ebv_attribute(
   attribute_name,
   value,
   levelpath = NULL,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -27,8 +27,8 @@ datacubepath, e.g. metric_1/ebv_cube. For the metric level the value may be 'met
 'scenario_1/metric_1'. This path depends on whether the netCDF hierarchy
 has scenarios or not.}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
-TRUE.}
+\item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
+it to FALSE.}
 }
 \value{
 Adds the new value to the attribute. Check your results using

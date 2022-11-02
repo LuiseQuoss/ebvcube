@@ -14,7 +14,7 @@ ebv_read_shp(
   touches = TRUE,
   overwrite = FALSE,
   ignore_RAM = FALSE,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -46,8 +46,8 @@ outputfile defined by 'outputpath'.}
 \item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
-TRUE.}
+\item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
+it to FALSE.}
 }
 \value{
 Returns a raster object if no outputpath is given. Otherwise the

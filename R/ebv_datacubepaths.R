@@ -3,8 +3,8 @@
 #'   data.
 #'
 #' @param filepath Character. Path to the netCDF file.
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @return Dataframe containing the paths to access the datacubes and
 #'   descriptions of scenario, metric and entity if existing.
@@ -16,7 +16,7 @@
 #'
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
-ebv_datacubepaths <- function(filepath, verbose = FALSE){
+ebv_datacubepaths <- function(filepath, verbose = TRUE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -29,14 +29,9 @@ ebv_datacubepaths <- function(filepath, verbose = FALSE){
     stop('Filepath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #filepath check

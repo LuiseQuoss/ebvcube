@@ -12,7 +12,7 @@ ebv_trend(
   subset = NULL,
   color = "dodgerblue4",
   touches = TRUE,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -40,8 +40,8 @@ Ending needs to be *.shp.}
 \item{touches}{Logical. Optional. Default: TRUE. Only relevant if the subset is
 indicated by a shapefile. See \code{\link[=ebv_read_shp]{ebv_read_shp()}}.}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
-TRUE.}
+\item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
+it to FALSE.}
 }
 \value{
 Returns plots and eventually values based on the \code{method} argument.

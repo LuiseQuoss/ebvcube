@@ -21,8 +21,8 @@
 #'   empty raster cells. Only relevant for DelayedArray return value.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @note For working with the DelayedMatrix take a look at
 #'   [DelayedArray::DelayedArray()] and the
@@ -69,14 +69,9 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
     stop('Datacubepath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #check logical arguments
@@ -214,7 +209,9 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
       type.long <- prop@ebv_cube$type
       ebv_i_check_ram(prop@spatial$dimensions,timestep,entity,type.long)
     } else{
-      message('RAM capacities are ignored.')
+      if(verbose){
+        print('RAM capacities are ignored.')
+      }
     }
 
     #return in memory array ----

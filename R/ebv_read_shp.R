@@ -22,8 +22,8 @@
 #'   outputfile defined by 'outputpath'.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @return Returns a raster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
@@ -47,7 +47,7 @@
 #' }
 ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
                          shp, outputpath=NULL, touches = TRUE, overwrite=FALSE,
-                         ignore_RAM=FALSE, verbose = FALSE){
+                         ignore_RAM=FALSE, verbose = TRUE){
   ####start initial checks ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -68,14 +68,9 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
     stop('Shapefile (shp) argument for subsetting is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #check logical arguments

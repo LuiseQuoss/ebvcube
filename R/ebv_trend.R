@@ -20,8 +20,8 @@
 #'   indicated by a shapefile. See [ebvcube::ebv_read_shp()].
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @note More information on the `method` argument: using `mean` will result in
 #'   a plot of the mean over time, additionally a vector of the mean values is
@@ -48,7 +48,7 @@
 #' }
 ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
                       subset=NULL, color="dodgerblue4", touches=TRUE,
-                      verbose=FALSE){
+                      verbose=TRUE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -65,14 +65,9 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     stop('Datacubepath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #filepath check
@@ -186,7 +181,9 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
   #1. check subset or not and get data ----
   if(!is.null(subset)){
-    print('Getting subset of the data')
+    if(verbose){
+      print('Getting subset of the data')
+    }
     data.all.raster <- ebv_read_shp(filepath = filepath,
                              datacubepath = datacubepath,
                              entity = entity,
@@ -219,7 +216,9 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
     #method == mean, min, max----
     #only one timestep----
     if (dims[3]==1){
-      message('Dataset has only one timestep. Single value will be returned.')
+      if(verbose){
+        message('Dataset has only one timestep. Single value will be returned.')
+      }
 
       if(method=='mean'){
         values <- mean(data.all, na.rm =T)
@@ -239,16 +238,22 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
         size <- dims[1]*dims[2]*dims[3]
       }
       if (size > 100000000){
-        message('Wow that is huge! Maybe get a tea...')
+        if(verbose){
+          message('Wow that is huge! Maybe get a tea...')
+        }
       }
 
       #calculate mean/min/max values
       false <- c()
       values <- c(1:time)
-      print('calculating timesteps...')
-      pb <- utils::txtProgressBar(min = 1, max = dims[3], initial = 1)
+      if(verbose){
+        print('calculating timesteps...')
+        pb <- utils::txtProgressBar(min = 1, max = dims[3], initial = 1)
+      }
       for (t in 1:time){
-        utils::setTxtProgressBar(pb,t)
+        if(verbose){
+          utils::setTxtProgressBar(pb,t)
+        }
         f <- tryCatch(
           {
             if(is_4D){
@@ -312,7 +317,9 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
     #only one timestep----
     if (dims[3]==1){
-      message('Dataset has only one timestep. Single boxplot will be returned.')
+      if(verbose){
+        message('Dataset has only one timestep. Single boxplot will be returned.')
+      }
 
       #data to data.frame
       dataset <- as.data.frame(x = c(data.all))
@@ -339,7 +346,9 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
         size <- as.numeric(dims[1])*as.numeric(dims[2])*as.numeric(dims[3])
       }
       if (size > 100000000){
-        message('Wow that is huge! Maybe get a tea...')
+        if(verbose){
+          message('Wow that is huge! Maybe get a tea...')
+        }
       }
 
       #rearrange data into data frame

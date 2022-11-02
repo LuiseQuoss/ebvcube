@@ -23,8 +23,8 @@
 #'   by the netCDF contains categorical data.
 #' @param na_rm Logical. Default: TRUE. NA values are removed in the analysis.
 #'   Change to FALSE to include NAs.
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @return Returns a named list containing the measurements.
 #' @export
@@ -56,7 +56,7 @@
 
 ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
                         subset=NULL, touches=TRUE, epsg = 4326, numerical=TRUE,
-                        na_rm=TRUE, verbose=FALSE){
+                        na_rm=TRUE, verbose=TRUE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -73,14 +73,9 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
     stop('Datacubepath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #filepath check - nc

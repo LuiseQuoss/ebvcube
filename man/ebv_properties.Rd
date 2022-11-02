@@ -4,7 +4,7 @@
 \alias{ebv_properties}
 \title{Read properties of EBV netCDF}
 \usage{
-ebv_properties(filepath, datacubepath = NULL, verbose = FALSE)
+ebv_properties(filepath, datacubepath = NULL, verbose = TRUE)
 }
 \arguments{
 \item{filepath}{Character. Path to the netCDF file.}
@@ -12,7 +12,8 @@ ebv_properties(filepath, datacubepath = NULL, verbose = FALSE)
 \item{datacubepath}{Character. Optional. Path to the datacube (use
 \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.}
+\item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
+it to FALSE.}
 }
 \value{
 S4 class containing information about file or file and datacube

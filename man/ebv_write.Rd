@@ -11,7 +11,7 @@ ebv_write(
   extent = c(-180, 180, -90, 90),
   type = "FLT8S",
   overwrite = FALSE,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -33,8 +33,8 @@ file. Possible values: INT1S, INT2S, INT2U, INT4S, INT4U, FLT4S, FLT8S.}
 \item{overwrite}{Locigal. Default: FALSE. Set to TRUE to overwrite the
 outputfile defined by 'outputpath'.}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
-TRUE.}
+\item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
+it to FALSE.}
 }
 \value{
 Returns the outputpath.

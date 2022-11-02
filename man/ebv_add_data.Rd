@@ -12,7 +12,7 @@ ebv_add_data(
   data,
   band = 1,
   ignore_RAM = FALSE,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -45,8 +45,8 @@ your memory to read the data. Can be switched off (set to TRUE). Ignore
 this argument when you give an array or a matrix for 'data' (it will do
 nothing).}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
-TRUE.}
+\item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
+it to FALSE.}
 }
 \value{
 Adds data to the EBV netCDF. Check your results using

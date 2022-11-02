@@ -24,8 +24,8 @@
 #'   or timesteps. Does not cover different datacubes.)
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @return Plots a map.
 #' @export
@@ -43,7 +43,7 @@
 #' }
 ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =TRUE,
                     col_rev=FALSE, classes = 5, all_data = FALSE, ignore_RAM=FALSE,
-                    verbose=FALSE){
+                    verbose=TRUE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -71,14 +71,9 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
     stop('Datacubepath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #filepath check
@@ -239,8 +234,8 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   }else if(length(dims)==2){
     size <- dims[1]*dims[2]
   }
-  if (size > 100000000){
-    message('Wow that is huge! Maybe get a tea, the caluculation will take a while...')
+  if (size > 100000000 & verbose){
+    print('Wow that is huge! Maybe get a tea, the caluculation will take a while...')
   }
 
   #get quantiles ----

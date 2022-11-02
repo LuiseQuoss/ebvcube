@@ -17,7 +17,7 @@ ebv_create(
   sep = ",",
   force_4D = TRUE,
   overwrite = FALSE,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -68,8 +68,8 @@ to the 4D version. Recommendation: go with the 4D cubes!}
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the output
 file defined by 'outputpath'.}
 
-\item{verbose}{Logical. Default: FALSE. Turn on all warnings by setting it to
-TRUE.}
+\item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
+it to FALSE.}
 }
 \value{
 Creates the netCDF file at the 'outputpath' location.

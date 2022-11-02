@@ -27,8 +27,8 @@
 #'   output file defined by 'outputpath'.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @return Default: returns the outputpath of the GeoTiff with the new
 #'   resolution. Optional: return the raster object with the new resolution.
@@ -59,7 +59,7 @@
 #' }
 ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timestep_src = 1,
                          resolution, outputpath, method='bilinear', return_raster=FALSE,
-                         overwrite = FALSE, ignore_RAM=FALSE, verbose=FALSE){
+                         overwrite = FALSE, ignore_RAM=FALSE, verbose=TRUE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -82,14 +82,9 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
     stop('Outputpath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #check logical arguments
@@ -243,7 +238,9 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
     if (!ignore_RAM){
       ebv_i_check_ram(res,timestep_src,entity_src, type.long)
     } else{
-      message('RAM capacities are ignored.')
+      if(verbose){
+        print('RAM capacities are ignored.')
+      }
     }
   }
 
@@ -301,7 +298,10 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
       # if (!stringr::str_detect(e, 'cannot create dataset from source')){
       #   stop(e)
       # }
-      message(paste0('Slower algorithm needs to be used. Please be patient.'))
+      if(verbose){
+        message('Slower algorithm needs to be used. Please be patient.')
+      }
+
       data_proj <- terra::project(data_ts, y = dummy, align=T, method=method, gdal=F)
     }
   )

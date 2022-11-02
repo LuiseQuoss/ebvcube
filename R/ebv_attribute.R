@@ -15,8 +15,8 @@
 #'   datacubepath, e.g. metric_1/ebv_cube. For the metric level the value may be 'metric_1' or
 #'   'scenario_1/metric_1'. This path depends on whether the netCDF hierarchy
 #'   has scenarios or not.
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @return Adds the new value to the attribute. Check your results using
 #'   [ebvcube::ebv_properties()].
@@ -51,7 +51,7 @@
 #'               value = value3)
 #' }
 ebv_attribute <- function(filepath, attribute_name, value,
-                          levelpath=NULL, verbose=FALSE){
+                          levelpath=NULL, verbose=TRUE){
   #start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -86,11 +86,6 @@ ebv_attribute <- function(filepath, attribute_name, value,
   #turn off local warnings if verbose=TRUE
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #check filepath
@@ -187,8 +182,8 @@ ebv_attribute <- function(filepath, attribute_name, value,
 
   #extra check for ebv_class and ebv_name ----
   #get current ebv_name and ebv_class
-  ebv.class <- ebv_i_read_att(hdf, 'ebv_class')
-  ebv.name <- ebv_i_read_att(hdf, 'ebv_name')
+  ebv.class <- ebv_i_read_att(hdf, 'ebv_class', verbose)
+  ebv.name <- ebv_i_read_att(hdf, 'ebv_name', verbose)
   #rhdf5::H5Fclose(hdf)
   ebv.classes <- c('Genetic composition', 'Species populations', 'Species traits', 'Community composition',
                    'Ecosystem functioning', 'Ecosystem structure', 'Ecosystem services')
@@ -311,7 +306,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
         h5obj <- rhdf5::H5Gopen(hdf, path)
       }
       #read att, change if different
-      att <- ebv_i_read_att(h5obj, attribute_name)
+      att <- ebv_i_read_att(h5obj, attribute_name, verbose)
       if(att==value){
         message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
       } else if (attribute_name %in% att.chr){
@@ -330,7 +325,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
   } else{
     #CASE: FILE HAS NO SCENARIOS----
     #read single attribute, change if different ----
-    att <- ebv_i_read_att(h5obj, attribute_name)
+    att <- ebv_i_read_att(h5obj, attribute_name, verbose)
     if(att==value){
       stop(paste0('Value of ', attribute_name, ' already is set to "', value, '".'))
     } else if (attribute_name %in% att.chr){
@@ -361,7 +356,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
         h5obj <- rhdf5::H5Dopen(hdf, path)
       }
       #change attribute
-      att <- ebv_i_read_att(h5obj, attribute_name)
+      att <- ebv_i_read_att(h5obj, attribute_name, verbose)
       if(att==value){
         message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
       } else if (attribute_name %in% att.chr){
@@ -374,7 +369,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
       h5obj <- rhdf5::H5Gopen(hdf, path)
 
       #change corresponding attribute - standard_name
-      att <- ebv_i_read_att(h5obj, 'standard_name')
+      att <- ebv_i_read_att(h5obj, 'standard_name', verbose)
       if(att==value){
         message(paste0('Value of standard_name in path ', path ,' already is set to "', value, '".'))
       } else if (attribute_name %in% att.chr){
@@ -387,7 +382,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
       h5obj <- rhdf5::H5Dopen(hdf, path)
 
       #change corresponding attribute - long_name
-      att <- ebv_i_read_att(h5obj, 'long_name')
+      att <- ebv_i_read_att(h5obj, 'long_name', verbose)
       if(att==value){
         message(paste0('Value of long_name in path ', path ,' already is set to "', value, '".'))
       } else if (attribute_name %in% att.chr){
@@ -413,7 +408,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
       attribute_name == 'ebv_spatial_scope' | attribute_name == 'ebv_entity_type'){
     #reopen file
     hdf <- rhdf5::H5Fopen(filepath)
-    keywords_old = ebv_i_read_att(hdf, 'keywords')
+    keywords_old = ebv_i_read_att(hdf, 'keywords', verbose)
     #get part 1: before changed value
     start_i = stringr::str_locate(keywords_old, attribute_name)[1]
     end_i = start_i+nchar(attribute_name)+1 #1: for ': '

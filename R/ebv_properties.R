@@ -37,7 +37,8 @@ methods::setClass("EBV netCDF properties", slots=list(general="list",
 #' @param filepath Character. Path to the netCDF file.
 #' @param datacubepath Character. Optional. Path to the datacube (use
 #'   [ebvcube::ebv_datacubepaths()]).
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @return S4 class containing information about file or file and datacube
 #'   depending on input.
@@ -53,7 +54,7 @@ methods::setClass("EBV netCDF properties", slots=list(general="list",
 #' prop_file <- ebv_properties(file)
 #' #get properties for the file and a specific datacube
 #' prop_dc <- ebv_properties(file, datacubes[1,1])
-ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
+ebv_properties <- function(filepath, datacubepath = NULL, verbose = TRUE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -82,14 +83,9 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     stop('Filepath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #filepath check
@@ -153,7 +149,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
     ####general properties of file ----
     # #get depth of nested structure
-    depth <- ebv_i_read_att(hdf, 'ebv_subgroups')
+    depth <- ebv_i_read_att(hdf, 'ebv_subgroups', verbose)
     if(!depth[1]==''){
       if('metric' %in% depth){
         metric <- TRUE
@@ -171,16 +167,16 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     }
 
     #get title
-    title <- ebv_i_read_att(hdf, 'title')[1]
+    title <- ebv_i_read_att(hdf, 'title', verbose)[1]
 
     #get description
-    description.file <- ebv_i_read_att(hdf, 'description')[1]
+    description.file <- ebv_i_read_att(hdf, 'description', verbose)[1]
 
     #get more global attributes
-    ebv_name <- ebv_i_read_att(hdf, 'ebv_name')
-    ebv_class <- ebv_i_read_att(hdf, 'ebv_class')
-    ebv_subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
-    creator <- ebv_i_read_att(hdf, 'creator')
+    ebv_name <- ebv_i_read_att(hdf, 'ebv_name', verbose)
+    ebv_class <- ebv_i_read_att(hdf, 'ebv_class', verbose)
+    ebv_subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups', verbose)
+    creator <- ebv_i_read_att(hdf, 'creator', verbose)
 
     #general
     general <- list(title=title, description=description.file,
@@ -189,7 +185,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
     #get srs ----
     srs.ds <- rhdf5::H5Dopen(hdf, 'crs')
-    srs <- ebv_i_read_att(srs.ds, 'spatial_ref')
+    srs <- ebv_i_read_att(srs.ds, 'spatial_ref', verbose)
     rhdf5::H5Dclose(srs.ds)
 
     #get epsg
@@ -205,9 +201,9 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     add <- 40177
     time.ds <- rhdf5::H5Dopen(hdf, 'time')
     #time units
-    time <- ebv_i_read_att(time.ds, 'units')[1]
+    time <- ebv_i_read_att(time.ds, 'units', verbose)[1]
     #time delta
-    t_delta <- ebv_i_read_att(time.ds, 't_delta')[1]
+    t_delta <- ebv_i_read_att(time.ds, 't_delta', verbose)[1]
     #timesteps
     timesteps <- rhdf5::h5read(hdf, 'time')
     #timesteps natural language
@@ -240,34 +236,34 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         type <- stringr::str_replace_all(type, stringr::fixed(" "), "")
 
         #get fillvalue
-        fillvalue <- ebv_i_read_att(dh, '_FillValue')
+        fillvalue <- ebv_i_read_att(dh, '_FillValue', verbose)
         if(is.null(fillvalue)){
           fillvalue <- array(NA)
         }
 
         #long name
         if (rhdf5::H5Aexists(dh, 'description')){
-          description <- ebv_i_read_att(dh, 'description')
+          description <- ebv_i_read_att(dh, 'description', verbose)
         }else if (rhdf5::H5Aexists(dh, 'long_name')){
-          description <- ebv_i_read_att(dh, 'long_name')[1]
+          description <- ebv_i_read_att(dh, 'long_name', verbose)[1]
         } else {
           description <- 'not defined'
         }
 
         #standard_name
         if (rhdf5::H5Aexists(dh, 'label')){
-          standard_name <- ebv_i_read_att(dh, 'label')[1]
+          standard_name <- ebv_i_read_att(dh, 'label', verbose)[1]
         } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-          standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
+          standard_name <- ebv_i_read_att(dh, 'standard_name', verbose)[1]
         } else {
           standard_name <- 'not defined'
         }
 
         #unit
-        unit <- ebv_i_read_att(dh, 'units')[1]
+        unit <- ebv_i_read_att(dh, 'units', verbose)[1]
         #only because of error in globES - delete when corrected!
         if (is.null(unit)){
-          unit <- ebv_i_read_att(dh, 'unit')[1]
+          unit <- ebv_i_read_att(dh, 'unit', verbose)[1]
         }
 
         #close data handle
@@ -284,15 +280,15 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
         #standard_name
         if (rhdf5::H5Aexists(dh, 'label')){
-          standard_name <- ebv_i_read_att(dh, 'label')[1]
+          standard_name <- ebv_i_read_att(dh, 'label', verbose)[1]
         } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-          standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
+          standard_name <- ebv_i_read_att(dh, 'standard_name', verbose)[1]
         } else {
           standard_name <- 'not defined'
         }
 
         #description
-        description <- ebv_i_read_att(dh, 'description')[1]
+        description <- ebv_i_read_att(dh, 'description', verbose)[1]
 
         #close data handle
         rhdf5::H5Gclose(dh)
@@ -311,15 +307,15 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
         #label
         if (rhdf5::H5Aexists(dh, 'label')){
-          standard_name <- ebv_i_read_att(dh, 'label')[1]
+          standard_name <- ebv_i_read_att(dh, 'label', verbose)[1]
         } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-          standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
+          standard_name <- ebv_i_read_att(dh, 'standard_name', verbose)[1]
         } else {
           standard_name <- 'not defined'
         }
 
         #description
-        description <- ebv_i_read_att(dh, 'description')
+        description <- ebv_i_read_att(dh, 'description', verbose)
 
         #close data handle
         rhdf5::H5Gclose(dh)
@@ -354,31 +350,31 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         type <- stringr::str_replace_all(type, stringr::fixed(" "), "")
 
         #get fillvalue
-        fillvalue <- ebv_i_read_att(dh, '_FillValue')
+        fillvalue <- ebv_i_read_att(dh, '_FillValue', verbose)
         if(is.null(fillvalue)){
           fillvalue <- array(NA)
         }
 
         #long name
         if (rhdf5::H5Aexists(dh, 'description')){
-          description <- ebv_i_read_att(dh, 'description')
+          description <- ebv_i_read_att(dh, 'description', verbose)
         } else if (rhdf5::H5Aexists(dh, 'long_name')){
-          description <- ebv_i_read_att(dh, 'long_name')[1]
+          description <- ebv_i_read_att(dh, 'long_name', verbose)[1]
         } else {
           description <- 'not defined'
         }
 
         #label
         if (rhdf5::H5Aexists(dh, 'label')){
-          standard_name <- ebv_i_read_att(dh, 'label')[1]
+          standard_name <- ebv_i_read_att(dh, 'label', verbose)[1]
         } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-          standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
+          standard_name <- ebv_i_read_att(dh, 'standard_name', verbose)[1]
         } else {
           standard_name <- 'not defined'
         }
 
         #unit
-        unit <- ebv_i_read_att(dh, 'units')[1]
+        unit <- ebv_i_read_att(dh, 'units', verbose)[1]
 
         #close data handle
         rhdf5::H5Dclose(dh)
@@ -394,15 +390,15 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
         #standard_name
         if (rhdf5::H5Aexists(dh, 'label')){
-          standard_name <- ebv_i_read_att(dh, 'label')[1]
+          standard_name <- ebv_i_read_att(dh, 'label', verbose)[1]
         } else if (rhdf5::H5Aexists(dh, 'standard_name')){
-          standard_name <- ebv_i_read_att(dh, 'standard_name')[1]
+          standard_name <- ebv_i_read_att(dh, 'standard_name', verbose)[1]
         } else {
           standard_name <- 'not defined'
         }
 
         #description
-        description <- ebv_i_read_att(dh, 'description')[1]
+        description <- ebv_i_read_att(dh, 'description', verbose)[1]
 
         #close data handle
         rhdf5::H5Gclose(dh)
@@ -458,53 +454,53 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
 
     #general ----
     # add entity names to global properties
-    title <- ebv_i_read_att(hdf, 'title')
-    description <- ebv_i_read_att(hdf, 'summary')
-    references <- ebv_i_read_att(hdf, 'references')
-    source <- ebv_i_read_att(hdf, 'source')
-    project_name <- ebv_i_read_att(hdf, 'project_name')
-    project_url <- ebv_i_read_att(hdf, 'project_url')
-    creator_name <- ebv_i_read_att(hdf, 'creator_name')
-    creator_institution <- ebv_i_read_att(hdf, 'creator_institution')
-    creator_email <- ebv_i_read_att(hdf, 'creator_email')
-    contributor_name <- ebv_i_read_att(hdf, 'contributor_name')
-    publisher_name <- ebv_i_read_att(hdf, 'publisher_name')
-    publisher_institution <-ebv_i_read_att(hdf, 'publisher_institution')
-    publisher_email <-ebv_i_read_att(hdf, 'publisher_email')
-    comment <- ebv_i_read_att(hdf, 'comment')
-    ebv_class <- ebv_i_read_att(hdf, 'ebv_class')
-    ebv_name <- ebv_i_read_att(hdf, 'ebv_name')
-    ebv_domain <- ebv_i_read_att(hdf, 'ebv_domain')
-    conventions <- ebv_i_read_att(hdf, 'Conventions')
-    naming_authority <- ebv_i_read_att(hdf, 'naming_authority')
-    history <- ebv_i_read_att(hdf, 'history')
-    keywords <- ebv_i_read_att(hdf, 'keywords')
-    id <- ebv_i_read_att(hdf, 'id')
-    date_created <- ebv_i_read_att(hdf, 'date_created')
-    date_issued <- ebv_i_read_att(hdf, 'date_issued')
-    licence <- ebv_i_read_att(hdf, 'license')
+    title <- ebv_i_read_att(hdf, 'title', verbose)
+    description <- ebv_i_read_att(hdf, 'summary', verbose)
+    references <- ebv_i_read_att(hdf, 'references', verbose)
+    source <- ebv_i_read_att(hdf, 'source', verbose)
+    project_name <- ebv_i_read_att(hdf, 'project_name', verbose)
+    project_url <- ebv_i_read_att(hdf, 'project_url', verbose)
+    creator_name <- ebv_i_read_att(hdf, 'creator_name', verbose)
+    creator_institution <- ebv_i_read_att(hdf, 'creator_institution', verbose)
+    creator_email <- ebv_i_read_att(hdf, 'creator_email', verbose)
+    contributor_name <- ebv_i_read_att(hdf, 'contributor_name', verbose)
+    publisher_name <- ebv_i_read_att(hdf, 'publisher_name', verbose)
+    publisher_institution <-ebv_i_read_att(hdf, 'publisher_institution', verbose)
+    publisher_email <-ebv_i_read_att(hdf, 'publisher_email', verbose)
+    comment <- ebv_i_read_att(hdf, 'comment', verbose)
+    ebv_class <- ebv_i_read_att(hdf, 'ebv_class', verbose)
+    ebv_name <- ebv_i_read_att(hdf, 'ebv_name', verbose)
+    ebv_domain <- ebv_i_read_att(hdf, 'ebv_domain', verbose)
+    conventions <- ebv_i_read_att(hdf, 'Conventions', verbose)
+    naming_authority <- ebv_i_read_att(hdf, 'naming_authority', verbose)
+    history <- ebv_i_read_att(hdf, 'history', verbose)
+    keywords <- ebv_i_read_att(hdf, 'keywords', verbose)
+    id <- ebv_i_read_att(hdf, 'id', verbose)
+    date_created <- ebv_i_read_att(hdf, 'date_created', verbose)
+    date_issued <- ebv_i_read_att(hdf, 'date_issued', verbose)
+    licence <- ebv_i_read_att(hdf, 'license', verbose)
 
     #entities info
     did <- rhdf5::H5Dopen(hdf, 'entity')#HERE
-    ebv_entity_type <- ebv_i_read_att(did, 'ebv_entity_type')
-    ebv_entity_scope <- ebv_i_read_att(did, 'ebv_entity_scope')
-    ebv_entity_classification_name <- ebv_i_read_att(did, 'ebv_entity_classification_name')
-    ebv_entity_classification_url <- ebv_i_read_att(did, 'ebv_entity_classification_url')
+    ebv_entity_type <- ebv_i_read_att(did, 'ebv_entity_type', verbose)
+    ebv_entity_scope <- ebv_i_read_att(did, 'ebv_entity_scope', verbose)
+    ebv_entity_classification_name <- ebv_i_read_att(did, 'ebv_entity_classification_name', verbose)
+    ebv_entity_classification_url <- ebv_i_read_att(did, 'ebv_entity_classification_url', verbose)
     rhdf5::H5Dclose(did)
 
     # spatial ----
     #get resolution, units
     resolution <- c()
-    crs_units <- stringr::str_split(ebv_i_read_att(hdf, 'geospatial_lon_units'), '_')[[1]][1]
-    resolution <- c(as.numeric(stringr::str_remove_all(c(resolution, ebv_i_read_att(hdf, 'geospatial_lon_resolution')),'[A-Za-z _-]')),
-                    as.numeric(stringr::str_remove_all(c(resolution, ebv_i_read_att(hdf, 'geospatial_lat_resolution')),'[A-Za-z _-]')))
+    crs_units <- stringr::str_split(ebv_i_read_att(hdf, 'geospatial_lon_units', verbose), '_')[[1]][1]
+    resolution <- c(as.numeric(stringr::str_remove_all(c(resolution, ebv_i_read_att(hdf, 'geospatial_lon_resolution', verbose)),'[A-Za-z _-]')),
+                    as.numeric(stringr::str_remove_all(c(resolution, ebv_i_read_att(hdf, 'geospatial_lat_resolution', verbose)),'[A-Za-z _-]')))
 
     #did <- rhdf5::H5Dopen(hdf, 'lat')
     #resolution <- c(resolution, ebv_i_read_att(hdf, 'geospatial_lat_resolution'))
 
     #global spatial atts
-    ebv_spatial_scope <- ebv_i_read_att(hdf, 'ebv_spatial_scope')
-    ebv_spatial_description <- ebv_i_read_att(hdf, 'ebv_spatial_description')
+    ebv_spatial_scope <- ebv_i_read_att(hdf, 'ebv_spatial_scope', verbose)
+    ebv_spatial_description <- ebv_i_read_att(hdf, 'ebv_spatial_description', verbose)
 
     #get dims
     if(ebv_i_4D(filepath)){
@@ -521,14 +517,14 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
     #get extent, epsg, crs
     did <- rhdf5::H5Dopen(hdf, 'crs')
     #extent <- ebv_i_read_att(did, 'geospatial_bounds')
-    epsg <- stringr::str_split(ebv_i_read_att(hdf, 'geospatial_bounds_crs'),':')[[1]][2]
-    crs <-ebv_i_read_att(did, 'spatial_ref')
+    epsg <- stringr::str_split(ebv_i_read_att(hdf, 'geospatial_bounds_crs', verbose),':')[[1]][2]
+    crs <-ebv_i_read_att(did, 'spatial_ref', verbose)
     rhdf5::H5Dclose(did)
 
     # temporal ----
     did <- rhdf5::H5Dopen(hdf, 'time')
-    t_res <- ebv_i_read_att(hdf, 'time_coverage_resolution')
-    t_units <- ebv_i_read_att(did, 'units')
+    t_res <- ebv_i_read_att(hdf, 'time_coverage_resolution', verbose)
+    t_units <- ebv_i_read_att(did, 'units', verbose)
     add <- 40177
     time_natural <- as.Date(time_data-add, origin='1970-01-01')
 
@@ -563,12 +559,12 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         path_s <- stringr::str_split(datacubepath, '/')[[1]][1]
         gid <- rhdf5::H5Gopen(hdf, path_s)
         #global info
-        ebv_scenario_classification_name <- ebv_i_read_att(hdf, 'ebv_scenario_classification_name')
-        ebv_scenario_classification_url <- ebv_i_read_att(hdf, 'ebv_scenario_classification_url')
-        ebv_scenario_classification_version <- ebv_i_read_att(hdf, 'ebv_scenario_classification_version')
+        ebv_scenario_classification_name <- ebv_i_read_att(hdf, 'ebv_scenario_classification_name', verbose)
+        ebv_scenario_classification_url <- ebv_i_read_att(hdf, 'ebv_scenario_classification_url', verbose)
+        ebv_scenario_classification_version <- ebv_i_read_att(hdf, 'ebv_scenario_classification_version', verbose)
         #group info
-        name_s <- ebv_i_read_att(gid, 'standard_name')
-        description_s <- ebv_i_read_att(gid, 'long_name')
+        name_s <- ebv_i_read_att(gid, 'standard_name', verbose)
+        description_s <- ebv_i_read_att(gid, 'long_name', verbose)
         rhdf5::H5Gclose(gid)
         scenario <- list('name' = name_s, 'description'=description_s,
                          'scenario_classification_name' = ebv_scenario_classification_name,
@@ -579,8 +575,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         path_m <- paste0(stringr::str_split(datacubepath, '/')[[1]][1],'/',
                          stringr::str_split(datacubepath, '/')[[1]][2])
         gid <- rhdf5::H5Gopen(hdf, path_m)
-        name_m <- ebv_i_read_att(gid, 'standard_name')
-        description_m <- ebv_i_read_att(gid, 'long_name')
+        name_m <- ebv_i_read_att(gid, 'standard_name', verbose)
+        description_m <- ebv_i_read_att(gid, 'long_name', verbose)
         rhdf5::H5Gclose(gid)
         metric <- list('name' = name_m, 'description'=description_m)
 
@@ -590,8 +586,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
         # get metric info
         path_m <- stringr::str_split(datacubepath, '/')[[1]][1]
         gid <- rhdf5::H5Gopen(hdf, path_m)
-        name_m <- ebv_i_read_att(gid, 'standard_name')
-        description_m <- ebv_i_read_att(gid, 'long_name')
+        name_m <- ebv_i_read_att(gid, 'standard_name', verbose)
+        description_m <- ebv_i_read_att(gid, 'long_name', verbose)
         rhdf5::H5Gclose(gid)
         metric <- list('name' = name_m, 'description'=description_m)
       }
@@ -599,9 +595,9 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = FALSE){
       #cube info ----
       # open datacube
       did <- rhdf5::H5Dopen(hdf, datacubepath)
-      fillvalue <- ebv_i_read_att(did, '_FillValue')
-      coverage_content_type <- ebv_i_read_att(did, 'coverage_content_type')
-      units_d <- ebv_i_read_att(did, 'units')
+      fillvalue <- ebv_i_read_att(did, '_FillValue', verbose)
+      coverage_content_type <- ebv_i_read_att(did, 'coverage_content_type', verbose)
+      units_d <- ebv_i_read_att(did, 'units', verbose)
       #get type
       info <- utils::capture.output(did)
       rhdf5::H5Dclose(did)

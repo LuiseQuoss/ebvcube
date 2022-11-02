@@ -44,10 +44,9 @@ ebv_i_file_opened <- function(filepath){
       }
     }
   } else if (ebv_i_os() == 'Windows') {
-    withr::local_options(list(warn = -1))
     #check whether file can be accessed with writing permission
     cmd <- paste0("powershell $FileStream = [System.IO.File]::Open('",filepath,"','Open','Write')")
-    out <- shell(cmd, intern=T,mustWork=T)
+    out <- suppressWarnings(shell(cmd, intern=T,mustWork=T))
     #process out
     if(!ebv_i_empty(out)){
       stop('File opened in another application. Please close file and try again.')
@@ -496,7 +495,7 @@ ebv_i_char_att <- function(h5obj, name, data){
 #' @param name Characer. Name of the attribute.
 #' @return Value of the attribute.
 #' @noRd
-ebv_i_read_att <-  function(h5obj, name){
+ebv_i_read_att <-  function(h5obj, name, verbose=TRUE){
   # ensure file and all datahandles are closed on exit ----
   withr::defer(
     if(exists('aid')){
@@ -506,7 +505,9 @@ ebv_i_read_att <-  function(h5obj, name){
   # read attribute ----
   #check if attribute exists
   if(!rhdf5::H5Aexists(h5obj, name)){
-    warning(paste0('The attribute ', name, ' does not exist. Or maybe wrong location in NetCDF?\n'))
+    if(verbose){
+      warning(paste0('The attribute ', name, ' does not exist. Or maybe wrong location in netCDF?\n'))
+    }
     return(NULL)
   } else {
     aid <- rhdf5::H5Aopen(h5obj, name)
@@ -526,9 +527,8 @@ ebv_i_read_att <-  function(h5obj, name){
 #' @return Logical. TRUE if 4D, FALSE if 3D.
 #' @noRd
 ebv_i_4D <- function(filepath){
-  withr::local_options(list(warn = -1)) #suppress warning if attribute does not exist
   hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  dims <- ebv_i_read_att(hdf, 'ebv_cube_dimensions')
+  dims <- ebv_i_read_att(hdf, 'ebv_cube_dimensions', FALSE)#suppress warning if attribute does not exist
   if (is.null(dims)){
     dim <- 3
   } else if(stringr::str_detect(dims,'entity')){

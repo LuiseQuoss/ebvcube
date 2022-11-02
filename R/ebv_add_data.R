@@ -25,8 +25,8 @@
 #'   your memory to read the data. Can be switched off (set to TRUE). Ignore
 #'   this argument when you give an array or a matrix for 'data' (it will do
 #'   nothing).
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @note If the data exceeds your memory the RAM check will throw an error. No
 #'   block-processing or other method implemented so far. Move to a machine with
@@ -54,7 +54,7 @@
 #'              }
 ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
                          data, band=1, ignore_RAM=FALSE,
-                         verbose=FALSE){
+                         verbose=TRUE){
   ### start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -84,14 +84,9 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     stop('Datacubepath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #check logical arguments
@@ -250,7 +245,9 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     if (!ignore_RAM){
       ebv_i_check_ram(size.int,timestep,entity,type.long)
     } else{
-      message('RAM capacities are ignored.')
+      if(verbose){
+        print('RAM capacities are ignored.')
+      }
     }
 
   } else if(matrix | array){
@@ -269,16 +266,16 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   lat.len <- dims[1]
   lon.len <- dims[2]
   if ((size.int[1] != lon.len) & (size.int[2] != lat.len)){
-    stop(paste0('The size of your GeoTiff does not correspond to the latitude and longitude coordinates.
+    stop(paste0('The size of your GeoTiff/data does not correspond to the latitude and longitude coordinates.
   Size should be: ', lon.len, ', ', lat.len, '. But is: ', size.int[1], ', ', size.int[2]))
   }
   if (size.int[1] != lon.len) {
-    stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
+    stop(paste0('The size of your GeoTiff/data doesn not match the longitudinal coordinates.
   Size sould be: ', lon.len, '. But size is: ', size.int[1]))
   } else if (size.int[2] != lat.len){
-    stop(paste0('The size of your GeoTiff doesn not match the longitudinal coordinates.
+    stop(paste0('The size of your GeoTiff/data doesn not match the longitudinal coordinates.
   Size sould be: ', lat.len, '. But size is: ', size.int[2]))
-  } #HERE---- alter the error message
+  }
 
   ### end initial test ----
 

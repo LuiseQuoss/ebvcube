@@ -12,8 +12,8 @@
 #' @param outputdir Character. Output directory of the downloaded files.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE if you want to
 #'   overwrite the netCDF and json.
-#' @param verbose Logical. Default: TRUE. Turn off additional prints/messages by
-#'   setting it to FALSE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @return Downloades a netCDF and json file to the given output directory.
 #' @export
@@ -46,7 +46,7 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
     stop('It seems that you are not connected to the internet and therefore cannot download any files. Please check your connection. If you are sure you are connected, it could also be that https://portal.geobon.org is down. Check in your browser.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
   }

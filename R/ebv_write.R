@@ -14,8 +14,8 @@
 #'   disk as a GeoTiff. Ending needs to be *.tif.
 #' @param overwrite Locigal. Default: FALSE. Set to TRUE to overwrite the
 #'   outputfile defined by 'outputpath'.
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #'
 #' @note If the nodata value of your data is not detected correctly, this could
 #'   be due to the wrong choice of the datatype (type argument).
@@ -46,7 +46,7 @@
 #' ebv_write(data = data_bb, outputpath = out, extent = c(5,15,47,55), overwrite = TRUE)
 #' }
 ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
-                      type='FLT8S', overwrite=FALSE, verbose=FALSE){
+                      type='FLT8S', overwrite=FALSE, verbose=TRUE){
   ####initial tests start ----
 
   #ensure that all tempfiles are deleted on exit
@@ -66,14 +66,9 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     stop('Outputpath argument is missing.')
   }
 
-  #turn off local warnings if verbose=TRUE
+  #check verbose
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #check logical arguments
@@ -117,7 +112,9 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   if (methods::is(data, "DelayedMatrix")){
 
     #data from H5Array - on disk
-    print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
+    if(verbose){
+      print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
+    }
 
     #derive other variables
     name <- stringr::str_remove(basename(outputpath),'.tif')
@@ -143,7 +140,9 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     terra::ext(temp_raster) <- extent
     terra::crs(temp_raster) <- crs
 
-    print('Delayed operations are finished, writing file to disk.')
+    if(verbose){
+      print('Delayed operations are finished, writing file to disk.')
+    }
     terra::writeRaster(temp_raster, outputpath, datatype=type, overwrite = overwrite)
 
     #delete temp file
@@ -155,7 +154,9 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   } else if(methods::is(data, "DelayedArray")){
 
     #data from H5Array - on disk
-    print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
+    if(verbose){
+      print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
+    }
 
     temp.tif <- tempfile(fileext = '.tif')
 
@@ -173,7 +174,9 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     terra::ext(temp_raster) <- extent
     terra::crs(temp_raster) <- crs
 
-    print('Delayed operations are finished, writing file to disk.')
+    if(verbose){
+      print('Delayed operations are finished, writing file to disk.')
+    }
     terra::writeRaster(temp_raster, outputpath, datatype=type, overwrite = overwrite)
 
     #delete temp file

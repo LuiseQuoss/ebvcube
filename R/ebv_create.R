@@ -27,8 +27,8 @@
 #'   the entity-names differs from the default, indicate here.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the output
 #'   file defined by 'outputpath'.
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to
-#'   TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'   it to FALSE.
 #' @param resolution Numerical. Vector of two numerical values defining the
 #'   longitudinal and latitudinal resolution of the pixel: c(lon,lat).
 #' @param timesteps Character. Vector of the timesteps in the dataset. Default:
@@ -68,7 +68,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
                        extent = c(-180,180,-90,90), resolution = c(1,1),
                        timesteps = NULL, fillvalue = NULL, prec = 'double',
                        sep=',', force_4D = TRUE, overwrite = FALSE,
-                       verbose = FALSE){
+                       verbose = TRUE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -136,11 +136,6 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   #turn off local warnings if verbose=TRUE
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #check logical arguments
@@ -434,7 +429,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
           timesteps <- c(timesteps, timestep)
         }
       } else {
-        warning('could not detect delta time. empty time dataset created')
+        warning('Could not detect delta time. Empty time dataset created')
         timesteps <- c(0)
       }
     }
