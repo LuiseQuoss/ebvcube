@@ -23,7 +23,7 @@
 #' datasets <- ebv_download()
 #'
 #' \donttest
-#' ebv_download(id = datasets$id[1]),
+#' ebv_download(id = datasets$id[1],
 #' outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
 #' }
 ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
@@ -62,12 +62,16 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
   colnames(datasets_list) <- c('id', 'title')
   datasets_list <- as.data.frame(datasets_list)
   datasets_list <- datasets_list[order(as.numeric(datasets_list$id)),] #sort by id
+  datasets_list$id <- as.integer(datasets_list$id)
 
 
   if(is.null(id)){
     #no dataset chosen
     #return list of datasets----
-    message(paste0('There are ', no_datasets, ' datasets available at the portal.'))
+    if(verbose){
+      print(paste0('There are ', no_datasets, ' datasets available at the portal.'))
+    }
+
     return(datasets_list)
 
   }else{
