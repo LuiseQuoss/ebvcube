@@ -53,18 +53,18 @@ This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL installatio
 One possibility to install GDAL is the [OSGeo4W Network installer](https://trac.osgeo.org/osgeo4w/). Check GDAL when running the installation! If you have QGIS on your machine, GDAL should be included.
 If you have problems you can set the GDAL related paths by hand using the following lines of code. Your paths will differ! First check your GDAL installation.
 ```{r, eval=F, echo=T}
-#add GDAL path to the existing paths
-Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
-#check and change path for proj_lib, gdal_data and gdal_driver_path
-Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
-Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
-Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
-
-#you can always check your GDAL path settings using
-Sys.getenv("PATH")
-Sys.getenv("PROJ_LIB") 
-Sys.getenv("GDAL_DATA") 
-Sys.getenv("GDAL_DRIVER_PATH") 
+# #add GDAL path to the existing paths
+# Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+# #check and change path for proj_lib, gdal_data and gdal_driver_path
+# Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+# Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+# Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+# 
+# #you can always check your GDAL path settings using
+# Sys.getenv("PATH")
+# Sys.getenv("PROJ_LIB") 
+# Sys.getenv("GDAL_DATA") 
+# Sys.getenv("GDAL_DRIVER_PATH") 
 
 ```
 
@@ -95,7 +95,7 @@ slotNames(prop.file)
 Now let's get the paths to all possible datacubes. The resulting dataframe includes the paths and also descriptions of the metric and/or scenario and/or entity. The paths basically consist of the nested structure of scenario, metric and the datacube.
 
 ```{r}
-datacubes <- ebv_datacubepaths(file)
+datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 datacubes
 ```
 
@@ -119,7 +119,7 @@ ebv_map(file, dc, entity=1, timestep = 1)
 prop.dc@general$title
 # And the datacube?
 prop.dc@metric$name
-prop@general$entity_names[1]
+prop.dc@general$entity_names[1]
 #What timestep?
 prop.dc@temporal$timesteps_natural[1]
 
@@ -165,8 +165,6 @@ To subset the data using a shapefile you need to indicate a directory for tempor
 ```{r}
 #load subset from shapefile (Germany)
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvcube")
-#define directory for temporary files
-options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3))
 dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
@@ -196,14 +194,14 @@ fv <- -3.4e+38
 #create the netCDF
 ebv_create(jsonpath = json, outputpath = newNc, entities = entities, 
            epsg = 4326, extent = c(-180, 180, -90, 90), resolution = c(1, 1),
-           fillvalue = fv, prec='float', force_4D = TRUE, overwrite=T)
+           fillvalue = fv, prec='float', force_4D = TRUE, overwrite=T, verbose=FALSE)
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
 print(ebv_properties(newNc)@general$entity_names)
 
 #check out the (still empty) datacubes that are available
-dc.new <- ebv_datacubepaths(newNc)
+dc.new <- ebv_datacubepaths(newNc, verbose=FALSE)
 print(dc.new)
 ```
 Hint: You can always take a look at your netCDF in [Panoply](https://www.giss.nasa.gov/tools/panoply/) provided by NASA. That's very helpful to understand the structure.

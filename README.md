@@ -68,18 +68,18 @@ paths by hand using the following lines of code. Your paths will differ!
 First check your GDAL installation.
 
 ``` r
-#add GDAL path to the existing paths
-Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
-#check and change path for proj_lib, gdal_data and gdal_driver_path
-Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
-Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
-Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
-
-#you can always check your GDAL path settings using
-Sys.getenv("PATH")
-Sys.getenv("PROJ_LIB") 
-Sys.getenv("GDAL_DATA") 
-Sys.getenv("GDAL_DRIVER_PATH") 
+# #add GDAL path to the existing paths
+# Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+# #check and change path for proj_lib, gdal_data and gdal_driver_path
+# Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+# Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+# Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+# 
+# #you can always check your GDAL path settings using
+# Sys.getenv("PATH")
+# Sys.getenv("PROJ_LIB") 
+# Sys.getenv("GDAL_DATA") 
+# Sys.getenv("GDAL_DRIVER_PATH") 
 ```
 
 ## 3. Working with the package - a quick intro
@@ -122,7 +122,7 @@ scenario and/or entity. The paths basically consist of the nested
 structure of scenario, metric and the datacube.
 
 ``` r
-datacubes <- ebv_datacubepaths(file)
+datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 datacubes
 #>       datacubepaths                                 metric_names
 #> 1 metric_1/ebv_cube Relative change in the number of species (%)
@@ -158,7 +158,6 @@ at the sixth one.
 #plot the global map
 dc <- datacubes[1,1]
 ebv_map(file, dc, entity=1, timestep = 1)
-#> Error in file.exists(temp.map): ungültiges 'file' Argument
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
@@ -171,8 +170,8 @@ prop.dc@general$title
 # And the datacube?
 prop.dc@metric$name
 #> [1] "Relative change in the number of species (%)"
-prop@general$entity_names[1]
-#> Error in eval(expr, envir, enclos): Objekt 'prop' nicht gefunden
+prop.dc@general$entity_names[1]
+#> [1] "all birds"
 #What timestep?
 prop.dc@temporal$timesteps_natural[1]
 #> [1] "1900-01-01"
@@ -241,8 +240,6 @@ for temporarily created files.
 ``` r
 #load subset from shapefile (Germany)
 shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvcube")
-#define directory for temporary files
-options('ebv_temp'=system.file("extdata/", package="ebvcube"))
 data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3))
 dim(data.shp)
 #> [1]  9 11  3
@@ -287,7 +284,7 @@ fv <- -3.4e+38
 #create the netCDF
 ebv_create(jsonpath = json, outputpath = newNc, entities = entities, 
            epsg = 4326, extent = c(-180, 180, -90, 90), resolution = c(1, 1),
-           fillvalue = fv, prec='float', force_4D = TRUE, overwrite=T)
+           fillvalue = fv, prec='float', force_4D = TRUE, overwrite=T, verbose=FALSE)
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
@@ -296,7 +293,7 @@ print(ebv_properties(newNc)@general$entity_names)
 #> [3] "all bird species"
 
 #check out the (still empty) datacubes that are available
-dc.new <- ebv_datacubepaths(newNc)
+dc.new <- ebv_datacubepaths(newNc, verbose=FALSE)
 print(dc.new)
 #>       datacubepaths                                 metric_names
 #> 1 metric_1/ebv_cube Relative change in the number of species (%)
