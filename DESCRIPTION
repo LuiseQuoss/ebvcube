@@ -40,9 +40,9 @@ Description: The concept of Essential Biodiversity Variables (EBV) comes with a
     The ebvcube R package provides functionality to easily create, access and 
     visualise this data. The EBV netCDFs can be downloaded from the EBV Data 
     Portal: Christian Langer/ iDiv (2020) <https://portal.geobon.org/>. 
-URL: <https://portal.geobon.org/> <https://geobon.org/ebvs/what-are-ebvs/> 
-    <https://github.com/LuiseQuoss/ebvcube>
-BugReports: <https://github.com/LuiseQuoss/ebvcube/issues>
+URL: https://portal.geobon.org/ https://geobon.org/ebvs/what-are-ebvs/ 
+    https://github.com/LuiseQuoss/ebvcube
+BugReports: https://github.com/LuiseQuoss/ebvcube/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
