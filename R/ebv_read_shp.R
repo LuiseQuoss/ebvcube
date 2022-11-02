@@ -41,7 +41,7 @@
 #'
 #' \donttest{
 #' #read subset - return Raster
-#' cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
+#' cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1,1],
 #'                              entity = 1, timestep = 1, shp = shp_path,
 #'                              outputpath = NULL)
 #' }

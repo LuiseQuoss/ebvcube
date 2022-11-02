@@ -22,7 +22,7 @@
 #' #get all available datasets
 #' datasets <- ebv_download()
 #'
-#' \donttest
+#' \dontrun{
 #' ebv_download(id = datasets$id[1],
 #' outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
 #' }

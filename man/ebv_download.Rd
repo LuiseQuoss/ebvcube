@@ -29,3 +29,12 @@ you no arguments are given. If an ID is given, the corresponding file
 (netCDF) and its metadata (json file) will be downloaded to the given
 output directory.
 }
+\examples{
+#get all available datasets
+datasets <- ebv_download()
+
+\dontrun{
+ebv_download(id = datasets$id[1],
+outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
+}
+}

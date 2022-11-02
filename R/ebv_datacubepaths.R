@@ -82,7 +82,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
 
   #ebv_subgroups
   if (! new){
-    subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups')
+    subgroups <- ebv_i_read_att(hdf, 'ebv_subgroups', verbose)
   } else{
     subgroups <- c()
   }

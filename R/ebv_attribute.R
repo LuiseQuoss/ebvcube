@@ -29,26 +29,26 @@
 #' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #'
-#' \donttest{
+#' \dontrun{
 #' #change the standard_name of the metric
 #' attribute1 <- 'standard_name'
 #' value1 <- 'new fake metric name'
-#' level1 <- 'scenario_1/metric_1'
-#' ebv_attribute(filepath = file, attribute_name = attribute1,
-#'               value = value1, level = level1)
+#' level1 <- 'metric_1'
+#' # ebv_attribute(filepath = file, attribute_name = attribute1,
+#' #               value = value1, level = level1)
 #'
 #' #change the units of the ebv_cube
 #' attribute2 <- 'units'
 #' value2 <- 'mean'
-#' level2 <- 'scenario_1/metric_1/ebv_cube' #equal to the datacubepath
-#' ebv_attribute(filepath = file, attribute_name = attribute2,
-#'               value = value2, level = level2)
+#' level2 <- 'metric_1/ebv_cube' #equal to the datacubepath
+#' # ebv_attribute(filepath = file, attribute_name = attribute2,
+#' #               value = value2, level = level2)
 #'
 #' #change the name of the creator at the global level
 #' attribute3 <- 'creator_name'
 #' value3 <- 'Jane Doe'
-#' ebv_attribute(filepath = file, attribute_name = attribute3,
-#'               value = value3)
+#' # ebv_attribute(filepath = file, attribute_name = attribute3,
+#' #               value = value3)
 #' }
 ebv_attribute <- function(filepath, attribute_name, value,
                           levelpath=NULL, verbose=TRUE){

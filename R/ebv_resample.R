@@ -36,13 +36,15 @@
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"),
+#'                     package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
-#' datacubes <- ebv_datacubepaths(file)
+#' datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 #'
 #' #define different resolutions
-#' res1 <- system.file(file.path("extdata","rodinini_001.nc"), package="ebvcube")
-#' res2 <- c(1,1,4326)
+#' res1 <- system.file(file.path("extdata",
+#'         "baisero_spepop_id5_20220405_v1_empty.nc"), package="ebvcube")
+#' res2 <- c(0.5,0.5,4326)
 #' #define output path
 #' out <- file.path(system.file(package='ebvcube'),"extdata","changeRes.tif")
 #'
@@ -50,12 +52,13 @@
 #' #resample using a netCDF file - return GeoTiff
 #' ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
 #'              entity_src=1, timestep_src = 1, resolution = res1,
-#'              outputpath = out)
+#'              outputpath = out, overwrite=TRUE)
 #'
 #' #resample defining the resolution and EPSG code by hand - return Raster
 #' data_raster <- ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
-#'                             entity_src=NULL, timestep_src = 1, resolution = res1,
-#'                             outputpath = out, method='near', return_raster=TRUE)
+#'                             entity_src=1, timestep_src = 1, resolution = res2,
+#'                             outputpath = out, method='near', return_raster=TRUE,
+#'                             overwrite=TRUE)
 #' }
 ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timestep_src = 1,
                          resolution, outputpath, method='bilinear', return_raster=FALSE,
