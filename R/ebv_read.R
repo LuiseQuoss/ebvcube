@@ -40,16 +40,18 @@
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
+#' \donttest{
 #' #read data as DelayedArray
-#' # cSAR.delayedarray <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
-#' #                               entity = 1, timestep = c(1,3), type='da',
-#' #                               sparse=TRUE)
+#' cSAR.delayedarray <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+#'                               entity = 1, timestep = c(1,3), type='da',
+#'                               sparse=TRUE)
 #' #read data as Raster
-#' # cSAR.raster <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
-#' #                              entity = 1, timestep = 1:3, type='r')
+#' cSAR.raster <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+#'                              entity = 1, timestep = 1:3, type='r')
 #' #read data as Array
-#' # cSAR.array <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
-#' #                               entity = 1, timestep = 1, type='r')
+#' cSAR.array <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
+#'                               entity = 1, timestep = 1, type='r')
+#' }
 ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
                      sparse=FALSE, ignore_RAM = FALSE, verbose = FALSE){
   ####initial tests start ----

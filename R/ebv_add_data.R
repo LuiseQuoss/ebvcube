@@ -48,8 +48,10 @@
 #' tif <- system.file(file.path("extdata","cSAR_write_ts234.tif"), package="ebvcube")
 #'
 #' # add data to the timestep 2, 3 and 4 using the first three bands of the GeoTiff
-#' #ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
-#' #             entity = 1, timestep = 2:4, data = tif, band = 1:3)
+#' \donttest{
+#' ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
+#'              entity = 1, timestep = 2:4, data = tif, band = 1:3)
+#'              }
 ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
                          data, band=1, ignore_RAM=FALSE,
                          verbose=FALSE){

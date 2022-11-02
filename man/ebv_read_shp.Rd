@@ -66,10 +66,12 @@ datacubes <- ebv_datacubepaths(file)
 #set path to shp file
 shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
 
+\donttest{
 #read subset - return Raster
-# cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
-#                              entity = 1, timestep = 1, shp = shp_path,
-#                              outputpath = NULL)
+cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
+                             entity = 1, timestep = 1, shp = shp_path,
+                             outputpath = NULL)
+}
 }
 \seealso{
 \code{\link[=ebv_read_bb]{ebv_read_bb()}} for subsetting via bounding box.

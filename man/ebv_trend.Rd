@@ -64,6 +64,8 @@ file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), pa
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file)
 
+\donttest{
 #plot the change of the mean over time of the first datacube
-#ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = 1)
+ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = 1)
+}
 }

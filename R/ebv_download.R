@@ -12,7 +12,8 @@
 #' @param outputdir Character. Output directory of the downloaded files.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE if you want to
 #'   overwrite the netCDF and json.
-#' @param verbose Logical. Default: FALSE. Turn on all warnings by setting it to TRUE.
+#' @param verbose Logical. Default: TRUE. Turn off additional prints/messages by
+#'   setting it to FALSE.
 #'
 #' @return Downloades a netCDF and json file to the given output directory.
 #' @export
@@ -21,9 +22,10 @@
 #' #get all available datasets
 #' datasets <- ebv_download()
 #'
-#' # ebv_download(id = datasets$id[1]),
-#' # outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
-#'
+#' \donttest
+#' ebv_download(id = datasets$id[1]),
+#' outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
+#' }
 ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
 
   #start initial tests----
@@ -47,11 +49,6 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
   #turn off local warnings if verbose=TRUE
   if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
     stop('Verbose must be of type logical.')
-  }
-  if(verbose){
-    withr::local_options(list(warn = 0))
-  }else{
-    withr::local_options(list(warn = -1))
   }
 
   #end initial tests----
@@ -118,7 +115,9 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
     }
 
     #download netcdf
-    print('Downloading file... Please wait.')
+    if(verbose){
+      print('Downloading file... Please wait.')
+      }
 
     curl::curl_download(nc_url,
                         destfile = file.path(outputdir, name_nc),
@@ -133,7 +132,8 @@ ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
 
 
   }
-
-print(paste0('Check out your files: ', file.path(outputdir, name_nc)))
+  if(verbose){
+    print(paste0('Check out your files: ', file.path(outputdir, name_nc)))
+  }
 
 }

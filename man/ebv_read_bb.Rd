@@ -78,15 +78,17 @@ bb_utm32 <- c(271985, 941837, 5232640, 6101151)
 cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
                              entity = 1, timestep = 1:3, bb = bb_wgs84)
 
+\donttest{
 #read bb (based on EPSG 4326) - write to GeoTiff
-# path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#                     entity = 1, timestep = 1, bb = bb_wgs84,
-#                     outputpath = out, overwrite = TRUE)
+path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
+                    entity = 1, timestep = 1, bb = bb_wgs84,
+                    outputpath = out, overwrite = TRUE)
 
 #read bb (based on EPSG 32632) - write to GeoTiff
-# path  <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#                      entity = 1, timestep = 1:2, bb = bb_utm32,
-#                      epsg = 32632, outputpath = out, overwrite = TRUE)
+path  <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
+                     entity = 1, timestep = 1:2, bb = bb_utm32,
+                     epsg = 32632, outputpath = out, overwrite = TRUE)
+}
 }
 \seealso{
 \code{\link[=ebv_read_shp]{ebv_read_shp()}} for subsetting via shapefile.

@@ -39,10 +39,12 @@
 #' #set path to shp file
 #' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
 #'
+#' \donttest{
 #' #read subset - return Raster
-#' # cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
-#' #                              entity = 1, timestep = 1, shp = shp_path,
-#' #                              outputpath = NULL)
+#' cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1],
+#'                              entity = 1, timestep = 1, shp = shp_path,
+#'                              outputpath = NULL)
+#' }
 ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
                          shp, outputpath=NULL, touches = TRUE, overwrite=FALSE,
                          ignore_RAM=FALSE, verbose = FALSE){
