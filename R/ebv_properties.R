@@ -114,7 +114,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = TRUE){
   ####initial tests end ----
 
   #check dimensions
-  ls <- rhdf5::h5ls(filepath)
+  ls <- suppressWarnings(rhdf5::h5ls(filepath))
   if('entity' %in% ls$name){#HERE
     new <- TRUE
   } else{
@@ -126,8 +126,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = TRUE){
   #aim: remove this part!!!
   if(!new){
     #get resolution ----
-    lat.data <- rhdf5::h5read(filepath, 'lat', start=1, count = 2)
-    lon.data <- rhdf5::h5read(filepath, 'lon', start=1, count = 2)
+    lat.data <- suppressWarnings(rhdf5::h5read(filepath, 'lat', start=1, count = 2))
+    lon.data <- suppressWarnings(rhdf5::h5read(filepath, 'lon', start=1, count = 2))
     res.lon <- lon.data[1]-lon.data[2]
     res.lat <- lat.data[1]-lat.data[2]
     if (res.lon<0){
@@ -139,8 +139,8 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = TRUE){
     resolution <- c(res.lon, res.lat)
 
     #get extent
-    lon.data <- rhdf5::h5read(filepath, 'lon')
-    lat.data <- rhdf5::h5read(filepath, 'lat')
+    lon.data <- suppressWarnings(rhdf5::h5read(filepath, 'lon'))
+    lat.data <- suppressWarnings(rhdf5::h5read(filepath, 'lat'))
     xmin <- min(lon.data) - resolution[1]/2
     xmax <- max(lon.data) + resolution[1]/2
     ymin <- min(lat.data) - resolution[2]/2
@@ -205,7 +205,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = TRUE){
     #time delta
     t_delta <- ebv_i_read_att(time.ds, 't_delta', verbose)[1]
     #timesteps
-    timesteps <- rhdf5::h5read(hdf, 'time')
+    timesteps <- suppressWarnings(rhdf5::h5read(hdf, 'time'))
     #timesteps natural language
     time_natural <- as.Date(timesteps-add, origin='1970-01-01')
 
@@ -433,7 +433,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = TRUE){
   }else{
     #ACDD STANDARD----
     #get all entity names ----
-    entity_data <- rhdf5::h5read(hdf, 'entity')#HERE
+    entity_data <- suppressWarnings(rhdf5::h5read(hdf, 'entity'))#HERE
     entity_names <- c()
     if(!is.na(ncol(entity_data))){#HERE!
       for (col in 1:ncol(entity_data)){
@@ -450,7 +450,7 @@ ebv_properties <- function(filepath, datacubepath = NULL, verbose = TRUE){
 
 
 
-    time_data <- rhdf5::h5read(hdf, 'time')
+    time_data <- suppressWarnings(rhdf5::h5read(hdf, 'time'))
 
     #general ----
     # add entity names to global properties

@@ -48,7 +48,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
   #######initial test end ----
 
   #file overview
-  ls <- rhdf5::h5ls(filepath)
+  ls <- suppressWarnings(rhdf5::h5ls(filepath))
 
   #check structure
   if('entities' %in% ls$name){
