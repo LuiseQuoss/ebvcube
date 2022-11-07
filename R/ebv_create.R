@@ -193,8 +193,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   }else{
     #length exactly 1 - either csv or vector
     #test if it is a file that can be opened
-    csv <- tryCatch({file(entities, open='rt')
-                  csv <- TRUE},
+    csv <- tryCatch({con <- file(entities, open='rt')
+                  csv <- TRUE
+                  close(con)},
                   error=function(e){
                     #it is a character vector
                     csv <- FALSE
