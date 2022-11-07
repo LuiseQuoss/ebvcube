@@ -68,18 +68,18 @@ paths by hand using the following lines of code. Your paths will differ!
 First check your GDAL installation.
 
 ``` r
-# #add GDAL path to the existing paths
-# Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
-# #check and change path for proj_lib, gdal_data and gdal_driver_path
-# Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
-# Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
-# Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
-# 
-# #you can always check your GDAL path settings using
-# Sys.getenv("PATH")
-# Sys.getenv("PROJ_LIB") 
-# Sys.getenv("GDAL_DATA") 
-# Sys.getenv("GDAL_DRIVER_PATH") 
+#add GDAL path to the existing paths
+Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
+#check and change path for proj_lib, gdal_data and gdal_driver_path
+Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
+Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
+Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
+
+#you can always check your GDAL path settings using
+Sys.getenv("PATH")
+Sys.getenv("PROJ_LIB")
+Sys.getenv("GDAL_DATA")
+Sys.getenv("GDAL_DRIVER_PATH")
 ```
 
 ## 3. Working with the package - a quick intro
