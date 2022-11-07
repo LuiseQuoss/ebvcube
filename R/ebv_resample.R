@@ -274,7 +274,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   #set extent
   if(!is.null(filepath_dest)){
     #BASED ON EBV NETCDF FILE
-    extent <- terra::ext(terra::rast(filepath_dest))
+    extent <- terra::ext(terra::rast(filepath_dest,2))
     terra::ext(dummy) <- extent
   } else{
     #BASED ON RES and CRS
