@@ -33,8 +33,9 @@ output directory.
 #get all available datasets
 datasets <- ebv_download()
 
-\dontrun{
-ebv_download(id = datasets$id[1],
-outputdir = file.path(system.file(package='ebvcube'), 'extdata'))
+\donttest{
+ebv_download(id = datasets$id[1], outputdir =
+file.path(system.file(package='ebvcube')), overwrite=TRUE,
+verbose=FALSE)
 }
 }

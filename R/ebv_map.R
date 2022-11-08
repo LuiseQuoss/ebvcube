@@ -31,15 +31,15 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' #set path to EBV netCDF
 #' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file)
 #'
-#' #plot a map for the 9th timestep, divide into 7 classes
+#' #plot a map for the 3rd timestep, divide into 7 classes
 #' ebv_map(filepath = file, datacubepath = datacubes[1,1], entity = 1,
-#'         timestep = 9, classes = 7)
+#'         timestep = 3, classes = 7)
 #' }
 ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =TRUE,
                     col_rev=FALSE, classes = 5, all_data = FALSE, ignore_RAM=FALSE,

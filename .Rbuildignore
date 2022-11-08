@@ -4,3 +4,5 @@
 ^LICENSE\.md$
 ^\.github$
 ^data-raw
+inst/martins_comcom_id1_20220208_v1.nc
+inst/martins_comcom_id1_20220208_v1_metadata.json

@@ -1,7 +1,7 @@
 Package: ebvcube
 Title: Working with netCDF for Essential Biodiversity Variables
 Version: 0.1.1
-Date: 2022-10-24
+Date: 2022-11-08
 Authors@R: 
     c(person(given = "Luise",
            family = "Quoss",
@@ -37,7 +37,7 @@ Author: Luise Quoss [aut, cre] (<https://orcid.org/0000-0002-9910-1252>),
 Maintainer: Luise Quoss <luise.quoss@idiv.de>
 Description: The concept of Essential Biodiversity Variables (EBV) comes with a 
     data structure based on the Network Common Data Form (netCDF). 
-    The ebvcube R package provides functionality to easily create, access and 
+    The 'ebvcube' 'R' package provides functionality to easily create, access and 
     visualise this data. The EBV netCDFs can be downloaded from the EBV Data 
     Portal: Christian Langer/ iDiv (2020) <https://portal.geobon.org/>. 
 URL: https://portal.geobon.org/ https://geobon.org/ebvs/what-are-ebvs/ 

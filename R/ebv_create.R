@@ -194,7 +194,6 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     #length exactly 1 - either csv or vector
     #test if it is a file that can be opened
     csv <- tryCatch({con <- file(entities, open='rt')
-                      close(con)
                       csv <- TRUE
                       },
                   error=function(e){
@@ -207,6 +206,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   }
   #if csv, make tests:
   if(csv){
+    close(con)
     if (checkmate::checkFileExists(entities) != TRUE){
       stop(paste0('Entities csv file does not exist.\n', entities))
     }
