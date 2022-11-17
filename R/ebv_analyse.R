@@ -89,9 +89,6 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
     stop(paste0('File ending is wrong. File cannot be processed.'))
   }
 
-  #file closed?
-  ebv_i_file_opened(filepath)
-
   #variable check
   if (checkmate::checkCharacter(datacubepath) != TRUE){
     stop('Datacubepath must be of type character.')

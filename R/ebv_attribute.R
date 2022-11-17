@@ -100,7 +100,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
   }
 
   #file closed?
-  ebv_i_file_opened(filepath)
+  ebv_i_file_opened(filepath, verbose)
 
   #open file
   hdf <- rhdf5::H5Fopen(filepath)

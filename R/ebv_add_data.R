@@ -127,7 +127,7 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   }
 
   #file closed?
-  ebv_i_file_opened(filepath_nc)
+  ebv_i_file_opened(filepath_nc, verbose)
 
   #already rotate data for tests etc.
   if(matrix | array){

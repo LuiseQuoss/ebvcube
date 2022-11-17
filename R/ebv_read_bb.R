@@ -109,7 +109,7 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
   }
 
   #file closed?
-  ebv_i_file_opened(filepath)
+  ebv_i_file_opened(filepath, verbose)
 
   #variable check
   if (checkmate::checkCharacter(datacubepath) != TRUE){

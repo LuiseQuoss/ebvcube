@@ -65,7 +65,7 @@ returned based on the epsg of the netCDF Dataset.
 #set path to EBV netCDF
 file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
-datacubes <- ebv_datacubepaths(file)
+datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 
 #set outputpath
 out <- file.path(system.file(package='ebvcube'),"extdata","subset_bb.tif")

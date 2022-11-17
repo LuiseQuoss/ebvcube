@@ -22,37 +22,31 @@ ebv_i_os <- function(){
 #' @param filepath Path to NetCDF file.
 #' @return Logical.
 #' @noRd
-ebv_i_file_opened <- function(filepath){
-  if (ebv_i_os() =='Linux' | ebv_i_os() =='Darwin'){
-    stdout <- paste0('lsof -t ', filepath, ' | wc -w')
-    result <- system(stdout, intern=TRUE)
-    if(result == '0'){
-      return(FALSE)
-    } else{
-      stdout <- paste0('lsof -t ', filepath)
-      result <- system(stdout, intern=TRUE)
-      stdout <- paste0('ps -p ', as.integer(result))
-      result <- system(stdout, intern=TRUE)
-      if (grepl('qgis', result[2], fixed=TRUE)){
-        stop(paste0('File ', basename(filepath), ' opened in QGIS and therefore cannot be processed. You must close the file.'))
-      } else if (grepl('rsession', result[2], fixed=TRUE)) {
-        stop(paste0('File ', basename(filepath), ' opened in R and therefore cannot be processed. You must close the file.'))
-        #use restart()?
-      } else {
-        running <- stringr::str_split(result[2], ' ')[[1]][length(stringr::str_split(result[2], ' ')[[1]])]
-        stop(paste0('File ', basename(filepath) ,' opend in different programm: ', running, '. You must close the file.'))
+ebv_i_file_opened <- function(filepath, verbose=TRUE){
+  if(interactive()){
+    if (ebv_i_os() =='Linux' | ebv_i_os() =='Darwin'){
+
+      stdout <- paste0('fuser -f ', filepath)
+      result = system(stdout, intern=TRUE)
+
+      if (!ebv_i_empty(result)){
+        if (result != '0'){
+          if(verbose){
+            warning('File opened in another application. Make sure you are not overwriting your data.')
+            }
+          }
+      }
+    } else if (ebv_i_os() == 'Windows') {
+      #check whether file can be accessed with writing permission
+      cmd <- paste0("powershell $FileStream = [System.IO.File]::Open('",filepath,"','Open','Write')")
+      out <- suppressWarnings(shell(cmd, intern=T,mustWork=T))
+      #process out
+      if(!ebv_i_empty(out)){
+        if(verbose){
+          warning('File opened in another application. Make sure you are not overwriting your data.')
+        }
       }
     }
-  } else if (ebv_i_os() == 'Windows') {
-    #check whether file can be accessed with writing permission
-    cmd <- paste0("powershell $FileStream = [System.IO.File]::Open('",filepath,"','Open','Write')")
-    out <- suppressWarnings(shell(cmd, intern=T,mustWork=T))
-    #process out
-    if(!ebv_i_empty(out)){
-      stop('File opened in another application. Please close file and try again.')
-    }
-  } else {
-    print('File opened check not implemented for this OS.')
   }
 }
 

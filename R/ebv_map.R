@@ -87,9 +87,6 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
     stop(paste0('File ending is wrong. File cannot be processed.'))
   }
 
-  #file closed?
-  ebv_i_file_opened(filepath)
-
   #datacubepath check
   hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){

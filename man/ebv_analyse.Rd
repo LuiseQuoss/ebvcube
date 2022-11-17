@@ -62,7 +62,7 @@ sd, n, #NAs, q25, q50, q75 (no mean for categorical data).
 #set path to EBV netCDF
 file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
-datacubes <- ebv_datacubepaths(file)
+datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 #set path to shp file
 shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
 

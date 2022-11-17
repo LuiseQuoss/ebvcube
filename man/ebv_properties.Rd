@@ -26,7 +26,7 @@ Structured access to all attributes of the netCDF file.
 #set path to EBV netCDF
 file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
-datacubes <- ebv_datacubepaths(file)
+datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 
 #get properties only for the file
 prop_file <- ebv_properties(file)
