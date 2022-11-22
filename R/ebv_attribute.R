@@ -381,7 +381,6 @@ ebv_attribute <- function(filepath, attribute_name, value,
 
         }else if(attribute_name=='standard_name' & !stringr::str_detect(path, 'ebv_cube')){
           #change path to corresponding other component
-          print('yes')
           path <- paste0(path, '/ebv_cube')
           h5obj <- rhdf5::H5Dopen(hdf, path)
 
@@ -390,7 +389,6 @@ ebv_attribute <- function(filepath, attribute_name, value,
           if(att==value){
             message(paste0('Value of long_name in path ', path ,' already is set to "', value, '".'))
           } else if (attribute_name %in% att.chr){
-            print('again')
             ebv_i_char_att(h5obj, 'long_name', value)
           }
 
@@ -441,7 +439,6 @@ ebv_attribute <- function(filepath, attribute_name, value,
 
       }else if(attribute_name=='standard_name' & !stringr::str_detect(path, 'ebv_cube')){
         #change path to corresponding other component
-        print('yes')
         path <- paste0(path, '/ebv_cube')
         h5obj <- rhdf5::H5Dopen(hdf, path)
 
@@ -450,7 +447,6 @@ ebv_attribute <- function(filepath, attribute_name, value,
         if(att==value){
           message(paste0('Value of long_name in path ', path ,' already is set to "', value, '".'))
         } else if (attribute_name %in% att.chr){
-          print('again')
           ebv_i_char_att(h5obj, 'long_name', value)
         }
 
