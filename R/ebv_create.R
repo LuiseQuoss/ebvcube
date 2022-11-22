@@ -715,7 +715,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   #keywords
   keywords <- paste0('ebv_class: ', json$ebv$ebv_class, ', ebv_name: ', json$ebv$ebv_name,
                      ', ebv_domain: ', paste0(json$ebv_domain[[1]], collapse=', '), ', ebv_spatial_scope: ',
-                     json$ebv_spatial$ebv_spatial_scope, ', ebv_entity_type: ',
+                     json$ebv_geospatial$ebv_geospatial_scope, ', ebv_entity_type: ',
                      json$ebv_entity$ebv_entity_type)
 
   if(scenarios_no > 0){
