@@ -71,8 +71,8 @@ datacubepaths <- ebv_datacubepaths(file, verbose=FALSE)
 tif <- system.file(file.path("extdata","entity1.tif"), package="ebvcube")
 
 # add data to the timestep 1, 2 and 3 using the first three bands of the GeoTiff
-\donttest{
+\dontrun{
 ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
              entity = 1, timestep = 1:3, data = tif, band = 1:3)
-             }
+}
 }

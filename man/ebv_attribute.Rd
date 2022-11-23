@@ -49,9 +49,10 @@ change the ebv_class first. Don't forget to change the ebv_name accordingly!
 file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 
 \dontrun{
+try({
 #change the standard_name of the metric
 attribute1 <- 'standard_name'
-value1 <- 'new fake metric name'
+value1 <- 'Relative change in the number of species (\%)'
 level1 <- 'metric_1'
 ebv_attribute(filepath = file, attribute_name = attribute1,
               value = value1, level = level1)
@@ -68,5 +69,6 @@ attribute3 <- 'creator_name'
 value3 <- 'Jane Doe'
 ebv_attribute(filepath = file, attribute_name = attribute3,
               value = value3)
+}, TRUE)
 }
 }

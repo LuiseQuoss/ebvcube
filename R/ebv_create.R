@@ -60,7 +60,7 @@
 #' entities <- file.path(system.file(package='ebvcube'),"extdata","entities.csv")
 #'
 #' #create new EBV netCDF
-#' \donttest{
+#' \dontrun{
 #' ebv_create(jsonpath = json, outputpath = out, entities = entities,
 #'            fillvalue=-3.4E38)
 #' }

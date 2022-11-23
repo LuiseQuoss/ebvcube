@@ -24,7 +24,7 @@
 #'
 #' \donttest{
 #' ebv_download(id = datasets$id[1], outputdir =
-#' file.path(system.file(package='ebvcube')), overwrite=TRUE,
+#' tempdir(), overwrite=TRUE,
 #' verbose=FALSE)
 #' }
 ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){

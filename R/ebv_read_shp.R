@@ -43,7 +43,7 @@
 #' #read subset - return Raster
 #' cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1,1],
 #'                              entity = 1, timestep = 1, shp = shp_path,
-#'                              outputpath = NULL)
+#'                              outputpath = NULL, ignore_RAM = TRUE)
 #' }
 ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
                          shp, outputpath=NULL, touches = TRUE, overwrite=FALSE,

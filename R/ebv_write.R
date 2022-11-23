@@ -29,7 +29,7 @@
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 #'
-#' \donttest{
+#' \dontrun{
 #' #read data
 #' data <- ebv_read(filepath = file, datacubepath = datacubes[1,1], timestep = 1, entity = 1)
 #' # HERE YOU CAN WORK WITH YOUR DATA

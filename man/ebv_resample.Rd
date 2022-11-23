@@ -78,7 +78,7 @@ res2 <- c(0.5,0.5,4326)
 #define output path
 out <- file.path(system.file(package='ebvcube'),"extdata","changeRes.tif")
 
-\donttest{
+\dontrun{
 #resample using a netCDF file - return GeoTiff
 ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
              entity_src=1, timestep_src = 1, resolution = res1,

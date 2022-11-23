@@ -67,7 +67,7 @@ datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 #read data as DelayedArray
 cSAR.delayedarray <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
                               entity = 1, timestep = c(1,3), type='da',
-                              sparse=TRUE)
+                              sparse = TRUE)
 #read data as Raster
 cSAR.raster <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
                              entity = 1, timestep = 1:3, type='r')

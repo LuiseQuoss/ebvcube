@@ -30,9 +30,10 @@
 #' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
 #'
 #' \dontrun{
+#' try({
 #' #change the standard_name of the metric
 #' attribute1 <- 'standard_name'
-#' value1 <- 'new fake metric name'
+#' value1 <- 'Relative change in the number of species (%)'
 #' level1 <- 'metric_1'
 #' ebv_attribute(filepath = file, attribute_name = attribute1,
 #'               value = value1, level = level1)
@@ -49,6 +50,7 @@
 #' value3 <- 'Jane Doe'
 #' ebv_attribute(filepath = file, attribute_name = attribute3,
 #'               value = value3)
+#' }, TRUE)
 #' }
 ebv_attribute <- function(filepath, attribute_name, value,
                           levelpath=NULL, verbose=TRUE){

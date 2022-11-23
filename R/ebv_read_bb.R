@@ -50,7 +50,7 @@
 #' cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
 #'                              entity = 1, timestep = 1:3, bb = bb_wgs84)
 #'
-#' \donttest{
+#' \dontrun{
 #' #read bb (based on EPSG 4326) - write to GeoTiff
 #' path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
 #'                     entity = 1, timestep = 1, bb = bb_wgs84,
