@@ -340,7 +340,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     if(is.null(timesteps)){
       timesteps <- json$timesteps[[1]]
     }
-    if(is.null(timesteps)){
+    if(!is.null(timesteps)){
       if(timesteps[1]=='N/A'){
         timesteps <- NULL
       }
