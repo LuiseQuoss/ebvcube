@@ -4,6 +4,9 @@
 # ebvcube package
 
 <!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ebvcube)](https://CRAN.R-project.org/package=ebvcube)
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV netCDFs
@@ -136,7 +139,7 @@ fyi: the result also holds the general file properties from above.
 prop.dc <- ebv_properties(file, datacubes[1,1])
 prop.dc@ebv_cube
 #> $units
-#> [1] "Percentage points"
+#> [1] "mean"
 #> 
 #> $coverage_content_type
 #> [1] "modelResult"
@@ -352,7 +355,7 @@ citation('ebvcube')
 #>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2021). _ebvcube:
 #>   Working with netCDF for Essential Biodiversity Variables_. German
 #>   Centre for Integrative Biodiversity Research (iDiv)
-#>   Halle-Jena-Leipzig, Germany. R package version 0.1.1,
+#>   Halle-Jena-Leipzig, Germany. R package version 0.1.2,
 #>   <https://github.com/LuiseQuoss/ebvcube>.
 #> 
 #> Ein BibTeX-Eintrag für LaTeX-Benutzer ist
@@ -361,7 +364,7 @@ citation('ebvcube')
 #>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
 #>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
 #>     year = {2021},
-#>     note = {R package version 0.1.1},
+#>     note = {R package version 0.1.2},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
 #>     address = {Germany},
 #>     url = {https://github.com/LuiseQuoss/ebvcube},

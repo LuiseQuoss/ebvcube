@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 # ebvcube package
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/ebvcube)](https://CRAN.R-project.org/package=ebvcube)
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV netCDFs which can be downloaded from the
