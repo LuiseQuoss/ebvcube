@@ -256,11 +256,18 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   #get temp directory
   temp_path <- tempdir()
 
-  #check timesteps
-  if(!is.null(timesteps)){
+  #read json ----
+  file <- jsonlite::fromJSON(txt=jsonpath)
+  #json root
+  json <- file$data
+
+  #check timesteps----
+  t_res <- json$time_coverage$time_coverage_resolution
+
+  if(!is.null(timesteps) & t_res != 'Paleo'){
     if (checkmate::checkCharacter(timesteps) != TRUE){
       stop('timesteps needs to be a list of character values.')
-    }else{
+    }else {
       for(ts in timesteps){
         #check ISO format
         if(!(grepl('^\\d{4}-\\d{2}-\\d{2}$', ts) | grepl('^\\d{4}$',ts))){
@@ -285,10 +292,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   }
 
-  #read json ----
-  file <- jsonlite::fromJSON(txt=jsonpath)
-  #json root
-  json <- file$data
+
 
   # get basic hierarchy info ----
   metrics_no <- length(json$ebv_metric)
@@ -328,15 +332,41 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   # get dimensions ----
   # time ----
-  t_res <- json$time_coverage$time_coverage_resolution
   t_start <- json$time_coverage$time_coverage_start
   t_end <- json$time_coverage$time_coverage_end
 
-  #create timesteps
+  #get ISO timesteps for irregular and paleo -> shiny app
+  if(t_res=='Irregular'){
+    if(is.null(timesteps)){
+      timesteps <- json$timesteps[[1]]
+    }
+    if(is.null(timesteps)){
+      if(timesteps[1]=='N/A'){
+        timesteps <- NULL
+      }
+    }
+  }
+
+  if(t_res=='Paleo'){
+    if(is.null(timesteps)){
+      timesteps <- json$timesteps[[1]]
+    }
+    if(!is.null(timesteps)){
+      if(timesteps[1]=='N/A'){
+        timesteps <- NULL
+      }
+    }
+    if(!is.null(timesteps)){
+      timesteps <- as.numeric(timesteps)
+      timesteps <- sort(timesteps, decreasing = TRUE)
+    }
+  }
+
+  #create integer timesteps
   add <- 40177
 
   #calculate timesteps
-  if(is.null(timesteps)){
+  if(is.null(timesteps) & t_res!='Paleo'){
     if(t_res=="P0000-00-00"){
       #one timestep only
       #check
@@ -435,7 +465,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
         timesteps <- c(0)
       }
     }
-  }else{
+  }else if (t_res != 'Paleo'){
     #take given timesteps and transform them into integer values
     temp_temp <- c()
     for (ts in timesteps){
@@ -450,7 +480,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     }
     timesteps <- temp_temp
   }
-
+  #if no timesteps are presented anywhere, throw error
+  if(is.null(timesteps)){
+    stop('There are no timesteps given. Define the argument "timesteps", to create your EBV netCDF.')
+  }
 
 
   # lat ----
@@ -480,7 +513,11 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   # create dimensions ----
   lat_dim <- ncdf4::ncdim_def('lat', crs_unit , vals = lat_data)
   lon_dim <- ncdf4::ncdim_def('lon', crs_unit, vals = lon_data)
-  time_dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)#HERE
+  if(t_res=='Paleo'){
+    time_dim <- ncdf4::ncdim_def('time', 'kyrs B.P.' , timesteps, unlim = T)#HERE
+  }else{
+    time_dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)#HERE
+  }
   entity_dim <- ncdf4::ncdim_def('entity', '', vals = 1:entities_no, create_dimvar=FALSE)
 
   # create list of vars 3D ----
@@ -926,7 +963,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   ebv_i_char_att(time.id, 'axis', 'T')
 
   # :calendar = "standard";
-  ebv_i_char_att(time.id, 'calendar', 'standard')
+  if(t_res != 'Paleo'){
+    ebv_i_char_att(time.id, 'calendar', 'standard')
+  }
 
   #close
   rhdf5::H5Dclose(time.id)
