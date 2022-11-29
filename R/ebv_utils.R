@@ -581,9 +581,9 @@ ebv_i_eval_epsg <- function(epsg, proj=F){
   #assign epsg crs to check wether the epsg can be processed
   tryCatch(
     if(stringr::str_detect(epsg, 'ESRI')){
-      terra::crs(dummy_raster) <- epsg
+      terra::crs(dummy_raster, warn=FALSE) <- epsg
     }else{
-      terra::crs(dummy_raster) <- paste0('EPSG:',epsg)
+      terra::crs(dummy_raster, warn=FALSE) <- paste0('EPSG:',epsg)
     },
 
    warning = function(e){

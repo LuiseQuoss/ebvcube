@@ -1,3 +1,10 @@
+# ebvcube 0.1.3
+## Major changes
+
+
+## Bug fixes
+- ebv_create: contributor_name, content coverage type and domain corrected (comma + white space)
+
 # ebvcube 0.1.2
 ## Major changes
 - implement CRAN feedback (ebv_i_file_opened (lsof to fuser), examples and test (writing to user library))
