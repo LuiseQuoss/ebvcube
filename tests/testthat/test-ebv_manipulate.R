@@ -29,8 +29,6 @@ test_that("test ebv_manipulate", {
              overwrite = TRUE,
              verbose = FALSE))
 
-  expect_equal(as.Date(file.info(file)$mtim), Sys.Date())
-
   #test ebv_attribute: keyword modification  ----
   domain_old <- ebv_properties(file)@general$ebv_domain
   if(domain_old=='Marine'){
