@@ -1067,7 +1067,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
       ebv_i_char_att(did, 'long_name', long_name)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
       ebv_i_char_att(did, 'coordinate', '/entity')#HERE
-      ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type[[1]], collapse=', '))
+      ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse=', '))
       #close dh
       rhdf5::H5Dclose(did)
     }
