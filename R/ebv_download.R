@@ -27,7 +27,10 @@
 #' tempdir(), overwrite=TRUE,
 #' verbose=FALSE)
 #' }
-ebv_download <- function(id=NULL, outputdir, overwrite=FALSE, verbose=TRUE){
+ebv_download <- function(id=NULL,
+                         outputdir,
+                         overwrite=FALSE,
+                         verbose=TRUE){
 
   #start initial tests----
   #check for internet connection
