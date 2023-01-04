@@ -306,7 +306,7 @@ ebv_properties <-
     # FILE AND DATACUBE ----
     if (!is.null(datacubepath)) {
       #info about scenario, metric, cube
-      # 1. scenario and metric
+      # 1. scenario and metric ----
       if (stringr::str_detect(datacubepath, 'scenario')) {
         # get scenario info
         path_s <- stringr::str_split(datacubepath, '/')[[1]][1]
@@ -345,7 +345,7 @@ ebv_properties <-
         metric <- list('name' = name_m, 'description' = description_m)
 
       } else{
-        # 2. metric only
+        # 2. metric only----
         scenario <- list('status' = 'This dataset has no scenario.')
         # get metric info
         path_m <- stringr::str_split(datacubepath, '/')[[1]][1]
