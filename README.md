@@ -7,7 +7,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ebvcube)](https://CRAN.R-project.org/package=ebvcube)
-[![R-CMD-check](https://github.com/LuiseQuoss/ebvcube/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LuiseQuoss/ebvcube/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/LuiseQuoss/ebvcube/actions/workflows/R-CMD-check.yaml/badge.svg?branch=dev)](https://github.com/LuiseQuoss/ebvcube/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV netCDFs
