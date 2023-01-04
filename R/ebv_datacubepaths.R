@@ -24,6 +24,11 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
       if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
+  withr::defer(
+    if(exists('gid')){
+      if(rhdf5::H5Iis_valid(gid)==TRUE){rhdf5::H5Gclose(gid)}
+    }
+  )
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
@@ -48,10 +53,10 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
   #######initial test end ----
 
   #file overview
-  ls <- suppressWarnings(rhdf5::h5ls(filepath))
+  dump <- rhdf5::h5dump(filepath, load=FALSE, recursive=FALSE)
 
   #check structure
-  if('entity' %in% ls$name){
+  if('entity' %in% names(dump)){
     new <- TRUE
   } else{
     new <- FALSE
@@ -64,15 +69,29 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
   remove <- c('crs', 'dim_entity', 'lat', 'lon', 'crs', 'time', 'var_entity',
               'entities', 'entity', 'nchar')
   for (r in remove){
-    ls <- ls[ls[,2]!=r,]
+    dump[[r]] <- NULL
   }
 
-  #paths ----
-  datacubepaths = c()
-  for (row in 1:nrow(ls)){
-    if(ls[row,3] == 'H5I_DATASET'){
-      p <- paste0(ls[row,'group'], '/', ls[row, 'name'])
-      p <- substring(p, 2, nchar(p))
+  #get paths ----
+  datacubepaths <- c()
+  dump <- names(dump)
+  #scenario and metrics
+  if('scenario_1' %in% dump){
+    hdf <- rhdf5::H5Fopen(filepath)
+    gid <- rhdf5::H5Gopen(hdf, 'scenario_1')
+    dump_m <- names(rhdf5::h5dump(gid, load=FALSE, recursive=FALSE))
+    rhdf5::H5Fclose(hdf)
+    rhdf5::H5Gclose(gid)
+    for (s in dump){
+      for (m in dump_m){
+        p <- paste0(s, '/', m, '/ebv_cube')
+        datacubepaths <- c(datacubepaths, p)
+      }
+    }
+  }else{
+    #only metric
+    for (e in dump){
+      p <- paste0(e, '/ebv_cube')
       datacubepaths <- c(datacubepaths, p)
     }
   }

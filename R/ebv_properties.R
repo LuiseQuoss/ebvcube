@@ -109,9 +109,10 @@ ebv_properties <-
     ####initial tests end ----
 
     #check dimensions
-    ls <- suppressWarnings(rhdf5::h5ls(filepath))
-    if ('entity' %in% ls$name) {
-      #HERE
+    dump <- rhdf5::h5dump(hdf, load=FALSE, recursive=FALSE)
+
+    #check structure
+    if('entity' %in% names(dump)){
       new <- TRUE
     } else{
       new <- FALSE
@@ -119,8 +120,7 @@ ebv_properties <-
 
     #ACDD STANDARD----
     #get all entity names ----
-    entity_data <-
-      suppressWarnings(rhdf5::h5read(hdf, 'entity'))#HERE
+    entity_data <- suppressWarnings(rhdf5::h5read(hdf, 'entity'))#HERE
     entity_names <- c()
     if (!is.na(ncol(entity_data))) {
       #HERE!
