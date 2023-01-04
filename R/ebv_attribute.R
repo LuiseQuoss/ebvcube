@@ -104,6 +104,9 @@ ebv_attribute <- function(filepath, attribute_name, value,
   #file closed?
   ebv_i_file_opened(filepath, verbose)
 
+  #get datacubes
+  datacubes <- ebv_datacubepaths(filepath, verbose=verbose)
+
   #open file
   hdf <- rhdf5::H5Fopen(filepath)
 
@@ -289,7 +292,6 @@ ebv_attribute <- function(filepath, attribute_name, value,
       rhdf5::H5Gclose(h5obj)
     }
     #get all scenarios----
-    datacubes <- ebv_datacubepaths(filepath, verbose=verbose)
     parts <- unique(unlist(stringr::str_split(datacubes[,1], '/')))
     index <- which(stringr::str_detect(parts, 'scenario'))
     scenarios <- parts[index]
