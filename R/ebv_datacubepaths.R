@@ -51,7 +51,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
   ls <- suppressWarnings(rhdf5::h5ls(filepath))
 
   #check structure
-  if('entities' %in% ls$name){
+  if('entity' %in% ls$name){
     new <- TRUE
   } else{
     new <- FALSE
@@ -184,7 +184,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
     #process 4D----
 
     #scenario and metric ----
-    if(('scenario' %in% subgroups )| stringr::str_detect(datacubepaths[1], 'scenario')){
+    if(('scenario' %in% subgroups)| stringr::str_detect(datacubepaths[1], 'scenario')){
       scenario_names <- c()
       metric_names <- c()
         #scenario longname
