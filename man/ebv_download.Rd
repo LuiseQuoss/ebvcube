@@ -21,7 +21,8 @@ overwrite the netCDF and json.}
 it to FALSE.}
 }
 \value{
-Downloades a netCDF and json file to the given output directory.
+Downloads a netCDF and json file (metadata) to the given output
+directory.
 }
 \description{
 Returns the list of all available data sets at the EBV Portal if

@@ -15,7 +15,8 @@
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
 #'
-#' @return Downloades a netCDF and json file to the given output directory.
+#' @return Downloads a netCDF and json file (metadata) to the given output
+#'   directory.
 #' @export
 #'
 #' @examples
