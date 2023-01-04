@@ -2,9 +2,10 @@
 # Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
 # Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
 # Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
-Sys.setenv(tidyterra.quiet = TRUE)
-library(devtools)
-library(usethis)
+
+# Sys.setenv(tidyterra.quiet = TRUE)
+# library(devtools)
+# library(usethis)
 
 # Sys.getenv('PATH')
 # Sys.getenv('PROJ_LIB')
