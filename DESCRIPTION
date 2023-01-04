@@ -1,7 +1,7 @@
 Package: ebvcube
 Title: Working with netCDF for Essential Biodiversity Variables
-Version: 0.1.2
-Date: 2022-11-08
+Version: 0.1.3
+Date: 2023-01-04
 Authors@R: 
     c(person(given = "Luise",
            family = "Quoss",
@@ -47,7 +47,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 biocViews:
 Imports: 
     checkmate,
