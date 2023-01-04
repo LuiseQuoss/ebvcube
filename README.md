@@ -160,7 +160,12 @@ at the sixth one.
 ``` r
 #plot the global map
 dc <- datacubes[1,1]
-ebv_map(file, dc, entity=1, timestep = 1)
+ebv_map(file, dc, entity=1, timestep = 1, verbose=FALSE)
+#> Warning: Multiple Methodentabellen gefunden für 'aperm'
+#> Warning: vorhergehender Import 'BiocGenerics::aperm' durch 'DelayedArray::aperm'
+#> während des Ladens von 'HDF5Array' ersetzt
+#> Warning: `show.limits` is ignored when `labels` are given as a character vector
+#> ℹ Either add the limits to `breaks` or provide a function for `labels`
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
@@ -176,7 +181,7 @@ prop.dc@metric$name
 prop.dc@general$entity_names[1]
 #> [1] "all birds"
 #What timestep?
-prop.dc@temporal$timesteps_natural[1]
+prop.dc@temporal$dates[1]
 #> [1] "1900-01-01"
 ```
 
@@ -355,7 +360,7 @@ citation('ebvcube')
 #>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2021). _ebvcube:
 #>   Working with netCDF for Essential Biodiversity Variables_. German
 #>   Centre for Integrative Biodiversity Research (iDiv)
-#>   Halle-Jena-Leipzig, Germany. R package version 0.1.2,
+#>   Halle-Jena-Leipzig, Germany. R package version 0.1.3,
 #>   <https://github.com/LuiseQuoss/ebvcube>.
 #> 
 #> Ein BibTeX-Eintrag für LaTeX-Benutzer ist
@@ -364,7 +369,7 @@ citation('ebvcube')
 #>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
 #>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
 #>     year = {2021},
-#>     note = {R package version 0.1.2},
+#>     note = {R package version 0.1.3},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
 #>     address = {Germany},
 #>     url = {https://github.com/LuiseQuoss/ebvcube},

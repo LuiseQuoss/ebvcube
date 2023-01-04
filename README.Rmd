@@ -114,7 +114,7 @@ To discover the spatial distribution of the data, you can plot a map of the data
 ```{r}
 #plot the global map
 dc <- datacubes[1,1]
-ebv_map(file, dc, entity=1, timestep = 1)
+ebv_map(file, dc, entity=1, timestep = 1, verbose=FALSE)
 
 # What was the data about again? Check the properties!
 prop.dc@general$title
@@ -122,7 +122,7 @@ prop.dc@general$title
 prop.dc@metric$name
 prop.dc@general$entity_names[1]
 #What timestep?
-prop.dc@temporal$timesteps_natural[1]
+prop.dc@temporal$dates[1]
 
 ```
 

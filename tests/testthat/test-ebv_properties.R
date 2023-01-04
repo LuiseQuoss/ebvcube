@@ -58,10 +58,10 @@ test_that("properties: check temporal", {
   expect_equal(prop$resolution,'N/A')
   expect_equal(prop$units,'days since 1860-01-01 00:00:00.0')
   expect_equal(prop$timesteps, array(c(14610,56613, 69397)))
-  expect_equal(prop$timesteps_natural[1], as.Date("1900-01-01"))
-  expect_equal(prop$timesteps_natural[2], as.Date("2015-01-01"))
-  expect_equal(prop$timesteps_natural[3], as.Date("2050-01-01"))
-  expect_equal(dim(prop$timesteps_natural), 3)
+  expect_equal(prop$dates[1], as.Date("1900-01-01"))
+  expect_equal(prop$dates[2], as.Date("2015-01-01"))
+  expect_equal(prop$dates[3], as.Date("2050-01-01"))
+  expect_equal(dim(prop$dates), 3)
   })
 
 test_that("properties: check metric", {

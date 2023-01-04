@@ -10,7 +10,7 @@
 #' @slot spatial Named list. Elements: wkt2, epsg, extent, resolution,
 #'   crs_units, dimensions, scope, description
 #' @slot temporal Named list. Elements: resolution, units, timesteps,
-#'   timesteps_natural
+#'   dates
 #' @slot metric Named list. Elements: name, description
 #' @slot scenario Named list. Elements: name, description
 #' @slot ebv_cube Named list. Elements: units, coverage_content_type, fillvalue,
@@ -300,7 +300,7 @@ ebv_properties <-
       'resolution' = t_res,
       'units' = t_units,
       'timesteps' = time_data,
-      'timesteps_natural' = time_natural
+      'dates' = time_natural
     )
 
     # FILE AND DATACUBE ----

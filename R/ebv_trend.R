@@ -138,7 +138,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
   # basic attributes ----
   time <- prop@spatial$dimensions[3]
-  timevalues <- prop@temporal$timesteps_natural
+  timevalues <- prop@temporal$dates
   #derive years
   if(grepl('^P\\d{4}-?\\d{0,2}-?\\d{0,2}$', prop@temporal$resolution)){
     if(stringr::str_split(prop@temporal$resolution, '-')[[1]][2]=='00' &

@@ -25,7 +25,7 @@ entity_classification_url}
 crs_units, dimensions, scope, description}
 
 \item{\code{temporal}}{Named list. Elements: resolution, units, timesteps,
-timesteps_natural}
+dates}
 
 \item{\code{metric}}{Named list. Elements: name, description}
 

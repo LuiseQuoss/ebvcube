@@ -138,7 +138,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   title <- prop@general$title
   epsg <- prop@spatial$epsg
   units <- prop@ebv_cube$units
-  timestep.nat <- prop@temporal$timesteps_natural[timestep]
+  timestep.nat <- prop@temporal$dates[timestep]
 
   #check file structure
   is_4D <- ebv_i_4D(filepath)
