@@ -161,11 +161,6 @@ at the sixth one.
 #plot the global map
 dc <- datacubes[1,1]
 ebv_map(file, dc, entity=1, timestep = 1, verbose=FALSE)
-#> Warning: Multiple Methodentabellen gefunden für 'aperm'
-#> Warning: vorhergehender Import 'BiocGenerics::aperm' durch 'DelayedArray::aperm'
-#> während des Ladens von 'HDF5Array' ersetzt
-#> Warning: `show.limits` is ignored when `labels` are given as a character vector
-#> ℹ Either add the limits to `breaks` or provide a function for `labels`
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />

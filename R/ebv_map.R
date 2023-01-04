@@ -302,7 +302,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
                                       direction = direction,
                                       guide=ggplot2::guide_bins(title=units,
                                                                 #even.steps = FALSE,
-                                                                show.limits = TRUE,
+                                                                #show.limits = TRUE,
                                                                 reverse=!col_rev,
                                                                 axis=F
                                       )
@@ -330,7 +330,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
                                       direction = direction,
                                       guide=ggplot2::guide_bins(title=units,
                                                                 #even.steps = FALSE,
-                                                                show.limits = TRUE,
+                                                                #show.limits = TRUE,
                                                                 reverse=!col_rev,
                                                                 axis=F
                                       )
