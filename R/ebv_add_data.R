@@ -109,7 +109,7 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   character <- FALSE
   matrix <- FALSE
   array <- FALSE
-  if(checkmate::test_character(data) & !any(class(hist_data[,,1]) == 'matrix')){
+  if(checkmate::test_character(data) & !any(class(data) == 'matrix')){
     character <- TRUE
     #check if tif file exists
     if (checkmate::checkFileExists(data) != TRUE){
