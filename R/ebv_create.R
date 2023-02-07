@@ -1047,7 +1047,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
       enum <- as.integer(paste0(stringr::str_extract_all(part, '\\d')[[1]], collapse=''))
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
-      ebv_i_char_att(did, 'coordinate', '/entity')#HERE
+      ebv_i_char_att(did, 'coordinates', '/entity')#HERE
       ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse=', '))
       ebv_i_char_att(did, 'standard_name', entity_csv[enum,1])
       #close dh
@@ -1066,7 +1066,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
       did <- rhdf5::H5Dopen(hdf, var)
       ebv_i_char_att(did, 'long_name', long_name)
       ebv_i_char_att(did, 'grid_mapping', '/crs')
-      ebv_i_char_att(did, 'coordinate', '/entity')#HERE
+      ebv_i_char_att(did, 'coordinates', '/entity')#HERE
       ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse=', '))
       #close dh
       rhdf5::H5Dclose(did)
