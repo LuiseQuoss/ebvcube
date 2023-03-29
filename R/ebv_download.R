@@ -46,6 +46,9 @@ ebv_download <- function(id=NULL,
       internet <- FALSE
     }
   })
+  if(is.null(internet)){
+    internet <- FALSE
+  }
 
   if(internet!=TRUE){
     stop('It seems that you are not connected to the internet and therefore cannot download any files. Please check your connection. If you are sure you are connected, it could also be that https://portal.geobon.org is down. Check in your browser.')
