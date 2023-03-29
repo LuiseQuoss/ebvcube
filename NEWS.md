@@ -1,9 +1,12 @@
 # ebvcube 0.1.3
 ## Major changes
+- ebv_map: correct the display of binary maps
 - ebv_create: implemented paleo and irregular dates netCDFs (terranova)
+- ebv_create: correct typo: coordinates instead of coordinate for entity coordinate
 - ebv_properties: remove backwards compatibility to old standard (before ACDD)
 - replaced h5ls by h5dump to make ebv_properties and ebv_datacubepaths faster
 - ebv_properties: rename 'timesteps_natural' to 'dates' (changes across functions)
+
 ## Bug fixes
 - ebv_create: contributor_name, content coverage type and domain corrected (comma + white space)
 - ebv_i_file_opened: solve error on MAC OS (CRAN)
