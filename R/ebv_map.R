@@ -139,6 +139,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   epsg <- prop@spatial$epsg
   units <- prop@ebv_cube$units
   timestep.nat <- prop@temporal$dates[timestep]
+  nodata <- prop@ebv_cube$fillvalue
 
   #check file structure
   is_4D <- ebv_i_4D(filepath)
@@ -180,6 +181,9 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
       data.all <- data.all[,,timestep]
     }
   }
+
+  #replace nodata value
+  data.all[data.all==nodata] <- NA
 
   #get the raster for plotting----
   #in case the raster is too big for memory -> resample and plot at lower resolution
@@ -239,9 +243,8 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   s <- stats::quantile(data.all, probs = seq(0, 1, (1/classes)), na.rm=TRUE)
 
   #check if quantile list values are unique
-  if(length(unique(s)) != (classes+1)){
-    message('Error while creating quantiles. Color Scale will be corrupted.
-            Most likely you will see less classes than you defined.')
+  if(length(unique(s)) != (classes+1) & classes!=1){
+    message('Color Scale will be corrupted. Most likely you will see less classes than you defined.')
     s <- unique(s)
   }
 
@@ -271,7 +274,28 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   }
 
 
-  #define display options ----
+  #define color options ----
+  if(classes==1){
+    rast_value = as.numeric(s[length(s)])
+    data.raster = terra::as.factor(data.raster)
+    levels(data.raster) <- data.frame(value=rast_value, desc=c('aquamarine4'))
+    color_def = scale_fill_manual(values = c('aquamarine4'), label= rast_value, na.value=NA, na.translate = F)
+
+
+  }else{
+    color_def <- ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
+                                              label = round(as.numeric(s),2),
+                                              direction = direction,
+                                              guide=ggplot2::guide_bins(title=paste(strwrap(
+                                                                          units,
+                                                                          width = 10
+                                                                        ), collapse = "\n"),
+                                                                        #even.steps = FALSE,
+                                                                        #show.limits = TRUE,
+                                                                        reverse=!col_rev,
+                                                                        axis=F
+                                              ))
+  }
 
   #plot with country outlines ----
   if (countries){
@@ -297,18 +321,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
                              ), collapse = "\n"),
                          subtitle = subtitle) +
         ggplot2::theme_classic() +
-        ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
-                                      label = round(as.numeric(s),2),
-                                      direction = direction,
-                                      guide=ggplot2::guide_bins(title=units,
-                                                                #even.steps = FALSE,
-                                                                #show.limits = TRUE,
-                                                                reverse=!col_rev,
-                                                                axis=F
-                                      )
-                                      # guide = ggplot2::guide_coloursteps(even.steps = FALSE
-                                      #                                    ),
-                                      )+
+        color_def +
         ggplot2::ylab(ylab) +
         ggplot2::xlab(xlab)
     )
@@ -325,18 +338,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
                            ), collapse = "\n"),
                          subtitle = subtitle) +
         ggplot2::theme_classic() +
-        ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
-                                      label = round(as.numeric(s),2),
-                                      direction = direction,
-                                      guide=ggplot2::guide_bins(title=units,
-                                                                #even.steps = FALSE,
-                                                                #show.limits = TRUE,
-                                                                reverse=!col_rev,
-                                                                axis=F
-                                      )
-                                      # guide = ggplot2::guide_coloursteps(even.steps = FALSE
-                                      #                                    ),
-        )+
+        color_def +
         ggplot2::ylab(ylab) +
         ggplot2::xlab(xlab)
     )
