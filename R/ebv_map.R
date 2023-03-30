@@ -279,7 +279,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
     rast_value = as.numeric(s[length(s)])
     data.raster = terra::as.factor(data.raster)
     levels(data.raster) <- data.frame(value=rast_value, desc=c('aquamarine4'))
-    color_def = scale_fill_manual(values = c('aquamarine4'), label= rast_value, na.value=NA, na.translate = F)
+    color_def = ggplot2::scale_fill_manual(values = c('aquamarine4'), label= rast_value, na.value=NA, na.translate = F)
 
 
   }else{
