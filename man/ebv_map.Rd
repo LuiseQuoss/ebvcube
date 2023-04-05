@@ -33,11 +33,12 @@ netCDFs.}
 \item{countries}{Logical. Default: TRUE. Simple country outlines will be
 plotted on top of the raster data. Disable by setting this option to FALSE.}
 
-\item{col_rev}{Logical. Default: FALSE Set to TRUE if you want the color
-ramp to be the other way around.}
+\item{col_rev}{Logical. Default: FALSE Set to TRUE if you want the color ramp
+to be the other way around.}
 
 \item{classes}{Integer. Default: 5. Define the amount of classes (quantiles)
-for the symbology. Currently restricted to maximum 15 classes.}
+for the symbology. Currently restricted to maximum 11 classes (allowed
+maximum for palette RdYlBu is 11).}
 
 \item{all_data}{Logical. Default: FALSE. The quantiles are based on the one
 timestep you chose (default). If you want include the full data of the
