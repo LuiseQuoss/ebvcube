@@ -150,7 +150,7 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   rhdf5::H5Fclose(hdf)
 
   # get properties
-  prop <- ebv_properties(filepath_nc, datacubepath)
+  prop <- ebv_properties(filepath_nc, datacubepath, verbose=F)
   fillvalue <- prop@ebv_cube$fillvalue
   dims <- prop@spatial$dimensions
   entity_names <- prop@general$entity_names
