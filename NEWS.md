@@ -1,5 +1,6 @@
 # ebvcube 0.1.3
 ## Major changes
+- ebv_trend: alter trend-plot (dashed-lines, subtitle)
 - ebv_map: correct the display of binary maps
 - ebv_create: implemented paleo and irregular dates netCDFs (terranova)
 - ebv_create: correct typo: coordinates instead of coordinate for entity coordinate
