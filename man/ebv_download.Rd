@@ -35,8 +35,8 @@ output directory.
 #datasets <- ebv_download()
 
 \donttest{
-#ebv_download(id = datasets$id[1], outputdir =
-#tempdir(), overwrite=TRUE,
-#verbose=FALSE)
-#}
+ebv_download(id = datasets$id[1], outputdir =
+tempdir(), overwrite=TRUE,
+verbose=FALSE)
+}
 }

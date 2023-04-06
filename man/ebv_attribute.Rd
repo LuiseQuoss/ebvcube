@@ -45,8 +45,9 @@ You can change the ebv_class and the ebv_name. In this case you need to
 change the ebv_class first. Don't forget to change the ebv_name accordingly!
 }
 \examples{
-#set path to EBV netCDF
-file <- system.file(file.path("extdata","baisero_spepop_id5_20220405_v1_empty.nc"), package="ebvcube")
+#set path to EBV netCDF file <-
+system.file(file.path("extdata","baisero_spepop_id5_20220405_v1_empty.nc"),
+package="ebvcube")
 
 \dontrun{
 try({
