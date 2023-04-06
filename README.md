@@ -160,7 +160,7 @@ at the sixth one.
 ``` r
 #plot the global map
 dc <- datacubes[1,1]
-ebv_map(file, dc, entity=1, timestep = 1, verbose=FALSE)
+ebv_map(file, dc, entity=1, timestep = 6, verbose=FALSE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
