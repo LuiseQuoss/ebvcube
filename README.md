@@ -92,6 +92,11 @@ Sys.getenv("GDAL_DRIVER_PATH")
 
 ## 3. Working with the package - a quick intro
 
+The example data set used in this README is a spatial subset (African
+continent) of the [Local bird diversity
+(cSAR/BES-SIM)](https://portal.geobon.org/ebv-detail?id=1) data set by
+Ines Martins.
+
 ### 3.1 Take a very first look at the file
 
 With the following two functions you get the metadata of a specific EBV
@@ -102,7 +107,7 @@ The properties encompass much more information!
 library(ebvcube)
 
 #set the path to the file
-file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 
 #read the properties of the file
 prop.file <- ebv_properties(file)
@@ -154,13 +159,13 @@ prop.dc@metric
 
 To discover the spatial distribution of the data, you can plot a map of
 the datacube that we just looked at. It has 12 timesteps. Here we look
-at the sixth one.
+at the first one.
 
 ``` r
 #plot the global map
 dc <- datacubes[2,1]
-ebv_map(file, dc, entity=1, timestep = 1, classes = 9, verbose=FALSE)
-#> Color Scale will be corrupted. Most likely you will see less classes than you defined.
+ebv_map(file, dc, entity=1, timestep = 1, classes = 9, 
+        verbose=FALSE, col_rev = T)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
@@ -180,7 +185,8 @@ averages <- ebv_trend(file, dc, entity=1)
 
 ``` r
 averages
-#> [1] 0.6991006 1.4253333 2.1951766
+#>  [1]  0.6140731  1.2972444  2.2045310  3.6016083  6.4691830  8.8957375
+#>  [7]  9.7711291 10.3299345 10.9822654 11.5685090 11.9421034 12.3869482
 ```
 
 It would be cool to have that for other indicators as well? Check out
@@ -199,28 +205,29 @@ names(measurements)
 #> [1] "min"  "q25"  "q50"  "mean" "q75"  "max"  "std"  "n"    "NAs"
 #check out the mean and the number of pixels
 measurements$mean
-#> [1] 0.6991006
+#> [1] 0.6140731
 measurements$n
-#> [1] 64800
+#> [1] 7650
 
-#info for a subset defined by a bounding box (roughly(!) Germany)
+#info for a subset defined by a bounding box
 #you can also define the subset by a Shapefile - check it out!
-bb <- c(5,15,47,55)
-measurements.bb <- ebv_analyse(file, dc, entity = 1, subset = bb)
+bb <- c(-26, 64, 30, 38)
+measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb)
 #check out the mean of the subset
 measurements.bb$mean
-#> [1] -1.428952
+#> [1] 0.3241093
 measurements.bb$n
-#> [1] 80
+#> [1] 720
 ```
 
-To access the data you can use the following:
+To access the first three timesteps of the data you can use the
+following:
 
 ``` r
 #load whole data as array for two timesteps
-data <- ebv_read(file, dc, entity = 1, timestep = c(1,2), type = 'a')
+data <- ebv_read(file, dc, entity = 1, timestep = 1:3, type = 'a')
 dim(data)
-#> [1] 180 360   2
+#> [1] 85 90  3
 ```
 
 To subset the data using a Shapefile you need to indicate a directory
@@ -228,10 +235,10 @@ for temporarily created files.
 
 ``` r
 #load subset from shapefile (Germany)
-shp <- system.file(file.path('extdata','subset_germany.shp'), package="ebvcube")
+shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
 data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3))
 dim(data.shp)
-#> [1]  9 11  3
+#> [1] 12  9  3
 #very quick plot of the resulting raster plus the shapefile
 borders <- terra::vect(shp)
 ggplot2::ggplot() +
@@ -267,7 +274,7 @@ The example is based on the [Local bird diversity
 #paths
 json <- system.file(file.path('extdata','metadata.json'), package="ebvcube")
 newNc <- file.path(system.file(package="ebvcube"),'extdata','test.nc')
-entities <- file.path(system.file(package='ebvcube'),"extdata","entities.csv")
+entities <- c('forest bird species','non-forest bird species','all bird species')
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF
