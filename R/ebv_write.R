@@ -25,7 +25,7 @@
 #'
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 #'
@@ -40,10 +40,10 @@
 #'
 #' #read a subset
 #' data_bb <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
-#'                        entity = 1, timestep = 1:3, bb = c(5,15,47,55))
+#'                        entity = 1, timestep = 1:3, bb = c(-26, 64, 30, 38))
 #'
 #' #write subset to disk as GeoTiff
-#' ebv_write(data = data_bb, outputpath = out, extent = c(5,15,47,55), overwrite = TRUE)
+#' ebv_write(data = data_bb, outputpath = out, extent = c(-26, 64, 30, 38), overwrite = TRUE)
 #' }
 ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
                       type='FLT8S', overwrite=FALSE, verbose=TRUE){

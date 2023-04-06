@@ -59,16 +59,16 @@ netCDF file. Subset definition by a shapefile.
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 
-#set path to shp file
-shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
+#set path to shp file - cameroon country borders
+shp_path <- system.file(file.path("extdata","cameroon.shp"), package="ebvcube")
 
 \donttest{
 #read subset - return Raster
-cSAR.germany <- ebv_read_shp(filepath = file, datacubepath = datacubes[1,1],
+cSAR_cameroon <- ebv_read_shp(filepath = file, datacubepath = datacubes[1,1],
                              entity = 1, timestep = 1, shp = shp_path,
                              outputpath = NULL, ignore_RAM = TRUE)
 }

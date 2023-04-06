@@ -34,22 +34,22 @@
 #' @importFrom stats quantile
 #' @examples
 #' #set path to EBV netCDF
-#' file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+#' file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 #' #set path to shp file
-#' shp_path <- system.file(file.path("extdata","subset_germany.shp"), package="ebvcube")
+#' shp_path <- system.file(file.path("extdata","cameroon.shp"), package="ebvcube")
 #'
 #' \donttest{
-#' #get measurements for full extent and all timesteps
+#' #get measurements for full extent and the first three timesteps
 #' data_global <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
 #'                            entity = 1, timestep = 1:3)
 #'
-#' #get measurements for germany only (using bounding box) and one timestep
+#' #get measurements for subset of Africa only (using bounding box) and one timestep
 #' data_bb_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
-#'                             entity = 1, timestep = 2, subset = c(5,15,47,55))
+#'                             entity = 1, timestep = 2, subset = c(-26, 64, 30, 38))
 #'
-#' #get measurements for germany only (using shp) and one timestep
+#' #get measurements for cameroon only (using shp) and one timestep
 #' data_shp_1900 <- ebv_analyse(filepath = file, datacubepath = datacubes[1,1],
 #'                              entity = 1, timestep = 3, subset = shp_path)
 #' }

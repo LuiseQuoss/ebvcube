@@ -63,19 +63,19 @@ returned based on the epsg of the netCDF Dataset.
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 
 #set outputpath
 out <- file.path(system.file(package='ebvcube'),"extdata","subset_bb.tif")
 #define two different bounding boxes based on different EPSG codes
-bb_wgs84 <- c(5,15,47,55)
-bb_utm32 <- c(271985, 941837, 5232640, 6101151)
+bb_wgs84 <- c(-26, 64, 30, 38)
+bb_utm32 <- c(-2383703, 5532302, 3643854, 4564646)
 
 
 #read bb (based on EPSG 4326) - return Raster
-cSAR.germany <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
+cSAR_subset <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
                              entity = 1, timestep = 1:3, bb = bb_wgs84)
 
 \dontrun{
@@ -84,7 +84,7 @@ path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
                     entity = 1, timestep = 1, bb = bb_wgs84,
                     outputpath = out, overwrite = TRUE)
 
-#read bb (based on EPSG 32632) - write to GeoTiff
+#read bb (based on ESRI 54009) - write to GeoTiff
 path  <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
                      entity = 1, timestep = 1:2, bb = bb_utm32,
                      epsg = 32632, outputpath = out, overwrite = TRUE)

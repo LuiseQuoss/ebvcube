@@ -46,21 +46,21 @@ change the ebv_class first. Don't forget to change the ebv_name accordingly!
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","baisero_spepop_id5_20220405_v1_empty.nc"), package="ebvcube")
 
 \dontrun{
 try({
 #change the standard_name of the metric
 attribute1 <- 'standard_name'
-value1 <- 'Relative change in the number of species (\%)'
-level1 <- 'metric_1'
+value1 <- 'habitat availability'
+level1 <- 'scenario_1/metric_1'
 ebv_attribute(filepath = file, attribute_name = attribute1,
               value = value1, level = level1)
 
 #change the units of the ebv_cube
 attribute2 <- 'units'
-value2 <- 'mean'
-level2 <- 'metric_1/ebv_cube' #equal to the datacubepath
+value2 <- 'Land-use of 5,090 mammals calculated in sqkm'
+level2 <- 'scenario_1/metric_1/ebv_cube' #equal to the datacubepath
 ebv_attribute(filepath = file, attribute_name = attribute2,
               value = value2, level = level2)
 

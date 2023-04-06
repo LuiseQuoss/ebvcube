@@ -163,7 +163,7 @@ dim(data)
 ```
 To subset the data using a Shapefile you need to indicate a directory for temporarily created files.
 ```{r}
-#load subset from shapefile (Germany)
+#load subset from shapefile (Cameroon)
 shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
 data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3))
 dim(data.shp)

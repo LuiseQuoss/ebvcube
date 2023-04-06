@@ -1,5 +1,5 @@
 test_that("properties: check S4", {
-  file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+  file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
   expect_type(ebv_properties(file), 'S4')
 })
 

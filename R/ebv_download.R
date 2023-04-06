@@ -21,7 +21,7 @@
 #'
 #' @examples
 #' #get all available datasets
-#' datasets <- ebv_download()
+#' #datasets <- ebv_download()
 #'
 #' \donttest{
 #' ebv_download(id = datasets$id[1], outputdir =

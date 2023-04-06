@@ -64,7 +64,7 @@ more capacities if needed.
 }
 \examples{
 #set path to EBV netCDF
-file <- system.file(file.path("extdata","martins_comcom_id1_20220208_v1.nc"), package="ebvcube")
+file <- system.file(file.path("extdata","test.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubepaths <- ebv_datacubepaths(file, verbose=FALSE)
 #set path to GeoTiff with data
