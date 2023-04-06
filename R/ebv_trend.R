@@ -327,7 +327,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       colnames(dataset) <- 'V1'
 
       #return(dataset)
-      ggp <- ggplot2::ggplot(data = dataset, ggplot2::aes(x=factor(timevalues), y=V1,)) +
+      ggp <- ggplot2::ggplot(data = dataset, ggplot2::aes(x=factor(timevalues), y='V1',)) +
         ggplot2::geom_boxplot(fill=color, outlier.size = 0.7, outlier.shape = 20) +
         ggplot2::ylab(units) +
         ggplot2::xlab('Time') +
