@@ -625,7 +625,7 @@ ebv_i_get_epsg <- function(wkt){
 #'
 #' @param wkt. Character. WKT representation of the CRS.
 #'
-#' @return Logocal. TRUE if it is OGC WKT2 (2019), else FALSE
+#' @return Logical. TRUE if it is OGC WKT2 (2019), else FALSE
 #' @noRd
 ebv_i_eval_wkt <- function(wkt){
   if(stringr::str_detect(wkt, 'USAGE')){
@@ -633,4 +633,20 @@ ebv_i_eval_wkt <- function(wkt){
   }else{
     return(F)
   }
+}
+
+#' Input character mess, get nice string.
+#'
+#' @param characters. Character. A set of characters that shall be conencted and
+#' whitespaces removed. Helpful for the character variables like 'entity' in the
+#' netCDFs. Used with apply.
+#'
+#' @return String. Pasted string.
+#' @noRd
+ebv_i_paste <- function(characters) {
+  return(gsub(
+    pattern = "(^ +| +$)",
+    replacement = "",
+    x = paste0(characters, collapse = '')
+  ))
 }

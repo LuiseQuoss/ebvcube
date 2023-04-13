@@ -1,3 +1,10 @@
+# ebvcube 0.1.4
+## Minor changes
+- ebv_properties: speed up for nc with many entities
+
+## Bug fixes
+
+
 # ebvcube 0.1.3
 ## Major changes
 - ebv_trend: alter trend-plot (dashed-lines, subtitle)

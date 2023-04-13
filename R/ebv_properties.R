@@ -119,24 +119,29 @@ ebv_properties <-
     }
 
     #ACDD STANDARD----
+    # p <- function(col){
+    #   return(gsub(pattern = "(^ +| +$)",
+    #               replacement = "",
+    #               x = paste0(col, collapse='')))
+    # }
+
     #get all entity names ----
     entity_data <- suppressWarnings(rhdf5::h5read(hdf, 'entity'))#HERE
     entity_names <- c()
     if (!is.na(ncol(entity_data))) {
-      #HERE!
-      for (col in 1:ncol(entity_data)) {
-        name <- paste0(entity_data[, col], collapse = '')
-        entity_names <- c(entity_names, name)
-      }
-      #trim whitespaces
-      entity_names <- gsub(pattern = "(^ +| +$)",
-                           replacement = "",
-                           x = entity_names)
+      # #HERE!
+      # for (col in 1:ncol(entity_data)) {
+      #   name <- paste0(entity_data[, col], collapse = '')
+      #   entity_names <- c(entity_names, name)
+      # }
+      # #trim whitespaces
+      # entity_names <- gsub(pattern = "(^ +| +$)",
+      #                      replacement = "",
+      #                      x = entity_names)
+      entity_names <-apply(entity_data, 2, ebv_i_paste)
     } else{
       entity_names <- entity_data
     }
-
-
 
     time_data <- suppressWarnings(rhdf5::h5read(hdf, 'time'))
 
