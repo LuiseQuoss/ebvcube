@@ -67,7 +67,9 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
 
   #get all datasets ----
   remove <- c('crs', 'dim_entity', 'lat', 'lon', 'crs', 'time', 'var_entity',
-              'entities', 'entity', 'nchar')
+              'entities', 'entity', 'nchar', 'nchar_entity', 'entity_levels',
+              'entity_list', 'nchar_taxonlist', 'taxonlevel', 'nchar_lsid',
+              'entity_lsid')
   for (r in remove){
     dump[[r]] <- NULL
   }
@@ -77,7 +79,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
   dump <- names(dump)
   #scenario and metrics
   if('scenario_1' %in% dump){
-    hdf <- rhdf5::H5Fopen(filepath)
+    hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
     gid <- rhdf5::H5Gopen(hdf, 'scenario_1')
     dump_m <- names(rhdf5::h5dump(gid, load=FALSE, recursive=FALSE))
     rhdf5::H5Fclose(hdf)
