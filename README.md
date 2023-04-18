@@ -234,7 +234,7 @@ To subset the data using a Shapefile you need to indicate a directory
 for temporarily created files.
 
 ``` r
-#load subset from shapefile (Germany)
+#load subset from shapefile (Cameroon)
 shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
 data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3))
 dim(data.shp)
@@ -348,7 +348,7 @@ citation('ebvcube')
 #>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2021). _ebvcube:
 #>   Working with netCDF for Essential Biodiversity Variables_. German
 #>   Centre for Integrative Biodiversity Research (iDiv)
-#>   Halle-Jena-Leipzig, Germany. R package version 0.1.3,
+#>   Halle-Jena-Leipzig, Germany. R package version 0.1.4,
 #>   <https://github.com/LuiseQuoss/ebvcube>.
 #> 
 #> Ein BibTeX-Eintrag für LaTeX-Benutzer ist
@@ -357,7 +357,7 @@ citation('ebvcube')
 #>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
 #>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
 #>     year = {2021},
-#>     note = {R package version 0.1.3},
+#>     note = {R package version 0.1.4},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
 #>     address = {Germany},
 #>     url = {https://github.com/LuiseQuoss/ebvcube},
