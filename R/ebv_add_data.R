@@ -120,6 +120,10 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     }
   } else if(class(data)[1]=='array'){
     array <- TRUE
+    if(length(dim(data))>3){
+      stop(paste0('Maximum number of dimensions for the data array is 3.
+                  Your data array has more than 3 dimensions.'))
+    }
   } else if('matrix' %in% class(data)){
     matrix <- TRUE
   } else{
@@ -130,9 +134,11 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   ebv_i_file_opened(filepath_nc, verbose)
 
   #already rotate data for tests etc.
-  if(matrix | array){
+  if(matrix){
     data <- t(data)
-
+  } else if(array){
+    #rotate array
+    data <- apply(data, c(1,3), t)
   }
 
   # open file
