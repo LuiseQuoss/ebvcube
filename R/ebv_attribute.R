@@ -150,7 +150,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
     #global
     'id', 'naming_authority', 'Conventions', 'date_issued',
     #ebv_cube
-    '_FillValue', 'grid_mapping','coordinate','_ChunkSizes')
+    '_FillValue', 'grid_mapping','coordinates','_ChunkSizes')
 
   if(attribute_name %in% att.blocked){
     stop(paste0('Changes for the attribute ', attribute_name, ' are blocked! Always built automatically.' ))
