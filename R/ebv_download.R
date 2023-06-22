@@ -144,8 +144,7 @@ ebv_download <- function(id=NULL,
 
 
   }
-  if(verbose){
-    print(paste0('Check out your files: ', file.path(outputdir, name_nc)))
-  }
+
+  return(file.path(outputdir, name_nc))
 
 }
