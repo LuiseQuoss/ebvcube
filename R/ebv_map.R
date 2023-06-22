@@ -266,11 +266,11 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
     }
   }
 
-  #get reverses color----
+  #reverse color----
   if(col_rev){
-    direction <- 1
-  } else{
     direction <- -1
+  } else{
+    direction <- 1
   }
 
   #get correct colors ----
@@ -312,7 +312,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
                                                                         ), collapse = "\n"),
                                                                         #even.steps = FALSE,
                                                                         #show.limits = TRUE,
-                                                                        reverse=!col_rev,
+                                                                        reverse=T,
                                                                         axis=F
                                               ))
   }
