@@ -134,7 +134,7 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
   ebv_i_file_opened(filepath_nc, verbose)
 
   #already rotate data for tests etc.
-  if(matrix){
+  if(matrix & !array){
     data <- t(data)
   } else if(array){
     #rotate array
