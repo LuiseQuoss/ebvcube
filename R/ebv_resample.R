@@ -19,12 +19,13 @@
 #' @param outputpath Character. Set path to write data as GeoTiff on disk.
 #' @param timestep_src Integer. Choose one or several timesteps (vector).
 #' @param method Character. Default: bilinear. Define resampling method. Choose
-#'   from: "near","bilinear","cubic" and "cubicspline". For categorical data,
-#'   use 'near'. Based on [terra::project()].
+#'   from: "near","bilinear","cubic", "cubicspline", "lanczos", "sum", "min",
+#'   "q1", "med", "q3", "max", "average", "mode" and "rms". For categorical
+#'   data, use 'near'. Based on [terra::project()].
 #' @param return_raster Logical. Default: FALSE. Set to TRUE to directly get the
 #'   corresponding SpatRast object.
-#' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
-#'   output file defined by 'outputpath'.
+#' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the output
+#'   file defined by 'outputpath'.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
 #'   your memory to read the data. Can be switched off (set to TRUE).
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
@@ -224,7 +225,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   if (checkmate::checkCharacter(method) != TRUE){
     stop('Method must be of type character.')
   }
-  methods <- c("near","bilinear","cubic","cubicspline")
+  methods <- c("near","bilinear","cubic", "cubicspline", "lanczos", "sum", "min","q1", "med", "q3", "max", "average", "mode", "rms")
   if (! method %in% methods){
     stop('Given method is not valid.\n', method)
   }
