@@ -216,7 +216,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     #read csv---
     # check if data inside
     tryCatch({
-      entity_csv <- suppressWarnings(utils::read.csv(entities, sep=sep, header=F, fileEncoding="UTF-8-BOM"))
+      entity_csv <- suppressWarnings(utils::read.csv(entities, sep=sep, header=F, fileEncoding="UTF-8"))
     },
     error=function(e){
       if(stringr::str_detect(as.character(e), 'no lines available')){
@@ -982,6 +982,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     }
     entity.values <- c(entity.values, new_values)
   }
+  entity.values <- enc2utf8(entity.values)
   entity.id <- rhdf5::H5Dopen(hdf, 'entity')#HERE
   rhdf5::H5Dwrite(entity.id, entity.values)
 
