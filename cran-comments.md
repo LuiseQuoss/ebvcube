@@ -5,8 +5,8 @@
 * This is a new release.
 
 ## Last CRAN feedback
-- Internet check done poorly (CRAN policy violation)
+- Internet check done wrong
 
 ## FIX
 - checking the internet using curl::has_internet and additional check for the
-  data portal website not suppressing the error message from base::url
+  data portal website

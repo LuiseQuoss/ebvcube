@@ -41,14 +41,15 @@ c(0.25, 0.25, 4326).}
 \item{outputpath}{Character. Set path to write data as GeoTiff on disk.}
 
 \item{method}{Character. Default: bilinear. Define resampling method. Choose
-from: "near","bilinear","cubic" and "cubicspline". For categorical data,
-use 'near'. Based on \code{\link[terra:project]{terra::project()}}.}
+from: "near","bilinear","cubic", "cubicspline", "lanczos", "sum", "min",
+"q1", "med", "q3", "max", "average", "mode" and "rms". For categorical
+data, use 'near'. Based on \code{\link[terra:project]{terra::project()}}.}
 
 \item{return_raster}{Logical. Default: FALSE. Set to TRUE to directly get the
 corresponding SpatRast object.}
 
-\item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
-output file defined by 'outputpath'.}
+\item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the output
+file defined by 'outputpath'.}
 
 \item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE).}

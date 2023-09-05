@@ -1,5 +1,18 @@
+# ebvcube 0.1.5
+
+## Major changes
+- ebv_resample: added more methods
+- ebv_create: lower compression to 5
+- ebv_download: return path
+- ebv_map: col_rev does not reverse the numbers in the legend
+
+## Bug fixes
+- ebv_download: fix the internet check
+- ebv_add_data: array data error (transpose)
+- ebv_attribtue: change 'coordinate' to 'coordinates' (black-list attribute)
+
 # ebvcube 0.1.4
-## Minor changes
+## Major changes
 - ebv_properties: speed up for nc with many entities
 
 ## Bug fixes
