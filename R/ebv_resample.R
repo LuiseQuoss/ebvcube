@@ -23,7 +23,7 @@
 #'   "q1", "med", "q3", "max", "average", "mode" and "rms". For categorical
 #'   data, use 'near'. Based on [terra::project()].
 #' @param return_raster Logical. Default: FALSE. Set to TRUE to directly get the
-#'   corresponding SpatRast object.
+#'   corresponding SpatRaster object.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the output
 #'   file defined by 'outputpath'.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
@@ -31,8 +31,8 @@
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
 #'
-#' @return Default: returns the outputpath of the GeoTiff with the new
-#'   resolution. Optional: return the raster object with the new resolution.
+#' @return Default: returns the output path of the GeoTiff with the new
+#'   resolution. Optional: return the SpatRaster object with the new resolution.
 #' @export
 #'
 #' @examples
@@ -50,7 +50,7 @@
 #' out <- file.path(system.file(package='ebvcube'),"extdata","changeRes.tif")
 #'
 #' \dontrun{
-#' #resample defining the resolution and EPSG code by hand - return Raster
+#' #resample defining the resolution and EPSG code by hand - return SpatRaster
 #' data_raster <- ebv_resample(filepath_src = file, datacubepath_src = datacubes[1,1],
 #'                             entity_src=1, timestep_src = 1, resolution = res2,
 #'                             outputpath = out, method='near', return_raster=TRUE,

@@ -12,7 +12,7 @@
 #'   netCDFs.
 #' @param shp Character. Path to the shapefile defining the subset. Ending needs
 #'   to be *.shp.
-#' @param outputpath Character. Default: NULL, returns the data as a raster
+#' @param outputpath Character. Default: NULL, returns the data as a SpatRaster
 #'   object in memory. Optional: set path to write subset as GeoTiff on disk.
 #' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param touches Logical. Default: TRUE, all pixels touched by the polygon(s) will
@@ -25,7 +25,7 @@
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
 #'
-#' @return Returns a raster object if no outputpath is given. Otherwise the
+#' @return Returns a SpatRaster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the ouputpath is returned.
 #' @export
 #' @seealso [ebvcube::ebv_read_bb()] for subsetting via bounding box.
@@ -40,7 +40,7 @@
 #' shp_path <- system.file(file.path("extdata","cameroon.shp"), package="ebvcube")
 #'
 #' \donttest{
-#' #read subset - return Raster
+#' #read subset - return SpatRaster
 #' cSAR_cameroon <- ebv_read_shp(filepath = file, datacubepath = datacubes[1,1],
 #'                              entity = 1, timestep = 1, shp = shp_path,
 #'                              outputpath = NULL, ignore_RAM = TRUE)

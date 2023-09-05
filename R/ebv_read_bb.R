@@ -12,7 +12,7 @@
 #'   netCDFs.
 #' @param bb Integer Vector. Definition of subset by bounding box: c(xmin,
 #'   xmax, ymin, ymax).
-#' @param outputpath Character. Default: NULL, returns the data as a raster
+#' @param outputpath Character. Default: NULL, returns the data as a SpatRaster
 #'   object in memory. Optional: set path to write subset as GeoTiff on disk.
 #' @param timestep Integer. Choose one or several timesteps.
 #' @param epsg Integer. Default: 4326 (WGS84). Change accordingly if your
@@ -25,7 +25,7 @@
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
 #'
-#' @return Returns a raster object if no outputpath is given. Otherwise the
+#' @return Returns a SpatRaster object if no outputpath is given. Otherwise the
 #'   subset is written onto the disk and the outputpath is returned.
 #' @export
 #'
@@ -46,7 +46,7 @@
 #' bb_utm32 <- c(-2383703, 5532302, 3643854, 4564646)
 #'
 #'
-#' #read bb (based on EPSG 4326) - return Raster
+#' #read bb (based on EPSG 4326) - return SpatRaster
 #' cSAR_subset <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
 #'                              entity = 1, timestep = 1:3, bb = bb_wgs84)
 #'
