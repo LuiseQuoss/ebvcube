@@ -5,7 +5,8 @@
 * This is a new release.
 
 ## Last CRAN feedback
-- Having package code which is run as part of the checks and attempts to write to the user library violates the CRAN Policy's
+- Internet check done poorly (CRAN policy violation)
 
 ## FIX
-- a 'read only' flag was missing - added it (in ebv_datacubepaths.R)
+- checking the internet using curl::has_internet and additional check for the
+  data portal website not suppressing the error message from base::url

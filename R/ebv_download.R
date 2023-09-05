@@ -35,23 +35,18 @@ ebv_download <- function(id=NULL,
 
   #start initial tests----
   #check for internet connection
-  internet <- tryCatch({
-    #try
-    url('https://portal.geobon.org', 'rb')
-    internet <-TRUE
-  },
-  #catch error/warning
-  warning = function(e){
-    if(stringr::str_detect(as.character(e), 'InternetOpenUrl failed')){
-      internet <- FALSE
-    }
-  })
-  if(is.null(internet)){
-    internet <- FALSE
+  if(!curl::has_internet()){
+    stop('You are not connected to the internet.')
   }
 
-  if(internet!=TRUE){
-    stop('It seems that you are not connected to the internet and therefore cannot download any files. Please check your connection. If you are sure you are connected, it could also be that https://portal.geobon.org is down. Check in your browser.')
+  #check if portal website can be reached
+  con <- url('https://portal.geobon.org') #, 'rb'
+  check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=T)[1])
+  suppressWarnings(try(close.connection(con),silent=T))
+  website <- ifelse(is.null(check),TRUE,FALSE)
+
+  if(website!=TRUE){
+    stop(paste0('The EBV Data Portal https://portal.geobon.org cannot be reached.\n', check))
   }
 
   #check verbose
