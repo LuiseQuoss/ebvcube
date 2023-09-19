@@ -26,7 +26,7 @@ ebv_i_file_opened <- function(filepath, verbose=TRUE){
   if(interactive()){
     if (ebv_i_os() =='Linux' | ebv_i_os() =='Darwin'){
 
-      stdout <- paste0('fuser -f ', filepath)
+      stdout <- paste0("fuser -f '", filepath, "'")
       result = system(stdout, intern=TRUE)
 
       if (!ebv_i_empty(result)){
