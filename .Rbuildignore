@@ -4,5 +4,6 @@
 ^LICENSE\.md$
 ^\.github$
 ^data-raw
+^cran-comments\.R$
 ^prep_cran_submit\.R$
 
