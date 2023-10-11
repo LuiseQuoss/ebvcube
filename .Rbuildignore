@@ -5,4 +5,4 @@
 ^\.github$
 ^data-raw
 ^prep_cran_submit\.R$
-^cran-comments\.md$
+
