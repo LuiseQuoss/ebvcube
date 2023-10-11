@@ -1,12 +1,12 @@
 #' Create an EBV netCDF
 #'
 #' @description Create the core structure of the EBV netCDF based on the json
-#'   from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
-#'   will be added afterwards. Use [ebvcube::ebv_add_data()] to add the missing
-#'   data.
+#'   from the \href{https://portal.geobon.org}{EBV Data Portal}. Data will be
+#'   added afterwards using [ebvcube::ebv_add_data()].
 #'
-#' @param jsonpath Character. Path to the json file downloaded from the
-#'   \href{https://portal.geobon.org/api-docs}{Geobon Portal API}.
+#' @param jsonpath Character. Path to the json file downloaded from the EBV Data
+#'   Portal. Login to the page and click on 'Uploads' and 'New Upload' to start
+#'   the process.
 #' @param outputpath Character. Set path where the netCDF file should be
 #'   created.
 #' @param entities Character string or vector of character strings. In case of

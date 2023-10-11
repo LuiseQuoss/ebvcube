@@ -1,12 +1,13 @@
 #BEFORE SUBMITTING TO CRAN
 
+# Run tests and examples
+devtools::document()
+devtools::test()
+devtools::run_examples()
+
 #build readme and manual
 devtools::build_manual()
 devtools::build_readme()
-
-# Run tests and examples
-devtools::test()
-devtools::run_examples()
 
 # Check package as CRAN
 rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"))
@@ -33,7 +34,7 @@ usethis::use_version(which = c("patch", "minor", "major", "dev")[1])
 
 # check on other distributions
 # _rhub
-cran_prep <- check_for_cran()
+cran_prep <- rhub::check_for_cran()
 cran_prep$cran_summary()
 # devtools::check_rhub()
 # rhub::check_on_windows(check_args = "--force-multiarch")
@@ -70,4 +71,4 @@ usethis::use_cran_comments(open = rlang::is_interactive())
 #news uptodate?
 
 # Verify you're ready for release, and release
-devtools::release()
+# devtools::release()

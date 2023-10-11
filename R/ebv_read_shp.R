@@ -15,9 +15,9 @@
 #' @param outputpath Character. Default: NULL, returns the data as a SpatRaster
 #'   object in memory. Optional: set path to write subset as GeoTiff on disk.
 #' @param timestep Integer. Choose one or several timesteps (vector).
-#' @param touches Logical. Default: TRUE, all pixels touched by the polygon(s) will
-#'   be updated. Set to FALSE to only include pixels that are on the line render
-#'   path or have center points inside the polygon(s).
+#' @param touches Logical. Default: TRUE, all pixels touched by the polygon(s)
+#'   will be updated. Set to FALSE to only include pixels that are on the line
+#'   render path or have center points inside the polygon(s).
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
 #'   outputfile defined by 'outputpath'.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
@@ -25,8 +25,8 @@
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
 #'
-#' @return Returns a SpatRaster object if no outputpath is given. Otherwise the
-#'   subset is written onto the disk and the ouputpath is returned.
+#' @return Returns a SpatRaster object if no output path is given. Otherwise the
+#'   subset is written onto the disk and the ouput path is returned.
 #' @export
 #' @seealso [ebvcube::ebv_read_bb()] for subsetting via bounding box.
 #'

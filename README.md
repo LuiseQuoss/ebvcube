@@ -230,8 +230,7 @@ dim(data)
 #> [1] 85 90  3
 ```
 
-To subset the data using a Shapefile you need to indicate a directory
-for temporarily created files.
+You can also get a spatial subset of the data by providing a Shapefile.
 
 ``` r
 #load subset from shapefile (Cameroon)

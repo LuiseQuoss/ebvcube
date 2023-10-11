@@ -15,8 +15,8 @@
 #' @param timestep Integer. Choose one or several timesteps (vector).
 #' @param type Character. Choose between 'a', 'r' and 'da'. The first returns an
 #'   array or matrix object. The 'r' indicates that a SpatRaster object from the
-#'   terra package will be returned. The latter ('da') returns a DelayedArray or
-#'   DelayedMatrix object.
+#'   terra package will be returned (default). The latter ('da') returns a
+#'   DelayedArray or DelayedMatrix object.
 #' @param sparse Logical. Default: FALSE. Set to TRUE if the data contains a lot
 #'   empty raster cells. Only relevant for DelayedArray return value.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
@@ -52,7 +52,7 @@
 #' cSAR.array <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
 #'                               entity = 1, timestep = 1, type='r')
 #' }
-ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='a',
+ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='r',
                      sparse=FALSE, ignore_RAM = FALSE, verbose = FALSE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit

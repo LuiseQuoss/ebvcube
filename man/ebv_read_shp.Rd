@@ -36,9 +36,9 @@ to be *.shp.}
 \item{outputpath}{Character. Default: NULL, returns the data as a SpatRaster
 object in memory. Optional: set path to write subset as GeoTiff on disk.}
 
-\item{touches}{Logical. Default: TRUE, all pixels touched by the polygon(s) will
-be updated. Set to FALSE to only include pixels that are on the line render
-path or have center points inside the polygon(s).}
+\item{touches}{Logical. Default: TRUE, all pixels touched by the polygon(s)
+will be updated. Set to FALSE to only include pixels that are on the line
+render path or have center points inside the polygon(s).}
 
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
 outputfile defined by 'outputpath'.}
@@ -50,8 +50,8 @@ your memory to read the data. Can be switched off (set to TRUE).}
 it to FALSE.}
 }
 \value{
-Returns a SpatRaster object if no outputpath is given. Otherwise the
-subset is written onto the disk and the ouputpath is returned.
+Returns a SpatRaster object if no output path is given. Otherwise the
+subset is written onto the disk and the ouput path is returned.
 }
 \description{
 Read a subset of one or more layers from one datacube of the

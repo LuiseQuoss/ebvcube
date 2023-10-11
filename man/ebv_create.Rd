@@ -21,8 +21,9 @@ ebv_create(
 )
 }
 \arguments{
-\item{jsonpath}{Character. Path to the json file downloaded from the
-\href{https://portal.geobon.org/api-docs}{Geobon Portal API}.}
+\item{jsonpath}{Character. Path to the json file downloaded from the EBV Data
+Portal. Login to the page and click on 'Uploads' and 'New Upload' to start
+the process.}
 
 \item{outputpath}{Character. Set path where the netCDF file should be
 created.}
@@ -76,9 +77,8 @@ Creates the netCDF file at the 'outputpath' location.
 }
 \description{
 Create the core structure of the EBV netCDF based on the json
-from the \href{https://portal.geobon.org/api-docs}{Geobon Portal API}. Data
-will be added afterwards. Use \code{\link[=ebv_add_data]{ebv_add_data()}} to add the missing
-data.
+from the \href{https://portal.geobon.org}{EBV Data Portal}. Data will be
+added afterwards using \code{\link[=ebv_add_data]{ebv_add_data()}}.
 }
 \note{
 To check out the results take a look at your netCDF file with
