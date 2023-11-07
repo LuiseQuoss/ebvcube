@@ -7,10 +7,15 @@
 ebv_download(id = NULL, outputdir, overwrite = FALSE, verbose = TRUE)
 }
 \arguments{
-\item{id}{Integer or Character. Must be a single integer value or a character
-string representing the title of the data set. Both can be retrieved by
-running \code{\link[=ebv_download]{ebv_download()}} without any arguments which returns the
-list of data sets available and their title and ID.}
+\item{id}{Integer or Character. There are three option to identify the datase
+to be downloaded. (1) It can be a single integer value representing the ID
+of the dataset. (2) It can be a character string representing the title of
+the data set. (3) It can be a character string representing the DOI of the
+dataset in the format '10.25829/f2rdp4' (Dataset 'Habitat availability for
+African great apes' by Jessica Junker from the EBV Data Portal). All three
+identifier can be retrieved by running \code{\link[=ebv_download]{ebv_download()}} without
+any arguments which returns a data.frame of all available data sets and
+their title, ID and DOI.}
 
 \item{outputdir}{Character. Output directory of the downloaded files.}
 
@@ -22,7 +27,8 @@ it to FALSE.}
 }
 \value{
 Downloads a netCDF and json file (metadata) to the given output
-directory.
+directory. If run empty returns a data.frame of all available data sets and
+their title, ID and DOI.
 }
 \description{
 Returns the list of all available data sets at the EBV Portal if

@@ -5,10 +5,15 @@
 #'   (netCDF) and its metadata (json file) will be downloaded to the given
 #'   output directory.
 #'
-#' @param id Integer or Character. Must be a single integer value or a character
-#'   string representing the title of the data set. Both can be retrieved by
-#'   running [ebvcube::ebv_download()] without any arguments which returns the
-#'   list of data sets available and their title and ID.
+#' @param id Integer or Character. There are three option to identify the datase
+#'   to be downloaded. (1) It can be a single integer value representing the ID
+#'   of the dataset. (2) It can be a character string representing the title of
+#'   the data set. (3) It can be a character string representing the DOI of the
+#'   dataset in the format '10.25829/f2rdp4' (Dataset 'Habitat availability for
+#'   African great apes' by Jessica Junker from the EBV Data Portal). All three
+#'   identifier can be retrieved by running [ebvcube::ebv_download()] without
+#'   any arguments which returns a data.frame of all available data sets and
+#'   their title, ID and DOI.
 #' @param outputdir Character. Output directory of the downloaded files.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE if you want to
 #'   overwrite the netCDF and json.
@@ -16,7 +21,8 @@
 #'   it to FALSE.
 #'
 #' @return Downloads a netCDF and json file (metadata) to the given output
-#'   directory.
+#'   directory. If run empty returns a data.frame of all available data sets and
+#'   their title, ID and DOI.
 #' @export
 #'
 #' @examples
@@ -66,7 +72,7 @@ ebv_download <- function(id=NULL,
   datasets_list <- as.data.frame(datasets_list)
   datasets_list <- datasets_list[order(as.numeric(datasets_list$id)),] #sort by id
   datasets_list$id <- as.integer(datasets_list$id)
-
+  datasets_list$doi <- c('coming soon')
 
   if(is.null(id)){
     #no dataset chosen
@@ -88,10 +94,43 @@ ebv_download <- function(id=NULL,
     if (checkmate::checkInt(id)==TRUE){
       #pass - ID is already a single integer value
     }else if(checkmate::checkCharacter(id, len=1)==TRUE){
-      #id is title -> turn into integer
-      id <- which(datasets_list$title==id)
-      if(ebv_i_empty(id)){
-        stop('Yout title does not match any of the titles available. Run this function without any arguments to get the list of available datasets, choose one and download it.')
+      #check if DOI - check will have a lot of false positives!
+      if(grepl('^10[.]\\d{1,}[.]?\\d*[/]?', id)){
+
+        #check if only DOI or link
+        if(! stringr::str_detect(id, 'https://doi.org/')){
+          url_id <- paste0('https://doi.org/', id)
+        }else{
+          url_id <- id
+        }
+
+        #check if this website is available
+        con_doi <- url(url_id)
+        check_doi <- suppressWarnings(try(open.connection(con_doi,open="rt",timeout=t),silent=T)[1])
+        suppressWarnings(try(close.connection(con_doi),silent=T))
+        website_doi <- ifelse(is.null(check_doi),TRUE,FALSE)
+
+        if(website_doi!=TRUE){
+          stop(paste0('The DOI you provided (', url_id ,') cannot be reached.\n', check_doi))
+        }
+
+        #get to the portal site
+        a <- httr::HEAD(url_id)
+        path_portal <- (a$all_headers[[1]])$headers$location
+
+        #get the ID
+        id <- stringr::str_split(path_portal, '=')[[1]][2]
+
+        #get download link from API
+        #download
+
+    }else{
+        #check if it is the title of a data set
+        #id is title -> turn into integer
+        id <- which(datasets_list$title==id)
+        if(ebv_i_empty(id)){
+          stop('Yout title does not match any of the titles available. Run this function without any arguments to get the list of available datasets, choose one and download it.')
+        }
       }
     }else{
       stop('The ID argument must be a single integer value or a single character string ')
