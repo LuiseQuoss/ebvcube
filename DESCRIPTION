@@ -54,6 +54,7 @@ Imports:
     DelayedArray,
     ggplot2,
     HDF5Array,
+    httr,
     jsonlite,
     memuse,
     methods,
