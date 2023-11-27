@@ -114,12 +114,18 @@ ebv_download <- function(id=NULL,
           stop(paste0('The DOI you provided (', url_id ,') cannot be reached.\n', check_doi))
         }
 
-        #get to the portal site
+        #get the url of the redirection from the DOI url
         a <- httr::HEAD(url_id)
         path_portal <- (a$all_headers[[1]])$headers$location
-
-        #get the ID
-        id <- stringr::str_split(path_portal, '=')[[1]][2]
+        #check if redirect to portal website
+        if(!grepl('portal.geobon.org/ebv-detail?id=', path_portal, fixed=T)){
+          #stop if DOI is not pointing to EBV Data Portal
+          stop('The DOI you have entered does not point to a dataset from the EBV Data Portal and therefore cannot be downloaded.')
+        }else{
+          #get the ID from the path
+          id <- stringr::str_split(path_portal, '=')[[1]][2]
+          id <- stringr::str_remove(id, '&v')
+        }
 
         #get download link from API
         #download
