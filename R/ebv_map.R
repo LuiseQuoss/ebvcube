@@ -303,7 +303,8 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
 
   }else{
-    color_def <- ggplot2::scale_fill_fermenter(na.value=NA, palette = palette, breaks =  as.numeric(s),
+    color_def <- ggplot2::scale_fill_fermenter(na.value=NA, palette = palette,
+                                               breaks =  as.numeric(s),
                                               label = signif(as.numeric(s),3),
                                               direction = direction,
                                               guide=ggplot2::guide_bins(title=paste(strwrap(
@@ -314,7 +315,8 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
                                                                         #show.limits = TRUE,
                                                                         reverse=T,
                                                                         axis=F
-                                              ))
+                                                                        )
+                                              )
   }
 
   #plot with country outlines ----

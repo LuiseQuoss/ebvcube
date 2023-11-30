@@ -103,7 +103,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
   }
 
   #file closed?
-  ebv_i_file_opened(filepath, verbose)
+  # ebv_i_file_opened(filepath, verbose)
 
   #get datacubes
   datacubes <- ebv_datacubepaths(filepath, verbose=verbose)
