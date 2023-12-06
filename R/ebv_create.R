@@ -318,9 +318,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   # unit
   if(stringr::str_detect(crs_ref,'PROJCRS')){
-    crs_unit <- 'meters'
+    crs_unit <- 'meter'
   } else{
-    crs_unit <- 'degrees'
+    crs_unit <- 'degree'
   }
   #compare geospatial unit from EPSG and json
   # json_unit <- json$geospatial_lat_units
@@ -807,12 +807,12 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   ebv_i_char_att(hdf, 'geospatial_bounds', bounds)
   ebv_i_char_att(hdf, 'geospatial_lat_resolution', paste0(res[2], ' ', crs_unit))
   ebv_i_char_att(hdf, 'geospatial_lon_resolution', paste0(res[1], ' ', crs_unit))
-  if(crs_unit == 'meters'){
-    ebv_i_char_att(hdf, 'geospatial_lon_units', 'meters')
-    ebv_i_char_att(hdf, 'geospatial_lat_units', 'meters')
+  if(crs_unit == 'meter'){
+    ebv_i_char_att(hdf, 'geospatial_lon_units', 'meter')
+    ebv_i_char_att(hdf, 'geospatial_lat_units', 'meter')
   }else{
-    ebv_i_char_att(hdf, 'geospatial_lon_units', 'degrees_east')
-    ebv_i_char_att(hdf, 'geospatial_lat_units', 'degrees_north')
+    ebv_i_char_att(hdf, 'geospatial_lon_units', 'degree_east')
+    ebv_i_char_att(hdf, 'geospatial_lat_units', 'degree_north')
   }
 
   #temporal attributes
@@ -922,9 +922,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   # :units = 'degrees_north';
   if(crs_proj){
-    ebv_i_char_att(lat.id, 'units', 'meters')#paste0(crs_unit, '_north'))
+    ebv_i_char_att(lat.id, 'units', 'meter')#paste0(crs_unit, '_north'))
   }else{
-    ebv_i_char_att(lat.id, 'units', 'degrees_north')#paste0(crs_unit, '_north'))
+    ebv_i_char_att(lat.id, 'units', 'degree_north')#paste0(crs_unit, '_north'))
   }
 
 
@@ -947,9 +947,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   # :units = 'degrees_east';
   if(crs_proj){
-    ebv_i_char_att(lon.id, 'units', 'meters')#paste0(crs_unit, '_north'))
+    ebv_i_char_att(lon.id, 'units', 'meter')#paste0(crs_unit, '_north'))
   }else{
-    ebv_i_char_att(lon.id, 'units', 'degrees_east')#paste0(crs_unit, '_east'))
+    ebv_i_char_att(lon.id, 'units', 'degree_east')#paste0(crs_unit, '_east'))
   }
 
   #close dataset
