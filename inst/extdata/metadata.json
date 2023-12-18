@@ -60,8 +60,8 @@
                 "ebv_spatial_description": "N\/A",
                 "ebv_spatial_resolution": null
             },
-            "geospatial_lat_units": "degrees_north",
-            "geospatial_lon_units": "degrees_east",
+            "geospatial_lat_units": "degree_north",
+            "geospatial_lon_units": "degree_east",
             "time_coverage": {
                 "time_coverage_resolution": "decadal",
                 "time_coverage_start": "1900",

@@ -78,8 +78,8 @@
                 "ebv_geospatial_scope": "Global",
                 "ebv_geospatial_description": "N/A"
             },
-            "geospatial_lat_units": "degrees",
-            "geospatial_lon_units": "degrees",
+            "geospatial_lat_units": "degree",
+            "geospatial_lon_units": "degree",
             "time_coverage": {
                 "time_coverage_resolution": "N/A",
                 "time_coverage_start": "1900-01-01",

@@ -10,7 +10,7 @@ test_that("properties: check spatial", {
   expect_equal(prop$epsg,"4326")
   expect_equal(prop$extent,c(-180, 180, -90, 90))
   expect_equal(prop$resolution, c(1,1))
-  expect_equal(prop$crs_units,'degrees')
+  expect_equal(prop$crs_units,'degree')
   expect_equal(prop$dimensions,c(180, 360, 3, 3))
   expect_equal(prop$scope,'Global')
   expect_equal(prop$description,'N/A')
