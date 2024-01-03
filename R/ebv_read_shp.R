@@ -115,7 +115,7 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
   }
   hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
   if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
-    stop(paste0('The given variable is not valid:\n', datacubepath))
+    stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
 
