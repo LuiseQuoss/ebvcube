@@ -637,7 +637,7 @@ ebv_i_eval_wkt <- function(wkt){
 
 #' Input character mess, get nice string.
 #'
-#' @param characters. Character. A set of characters that shall be conencted and
+#' @param characters. Character. A set of characters that shall be connected and
 #' whitespaces removed. Helpful for the character variables like 'entity' in the
 #' netCDFs. Used with apply.
 #'
@@ -649,4 +649,143 @@ ebv_i_paste <- function(characters) {
     replacement = "",
     x = paste0(characters, collapse = '')
   ))
+}
+
+
+#' Turn ISO date into index for subsetting
+#'
+#' @param date_iso. Character. User input to get data for one timestep.
+#' @param dates. The timesteps/dates available in the netCDF. Comes from the
+#'   ebv_properties function.
+#'
+#' @return Integer. Index of the timestep in the datacube.
+#' @noRd
+ebv_i_date <- function(date_iso, dates){
+  if(checkmate::checkCharacter(date_iso)!=TRUE){
+    stop('Your timestep must be of type character.')
+  }
+  index <- which(date_is==dates)
+  if(checkmate::checkInt(index)!=TRUE){
+    stop(paste0('Could not find the timestep specified by you: ', date_iso,'\nAvailable timesteps: ', paste0(dates, collapse = ', ')))
+  }else{
+    return(index)
+  }
+}
+
+#' Turn scenario and metric into the datacubepath
+#'
+#' @param scenario. Character or NULL.
+#' @param metric. Character.
+#' @param datacubepaths Dataframe.
+#' @param verbose Boolean.
+#'
+#' @return Character. The datacubepath used by all the other functions.
+#' @noRd
+ebv_i_datacubepath <- function(scenario, metric, datacubepaths, verbose){
+  #initial checks
+  if(!(checkmate::checkCharacter(scenario)==TRUE | is.null(scenario))){
+    stop('Your scenario must either be of type character or simply NULL - if the dataset has no scenario.')
+  }
+  if(checkmate::checkCharacter(metric)!=TRUE){
+    stop('Your metric must be of type character.')
+  }
+
+  #how many scenarios are there?
+  if(stringr::str_detect(datacubepaths[1,1], 'scenario')){
+    s <- length(unique(stringr::str_split(datacubepaths[,1], '/', simplify = T)[,1]))
+  }else{
+    s <- 0
+  }
+  #how many metrics are there?
+  m <- length(unique(stringr::str_split(datacubepaths[,1], '/', simplify = T)[,2]))
+
+
+
+  #check if the user specified a scenario
+  if(is.null(scenario) & s>1){
+    stop(paste0('You only specified a metric but the dataset has ', s, ' scenarios. Please specify one. If you do not know what scenarios there are check the ebv_datacubepaths function.'))
+  } else if(is.null(scenario) & s==1){
+    #if scenario is not specified but there is only 1
+    part_1 <- 'scenario_1/'
+  }else if(is.null(scenario) & s==0){
+    #if there is no scenario
+    part_1 <- ''
+  } else if(!is.null(scenario) & s==0){
+    #if there is a scenario defined by the user but actually not in the dataset/needed
+    if(verbose){print('You specified a scenario, but the dataset has no scenarios. This scenario will be ignored.')}
+    part_1 <- ''
+  }
+
+  #check the scenario if there are several
+  if(s>1){
+    #try absolute matching
+    s_index <- which(scenario == datacubepaths$scenario_names)[1]
+    if(!is.na(s_index)){
+      part_1 <- paste0(stringr::str_split(datacubepaths$datacubepaths[s_index], '/', simplify = T)[1,1], '/')
+    }else{
+      #try fuzzy matching
+      # agrep('ssp1 lucc', datacubepaths$scenario_names, ignore.case = TRUE,
+      #       fixed = FALSE, max.distance = 0.3, value=T)
+      # stringdist::amatch('SSP1 LUCC' , datacubepaths$scenario_names, maxDist = 10)
+      dist <- utils::adist(scenario , datacubepaths$scenario_names, ignore.case=T, partial=F)
+      s_index <- which(dist == min(dist))
+      if(length(s_index) > 1) {
+        stop('No match for the scenario you gave. Please correct or use the ebv_datacubepaths function to fill in the datacubepath argument instead.')
+      }else{
+        part_1 <- paste0(stringr::str_split(datacubepaths$datacubepaths[s_index], '/', simplify = T)[1,1], '/')
+      }
+
+      #inform user
+      if(verbose){
+        print(paste0('Used fuzzy matching to detect the scenario. This was the best match: ', datacubepaths$scenario_names[s_index], '. If this does not fit what you search for, use the ebv_datacubepaths function to correct your scenario name.'))
+      }
+
+    }
+
+  }
+
+  #check the metric if there are several
+  if(m>1){
+    #try absolute matching
+    m_index <- which(metric == datacubepaths$metric_names)[1]
+    if(!is.na(m_index)){
+      part_2 <- paste0(stringr::str_split(datacubepaths$datacubepaths[m_index], '/', simplify = T)[1,2], '/')
+    }else{
+      #try fuzzy matching
+      dist <- utils::adist(metric , datacubepaths$metric_names, ignore.case=T, partial=F)
+      m_index <- which(dist == min(dist))
+      if(length(m_index) > 1) {
+        stop('No match for the metric you gave. Please correct or use the ebv_datacubepaths function to fill in the datacubepath argument instead.')
+      }else{
+        part_2 <- paste0(stringr::str_split(datacubepaths$datacubepaths[m_index], '/', simplify = T)[1,2], '/')
+      }
+
+      #inform user
+      if(verbose){
+        print(paste0('Used fuzzy matching to detect the metric This was the best match: ', datacubepaths$metric_names[m_index], '. If this does not fit what you search for, use the ebv_datacubepaths function to correct your metric name.'))
+      }
+
+    }
+  } else if (m==1){
+    #if there is only one metric...
+    part_2 <- 'metric_1/'
+  }
+
+
+  #put the datacube path together
+  datacubepath <- paste0(part_1, part_2, 'ebv_cube')
+
+  #double check
+  if(!datacubepath %in% datacubepaths$datacubepaths){
+    stop('We could not identify the datacubepath correctly from the (scenario and) metric argument(s). Please check the ebv_datacubepaths function and pass the correct datacubepath that corresponds to your (scenario and) metric to the datacubepath-argument directly. Sorry for the inconvenience.')
+  }
+
+  #info for user
+  if(verbose){
+    print(paste0('Referring to datacubepath ', datacubepath))
+  }
+
+  #return the datacubepath
+  return(datacubepath)
+
 }
