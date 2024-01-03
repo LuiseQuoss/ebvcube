@@ -163,7 +163,10 @@ ebv_download <- function(id=NULL,
 
     #check if netCDF file already exists
     if(file.exists(file.path(outputdir, name_nc)) & overwrite==FALSE ){
-      stop('NetCDF already downloaded to this directory. Set overwrite to TRUE to replace the older version.')
+      if(verbose){
+        print('NetCDF already downloaded to this directory. Set overwrite to TRUE to replace the older version.')
+      }
+      return(file.path(outputdir, name_nc))
     }
 
     #download netcdf
