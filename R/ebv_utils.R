@@ -661,12 +661,17 @@ ebv_i_paste <- function(characters) {
 #' @return Integer. Index of the timestep in the datacube.
 #' @noRd
 ebv_i_date <- function(date_iso, dates){
+  #allow for year only
+  #1. check if several values for one year?
+  #2. allow for integer value
+  #implement the same for month
+
   if(checkmate::checkCharacter(date_iso)!=TRUE){
     stop('Your timestep must be of type character.')
   }
   index <- which(date_is==dates)
   if(checkmate::checkInt(index)!=TRUE){
-    stop(paste0('Could not find the timestep specified by you: ', date_iso,'\nAvailable timesteps: ', paste0(dates, collapse = ', ')))
+    stop(paste0('Could not find the timestep specified by you: ', date_iso, '\nAvailable timesteps: ', paste0(dates, collapse = ', ')))
   }else{
     return(index)
   }
