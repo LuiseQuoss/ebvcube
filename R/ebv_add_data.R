@@ -315,6 +315,10 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     rhdf5::H5Sclose(file_space)
   }
 
+
+  #think about replacing NaN with NA -> weird errors -> check again if this bug is real!
+  data[is.nan(data)] <- NA
+
   #write data ----
 
   if(is_4D){
