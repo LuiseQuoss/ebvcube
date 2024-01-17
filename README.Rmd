@@ -52,7 +52,7 @@ You can install the ebvcube packages with:
 install.packages('ebvcube') 
 
 #install the latest version from GitHub
-devtools::install_github('https://github.com/LuiseQuoss/ebvcube')
+devtools::install_github('https://github.com/LuiseQuoss/ebvcube/tree/dev')
 
 ```
 This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL installation on your machine. 
