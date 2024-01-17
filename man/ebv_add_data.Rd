@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebv_add_data.R
 \name{ebv_add_data}
 \alias{ebv_add_data}
-\title{Add data to a self-created EBV netCDF}
+\title{Add data to your EBV netCDF}
 \usage{
 ebv_add_data(
   filepath_nc,
@@ -54,8 +54,8 @@ Adds data to the EBV netCDF. Check your results using
 \code{\link[=ebv_map]{ebv_map()}} and/or \code{\link[=ebv_trend]{ebv_trend()}}.
 }
 \description{
-Add data to the self-created EBV netCDF from GeoTiffs. First,
-create a new EBV netCDF using \code{\link[=ebv_create]{ebv_create()}}.
+Add data to your EBV netCDF from GeoTiffs or in-memory arrays.
+First, create a new EBV netCDF using \code{\link[=ebv_create]{ebv_create()}}.
 }
 \note{
 If the data exceeds your memory the RAM check will throw an error. No

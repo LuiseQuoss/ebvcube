@@ -1,7 +1,7 @@
-#' Add data to a self-created EBV netCDF
+#' Add data to your EBV netCDF
 #'
-#' @description Add data to the self-created EBV netCDF from GeoTiffs. First,
-#'   create a new EBV netCDF using [ebvcube::ebv_create()].
+#' @description Add data to your EBV netCDF from GeoTiffs or in-memory arrays.
+#'   First, create a new EBV netCDF using [ebvcube::ebv_create()].
 #'
 #' @param filepath_nc Character. Path to the self-created netCDF file.
 #' @param data Character or matrix or array. If character: Path to the GeoTiff
