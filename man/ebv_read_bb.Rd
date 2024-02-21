@@ -74,11 +74,11 @@ bb_wgs84 <- c(-26, 64, 30, 38)
 bb_utm32 <- c(-2383703, 5532302, 3643854, 4564646)
 
 
+\dontrun{
 #read bb (based on EPSG 4326) - return SpatRaster
 cSAR_subset <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
                              entity = 1, timestep = 1:3, bb = bb_wgs84)
 
-\dontrun{
 #read bb (based on EPSG 4326) - write to GeoTiff
 path <- ebv_read_bb(filepath = file, datacubepath = datacubes[1,1],
                     entity = 1, timestep = 1, bb = bb_wgs84,
