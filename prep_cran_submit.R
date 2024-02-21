@@ -6,10 +6,12 @@ devtools::test()
 devtools::run_examples()
 
 #build readme and manual
-devtools::build_manual()
+# devtools::build_manual()
+devtools::build_manual(path=system.file(file.path("docs"), package="ebvcube"))
 devtools::build_readme()
 
 # Check package as CRAN
+devtools::check()
 rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"))
 
 # Check content

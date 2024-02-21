@@ -669,7 +669,7 @@ ebv_i_date <- function(date_iso, dates){
   if(checkmate::checkCharacter(date_iso)!=TRUE){
     stop('Your timestep must be of type character.')
   }
-  index <- which(date_is==dates)
+  index <- which(date_iso==dates)
   if(checkmate::checkInt(index)!=TRUE){
     stop(paste0('Could not find the timestep specified by you: ', date_iso, '\nAvailable timesteps: ', paste0(dates, collapse = ', ')))
   }else{

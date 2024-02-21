@@ -1,4 +1,16 @@
-# ebvcube 0.1.5
+# ebvcube 0.1.7
+
+## Major changes
+- ebv_download: download via DOI
+- ebv_create: lon and lat units changed (see below)
+- EBVcube format: geospatial units: 'degrees'/'meters' to 'degree'/'meter'
+- ebv_download: return path of netCDF file also if it is already downloaded 
+
+## Bug fixes
+- remove ebv_i_file_opened from the functions
+- ebv_read: read-access only
+
+# ebvcube 0.1.6
 
 ## Major changes
 - ebv_resample: added more methods
