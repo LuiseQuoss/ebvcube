@@ -67,29 +67,6 @@ install.packages('ebvcube')
 devtools::install_github('https://github.com/LuiseQuoss/ebvcube/tree/dev')
 ```
 
-This packages uses GDAL tools (GDAL version: 3.1.4). You need a GDAL
-installation on your machine. One possibility to install GDAL is the
-[OSGeo4W Network installer](https://trac.osgeo.org/osgeo4w/). Check GDAL
-when running the installation! If you have QGIS on your machine, GDAL
-should be included. If you have problems you can set the GDAL related
-paths by hand using the following lines of code. Your paths will differ!
-First check your GDAL installation.
-
-``` r
-#add GDAL path to the existing paths
-Sys.setenv(PATH = paste0('C:\\OSGeo4W64\\bin;',Sys.getenv("PATH")))
-#check and change path for proj_lib, gdal_data and gdal_driver_path
-Sys.setenv(PROJ_LIB = 'C:\\OSGeo4W64\\share\\proj')
-Sys.setenv(GDAL_DATA = 'C:\\OSGeo4W64\\share\\gdal')
-Sys.setenv(GDAL_DRIVER_PATH = 'C:\\OSGeo4W64\\bin\\gdalplugins')
-
-#you can always check your GDAL path settings using
-Sys.getenv("PATH")
-Sys.getenv("PROJ_LIB")
-Sys.getenv("GDAL_DATA")
-Sys.getenv("GDAL_DRIVER_PATH")
-```
-
 ## 3. Working with the package - a quick intro
 
 The example data set used in this README is a spatial subset (African
@@ -168,7 +145,7 @@ ebv_map(file, dc, entity=1, timestep = 1, classes = 9,
         verbose=FALSE, col_rev = T)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 It’s nice to see the global distribution, but how is the change of that
 datacube (non forest birds) over time? Let’s take a look at the average.
@@ -181,7 +158,7 @@ averages <- ebv_trend(file, dc, entity=1)
 #> ================================================================================
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
 ``` r
 averages
@@ -247,7 +224,7 @@ ggplot2::ggplot() +
   ggplot2::theme_classic()
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 Imagine you have a very large dataset but only limited memory. The
 package provides the possibility to load the data as a DelayedArray. The
 ebv_write() function helps you to write that data back on disk properly.
