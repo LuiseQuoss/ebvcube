@@ -686,7 +686,7 @@ ebv_i_date <- function(timestep, dates){
     #make sure dates are character
     dates <- as.character(dates)
     #get index of date(s)
-    index <- which(timestep%in%dates)
+    index <- which(dates %in% timestep)
     #check: found any timestep?
     if(!length(index)>0){
       stop(paste0('Could not find the timestep(s) specified by you: ', paste(timestep, collapse = ', '), '\nAvailable timesteps: ', paste0(dates, collapse = ', ')))
