@@ -652,29 +652,56 @@ ebv_i_paste <- function(characters) {
 }
 
 
-#' Turn ISO date into index for subsetting
+#' Test all integer and ISO date timestep-inputs, return index/indices
 #'
-#' @param date_iso. Character. User input to get data for one timestep.
+#' @param timestep Integer or character.
 #' @param dates. The timesteps/dates available in the netCDF. Comes from the
 #'   ebv_properties function.
 #'
 #' @return Integer. Index of the timestep in the datacube.
 #' @noRd
-ebv_i_date <- function(date_iso, dates){
-  #allow for year only
-  #1. check if several values for one year?
-  #2. allow for integer value
-  #implement the same for month
+ebv_i_date <- function(timestep, dates){
 
-  if(checkmate::checkCharacter(date_iso)!=TRUE){
-    stop('Your timestep must be of type character.')
+  #maximum timesteps
+  max_time <- length(dates)
+
+  #check if integer or character
+  if ((checkmate::check_integerish(timestep, lower = 1)!=TRUE)&(checkmate::checkCharacter(timestep)!=TRUE)){
+    stop('The argument timestep must be of type integer or character.')
   }
-  index <- which(date_iso==dates)
-  if(checkmate::checkInt(index)!=TRUE){
-    stop(paste0('Could not find the timestep specified by you: ', date_iso, '\nAvailable timesteps: ', paste0(dates, collapse = ', ')))
-  }else{
-    return(index)
+
+  #if integer
+  if(checkmate::check_integerish(timestep)==TRUE){
+    #check that timestep is not bigger than the maximum timestep
+    if(checkmate::check_integerish(timestep, lower = 1, upper = max_time, max.len = max_time)!=TRUE){
+      timestep <- timestep[which(! timestep %in% 1:max_time)]
+      stop(paste0('Part of your timesteps is out of the temporal bounds: ', paste(timestep, collapse = ', '), '. Timestep range is 1 to ', max_time, '.'))
+    }else{
+      #return timestep
+      return(timestep)
+    }
+  } else if (checkmate::checkCharacter(timestep)==TRUE){
+  #if character - find index, check if outside range
+
+    #make sure dates are character
+    dates <- as.character(dates)
+    #get index of date(s)
+    index <- which(timestep%in%dates)
+    #check: found any timestep?
+    if(!length(index)>0){
+      stop(paste0('Could not find the timestep(s) specified by you: ', paste(timestep, collapse = ', '), '\nAvailable timesteps: ', paste0(dates, collapse = ', ')))
+    }else if (length(index)!=length(timestep)){
+      #found only part of the timesteps?
+      timestep <- timestep[which(! timestep %in% dates)]
+      stop(paste0('Part of your timesteps is out of the temporal bounds: ', paste(timestep, collapse = ', '), '. Timestep range is ', paste(dates, collapse = ', '), '.'))
+    }else{
+      #found all -> success!
+      return(index)
+    }
+    #IMPLEMENT FOR YEAR/MONTH ONLY
+
   }
+
 }
 
 #' Turn scenario and metric into the datacubepath
