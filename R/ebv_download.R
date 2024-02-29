@@ -5,24 +5,24 @@
 #'   (netCDF) and its metadata (json file) will be downloaded to the given
 #'   output directory.
 #'
-#' @param id Integer or Character. There are three option to identify the datase
-#'   to be downloaded. (1) It can be a single integer value representing the ID
-#'   of the dataset. (2) It can be a character string representing the title of
-#'   the data set. (3) It can be a character string representing the DOI of the
-#'   dataset in the format '10.25829/f2rdp4' (Dataset 'Habitat availability for
-#'   African great apes' by Jessica Junker from the EBV Data Portal). All three
-#'   identifier can be retrieved by running [ebvcube::ebv_download()] without
-#'   any arguments which returns a data.frame of all available data sets and
-#'   their title, ID and DOI.
+#' @param id Integer or Character. There are three option to identify the
+#'   dataset to be downloaded. (1) It can be a single integer value representing
+#'   the ID of the dataset. (2) It can be a character string representing the
+#'   title of the data set. (3) It can be a character string representing the
+#'   DOI of the dataset in the format '10.25829/f2rdp4' (Dataset 'Habitat
+#'   availability for African great apes' by Jessica Junker from the EBV Data
+#'   Portal). All three identifier can be retrieved by running
+#'   [ebvcube::ebv_download()] without any arguments which returns a data.frame
+#'   of all available data sets and their ID, title and DOI.
 #' @param outputdir Character. Output directory of the downloaded files.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE if you want to
 #'   overwrite the netCDF and json.
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
 #'
-#' @return Downloads a netCDF and json file (metadata) to the given output
+#' @return Downloads a netCDF and json file (ACDD metadata) to the given output
 #'   directory. If run empty returns a data.frame of all available data sets and
-#'   their title, ID and DOI.
+#'   their ID, title and DOI.
 #' @export
 #'
 #' @examples
