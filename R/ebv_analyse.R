@@ -13,7 +13,10 @@
 #'   via the path to a shapefile (character) or the indication of a bounding box
 #'   (vector of four numeric values) defining the subset. Else the whole area is
 #'   analysed.
-#' @param timestep Integer. Choose one or several timesteps (vector).
+#' @param timestep Integer or character. Select one or several timestep(s).
+#'   Either provide an integer value or list of values that refer(s) to the
+#'   index of the timestep(s) (minimum value: 1) or provide a date or list of
+#'   dates in ISO format, such as '2015-01-01'.
 #' @param touches Logical. Optional. Default: TRUE. Only relevant if the subset is
 #'   indicated by a shapefile. See [ebvcube::ebv_read_shp()].
 #' @param epsg Numeric. Optional. Only relevant if the subset is indicated by a
@@ -102,18 +105,8 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
   #get properties
   prop <- ebv_properties(filepath, datacubepath, verbose)
 
-  #timestep check
-  #check if timestep is valid type
-  if(checkmate::checkIntegerish(timestep) != TRUE){
-    stop('Timestep has to be an integer or a list of integers.')
-  }
-
-  #check timestep range
-  max_time <- prop@spatial$dimensions[3]
-  min_time <- 1
-  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
-    stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-  }
+  #timestep check -> in case of ISO, get index
+  timestep <- ebv_i_date(timestep, prop@temporal$dates)
 
   #check logical arguments
   if(checkmate::checkLogical(na_rm, len=1, any.missing=F) != TRUE){

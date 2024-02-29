@@ -28,7 +28,10 @@ the entity argument is set to NULL. Else, a character string or single
 integer value must indicate the entity of the 4D structure of the EBV
 netCDFs.}
 
-\item{timestep}{Integer. Choose one or several timesteps (vector).}
+\item{timestep}{Integer or character. Select one or several timestep(s).
+Either provide an integer value or list of values that refer(s) to the
+index of the timestep(s) (minimum value: 1) or provide a date or list of
+dates in ISO format, such as '2015-01-01'.}
 
 \item{subset}{Optional if you want measurements on a smaller subset. Possible
 via the path to a shapefile (character) or the indication of a bounding box

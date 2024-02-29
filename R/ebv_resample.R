@@ -17,7 +17,10 @@
 #'   x-resolution, the y-resolution and the corresponding EPSG code, e.g.
 #'   c(0.25, 0.25, 4326).
 #' @param outputpath Character. Set path to write data as GeoTiff on disk.
-#' @param timestep_src Integer. Choose one or several timesteps (vector).
+#' @param timestep_src Integer or character. Select one or several timestep(s).
+#'   Either provide an integer value or list of values that refer(s) to the
+#'   index of the timestep(s) (minimum value: 1) or provide a date or list of
+#'   dates in ISO format, such as '2015-01-01'.
 #' @param method Character. Default: bilinear. Define resampling method. Choose
 #'   from: "near","bilinear","cubic", "cubicspline", "lanczos", "sum", "min",
 #'   "q1", "med", "q3", "max", "average", "mode" and "rms". For categorical
@@ -189,18 +192,8 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
     }
   }
 
-  #source timestep check
-  #check if timestep is valid type
-  if(checkmate::checkIntegerish(timestep_src) != TRUE){
-    stop('timestep_src has to be an integer or a list of integers.')
-  }
-
-  #check timestep_src range
-  max_time <- prop_src@spatial$dimensions[3]
-  min_time <- 1
-  if(checkmate::checkIntegerish(timestep_src, lower=min_time, upper=max_time) != TRUE){
-    stop(paste0('Chosen timestep_src ', paste(timestep_src, collapse = ' '), ' is out of bounds. timestep_src range is ', min_time, ' to ', max_time, '.'))
-  }
+  #timestep check -> in case of ISO, get index
+  timestep_src <- ebv_i_date(timestep_src, prop_src@temporal$dates)
 
   #outputpath check
   if (!is.null(outputpath)){
@@ -260,6 +253,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   data_raw <- terra::rast(filepath_src, subds = paste0('/', datacubepath_src))
 
   #get the index depending on the amount of entities and timesteps
+  max_time <- prop_src@spatial$dimensions[3]
   terra_index <- (entity_index-1)*max_time + timestep_src
   data_ts <- data_raw[[terra_index]]
 

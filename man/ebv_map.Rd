@@ -28,7 +28,9 @@ the entity argument is set to NULL. Else, a character string or single
 integer value must indicate the entity of the 4D structure of the EBV
 netCDFs.}
 
-\item{timestep}{Integer. Choose one timestep.}
+\item{timestep}{Integer or character. Select a timestep. Either provide an
+integer value that refers to the index of the timestep (minimum value: 1)
+or provide a date in ISO format, such as '2015-01-01'.}
 
 \item{countries}{Logical. Default: TRUE. Simple country outlines will be
 plotted on top of the raster data. Disable by setting this option to FALSE.}

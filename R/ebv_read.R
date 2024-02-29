@@ -12,7 +12,10 @@
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
 #'   netCDFs.
-#' @param timestep Integer. Choose one or several timesteps (vector).
+#' @param timestep Integer or character. Select one or several timestep(s).
+#'   Either provide an integer value or list of values that refer(s) to the
+#'   index of the timestep(s) (minimum value: 1) or provide a date or list of
+#'   dates in ISO format, such as '2015-01-01'.
 #' @param type Character. Choose between 'a', 'r' and 'da'. The first returns an
 #'   array or matrix object. The 'r' indicates that a SpatRaster object from the
 #'   terra package will be returned (default). The latter ('da') returns a
@@ -137,18 +140,8 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='r',
     }
   }
 
-  #timestep check
-  #check if timestep is valid type
-  if(checkmate::checkIntegerish(timestep) != TRUE){
-    stop('Timestep has to be an integer or a list of integers.')
-  }
-
-  #check timestep range
-  max_time <- prop@spatial$dimensions[3]
-  min_time <- 1
-  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
-    stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-  }
+  #timestep check -> in case of ISO, get index
+  timestep <- ebv_i_date(timestep, prop@temporal$dates)
 
   #######initial test end ----
 

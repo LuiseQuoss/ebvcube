@@ -10,7 +10,9 @@
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
 #'   netCDFs.
-#' @param timestep Integer. Choose one timestep.
+#' @param timestep Integer or character. Select a timestep. Either provide an
+#'   integer value that refers to the index of the timestep (minimum value: 1)
+#'   or provide a date in ISO format, such as '2015-01-01'.
 #' @param countries Logical. Default: TRUE. Simple country outlines will be
 #'   plotted on top of the raster data. Disable by setting this option to FALSE.
 #' @param col_rev Logical. Default: FALSE Set to TRUE if you want the color ramp
@@ -99,18 +101,12 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   prop <- ebv_properties(filepath, datacubepath, verbose)
 
   #timestep check
-  #check if timestep is valid type
-  if (checkmate::checkInt(timestep)!=TRUE){
-    stop('The argument timestep must be of type "single integerish value"')
+  #additional check because map only allows 1 timestep
+  if (length(timestep)>1){
+    stop('Please provide a single timestep.')
   }
-
-  #check timestep range
-  min_time <- 1
-  max_time <- prop@spatial$dimensions[3]
-  if(checkmate::checkInt(timestep, lower=min_time, upper=max_time)!= TRUE){
-    stop(paste0('Chosen timestep ', timestep, ' is out of bounds. Timestep range is ',
-                min_time, ' to ', max_time, '.'))
-  }
+  #normal timestep checks -> in case of ISO, get index
+  timestep <- ebv_i_date(timestep, prop@temporal$dates)
 
   #check classes argument - single integer
   if (checkmate::checkInt(classes)!=TRUE){

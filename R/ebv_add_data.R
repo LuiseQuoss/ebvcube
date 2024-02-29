@@ -15,9 +15,11 @@
 #'   netCDFs. The character string can be obtained using
 #'   [ebvcube::ebv_properties()]. Choose the entity you are interested in from
 #'   the slot general and the list item entity_names.
-#' @param timestep Integer. Default: 1. Define to which timestep or timesteps
-#'   the data should be added. If several timesteps are given they have to be in
-#'   a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.
+#' @param timestep Integer or character. Default: 1. Define to which timestep or
+#'   timesteps the data should be added. If several timesteps are given they
+#'   have to be in a continuous and in order. Meaning c(4,5,6) is right but
+#'   c(2,5,6) is wrong. Alternatively you can provide a date or list of dates in
+#'   ISO format, such as '2015-01-01' (also in order).
 #' @param band Integer. Default: 1. Define which band(s) to read from GeoTiff.
 #'   Can be several. Don't have to be in order as the timesteps definition
 #'   requires.
@@ -52,7 +54,7 @@
 #' ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
 #'              entity = 1, timestep = 1:3, data = tif, band = 1:3)
 #' }
-ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
+ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
                          data, band=1, ignore_RAM=FALSE,
                          verbose=TRUE){
   ### start initial tests ----
@@ -180,18 +182,8 @@ ebv_add_data <- function(filepath_nc, datacubepath,entity=NULL, timestep=1,
     }
   }
 
-  #check timesteps
-  #check if timestep is valid type
-  if(checkmate::checkIntegerish(timestep) != TRUE){
-    stop('Timestep has to be an integer or a list of integers.')
-  }
-
-  #check timestep range
-  max_time <- dims[3] #length(rhdf5::h5read(filepath_nc,'time'))
-  min_time <- 1
-  if(checkmate::checkIntegerish(timestep, lower=min_time, upper=max_time) != TRUE){
-    stop(paste0('Chosen timestep ', paste(timestep, collapse = ' '), ' is out of bounds. Timestep range is ', min_time, ' to ', max_time, '.'))
-  }
+  #timestep check -> in case of ISO, get index
+  timestep <- ebv_i_date(timestep, prop@temporal$dates)
 
   #check if band is valid type
   if(checkmate::checkIntegerish(band) != TRUE){

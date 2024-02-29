@@ -28,9 +28,11 @@ netCDFs. The character string can be obtained using
 \code{\link[=ebv_properties]{ebv_properties()}}. Choose the entity you are interested in from
 the slot general and the list item entity_names.}
 
-\item{timestep}{Integer. Default: 1. Define to which timestep or timesteps
-the data should be added. If several timesteps are given they have to be in
-a continuous order. Meaning c(4,5,6) is right but c(2,5,6) is wrong.}
+\item{timestep}{Integer or character. Default: 1. Define to which timestep or
+timesteps the data should be added. If several timesteps are given they
+have to be in a continuous and in order. Meaning c(4,5,6) is right but
+c(2,5,6) is wrong. Alternatively you can provide a date or list of dates in
+ISO format, such as '2015-01-01' (also in order).}
 
 \item{data}{Character or matrix or array. If character: Path to the GeoTiff
 file containing the data. Ending needs to be *.tif. If matrix or array:
