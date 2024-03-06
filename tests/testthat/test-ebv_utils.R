@@ -98,3 +98,122 @@ test_that("test ebv_i_transform_bb", {
   expect_equal(new_bb, c(-5565974.540,  5565974.540,  2273030.927,  4865942.280))
 })
 
+#date detection test ----
+
+test_that("test ebv_i_date integer success", {
+  dates_all <- 1:12
+  dates_indice <- ebv_i_date(1:3, dates_all)
+  expect_equal(dates_indice, 1:3)
+})
+
+test_that("test ebv_i_date single integer success", {
+  dates_all <- 1:13
+  dates_indice <- ebv_i_date(13, dates_all)
+  expect_equal(dates_indice, 13)
+})
+
+test_that("test ebv_i_date integer error", {
+  dates_all <- 1:12
+  expect_error(ebv_i_date(12:14, dates_all))
+})
+
+test_that("test ebv_i_date single integer error", {
+  dates_all <- 1:12
+  expect_error(ebv_i_date(14, dates_all))
+})
+
+test_that("test ebv_i_date iso-strings success", {
+  dates_all <- paste0(as.character(seq(1900,2010,10)), '-01-01')
+  dates_indice <- ebv_i_date(c("1940-01-01", "1950-01-01", "1960-01-01"), dates_all)
+  expect_equal(dates_indice, 5:7)
+})
+
+test_that("test ebv_i_date single iso-string success", {
+  dates_all <- paste0(as.character(seq(1900,2010,10)), '-01-01')
+  dates_indice <- ebv_i_date(c("1940-01-01"), dates_all)
+  expect_equal(dates_indice, 5)
+})
+
+test_that("test ebv_i_date iso-strings error", {
+  dates_all <- paste0(as.character(seq(1900,1940,10)), '-01-01')
+  expect_error(ebv_i_date(c("1940-01-01", "1950-01-01", "1960-01-01"), dates_all))
+})
+
+test_that("test ebv_i_date single iso-string error", {
+  dates_all <- paste0(as.character(seq(1900,1940,10)), '-01-01')
+  expect_error(ebv_i_date("1960-01-01", dates_all))
+})
+
+# test scenario and metric definition ----
+#ebv_i_datacubepath(scenario, metric, datacubepaths, verbose)
+
+test_that("test ebv_i_datacubepath 2 string values success", {
+  datacubepaths <- data.frame(c('scenario_1/metric_1/ebv_cube', 'scenario_1/metric_2/ebv_cube',
+                         'scenario_1/metric_3/ebv_cube',
+                         'scenario_2/metric_1/ebv_cube', 'scenario_2/metric_2/ebv_cube',
+                         'scenario_2/metric_3/ebv_cube',
+                         'scenario_3/metric_1/ebv_cube', 'scenario_3/metric_2/ebv_cube',
+                         'scenario_3/metric_3/ebv_cube'))
+  datacubepaths <- cbind(datacubepaths, c('SSP1-RCP1.5 LU','SSP1-RCP1.5 LU','SSP1-RCP1.5 LU',
+                            'SSP3-RCP6.0 LU','SSP3-RCP6.0 LU','SSP3-RCP6.0 LU',
+                            'SSP5-RCP8.5 LU', 'SSP5-RCP8.5 LU', 'SSP5-RCP8.5 LU'))
+  datacubepaths <- cbind(datacubepaths, c('Species richness (S)','Relative species richness change (Delta_S)',
+                            'Diversity-weighted relative species richness change (Delta_SS)'))
+  colnames(datacubepaths) <- c('datacubepaths', 'scenario_names', 'metric_names')
+
+  result <- ebv_i_datacubepath('SSP3-RCP6.0 LU', 'Species richness (S)', datacubepaths, FALSE)
+  expect_equal(result, "scenario_2/metric_1/ebv_cube")
+})
+
+test_that("test ebv_i_datacubepath string values error", {
+  datacubepaths <- data.frame(c('scenario_1/metric_1/ebv_cube', 'scenario_1/metric_2/ebv_cube',
+                                'scenario_1/metric_3/ebv_cube',
+                                'scenario_2/metric_1/ebv_cube', 'scenario_2/metric_2/ebv_cube',
+                                'scenario_2/metric_3/ebv_cube',
+                                'scenario_3/metric_1/ebv_cube', 'scenario_3/metric_2/ebv_cube',
+                                'scenario_3/metric_3/ebv_cube'))
+  datacubepaths <- cbind(datacubepaths, c('SSP1-RCP1.5 LU','SSP1-RCP1.5 LU','SSP1-RCP1.5 LU',
+                                          'SSP3-RCP6.0 LU','SSP3-RCP6.0 LU','SSP3-RCP6.0 LU',
+                                          'SSP5-RCP8.5 LU', 'SSP5-RCP8.5 LU', 'SSP5-RCP8.5 LU'))
+  datacubepaths <- cbind(datacubepaths, c('Species richness (S)','Relative species richness change (Delta_S)',
+                                          'Diversity-weighted relative species richness change (Delta_SS)'))
+  colnames(datacubepaths) <- c('datacubepaths', 'scenario_names', 'metric_names')
+
+  expect_error(ebv_i_datacubepath('SSP3-RCP9.0 LU', 'Species richness (S)', datacubepaths, FALSE))
+})
+
+test_that("test ebv_i_datacubepath no string values success", {
+  datacubepaths <- data.frame(c('scenario_1/metric_1/ebv_cube', 'scenario_1/metric_2/ebv_cube',
+                                'scenario_1/metric_3/ebv_cube',
+                                'scenario_2/metric_1/ebv_cube', 'scenario_2/metric_2/ebv_cube',
+                                'scenario_2/metric_3/ebv_cube',
+                                'scenario_3/metric_1/ebv_cube', 'scenario_3/metric_2/ebv_cube',
+                                'scenario_3/metric_3/ebv_cube'))
+  datacubepaths <- cbind(datacubepaths, c('SSP1-RCP1.5 LU','SSP1-RCP1.5 LU','SSP1-RCP1.5 LU',
+                                          'SSP3-RCP6.0 LU','SSP3-RCP6.0 LU','SSP3-RCP6.0 LU',
+                                          'SSP5-RCP8.5 LU', 'SSP5-RCP8.5 LU', 'SSP5-RCP8.5 LU'))
+  datacubepaths <- cbind(datacubepaths, c('Species richness (S)','Relative species richness change (Delta_S)',
+                                          'Diversity-weighted relative species richness change (Delta_SS)'))
+  colnames(datacubepaths) <- c('datacubepaths', 'scenario_names', 'metric_names')
+
+  result <- ebv_i_datacubepath(1, 3, datacubepaths, FALSE)
+  expect_equal(result, "scenario_1/metric_3/ebv_cube")
+})
+
+
+test_that("test ebv_i_datacubepath no string values error", {
+  datacubepaths <- data.frame(c('scenario_1/metric_1/ebv_cube', 'scenario_1/metric_2/ebv_cube',
+                                'scenario_1/metric_3/ebv_cube',
+                                'scenario_2/metric_1/ebv_cube', 'scenario_2/metric_2/ebv_cube',
+                                'scenario_2/metric_3/ebv_cube',
+                                'scenario_3/metric_1/ebv_cube', 'scenario_3/metric_2/ebv_cube',
+                                'scenario_3/metric_3/ebv_cube'))
+  datacubepaths <- cbind(datacubepaths, c('SSP1-RCP1.5 LU','SSP1-RCP1.5 LU','SSP1-RCP1.5 LU',
+                                          'SSP3-RCP6.0 LU','SSP3-RCP6.0 LU','SSP3-RCP6.0 LU',
+                                          'SSP5-RCP8.5 LU', 'SSP5-RCP8.5 LU', 'SSP5-RCP8.5 LU'))
+  datacubepaths <- cbind(datacubepaths, c('Species richness (S)','Relative species richness change (Delta_S)',
+                                          'Diversity-weighted relative species richness change (Delta_SS)'))
+  colnames(datacubepaths) <- c('datacubepaths', 'scenario_names', 'metric_names')
+
+  expect_error(ebv_i_datacubepath(1, 5, datacubepaths, FALSE))
+})
