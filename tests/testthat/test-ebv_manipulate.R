@@ -100,7 +100,15 @@ test_that("test ebv_manipulate", {
     ebv_attribute(file, 'coverage_content_type', "modelResult", 'scenario_1/metric_1/ebv_cube', FALSE)
     prop <- ebv_properties(file, 'scenario_1/metric_1/ebv_cube')@ebv_cube
     expect_equal(prop$coverage_content_type, "modelResult")
-    }
+  }
+
+  #add data
+  dims <- ebv_properties(file, 'scenario_1/metric_1/ebv_cube')@spatial$dimensions[1:2]
+  RandomNum <- as.integer(runif(64800, 1, 99))
+  array <- array(RandomNum, dims)
+  ebv_add_data(file, 'scenario_1/metric_1/ebv_cube',1,1,array)
+  data <- ebv_read(file, 'scenario_1/metric_1/ebv_cube',1,1, 'a')
+  expect_equal(data[90,180,1], array[90,180])
 
   #remove file
   file.remove(file)
