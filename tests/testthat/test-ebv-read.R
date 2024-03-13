@@ -41,7 +41,7 @@ test_that("test ebv_read_shp single timestep", {
 test_that("test ebv_read_shp multiple timesteps", {
   shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
   file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
-  data <- ebv_read_shp(file, 'metric_1/ebv_cube', entity=1, shp = shp, timestep = 1:3)
+  data <- ebv_read_shp(file, 'metric_1/ebv_cube', entity='forest bird species', shp = shp, timestep = 1:3)
   dims <- dim(data)
   value <- as.numeric(data[5,5,1])
   expect_equal(dims, c(12,9,3))
