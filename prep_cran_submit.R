@@ -5,6 +5,9 @@ devtools::document()
 devtools::test()
 devtools::run_examples()
 
+#run lintr
+lintr::lint_dir()
+
 #build readme and manual
 # devtools::build_manual()
 devtools::build_manual(path=system.file(file.path("docs"), package="ebvcube"))

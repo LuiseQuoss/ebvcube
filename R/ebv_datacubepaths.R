@@ -35,7 +35,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
@@ -112,7 +112,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
     #process 3D----
     entity_names <- c()
     #scenario and metric ----
-    if(('scenario' %in% subgroups )| stringr::str_detect(datacubepaths[1], 'scenario')){
+    if(('scenario' %in% subgroups)|| stringr::str_detect(datacubepaths[1], 'scenario')){
       scenario_names <- c()
       metric_names <- c()
       for (p in datacubepaths){
@@ -154,10 +154,10 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
         entity_names <- c(entity_names, e)
       }
       #build result data.frame
-      if(!new | !any(entity_names=='not defined')){
-        result = data.frame(datacubepaths, scenario_names, metric_names, entity_names)
+      if(!new || !any(entity_names=='not defined')){
+        result <- data.frame(datacubepaths, scenario_names, metric_names, entity_names)
       } else{
-        result = data.frame(datacubepaths, scenario_names, metric_names)
+        result <- data.frame(datacubepaths, scenario_names, metric_names)
       }
     } else{
       # only metric ----
@@ -194,10 +194,10 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
 
       }
       #build result data.frame
-      if(!new | ! any(entity_names=='not defined')){
-        result = data.frame(datacubepaths, metric_names, entity_names)
+      if(!new || ! any(entity_names=='not defined')){
+        result <- data.frame(datacubepaths, metric_names, entity_names)
       } else{
-        result = data.frame(datacubepaths, metric_names)
+        result <- data.frame(datacubepaths, metric_names)
       }
 
     }
@@ -205,7 +205,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
     #process 4D----
 
     #scenario and metric ----
-    if(('scenario' %in% subgroups)| stringr::str_detect(datacubepaths[1], 'scenario')){
+    if(('scenario' %in% subgroups)|| stringr::str_detect(datacubepaths[1], 'scenario')){
       scenario_names <- c()
       metric_names <- c()
         #scenario longname
@@ -236,7 +236,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
         metric_names <- c(metric_names, m)
       }
         #build result data.frame
-        result = data.frame(datacubepaths, scenario_names, metric_names)
+        result <- data.frame(datacubepaths, scenario_names, metric_names)
       } else{
       # only metric ----
       metric_names <- c()
@@ -261,7 +261,7 @@ ebv_datacubepaths <- function(filepath, verbose = TRUE){
 
       }
       #build result data.frame
-        result = data.frame(datacubepaths, metric_names)
+        result <- data.frame(datacubepaths, metric_names)
     }
   }
 

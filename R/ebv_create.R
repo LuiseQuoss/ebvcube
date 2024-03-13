@@ -96,12 +96,12 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   )
   withr::defer(
     if(exists('nc')){
-      tryCatch(l <- utils::capture.output(ncdf4::nc_close(nc)))
+      tryCatch(utils::capture.output(ncdf4::nc_close(nc)))
     }
   )
   withr::defer(
     if(exists('nc_test')){
-      tryCatch(l <- utils::capture.output(ncdf4::nc_close(nc_test)))
+      tryCatch(utils::capture.output(ncdf4::nc_close(nc_test)))
     }
   )
 
@@ -134,15 +134,15 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=FALSE) != TRUE){
     stop('overwrite must be of type logical.')
   }
-  if(checkmate::checkLogical(force_4D, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(force_4D, len=1, any.missing=FALSE) != TRUE){
     stop('force_4D must be of type logical.')
   }
 
@@ -153,7 +153,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   if (checkmate::checkFileExists(jsonpath) != TRUE){
     stop(paste0('Json file does not exist.\n', jsonpath))
   }
-  if (!(endsWith(jsonpath, '.json') | endsWith(jsonpath, '.js'))){
+  if (!(endsWith(jsonpath, '.json') || endsWith(jsonpath, '.js'))){
     stop(paste0('Json file ending is wrong. File cannot be processed.'))
   }
 
@@ -216,7 +216,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     #read csv---
     # check if data inside
     tryCatch({
-      entity_csv <- suppressWarnings(utils::read.csv(entities, sep=sep, header=F, fileEncoding="UTF-8"))
+      entity_csv <- suppressWarnings(utils::read.csv(entities, sep=sep, header=FALSE, fileEncoding="UTF-8"))
     },
     error=function(e){
       if(stringr::str_detect(as.character(e), 'no lines available')){
@@ -243,7 +243,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   #check fillvalue
   if (! is.null(fillvalue)){
-    if(checkmate::checkNumber(fillvalue) != TRUE & !is.na(fillvalue)){
+    if(checkmate::checkNumber(fillvalue) != TRUE && !is.na(fillvalue)){
       stop('The fillvalue needs to be a single numeric value or NA.')
     }
   }
@@ -264,13 +264,13 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   #check timesteps----
   t_res <- json$time_coverage$time_coverage_resolution
 
-  if(!is.null(timesteps) & t_res != 'Paleo'){
+  if(!is.null(timesteps) && t_res != 'Paleo'){
     if (checkmate::checkCharacter(timesteps) != TRUE){
       stop('timesteps needs to be a list of character values.')
     }else {
       for(ts in timesteps){
         #check ISO format
-        if(!(grepl('^\\d{4}-\\d{2}-\\d{2}$', ts) | grepl('^\\d{4}$',ts))){
+        if(!(grepl('^\\d{4}-\\d{2}-\\d{2}$', ts) || grepl('^\\d{4}$',ts))){
           stop(paste0('Your timestep ', ts, ' is not following the indicated ISO format. Check help page for more information.'))
         }
 
@@ -281,8 +281,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   # end initial tests ----
 
   #overwrite --> delete file
-  if (file.exists(outputpath) & overwrite==TRUE){
-    t <- tryCatch(file.remove(outputpath),
+  if (file.exists(outputpath) && overwrite==TRUE){
+    tryCatch(file.remove(outputpath),
                   warning = function(w){
                     temp <- stringr::str_remove(as.character(w), '\\\\')
                     if(stringr::str_detect(temp,'cannot remove file')){
@@ -366,7 +366,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   add <- 40177
 
   #calculate timesteps
-  if(is.null(timesteps) & t_res!='Paleo'){
+  if(is.null(timesteps) && t_res!='Paleo'){
     if(t_res=="P0000-00-00"){
       #one timestep only
       #check
@@ -421,7 +421,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
       } else if (mapply(grepl,'month',t_res,ignore.case=TRUE)){
         start <- as.Date(t_start)
         end   <- as.Date(t_end)
-        sequence <- seq(from=start, to=end,by='month' )
+        sequence <- seq(from=start, to=end,by='month')
         timesteps <- c()
         for (s in sequence){
           date <- as.numeric(as.Date(s,origin=as.Date("1970-01-01")))
@@ -431,7 +431,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
       }else if (mapply(grepl,'day',t_res,ignore.case=TRUE)){
         start <- as.Date(t_start)
         end   <- as.Date(t_end)
-        sequence <- seq(from=start, to=end,by='days' )
+        sequence <- seq(from=start, to=end,by='days')
         timesteps <- c()
         for (s in sequence){
           date <- as.numeric(as.Date(s,origin=as.Date("1970-01-01")))
@@ -514,9 +514,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   lat_dim <- ncdf4::ncdim_def('lat', crs_unit , vals = lat_data)
   lon_dim <- ncdf4::ncdim_def('lon', crs_unit, vals = lon_data)
   if(t_res=='Paleo'){
-    time_dim <- ncdf4::ncdim_def('time', 'kyrs B.P.' , timesteps, unlim = T)#HERE
+    time_dim <- ncdf4::ncdim_def('time', 'kyrs B.P.' , timesteps, unlim = TRUE)#HERE
   }else{
-    time_dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = T)#HERE
+    time_dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = TRUE)#HERE
   }
   entity_dim <- ncdf4::ncdim_def('entity', '', vals = 1:entities_no, create_dimvar=FALSE)
 
@@ -574,10 +574,10 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   }
 
   var_list_nc <- list()
-  enum = 1
+  enum <- 1
 
   #check shuffle
-  if(prec=='integer' | prec=='short'){
+  if(prec=='integer' || prec=='short'){
     shuffle <- TRUE
   } else{
     shuffle <- FALSE
@@ -592,11 +592,11 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
     test_def <- ncdf4::ncvar_def(name = 'test_var', units = 'some units',
                                  dim= list(lon_dim, lat_dim, time_dim),
                                  compression=5, prec=prec,
-                                 verbose=F, shuffle=shuffle)
+                                 verbose=FALSE, shuffle=shuffle)
     nc_test <- ncdf4::nc_create(filename = temp,
                            vars = test_def,
-                           force_v4 = T,
-                           verbose = F)
+                           force_v4 = TRUE,
+                           verbose = FALSE)
     ncdf4::nc_close(nc_test)
     #read out chunksize definition
     nc_test <- ncdf4::nc_open(temp)
@@ -623,7 +623,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
                                       prec=prec, verbose=verbose, shuffle=shuffle
                                       ))
         var_list_nc[[enum]] <- eval(parse(text=name))
-        enum = enum +1
+        enum <- enum +1
       }
     } else {
       for (var in var_list){
@@ -636,7 +636,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
                                       verbose=verbose, shuffle=shuffle
                                       ))
         var_list_nc[[enum]] <- eval(parse(text=name))
-        enum = enum +1
+        enum <- enum +1
       }
     }
   }else{
@@ -652,7 +652,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
                                       verbose=verbose, shuffle=shuffle,
                                       chunksizes=chunksizes_new))
         var_list_nc[[enum]] <- eval(parse(text=name))
-        enum = enum +1
+        enum <- enum +1
       }
     } else {
       for (var in var_list){
@@ -665,7 +665,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
                                       verbose=verbose, shuffle=shuffle,
                                       chunksizes=chunksizes_new))
         var_list_nc[[enum]] <- eval(parse(text=name))
-        enum = enum +1
+        enum <- enum +1
       }
     }
   }
@@ -690,7 +690,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   #add entities variable ----
   max_char <- max(nchar(entity_csv[,1]))
-  dimchar <- ncdf4::ncdim_def("nchar", "", 1:max_char, create_dimvar=FALSE )
+  dimchar <- ncdf4::ncdim_def("nchar", "", 1:max_char, create_dimvar=FALSE)
   var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='1', #HERE adimensional
                                           dim=list(dimchar,entity_dim),
                                           prec='char', verbose = verbose)
@@ -699,7 +699,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   # also creates groups
   nc <- ncdf4::nc_create(filename = outputpath,
                          vars = var_list_nc,
-                         force_v4 = T,
+                         force_v4 = TRUE,
                          verbose = verbose)
 
   # close file
@@ -775,7 +775,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   for (i in 1:length(global.att)){
     att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
     att.txt <- paste0(trimws(att.txt), collapse = ', ')
-    if(names(global.att[i])=='contributor_name' | names(global.att[i])=='ebv_domain'){
+    if(names(global.att[i])=='contributor_name' || names(global.att[i])=='ebv_domain'){
       att.txt <- paste0(trimws(trimws(stringr::str_split(att.txt,',')[[1]])), collapse = ', ')
     }
     ebv_i_char_att(hdf, names(global.att[i]), att.txt)
@@ -830,7 +830,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   ebv_i_char_att(crs.id, 'GeoTransform', geo_trans)
 
   #get grid mapping attributes
-  crs_grid <- ebv_i_eval_epsg(epsg, proj=T)
+  crs_grid <- ebv_i_eval_epsg(epsg, proj=TRUE)
   crs_wkt_list <- stringr::str_split(crs_wkt, '\n')[[1]]
 
 

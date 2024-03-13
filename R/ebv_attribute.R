@@ -87,7 +87,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
@@ -153,7 +153,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
     '_FillValue', 'grid_mapping','coordinates','_ChunkSizes')
 
   if(attribute_name %in% att.blocked){
-    stop(paste0('Changes for the attribute ', attribute_name, ' are blocked! Always built automatically.' ))
+    stop(paste0('Changes for the attribute ', attribute_name, ' are blocked! Always built automatically.'))
   }
 
 
@@ -171,19 +171,19 @@ ebv_attribute <- function(filepath, attribute_name, value,
     }else if(mapply(grepl,'time',levelpath,ignore.case=TRUE)){
       stop('Changes for the time dataset are blocked! Rebuild netCDF if you want a different time definition.')
     }
-    if(stringr::str_detect(levelpath,'scenario') & stringr::str_detect(levelpath,'metric')){
-      scenario_exist=TRUE
+    if(stringr::str_detect(levelpath,'scenario') && stringr::str_detect(levelpath,'metric')){
+      scenario_exist <- TRUE
     }else{
-      scenario_exist=FALSE
+      scenario_exist <- FALSE
     }
     if (stringr::str_detect(levelpath,'metric')){
-      metric_exists = TRUE
+      metric_exists <- TRUE
     }else{
-      metric_exists = FALSE
+      metric_exists <- FALSE
     }
   }else{
-    scenario_exist=FALSE
-    metric_exists = FALSE
+    scenario_exist <- FALSE
+    metric_exists <- FALSE
   }
 
   #extra check for ebv_class and ebv_name ----
@@ -217,7 +217,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
       ebv.names <- c('Pollination')
     }
     #check if ebv_name corresponds - else warning: also change ebv_name!
-    if(attribute_name=='ebv_class' & ! ebv.name %in% ebv.names){
+    if(attribute_name=='ebv_class' && ! ebv.name %in% ebv.names){
       warning(paste0('The current ebv_name ', ebv.name, ' does not correspond the new ebv_class ', ebv.class,  '. Possible ebv_name values: ', paste(ebv.names, collapse = ', '), '. Change ebv_name!'))
     }
   } else if (attribute_name=='ebv_name'){
@@ -371,7 +371,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
             ebv_i_char_att(h5obj, attribute_name, value)
           }
 
-        }else if(attribute_name=='long_name' & stringr::str_detect(path, 'ebv_cube')){
+        }else if(attribute_name=='long_name' && stringr::str_detect(path, 'ebv_cube')){
           #change path to corresponding other component
           path <- stringr::str_remove(path, '/ebv_cube')
           h5obj <- rhdf5::H5Gopen(hdf, path)
@@ -384,7 +384,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
             ebv_i_char_att(h5obj, 'standard_name', value)
           }
 
-        }else if(attribute_name=='standard_name' & !stringr::str_detect(path, 'ebv_cube')){
+        }else if(attribute_name=='standard_name' && !stringr::str_detect(path, 'ebv_cube')){
           #change path to corresponding other component
           path <- paste0(path, '/ebv_cube')
           h5obj <- rhdf5::H5Dopen(hdf, path)
@@ -429,7 +429,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
           ebv_i_char_att(h5obj, attribute_name, value)
         }
 
-      }else if(attribute_name=='long_name' & stringr::str_detect(path, 'ebv_cube')){
+      }else if(attribute_name=='long_name' && stringr::str_detect(path, 'ebv_cube')){
         #change path to corresponding other component
         path <- stringr::str_remove(path, '/ebv_cube')
         h5obj <- rhdf5::H5Gopen(hdf, path)
@@ -442,7 +442,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
           ebv_i_char_att(h5obj, 'standard_name', value)
         }
 
-      }else if(attribute_name=='standard_name' & !stringr::str_detect(path, 'ebv_cube')){
+      }else if(attribute_name=='standard_name' && !stringr::str_detect(path, 'ebv_cube')){
         #change path to corresponding other component
         path <- paste0(path, '/ebv_cube')
         h5obj <- rhdf5::H5Dopen(hdf, path)
@@ -474,30 +474,30 @@ ebv_attribute <- function(filepath, attribute_name, value,
 
 
   #check if any attribute inside keywords is changed -> change keywords ----
-  if (attribute_name == 'ebv_class' | attribute_name == 'ebv_name' | attribute_name == 'ebv_domain' |
-      attribute_name == 'ebv_spatial_scope' | attribute_name == 'ebv_entity_type'){
+  if (attribute_name == 'ebv_class' || attribute_name == 'ebv_name' || attribute_name == 'ebv_domain' ||
+      attribute_name == 'ebv_spatial_scope' || attribute_name == 'ebv_entity_type'){
     #reopen file
     hdf <- rhdf5::H5Fopen(filepath)
-    keywords_old = ebv_i_read_att(hdf, 'keywords', verbose)
+    keywords_old <- ebv_i_read_att(hdf, 'keywords', verbose)
     #get part 1: before changed value
-    start_i = stringr::str_locate(keywords_old, attribute_name)[1]
-    end_i = start_i+nchar(attribute_name)+1 #1: for ': '
-    part_1 =stringr::str_sub(keywords_old, 1, end_i)
+    start_i <- stringr::str_locate(keywords_old, attribute_name)[1]
+    end_i <- start_i+nchar(attribute_name)+1 #1: for ': '
+    part_1 <- stringr::str_sub(keywords_old, 1, end_i)
     #get everything after changed values
     if(attribute_name == 'ebv_class'){
-      start_j = stringr::str_locate(keywords_old, ', ebv_name')[1]
+      start_j <- stringr::str_locate(keywords_old, ', ebv_name')[1]
     }else if(attribute_name == 'ebv_name'){
-      start_j = stringr::str_locate(keywords_old, ', ebv_domain')[1]
+      start_j <- stringr::str_locate(keywords_old, ', ebv_domain')[1]
     }else if(attribute_name == 'ebv_domain'){
-      start_j = stringr::str_locate(keywords_old, ', ebv_spatial_scope')[1]
+      start_j <- stringr::str_locate(keywords_old, ', ebv_spatial_scope')[1]
     }else if(attribute_name == 'ebv_spatial_scope'){
-      start_j = stringr::str_locate(keywords_old, ', ebv_entity_type')[1]
+      start_j <- stringr::str_locate(keywords_old, ', ebv_entity_type')[1]
     }else if(attribute_name == 'ebv_entity_type'){
-      start_j = nchar(keywords_old)+1
+      start_j <- nchar(keywords_old)+1
     }
-    part_2 = stringr::str_sub(keywords_old, start_j)
+    part_2 <- stringr::str_sub(keywords_old, start_j)
     #put together new keywords
-    keywords_new = paste0(part_1, value, part_2)
+    keywords_new <- paste0(part_1, value, part_2)
     #overwrite keywords
     ebv_i_char_att(hdf, 'keywords', keywords_new)
   }

@@ -67,12 +67,12 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=FALSE) != TRUE){
     stop('overwrite must be of type logical.')
   }
 
@@ -185,7 +185,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     }
 
   # write array or matrix ----
-  }else if (methods::is(data, "array") |methods::is(data, "matrix")){
+  }else if (methods::is(data, "array") || methods::is(data, "matrix")){
     #data from array/matrix - in memory
 
     #array/matrix to raster

@@ -142,8 +142,8 @@ at the first one.
 ``` r
 #plot the global map
 dc <- datacubes[2,1]
-ebv_map(file, dc, entity=1, timestep = 1, classes = 9, 
-        verbose=FALSE, col_rev = T)
+ebv_map(file, dc, entity=1, timestep = 1, classes = 9,
+        verbose=FALSE, col_rev = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
@@ -255,9 +255,9 @@ entities <- c('forest bird species','non-forest bird species','all bird species'
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF
-ebv_create(jsonpath = json, outputpath = newNc, entities = entities, 
+ebv_create(jsonpath = json, outputpath = newNc, entities = entities,
            epsg = 4326, extent = c(-180, 180, -90, 90), resolution = c(1, 1),
-           fillvalue = fv, overwrite=T, verbose=FALSE)
+           fillvalue = fv, overwrite=TRUE, verbose=FALSE)
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
@@ -287,9 +287,10 @@ same datacube by changing the timestep definition.
 
 ``` r
 #path to tif with data
-root <- system.file(file.path('extdata'), package="ebvcube") 
+root <- system.file(file.path('extdata'), package="ebvcube")
 tifs <- c('entity1.tif', 'entity2.tif', 'entity3.tif')
 tif_paths <- file.path(root, tifs)
+
 #adding the data
 entity <- 1
 for (tif in tif_paths){

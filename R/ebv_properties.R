@@ -77,7 +77,7 @@ ebv_properties <-
     }
 
     #check verbose
-    if (checkmate::checkLogical(verbose, len = 1, any.missing = F) != TRUE) {
+    if (checkmate::checkLogical(verbose, len = 1, any.missing = FALSE) != TRUE) {
       stop('Verbose must be of type logical.')
     }
 
@@ -96,27 +96,17 @@ ebv_properties <-
     hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
 
     #variable check
-    if (checkmate::checkCharacter(datacubepath) != TRUE &
+    if (checkmate::checkCharacter(datacubepath) != TRUE &&
         !is.null(datacubepath)) {
       stop('Datacubepath must be of type character.')
     }
     if (!is.null(datacubepath)) {
-      if (rhdf5::H5Lexists(hdf, datacubepath) == FALSE |
+      if (rhdf5::H5Lexists(hdf, datacubepath) == FALSE ||
           !stringr::str_detect(datacubepath, 'ebv_cube')) {
         stop(paste0('The given variable is not valid:\n', datacubepath))
       }
     }
     ####initial tests end ----
-
-    #check dimensions
-    dump <- rhdf5::h5dump(hdf, load=FALSE, recursive=FALSE)
-
-    #check structure
-    if('entity' %in% names(dump)){
-      new <- TRUE
-    } else{
-      new <- FALSE
-    }
 
     #ACDD STANDARD----
     #get all entity names ----
@@ -302,11 +292,11 @@ ebv_properties <-
         path_s <- stringr::str_split(datacubepath, '/')[[1]][1]
         gid <- rhdf5::H5Gopen(hdf, path_s)
         #global info
-        ebv_scenario_classification_name <-
+        ebv_sce_class_name <-
           ebv_i_read_att(hdf, 'ebv_scenario_classification_name', verbose)
-        ebv_scenario_classification_url <-
+        ebv_scen_class_url <-
           ebv_i_read_att(hdf, 'ebv_scenario_classification_url', verbose)
-        ebv_scenario_classification_version <-
+        ebv_sce_class_version <-
           ebv_i_read_att(hdf, 'ebv_scenario_classification_version', verbose)
         #group info
         name_s <- ebv_i_read_att(gid, 'standard_name', verbose)
@@ -316,9 +306,9 @@ ebv_properties <-
           list(
             'name' = name_s,
             'description' = description_s,
-            'scenario_classification_name' = ebv_scenario_classification_name,
-            'scenario_classification_url' = ebv_scenario_classification_url,
-            'scenario_classification_version' = ebv_scenario_classification_version
+            'scenario_classification_name' = ebv_sce_class_name,
+            'scenario_classification_url' = ebv_scen_class_url,
+            'scenario_classification_version' = ebv_sce_class_version
           )
 
         # get metric info

@@ -6,4 +6,4 @@
 ^data-raw
 ^cran-comments\.md$
 ^prep_cran_submit\.R$
-
+^.lintr

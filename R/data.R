@@ -7,4 +7,3 @@
 #'   Earth}. Used version 4.0.0 and reduced attributes.
 #' @docType data
 "world_boundaries"
-

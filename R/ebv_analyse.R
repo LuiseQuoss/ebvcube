@@ -77,7 +77,7 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
@@ -97,7 +97,7 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
     stop('Datacubepath must be of type character.')
   }
   hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
     stop(paste0('The given variable is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
@@ -109,13 +109,13 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
   timestep <- ebv_i_date(timestep, prop@temporal$dates)
 
   #check logical arguments
-  if(checkmate::checkLogical(na_rm, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(na_rm, len=1, any.missing=FALSE) != TRUE){
     stop('na_rm must be of type logical.')
   }
-  if(checkmate::checkLogical(numerical, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(numerical, len=1, any.missing=FALSE) != TRUE){
     stop('numerical must be of type logical.')
   }
-  if(checkmate::checkLogical(touches, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(touches, len=1, any.missing=FALSE) != TRUE){
     stop('touches must be of type logical.')
   }
 
@@ -147,7 +147,7 @@ ebv_analyse <- function(filepath, datacubepath, entity=NULL, timestep=1,
   if (is.null(subset)){
     #process whole file + variable+ timestep
     type.short <- ebv_i_type_r(prop@ebv_cube$type)
-    all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath, as.sparse = T, type = type.short)
+    all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath, as.sparse = TRUE, type = type.short)
     if(is_4D){
       #process 4D
       subset.array <- all[,,timestep,entity_index]

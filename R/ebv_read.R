@@ -73,15 +73,15 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='r',
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(sparse, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(sparse, len=1, any.missing=FALSE) != TRUE){
     stop('sparse must be of type logical.')
   }
-  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=FALSE) != TRUE){
     stop('ignore_RAM must be of type logical.')
   }
 
@@ -112,7 +112,7 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='r',
     stop('Datacubepath must be of type character.')
   }
   hdf <- rhdf5::H5Fopen(filepath, flags = 'H5F_ACC_RDONLY')
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
@@ -196,7 +196,7 @@ ebv_read <- function(filepath, datacubepath,  entity=NULL, timestep=1, type='r',
     }
 
     # return any in-memory object ----
-  } else if (type=='a' | type=='r') {
+  } else if (type=='a' || type=='r') {
     #check needed RAM
     if (!ignore_RAM){
       type.long <- prop@ebv_cube$type

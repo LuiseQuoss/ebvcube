@@ -90,18 +90,18 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(return_raster, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(return_raster, len=1, any.missing=FALSE) != TRUE){
     stop('return_raster must be of type logical.')
   }
-  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=FALSE) != TRUE){
     stop('overwrite must be of type logical.')
   }
-  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=FALSE) != TRUE){
     stop('ignore_RAM must be of type logical.')
   }
 
@@ -162,7 +162,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
     stop('Datacubepath must be of type character.')
   }
   hdf <- rhdf5::H5Fopen(filepath_src, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath_src)==FALSE | !stringr::str_detect(datacubepath_src, 'ebv_cube')){
+  if (rhdf5::H5Lexists(hdf, datacubepath_src)==FALSE || !stringr::str_detect(datacubepath_src, 'ebv_cube')){
     stop(paste0('The given variable is not valid:\n', datacubepath_src))
   }
   rhdf5::H5Fclose(hdf)
@@ -240,10 +240,6 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
 
   #######initial test end ----
 
-  #srs defintion from epsg
-  srs_src <- paste0('EPSG:',epsg_src)
-  srs_dest <- paste0('EPSG:',epsg_dest)
-
   #get output type
   type_ot <- ebv_i_type_ot(type.long)
   type_terra <- ebv_i_type_terra(type_ot)
@@ -284,7 +280,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   #align to origin of the destination file
   data_proj <- tryCatch(
     {
-      data_proj <- terra::project(data_ts, y = dummy, align=T, method=method, gdal=T)
+      data_proj <- terra::project(data_ts, y = dummy, align=TRUE, method=method, gdal=TRUE)
     },
     error=function(e){
       # if (!stringr::str_detect(e, 'cannot create dataset from source')){
@@ -294,7 +290,7 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
         message('Slower algorithm needs to be used. Please be patient.')
       }
 
-      data_proj <- terra::project(data_ts, y = dummy, align=T, method=method, gdal=F)
+      data_proj <- terra::project(data_ts, y = dummy, align=TRUE, method=method, gdal=FALSE)
     }
   )
 
@@ -310,4 +306,3 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
     return(outputpath)
   }
 }
-

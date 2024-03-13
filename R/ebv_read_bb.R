@@ -88,15 +88,15 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=FALSE) != TRUE){
     stop('ignore_RAM must be of type logical.')
   }
-  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=FALSE) != TRUE){
     stop('overwrite must be of type logical.')
   }
 
@@ -119,7 +119,7 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
     stop('Datacubepath must be of type character.')
   }
   hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
@@ -198,7 +198,7 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
   #check if bb is in spatial extent
   lat_check <- ext[1]>bb[1] | ext[2]<bb[2]
   lon_check <- ext[3]>bb[3] | ext[4]<bb[4]
-  if(lon_check | lat_check){
+  if(lon_check || lat_check){
     warning(paste0('The extent of the bounding box is bigger than the area covered by the dataset.
                    Data output encompasses a smaller extent.\nGiven bb: ', paste(bb, collapse = ' '),
                    '\nDataset bb: ', paste(ext, collapse = ' ')), immediate. = TRUE)

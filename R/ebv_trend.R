@@ -66,7 +66,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
@@ -83,13 +83,13 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
 
   #datacubepath check
   hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
 
   #check color
-  if( ! color %in% grDevices::colors()){
+  if(! color %in% grDevices::colors()){
     stop('color not known. Choose a different one!')
   }
 
@@ -141,7 +141,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   timevalues <- prop@temporal$dates
   #derive years
   if(grepl('^P\\d{4}-?\\d{0,2}-?\\d{0,2}$', prop@temporal$resolution)){
-    if(stringr::str_split(prop@temporal$resolution, '-')[[1]][2]=='00' &
+    if(stringr::str_split(prop@temporal$resolution, '-')[[1]][2]=='00' &&
        stringr::str_split(prop@temporal$resolution, '-')[[1]][3]=='00'){
       timevalues <- format(as.Date(timevalues, format='%Y-%m-%d'), '%Y')
     }
@@ -212,7 +212,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   }
 
   #2. check method ----
-  if(method=='mean' | method=='min' | method=='max'){
+  if(method=='mean' || method=='min' || method=='max'){
     #method == mean, min, max----
     #only one timestep----
     if (dims[3]==1){
@@ -221,11 +221,11 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
       }
 
       if(method=='mean'){
-        values <- mean(data.all, na.rm =T)
+        values <- mean(data.all, na.rm =TRUE)
       } else if(method=='min'){
-        values <- min(data.all, na.rm =T)
+        values <- min(data.all, na.rm =TRUE)
       } else if(method=='max'){
-        values <- max(data.all, na.rm =T)
+        values <- max(data.all, na.rm =TRUE)
       }
 
     }else{
@@ -262,11 +262,11 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
               data <- data.all[,,t]
             }
             if(method=='mean'){
-              v <- mean(data, na.rm =T)
+              v <- mean(data, na.rm =TRUE)
             } else if(method=='min'){
-              v <- min(data, na.rm =T)
+              v <- min(data, na.rm =TRUE)
             } else if(method=='max'){
-              v <- max(data, na.rm =T)
+              v <- max(data, na.rm =TRUE)
             }
             f <- 0
           },

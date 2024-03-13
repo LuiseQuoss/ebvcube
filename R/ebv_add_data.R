@@ -87,12 +87,12 @@ ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=FALSE) != TRUE){
     stop('ignore_RAM must be of type logical.')
   }
 
@@ -111,7 +111,7 @@ ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
   character <- FALSE
   matrix <- FALSE
   array <- FALSE
-  if(checkmate::test_character(data) & !any(class(data) == 'matrix')){
+  if(checkmate::test_character(data) && !any(class(data) == 'matrix')){
     character <- TRUE
     #check if tif file exists
     if (checkmate::checkFileExists(data) != TRUE){
@@ -136,7 +136,7 @@ ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
   # ebv_i_file_opened(filepath_nc, verbose)
 
   #already rotate data for tests etc.
-  if(matrix & !array){
+  if(matrix && !array){
     data <- t(data)
   } else if(array){
     #rotate array
@@ -147,19 +147,18 @@ ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
   hdf <- rhdf5::H5Fopen(filepath_nc)
 
   #check datacubepath
-  if (checkmate::checkCharacter(datacubepath) != TRUE & !is.null(datacubepath)){
+  if (checkmate::checkCharacter(datacubepath) != TRUE && !is.null(datacubepath)){
     stop('Datacubepath must be of type character.')
   }
   if(!is.null(datacubepath)){
-    if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
+    if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
       stop(paste0('The given datacubepath is not valid:\n', datacubepath))
     }
   }
   rhdf5::H5Fclose(hdf)
 
   # get properties
-  prop <- ebv_properties(filepath_nc, datacubepath, verbose=F)
-  fillvalue <- prop@ebv_cube$fillvalue
+  prop <- ebv_properties(filepath_nc, datacubepath, verbose=FALSE)
   dims <- prop@spatial$dimensions
   entity_names <- prop@general$entity_names
 
@@ -201,7 +200,7 @@ ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
   if(character){
     tif_info <- terra::describe(data)
     b.count <- stringr::str_count(tif_info, 'Band')
-    b.sum <- sum(b.count, na.rm=T)
+    b.sum <- sum(b.count, na.rm=TRUE)
     if (b.sum < length(timestep)){
       stop('The amount of timesteps to write to the netCDF is longer than the available bands in Tiff.')
     }
@@ -209,8 +208,8 @@ ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
     if (max(band) > b.sum){
       stop('The highest band that should be used exceeds the amount of bands in GeoTiff File.')
     }
-  }else if (matrix | array){
-    if(matrix & length(timestep)>1){
+  }else if (matrix || array){
+    if(matrix && length(timestep)>1){
       stop('You are trying to write several timesteps to the netCDF even though you handed over data in a matrix and one timestep only can be filled.')
     }else if (array){
       if(dim(data)[3]< length(timestep)){
@@ -248,7 +247,7 @@ ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
       }
     }
 
-  } else if(matrix | array){
+  } else if(matrix || array){
     #DOING NOTHING - ELEMENT ALREADY IN MEMORY
     # if(is.double(data)){
     #   type.long <- 'double'
@@ -263,7 +262,7 @@ ebv_add_data <- function(filepath_nc, datacubepath, entity=NULL, timestep=1,
   #check if dims of tif data correspond to lat and lon in netcdf
   lat.len <- dims[1]
   lon.len <- dims[2]
-  if ((size.int[1] != lon.len) & (size.int[2] != lat.len)){
+  if ((size.int[1] != lon.len) && (size.int[2] != lat.len)){
     stop(paste0('The size of your GeoTiff/data does not correspond to the latitude and longitude coordinates.
   Size should be: ', lon.len, ', ', lat.len, '. But is: ', size.int[1], ', ', size.int[2]))
   }

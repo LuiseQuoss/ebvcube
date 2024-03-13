@@ -75,7 +75,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
@@ -92,7 +92,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
   #datacubepath check
   hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
@@ -117,20 +117,19 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=FALSE) != TRUE){
     stop('ignore_RAM must be of type logical.')
   }
-  if(checkmate::checkLogical(countries, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(countries, len=1, any.missing=FALSE) != TRUE){
     stop('countries must be of type logical.')
   }
-  if(checkmate::checkLogical(col_rev, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(col_rev, len=1, any.missing=FALSE) != TRUE){
     stop('col_rev must be of type logical.')
   }
 
   # end initial tests ----
 
   #get properties ----
-  fillvalue <- prop@ebv_cube$fillvalue[1]
   type.short <- ebv_i_type_r(prop@ebv_cube$type)
   title <- prop@general$title
   epsg <- prop@spatial$epsg
@@ -218,7 +217,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   temp.map <- results[[2]]
 
   #reduce data.all if resampling took place and not all timesteps are needed for quantiles
-  if(!is.null(temp.map) & !all_data){
+  if(!is.null(temp.map) && !all_data){
     data.all <- terra::as.array(terra::rast(temp.map))
   }
   #get dimensions of array
@@ -233,7 +232,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   }else if(length(dims)==2){
     size <- dims[1]*dims[2]
   }
-  if (size > 100000000 & verbose){
+  if (size > 100000000 && verbose){
     print('Wow that is huge! Maybe get a tea, the caluculation will take a while...')
   }
 
@@ -241,23 +240,23 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
   s <- stats::quantile(data.all, probs = seq(0, 1, (1/classes)), na.rm=TRUE)
 
   #check if quantile list values are unique
-  if(length(unique(s)) != (classes+1) & classes!=1){
+  if(length(unique(s)) != (classes+1) && classes!=1){
     message('Color Scale will be corrupted. Most likely you will see less classes than you defined.')
     s <- unique(s)
     if(length(s)==1){
-      rast_value = as.numeric(s[length(s)])
+      rast_value <- as.numeric(s[length(s)])
       legend_lab <- as.numeric(s[length(s)])
     }
   } else if (classes==1){
     if(s[1]!=s[2]){
-      s <- signif(max(data.all, na.rm=T),4)
+      s <- signif(max(data.all, na.rm=TRUE),4)
       data.raster[!is.na(data.raster)] <- 1
-      min_val <- signif(min(data.all, na.rm=T),4)
-      max_val <- signif(max(data.all, na.rm=T),4)
+      min_val <- signif(min(data.all, na.rm=TRUE),4)
+      max_val <- signif(max(data.all, na.rm=TRUE),4)
       legend_lab <- paste0(min_val, ' - ', max_val)
       rast_value <- 1
     }else{
-      rast_value = as.numeric(s[length(s)])
+      rast_value <- as.numeric(s[length(s)])
       legend_lab <- as.numeric(s[length(s)])
     }
   }
@@ -271,7 +270,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
   #get correct colors ----
 
-  if (min(s)<0 & max(s)>0){
+  if (min(s)<0 && max(s)>0){
     palette <- 'RdYlBu'
   } else {
     palette <- 'YlGn'
@@ -289,12 +288,12 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
 
   #define color options ----
-  if(classes==1 | length(s)==1){
-    data.raster = terra::as.factor(data.raster)
+  if(classes==1 || length(s)==1){
+    data.raster <- terra::as.factor(data.raster)
     levels(data.raster) <- data.frame(value=rast_value, desc=c('aquamarine4'))
-    color_def = ggplot2::scale_fill_manual(paste(strwrap(units,width = 10), collapse = "\n"),
+    color_def <- ggplot2::scale_fill_manual(paste(strwrap(units,width = 10), collapse = "\n"),
                                            values = c('aquamarine4'), label= legend_lab,
-                                           na.value=NA, na.translate = F
+                                           na.value=NA, na.translate = FALSE
                                            )
 
 
@@ -309,8 +308,8 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
                                                                         ), collapse = "\n"),
                                                                         #even.steps = FALSE,
                                                                         #show.limits = TRUE,
-                                                                        reverse=T,
-                                                                        axis=F
+                                                                        reverse=TRUE,
+                                                                        axis=FALSE
                                                                         )
                                               )
   }
@@ -326,7 +325,7 @@ ebv_map <- function(filepath, datacubepath, entity=NULL, timestep=1, countries =
 
     #crop world_boundaries to extent
     extent <- terra::ext(data.raster)
-    world_boundaries <- terra::crop(world_boundaries, extent )
+    world_boundaries <- terra::crop(world_boundaries, extent)
 
     print(
       ggplot2::ggplot() +

@@ -72,18 +72,18 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
   }
 
   #check verbose
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(ignore_RAM, len=1, any.missing=FALSE) != TRUE){
     stop('ignore_RAM must be of type logical.')
   }
-  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=FALSE) != TRUE){
     stop('overwrite must be of type logical.')
   }
-  if(checkmate::checkLogical(touches, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(touches, len=1, any.missing=FALSE) != TRUE){
     stop('touches must be of type logical.')
   }
 
@@ -117,7 +117,7 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
     stop('Datacubepath must be of type character.')
   }
   hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE | !stringr::str_detect(datacubepath, 'ebv_cube')){
+  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
     stop(paste0('The given datacubepath is not valid:\n', datacubepath))
   }
   rhdf5::H5Fclose(hdf)
@@ -157,14 +157,6 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
     entity_names <- prop@general$entity_names
     ebv_i_entity(entity, entity_names)
 
-    #get entity index
-    if(checkmate::checkIntegerish(entity, len=1) == TRUE){
-      entity_index <- entity
-    } else if (checkmate::checkCharacter(entity)==TRUE){
-      entity_index <- which(entity_names==entity)
-    } else{
-      entity <- 1 #set entity to 1 (for ebv_i_check_ram)
-    }
   }
 
   ####end initial checks ----
@@ -192,9 +184,6 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
   epsg.nc <- as.integer(prop@spatial$epsg)
   crs.nc <- prop@spatial$wkt2
 
-  #original extent
-  extent.org <- terra::ext(subset)
-
   #reproject shp if necessary to epsg of ncdf ----
   if (epsg.shp != epsg.nc){
     subset <- terra::project(subset, crs.nc)
@@ -203,19 +192,10 @@ ebv_read_shp <- function(filepath, datacubepath, entity=NULL, timestep = 1,
   #get extent of shp
   extent.shp <- terra::ext(subset)
 
-  #get extent of ncdf file
-  ext <- prop@spatial$extent
-
   #get subset of ncdf #checks for RAM
   subset.nc <- ebv_read_bb(filepath, datacubepath, entity=entity,
                            bb=c(extent.shp[1], extent.shp[2], extent.shp[3], extent.shp[4]),
                            timestep=timestep, epsg=epsg.nc, ignore_RAM = ignore_RAM, verbose=verbose)
-
-  #get extent of raster
-  extent.raster <- terra::ext(subset.nc)
-
-  #get resolution of ncdf
-  resolution.nc <- terra::res(subset.nc)
 
   #rasterize shp ----
   #with resoultion of ncdf, burn value 1 (temp.raster --> mask)
