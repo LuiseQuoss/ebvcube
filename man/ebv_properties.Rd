@@ -4,13 +4,32 @@
 \alias{ebv_properties}
 \title{Read properties of EBV netCDF}
 \usage{
-ebv_properties(filepath, datacubepath = NULL, verbose = TRUE)
+ebv_properties(
+  filepath,
+  datacubepath = NULL,
+  scenario = NULL,
+  metric = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{filepath}{Character. Path to the netCDF file.}
 
-\item{datacubepath}{Character. Optional. Path to the datacube (use
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Character. Optional. Default: NULL. Path to the datacube
+(use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}). Alternatively, you can use the
+scenario and metric argument to define which cube you want to access.}
+
+\item{scenario}{Character or integer. Optional. Default: NULL. Define the
+scenario you want to access. If the EBV netCDF has no scenarios, leave the
+default value (NULL). You can use an integer value defining the scenario or
+give the name of the scenario as a character string. To check the available
+scenarios and their name or number (integer), use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
+
+\item{metric}{Character or integer. Optional. Define the metric you want to
+access. You can use an integer value defining the metric or give the name
+of the scenario as a character string. To check the available metrics and
+their name or number (integer), use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
 
 \item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
 it to FALSE.}
@@ -23,13 +42,16 @@ depending on input.
 Structured access to all attributes of the netCDF file.
 }
 \examples{
-#set path to EBV netCDF
+#define path to EBV netCDF
 file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 #get all datacubepaths of EBV netCDF
 datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 
 #get properties only for the file
 prop_file <- ebv_properties(file)
-#get properties for the file and a specific datacube
-prop_dc <- ebv_properties(file, datacubes[1,1])
+#get properties for the file and a specific datacube - use datacubepath
+prop_dc <- ebv_properties(file, datacubepath = datacubes[1,1])
+#get properties for the file and a specific datacube - use scenario & metric
+#note: this dataset has no scenario -> only metric is defined
+prop_dc <- ebv_properties(file, metric = 2)
 }

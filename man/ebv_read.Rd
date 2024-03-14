@@ -6,10 +6,12 @@
 \usage{
 ebv_read(
   filepath,
-  datacubepath,
+  datacubepath = NULL,
   entity = NULL,
   timestep = 1,
   type = "r",
+  scenario = NULL,
+  metric = NULL,
   sparse = FALSE,
   ignore_RAM = FALSE,
   verbose = FALSE
@@ -18,8 +20,9 @@ ebv_read(
 \arguments{
 \item{filepath}{Character. Path to the netCDF file.}
 
-\item{datacubepath}{Character. Path to the datacube (use
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Character. Optional. Default: NULL. Path to the datacube
+(use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}). Alternatively, you can use the
+scenario and metric argument to define which cube you want to access.}
 
 \item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
 the entity argument is set to NULL. Else, a character string or single
@@ -35,6 +38,18 @@ dates in ISO format, such as '2015-01-01'.}
 array or matrix object. The 'r' indicates that a SpatRaster object from the
 terra package will be returned (default). The latter ('da') returns a
 DelayedArray or DelayedMatrix object.}
+
+\item{scenario}{Character or integer. Optional. Default: NULL. Define the
+scenario you want to access. If the EBV netCDF has no scenarios, leave the
+default value (NULL). You can use an integer value defining the scenario or
+give the name of the scenario as a character string. To check the available
+scenarios and their name or number (integer), use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
+
+\item{metric}{Character or integer. Optional. Define the metric you want to
+access. You can use an integer value defining the metric or give the name
+of the scenario as a character string. To check the available metrics and
+their name or number (integer), use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
 
 \item{sparse}{Logical. Default: FALSE. Set to TRUE if the data contains a lot
 empty raster cells. Only relevant for DelayedArray return value.}
@@ -72,8 +87,8 @@ cSAR.delayedarray <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
                               entity = 1, timestep = c(1,3), type='da',
                               sparse = TRUE)
 #read data as SpatRaster
-cSAR.raster <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
-                             entity = 1, timestep = 1:3, type='r')
+cSAR.raster <- ebv_read(filepath = file,entity = 1, timestep = "2000-01-01",
+                        type='r', metric = 1)
 #read data as Array
 cSAR.array <- ebv_read(filepath = file, datacubepath = datacubes[1,1],
                               entity = 1, timestep = 1, type='r')

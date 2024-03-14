@@ -4,8 +4,9 @@
 #'   NetCDF file. Subset definition by a bounding box.
 #'
 #' @param filepath Character. Path to the netCDF file.
-#' @param datacubepath Character. Path to the datacube (use
-#'   [ebvcube::ebv_datacubepaths()]).
+#' @param datacubepath Character. Optional. Default: NULL. Path to the datacube
+#'   (use [ebvcube::ebv_datacubepaths()]). Alternatively, you can use the
+#'   scenario and metric argument to define which cube you want to access.
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
@@ -21,6 +22,16 @@
 #' @param epsg Integer. Default: 4326 (WGS84). Change accordingly if your
 #'   bounding box coordinates are based on a different coordinate reference
 #'   system.
+#' @param scenario Character or integer. Optional. Default: NULL. Define the
+#'   scenario you want to access. If the EBV netCDF has no scenarios, leave the
+#'   default value (NULL). You can use an integer value defining the scenario or
+#'   give the name of the scenario as a character string. To check the available
+#'   scenarios and their name or number (integer), use
+#'   [ebvcube::ebv_datacubepaths()].
+#' @param metric Character or integer. Optional. Define the metric you want to
+#'   access. You can use an integer value defining the metric or give the name
+#'   of the scenario as a character string. To check the available metrics and
+#'   their name or number (integer), use [ebvcube::ebv_datacubepaths()].
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the
 #'   outputfile defined by 'outputpath'.
 #' @param ignore_RAM Logical. Default: FALSE. Checks if there is enough space in
@@ -64,9 +75,9 @@
 #'                      entity = 1, timestep = 1:2, bb = bb_utm32,
 #'                      epsg = 32632, outputpath = out, overwrite = TRUE)
 #' }
-ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
-                        outputpath=NULL, epsg = 4326, overwrite=FALSE,
-                        ignore_RAM = FALSE, verbose = TRUE){
+ebv_read_bb <- function(filepath, datacubepath = NULL, entity=NULL, timestep = 1, bb,
+                        outputpath=NULL, epsg = 4326, scenario = NULL, metric = NULL,
+                        overwrite=FALSE, ignore_RAM = FALSE, verbose = TRUE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -79,10 +90,6 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
   if(missing(filepath)){
     stop('Filepath argument is missing.')
   }
-  if(missing(datacubepath)){
-    stop('Datacubepath argument is missing.')
-  }
-  #are all arguments given?
   if(missing(bb)){
     stop('Bounding box (bb) argument is missing.')
   }
@@ -114,18 +121,34 @@ ebv_read_bb <- function(filepath, datacubepath, entity=NULL, timestep = 1, bb,
   #file closed?
   # ebv_i_file_opened(filepath, verbose)
 
-  #variable check
-  if (checkmate::checkCharacter(datacubepath) != TRUE){
-    stop('Datacubepath must be of type character.')
+  #datacubepath check
+  #1. make sure anything is defined
+  if(is.null(datacubepath) && is.null(scenario) && is.null(metric)){
+    stop('You need to define the datacubepath or the scenario and metric.
+       Regarding the second option: If your EBV netCDF has no scenario,
+       leave the argument empty.')
+  }else if(!is.null(datacubepath)){
+    #2. check datacubepath
+    # open file
+    hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
+    if (checkmate::checkCharacter(datacubepath) != TRUE) {
+      stop('Datacubepath must be of type character.')
+    }
+    if (rhdf5::H5Lexists(hdf, datacubepath) == FALSE ||
+        !stringr::str_detect(datacubepath, 'ebv_cube')) {
+      stop(paste0('The given datacubepath is not valid:\n', datacubepath))
+    }
+    #close file
+    rhdf5::H5Fclose(hdf)
+  } else if(!is.null(metric)){
+    #3. check metric&scenario
+    datacubepaths <- ebv_datacubepaths(filepath, verbose=verbose)
+    datacubepath <- ebv_i_datacubepath(scenario, metric,
+                                       datacubepaths, verbose=verbose)
   }
-  hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
-    stop(paste0('The given datacubepath is not valid:\n', datacubepath))
-  }
-  rhdf5::H5Fclose(hdf)
 
   #get properties
-  prop <- ebv_properties(filepath, datacubepath, verbose)
+  prop <- ebv_properties(filepath, datacubepath, verbose = verbose)
 
   #timestep check -> in case of ISO, get index
   timestep <- ebv_i_date(timestep, prop@temporal$dates)

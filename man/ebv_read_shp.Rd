@@ -6,12 +6,14 @@
 \usage{
 ebv_read_shp(
   filepath,
-  datacubepath,
+  datacubepath = NULL,
   entity = NULL,
   timestep = 1,
   shp,
   outputpath = NULL,
   touches = TRUE,
+  scenario = NULL,
+  metric = NULL,
   overwrite = FALSE,
   ignore_RAM = FALSE,
   verbose = TRUE
@@ -20,8 +22,9 @@ ebv_read_shp(
 \arguments{
 \item{filepath}{Character. Path to the netCDF file.}
 
-\item{datacubepath}{Character. Path to the datacube (use
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Character. Optional. Default: NULL. Path to the datacube
+(use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}). Alternatively, you can use the
+scenario and metric argument to define which cube you want to access.}
 
 \item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
 the entity argument is set to NULL. Else, a character string or single
@@ -42,6 +45,18 @@ object in memory. Optional: set path to write subset as GeoTiff on disk.}
 \item{touches}{Logical. Default: TRUE, all pixels touched by the polygon(s)
 will be updated. Set to FALSE to only include pixels that are on the line
 render path or have center points inside the polygon(s).}
+
+\item{scenario}{Character or integer. Optional. Default: NULL. Define the
+scenario you want to access. If the EBV netCDF has no scenarios, leave the
+default value (NULL). You can use an integer value defining the scenario or
+give the name of the scenario as a character string. To check the available
+scenarios and their name or number (integer), use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
+
+\item{metric}{Character or integer. Optional. Define the metric you want to
+access. You can use an integer value defining the metric or give the name
+of the scenario as a character string. To check the available metrics and
+their name or number (integer), use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
 
 \item{overwrite}{Logical. Default: FALSE. Set to TRUE to overwrite the
 outputfile defined by 'outputpath'.}

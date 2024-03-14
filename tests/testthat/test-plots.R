@@ -53,7 +53,7 @@ test_that("test ebv_trend boxplot", {
 })
 
 # basic tests for ebv_map ----
-test_that("test ebv_map", {
+test_that("test ebv_map 1", {
   file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
   ebv_map(file, 'metric_1/ebv_cube', 1, 3, classes=5)
   p <- ggplot2::last_plot()
@@ -64,5 +64,19 @@ test_that("test ebv_map", {
   expect_identical(p$labels$subtitle, "Relative change in the number of species (%) - forest bird species (1920-01-01)")
   expect_identical(p$scales$scales[[1]]$labels, c(-0.1930,  0.0413,  0.2370,  0.5950,  1.0500,  5.0500))
   # expect_identical(p$scales$scales[[1]]$guide$title, "Percentage\npoints")
+})
 
+test_that("test ebv_map 2", {
+  file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
+  ebv_map(filepath = file, entity = 'all bird species', timestep = "1950-01-01",
+          metric = 'Relative change in the number of species (%)',
+          classes = 7, verbose = FALSE)
+  p <- ggplot2::last_plot()
+  expect_true(ggplot2::is.ggplot(p))
+  expect_error(print(p), NA)
+  expect_identical(p$labels$y, "longitude")
+  expect_identical(p$labels$title, "Local bird diversity (cSAR/BES-SIM)")
+  expect_identical(p$labels$subtitle, "Relative change in the number of species (%) - all bird species (1950-01-01)")
+  expect_identical(p$scales$scales[[1]]$labels, c(-1.69, 0.358, 0.788,  2.05, 3.11, 4.05, 5.91, 19.4))
+  # expect_identical(p$scales$scales[[1]]$guide$title, "Percentage\npoints")
 })

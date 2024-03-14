@@ -40,29 +40,46 @@ methods::setClass(
 #' @description Structured access to all attributes of the netCDF file.
 #'
 #' @param filepath Character. Path to the netCDF file.
-#' @param datacubepath Character. Optional. Path to the datacube (use
-#'   [ebvcube::ebv_datacubepaths()]).
+#' @param datacubepath Character. Optional. Default: NULL. Path to the datacube
+#'   (use [ebvcube::ebv_datacubepaths()]). Alternatively, you can use the
+#'   scenario and metric argument to define which cube you want to access.
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
+#' @param scenario Character or integer. Optional. Default: NULL. Define the
+#'   scenario you want to access. If the EBV netCDF has no scenarios, leave the
+#'   default value (NULL). You can use an integer value defining the scenario or
+#'   give the name of the scenario as a character string. To check the available
+#'   scenarios and their name or number (integer), use
+#'   [ebvcube::ebv_datacubepaths()].
+#' @param metric Character or integer. Optional. Define the metric you want to
+#'   access. You can use an integer value defining the metric or give the name
+#'   of the scenario as a character string. To check the available metrics and
+#'   their name or number (integer), use [ebvcube::ebv_datacubepaths()].
 #'
 #' @return S4 class containing information about file or file and datacube
 #'   depending on input.
 #' @export
 #'
 #' @examples
-#' #set path to EBV netCDF
+#' #define path to EBV netCDF
 #' file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 #' #get all datacubepaths of EBV netCDF
 #' datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 #'
 #' #get properties only for the file
 #' prop_file <- ebv_properties(file)
-#' #get properties for the file and a specific datacube
-#' prop_dc <- ebv_properties(file, datacubes[1,1])
+#' #get properties for the file and a specific datacube - use datacubepath
+#' prop_dc <- ebv_properties(file, datacubepath = datacubes[1,1])
+#' #get properties for the file and a specific datacube - use scenario & metric
+#' #note: this dataset has no scenario -> only metric is defined
+#' prop_dc <- ebv_properties(file, metric = 2)
 ebv_properties <-
   function(filepath,
            datacubepath = NULL,
+           scenario = NULL,
+           metric = NULL,
            verbose = TRUE) {
+
     ####initial tests start ----
     # ensure file and all datahandles are closed on exit
     withr::defer(if (exists('hdf')) {
@@ -92,20 +109,42 @@ ebv_properties <-
       stop(paste0('File ending is wrong. File cannot be processed.'))
     }
 
-    # open file
-    hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-
-    #variable check
-    if (checkmate::checkCharacter(datacubepath) != TRUE &&
-        !is.null(datacubepath)) {
-      stop('Datacubepath must be of type character.')
-    }
-    if (!is.null(datacubepath)) {
+    #datacubepath check
+    #1. make sure anything is defined
+    if(is.null(datacubepath) && is.null(scenario) && is.null(metric)){
+      if(verbose){
+        print('Giving the properties for the file. For more info on a specific datacube, define the metric and scenario OR datacubepath.')
+      }
+      # open file
+      hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
+    }else if(!is.null(datacubepath)){
+    #2. check datacubepath
+      # open file
+      hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
+      if (checkmate::checkCharacter(datacubepath) != TRUE) {
+        stop('Datacubepath must be of type character.')
+      }
       if (rhdf5::H5Lexists(hdf, datacubepath) == FALSE ||
           !stringr::str_detect(datacubepath, 'ebv_cube')) {
-        stop(paste0('The given variable is not valid:\n', datacubepath))
+        stop(paste0('The given datacubepath is not valid:\n', datacubepath))
+      }
+      if(verbose){
+        print('Giving the properties for the file and a specified datacube.')
+      }
+    } else if(!is.null(metric)){
+      #3. check metric&scenario
+      datacubepaths <- ebv_datacubepaths(filepath, verbose)
+      datacubepath <- ebv_i_datacubepath(scenario, metric,
+                                         datacubepaths, verbose)
+      # open file
+      hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
+
+      if(verbose){
+        print('Giving the properties for the file and a specified datacube.')
       }
     }
+
+
     ####initial tests end ----
 
     #ACDD STANDARD----

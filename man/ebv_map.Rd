@@ -6,12 +6,14 @@
 \usage{
 ebv_map(
   filepath,
-  datacubepath,
+  datacubepath = NULL,
   entity = NULL,
   timestep = 1,
   countries = TRUE,
   col_rev = FALSE,
   classes = 5,
+  scenario = NULL,
+  metric = NULL,
   all_data = FALSE,
   ignore_RAM = FALSE,
   verbose = TRUE
@@ -20,8 +22,9 @@ ebv_map(
 \arguments{
 \item{filepath}{Character. Path to the netCDF file.}
 
-\item{datacubepath}{Character. Path to the datacube (use
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Character. Optional. Default: NULL. Path to the datacube
+(use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}). Alternatively, you can use the
+scenario and metric argument to define which cube you want to access.}
 
 \item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
 the entity argument is set to NULL. Else, a character string or single
@@ -41,6 +44,18 @@ to be the other way around.}
 \item{classes}{Integer. Default: 5. Define the amount of classes (quantiles)
 for the symbology. Currently restricted to maximum 11 classes (allowed
 maximum for palette RdYlBu is 11).}
+
+\item{scenario}{Character or integer. Optional. Default: NULL. Define the
+scenario you want to access. If the EBV netCDF has no scenarios, leave the
+default value (NULL). You can use an integer value defining the scenario or
+give the name of the scenario as a character string. To check the available
+scenarios and their name or number (integer), use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
+
+\item{metric}{Character or integer. Optional. Define the metric you want to
+access. You can use an integer value defining the metric or give the name
+of the scenario as a character string. To check the available metrics and
+their name or number (integer), use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
 
 \item{all_data}{Logical. Default: FALSE. The quantiles are based on the one
 timestep you chose (default). If you want include the full data of the
@@ -70,6 +85,9 @@ datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 
 #plot a map for the 3rd timestep, divide into 7 classes
 ebv_map(filepath = file, datacubepath = datacubes[1,1], entity = 1,
-        timestep = 3, classes = 7)
+        timestep = 3, classes = 7, verbose = FALSE)
+ebv_map(filepath = file, entity = 'all bird species', timestep = "1950-01-01",
+        metric = 'Relative change in the number of species (\%)',
+        classes = 7, verbose = FALSE)
 }
 }

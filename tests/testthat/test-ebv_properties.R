@@ -91,3 +91,10 @@ test_that("properties: check ebv_cube", {
   expect_equal(prop$type,'H5T_IEEE_F32LE')
 })
 
+test_that("properties: check def of datacubepath by scenario and metric", {
+  file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
+  prop <- ebv_properties(file, scenario = 2, metric=3, verbose=FALSE)
+  expect_equal(prop@scenario$name,"SSP3-RCP6.0 LULC")
+  expect_equal(prop@metric$name,"Diversity-weighted relative species richness change (Delta_SS)")
+})
+

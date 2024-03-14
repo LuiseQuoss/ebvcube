@@ -6,11 +6,13 @@
 \usage{
 ebv_add_data(
   filepath_nc,
-  datacubepath,
+  datacubepath = NULL,
   entity = NULL,
   timestep = 1,
   data,
   band = 1,
+  scenario = NULL,
+  metric = NULL,
   ignore_RAM = FALSE,
   verbose = TRUE
 )
@@ -18,8 +20,9 @@ ebv_add_data(
 \arguments{
 \item{filepath_nc}{Character. Path to the self-created netCDF file.}
 
-\item{datacubepath}{Character. Path to the datacube (use
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Character. Optional. Default: NULL. Path to the datacube
+(use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}). Alternatively, you can use the
+scenario and metric argument to define which cube you want to access.}
 
 \item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
 the entity argument is set to NULL. Else, a character string or single
@@ -41,6 +44,18 @@ in-memory object holding the data.}
 \item{band}{Integer. Default: 1. Define which band(s) to read from GeoTiff.
 Can be several. Don't have to be in order as the timesteps definition
 requires.}
+
+\item{scenario}{Character or integer. Optional. Default: NULL. Define the
+scenario you want to access. If the EBV netCDF has no scenarios, leave the
+default value (NULL). You can use an integer value defining the scenario or
+give the name of the scenario as a character string. To check the available
+scenarios and their name or number (integer), use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
+
+\item{metric}{Character or integer. Optional. Define the metric you want to
+access. You can use an integer value defining the metric or give the name
+of the scenario as a character string. To check the available metrics and
+their name or number (integer), use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
 
 \item{ignore_RAM}{Logical. Default: FALSE. Checks if there is enough space in
 your memory to read the data. Can be switched off (set to TRUE). Ignore
@@ -74,7 +89,12 @@ tif <- system.file(file.path("extdata","entity1.tif"), package="ebvcube")
 
 # add data to the timestep 1, 2 and 3 using the first three bands of the GeoTiff
 \dontrun{
+#use datacubepath argument and define timestep by integer
 ebv_add_data(filepath_nc = file, datacubepath = datacubepaths[1,1],
              entity = 1, timestep = 1:3, data = tif, band = 1:3)
+#use metric argument and define timestep by ISO-format
+ebv_add_data(filepath_nc = file, entity = 1,
+             timestep = paste0(as.character(seq(1900,1920,10)), '-01-01'),
+             metric = 1, data = tif, band = 1:3, verbose = FALSE)
 }
 }
