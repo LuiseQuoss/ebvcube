@@ -2,24 +2,27 @@
 % Please edit documentation in R/ebv_trend.R
 \name{ebv_trend}
 \alias{ebv_trend}
-\title{Plot the trend of an EBV NetCDF}
+\title{Plot the trend of an EBV netCDF}
 \usage{
 ebv_trend(
   filepath,
-  datacubepath,
+  datacubepath = NULL,
   entity = NULL,
   method = "mean",
   subset = NULL,
   color = "dodgerblue4",
   touches = TRUE,
+  scenario = NULL,
+  metric = NULL,
   verbose = TRUE
 )
 }
 \arguments{
-\item{filepath}{Character. Path to the NetCDF file.}
+\item{filepath}{Character. Path to the netCDF file.}
 
-\item{datacubepath}{Character. Path to the datacube (use
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}).}
+\item{datacubepath}{Character. Optional. Default: NULL. Path to the datacube
+(use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}). Alternatively, you can use the
+scenario and metric argument to define which cube you want to access.}
 
 \item{entity}{Character or Integer. Default is NULL. If the structure is 3D,
 the entity argument is set to NULL. Else, a character string or single
@@ -27,8 +30,7 @@ integer value must indicate the entity of the 4D structure of the EBV
 netCDFs.}
 
 \item{method}{Character. Default: mean. Choose one of the following options
-for different plots: mean, min, max, boxplot. See \strong{Note} for more
-information.}
+for different plots: mean, min, max, boxplot. See \strong{Note} for more}
 
 \item{subset}{Character. Default: NULL. If you want to look at the trend for
 a spatial subset, define the path to the shapefile encompassing the area.
@@ -40,6 +42,18 @@ Ending needs to be *.shp.}
 \item{touches}{Logical. Optional. Default: TRUE. Only relevant if the subset is
 indicated by a shapefile. See \code{\link[=ebv_read_shp]{ebv_read_shp()}}.}
 
+\item{scenario}{Character or integer. Optional. Default: NULL. Define the
+scenario you want to access. If the EBV netCDF has no scenarios, leave the
+default value (NULL). You can use an integer value defining the scenario or
+give the name of the scenario as a character string. To check the available
+scenarios and their name or number (integer), use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
+
+\item{metric}{Character or integer. Optional. Define the metric you want to
+access. You can use an integer value defining the metric or give the name
+of the scenario as a character string. To check the available metrics and
+their name or number (integer), use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
+
 \item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
 it to FALSE.}
 }
@@ -48,7 +62,7 @@ Returns plots and eventually values based on the \code{method} argument.
 See \strong{Note} for more information
 }
 \description{
-Plot the trend of one datacube of a EBV NetCDF over time
+Plot the trend of one datacube of a EBV netCDF over time
 (x-axis). Different options can be chosen based on the \code{method} argument.
 }
 \note{

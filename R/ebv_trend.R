@@ -1,18 +1,18 @@
-#' Plot the trend of an EBV NetCDF
+#' Plot the trend of an EBV netCDF
 #'
-#' @description Plot the trend of one datacube of a EBV NetCDF over time
+#' @description Plot the trend of one datacube of a EBV netCDF over time
 #'   (x-axis). Different options can be chosen based on the `method` argument.
 #'
-#' @param filepath Character. Path to the NetCDF file.
-#' @param datacubepath Character. Path to the datacube (use
-#'   [ebvcube::ebv_datacubepaths()]).
+#' @param filepath Character. Path to the netCDF file.
+#' @param datacubepath Character. Optional. Default: NULL. Path to the datacube
+#'   (use [ebvcube::ebv_datacubepaths()]). Alternatively, you can use the
+#'   scenario and metric argument to define which cube you want to access.
 #' @param entity Character or Integer. Default is NULL. If the structure is 3D,
 #'   the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
 #'   netCDFs.
 #' @param method Character. Default: mean. Choose one of the following options
 #'   for different plots: mean, min, max, boxplot. See **Note** for more
-#'   information.
 #' @param subset Character. Default: NULL. If you want to look at the trend for
 #'   a spatial subset, define the path to the shapefile encompassing the area.
 #'   Ending needs to be *.shp.
@@ -20,6 +20,16 @@
 #'   indicated by a shapefile. See [ebvcube::ebv_read_shp()].
 #' @param color Character. Default: dodgerblue4. Change to any color known by R
 #'   [grDevices::colors()]
+#' @param scenario Character or integer. Optional. Default: NULL. Define the
+#'   scenario you want to access. If the EBV netCDF has no scenarios, leave the
+#'   default value (NULL). You can use an integer value defining the scenario or
+#'   give the name of the scenario as a character string. To check the available
+#'   scenarios and their name or number (integer), use
+#'   [ebvcube::ebv_datacubepaths()].
+#' @param metric Character or integer. Optional. Define the metric you want to
+#'   access. You can use an integer value defining the metric or give the name
+#'   of the scenario as a character string. To check the available metrics and
+#'   their name or number (integer), use [ebvcube::ebv_datacubepaths()].
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
 #'
@@ -46,9 +56,9 @@
 #' #plot the change of the mean over time of the first datacube
 #' ebv_trend(filepath = file, datacubepath = datacubes[1,1], entity = 1)
 #' }
-ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
-                      subset=NULL, color="dodgerblue4", touches=TRUE,
-                      verbose=TRUE){
+ebv_trend <- function(filepath, datacubepath = NULL, entity = NULL, method='mean',
+                      subset = NULL, color="dodgerblue4", touches = TRUE,
+                      scenario = NULL, metric = NULL, verbose = TRUE){
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -60,9 +70,6 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   #are all arguments given?
   if(missing(filepath)){
     stop('Filepath argument is missing.')
-  }
-  if(missing(datacubepath)){
-    stop('Datacubepath argument is missing.')
   }
 
   #check verbose
@@ -82,11 +89,30 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   }
 
   #datacubepath check
-  hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath)==FALSE || !stringr::str_detect(datacubepath, 'ebv_cube')){
-    stop(paste0('The given datacubepath is not valid:\n', datacubepath))
+  #1. make sure anything is defined
+  if(is.null(datacubepath) && is.null(scenario) && is.null(metric)){
+    stop('You need to define the datacubepath or the scenario and metric.
+       Regarding the second option: If your EBV netCDF has no scenario,
+       leave the argument empty.')
+  }else if(!is.null(datacubepath)){
+    #2. check datacubepath
+    # open file
+    hdf <- rhdf5::H5Fopen(filepath, flags = "H5F_ACC_RDONLY")
+    if (checkmate::checkCharacter(datacubepath) != TRUE) {
+      stop('Datacubepath must be of type character.')
+    }
+    if (rhdf5::H5Lexists(hdf, datacubepath) == FALSE ||
+        !stringr::str_detect(datacubepath, 'ebv_cube')) {
+      stop(paste0('The given datacubepath is not valid:\n', datacubepath))
+    }
+    #close file
+    rhdf5::H5Fclose(hdf)
+  } else if(!is.null(metric)){
+    #3. check metric&scenario
+    datacubepaths <- ebv_datacubepaths(filepath, verbose=verbose)
+    datacubepath <- ebv_i_datacubepath(scenario, metric,
+                                       datacubepaths, verbose=verbose)
   }
-  rhdf5::H5Fclose(hdf)
 
   #check color
   if(! color %in% grDevices::colors()){
@@ -94,7 +120,7 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
   }
 
   #get properties----
-  prop <- ebv_properties(filepath, datacubepath, verbose)
+  prop <- ebv_properties(filepath, datacubepath, verbose=verbose)
 
   #check file structure
   is_4D <- ebv_i_4D(filepath)
@@ -189,7 +215,8 @@ ebv_trend <- function(filepath, datacubepath, entity=NULL, method='mean',
                              entity = entity,
                              timestep = 1:dims[3],#get all timesteps
                              shp = subset,
-                             touches = touches)
+                             touches = touches,
+                             verbose = verbose)
     #turn into array
     #DelayedArray::DelayedArray(data.all.raster)
     data.all <- terra::as.array(data.all.raster)

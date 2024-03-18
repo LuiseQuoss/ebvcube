@@ -6,12 +6,14 @@
 \usage{
 ebv_resample(
   filepath_src,
-  datacubepath_src,
+  datacubepath_src = NULL,
   entity_src = NULL,
   timestep_src = 1,
   resolution,
   outputpath,
   method = "bilinear",
+  scenario = NULL,
+  metric = NULL,
   return_raster = FALSE,
   overwrite = FALSE,
   ignore_RAM = FALSE,
@@ -22,8 +24,9 @@ ebv_resample(
 \item{filepath_src}{Character. Path to the netCDF file whose resolution
 should be changed.}
 
-\item{datacubepath_src}{Character. Path to the datacube (use
-\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}) whose resolution should be changed.}
+\item{datacubepath_src}{Character. Optional. Default: NULL. Path to the
+datacube (use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}). Alternatively, you can use
+the scenario and metric argument to define which cube you want to access.}
 
 \item{entity_src}{Character or Integer. Default is NULL. If the structure is
 3D, the entity argument is set to NULL. Else, a character string or single
@@ -35,11 +38,11 @@ Either provide an integer value or list of values that refer(s) to the
 index of the timestep(s) (minimum value: 1) or provide a date or list of
 dates in ISO format, such as '2015-01-01'.}
 
-\item{resolution}{Either the path to an EBV netCDF file that determines the
-resolution (character) or the resolution defined directly (numeric). The
-vector defining the resolution directly must contain three elements: the
-x-resolution, the y-resolution and the corresponding EPSG code, e.g.
-c(0.25, 0.25, 4326).}
+\item{resolution}{Character or Numeric. Either the path to an EBV netCDF file
+that determines the resolution (character) or the resolution defined
+directly (numeric). The vector defining the resolution directly must
+contain three elements: the x-resolution, the y-resolution and the
+corresponding EPSG code, e.g. c(0.25, 0.25, 4326).}
 
 \item{outputpath}{Character. Set path to write data as GeoTiff on disk.}
 
@@ -47,6 +50,18 @@ c(0.25, 0.25, 4326).}
 from: "near","bilinear","cubic", "cubicspline", "lanczos", "sum", "min",
 "q1", "med", "q3", "max", "average", "mode" and "rms". For categorical
 data, use 'near'. Based on \code{\link[terra:project]{terra::project()}}.}
+
+\item{scenario}{Character or integer. Optional. Default: NULL. Define the
+scenario you want to access. If the EBV netCDF has no scenarios, leave the
+default value (NULL). You can use an integer value defining the scenario or
+give the name of the scenario as a character string. To check the available
+scenarios and their name or number (integer), use
+\code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
+
+\item{metric}{Character or integer. Optional. Define the metric you want to
+access. You can use an integer value defining the metric or give the name
+of the scenario as a character string. To check the available metrics and
+their name or number (integer), use \code{\link[=ebv_datacubepaths]{ebv_datacubepaths()}}.}
 
 \item{return_raster}{Logical. Default: FALSE. Set to TRUE to directly get the
 corresponding SpatRaster object.}

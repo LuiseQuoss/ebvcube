@@ -5,17 +5,18 @@
 #'
 #' @param filepath_src Character. Path to the netCDF file whose resolution
 #'   should be changed.
-#' @param datacubepath_src Character. Path to the datacube (use
-#'   [ebvcube::ebv_datacubepaths()]) whose resolution should be changed.
+#' @param datacubepath_src Character. Optional. Default: NULL. Path to the
+#'   datacube (use [ebvcube::ebv_datacubepaths()]). Alternatively, you can use
+#'   the scenario and metric argument to define which cube you want to access.
 #' @param entity_src Character or Integer. Default is NULL. If the structure is
 #'   3D, the entity argument is set to NULL. Else, a character string or single
 #'   integer value must indicate the entity of the 4D structure of the EBV
 #'   netCDFs.
-#' @param resolution Either the path to an EBV netCDF file that determines the
-#'   resolution (character) or the resolution defined directly (numeric). The
-#'   vector defining the resolution directly must contain three elements: the
-#'   x-resolution, the y-resolution and the corresponding EPSG code, e.g.
-#'   c(0.25, 0.25, 4326).
+#' @param resolution Character or Numeric. Either the path to an EBV netCDF file
+#'   that determines the resolution (character) or the resolution defined
+#'   directly (numeric). The vector defining the resolution directly must
+#'   contain three elements: the x-resolution, the y-resolution and the
+#'   corresponding EPSG code, e.g. c(0.25, 0.25, 4326).
 #' @param outputpath Character. Set path to write data as GeoTiff on disk.
 #' @param timestep_src Integer or character. Select one or several timestep(s).
 #'   Either provide an integer value or list of values that refer(s) to the
@@ -25,6 +26,16 @@
 #'   from: "near","bilinear","cubic", "cubicspline", "lanczos", "sum", "min",
 #'   "q1", "med", "q3", "max", "average", "mode" and "rms". For categorical
 #'   data, use 'near'. Based on [terra::project()].
+#' @param scenario Character or integer. Optional. Default: NULL. Define the
+#'   scenario you want to access. If the EBV netCDF has no scenarios, leave the
+#'   default value (NULL). You can use an integer value defining the scenario or
+#'   give the name of the scenario as a character string. To check the available
+#'   scenarios and their name or number (integer), use
+#'   [ebvcube::ebv_datacubepaths()].
+#' @param metric Character or integer. Optional. Define the metric you want to
+#'   access. You can use an integer value defining the metric or give the name
+#'   of the scenario as a character string. To check the available metrics and
+#'   their name or number (integer), use [ebvcube::ebv_datacubepaths()].
 #' @param return_raster Logical. Default: FALSE. Set to TRUE to directly get the
 #'   corresponding SpatRaster object.
 #' @param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the output
@@ -64,8 +75,9 @@
 #'              outputpath = out, overwrite=TRUE)
 #'
 #' }
-ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timestep_src = 1,
-                         resolution, outputpath, method='bilinear', return_raster=FALSE,
+ebv_resample <- function(filepath_src, datacubepath_src = NULL, entity_src=NULL,
+                         timestep_src = 1, resolution, outputpath, method='bilinear',
+                         scenario = NULL, metric = NULL, return_raster=FALSE,
                          overwrite = FALSE, ignore_RAM=FALSE, verbose=TRUE){
   ####initial tests start ----
   # ensure file and all datahandles are closed on exit
@@ -78,9 +90,6 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   #are all arguments given?
   if(missing(filepath_src)){
     stop('Filepath_src argument is missing.')
-  }
-  if(missing(datacubepath_src)){
-    stop('Datacubepath_src argument is missing.')
   }
   if(missing(resolution)){
     stop('Resolution argument is missing.')
@@ -136,13 +145,13 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
   if(!is.null(filepath_dest)){
     #filepath dest check
     if (checkmate::checkCharacter(filepath_dest) != TRUE){
-      stop('Filepath_dest must be of type character.')
+      stop('Resolution must be of type integer or character.')
     }
     if (checkmate::checkFileExists(filepath_dest) != TRUE){
-      stop(paste0('Filepath_dest does not exist.\n', filepath_dest))
+      stop(paste0('The file for the resolution does not exist.\n', filepath_dest))
     }
     if (!endsWith(filepath_dest, '.nc')){
-      stop(paste0('File ending of filepath_dest is wrong. File cannot be processed.'))
+      stop(paste0('File ending of the resolution-file is wrong - must be .nc'))
     }
 
     #get properties
@@ -157,18 +166,34 @@ ebv_resample <- function(filepath_src, datacubepath_src, entity_src=NULL, timest
 
   }
 
-  #source variable check
-  if (checkmate::checkCharacter(datacubepath_src) != TRUE){
-    stop('Datacubepath must be of type character.')
+  #source datacubepath check
+  #1. make sure anything is defined
+  if(is.null(datacubepath_src) && is.null(scenario) && is.null(metric)){
+    stop('You need to define the datacubepath_src or the scenario and metric.
+       Regarding the second option: If your EBV netCDF has no scenario,
+       leave the argument empty.')
+  }else if(!is.null(datacubepath_src)){
+    #2. check datacubepath_src
+    # open file
+    hdf <- rhdf5::H5Fopen(filepath_src, flags = "H5F_ACC_RDONLY")
+    if (checkmate::checkCharacter(datacubepath_src) != TRUE) {
+      stop('Datacubepath must be of type character.')
+    }
+    if (rhdf5::H5Lexists(hdf, datacubepath_src) == FALSE ||
+        !stringr::str_detect(datacubepath_src, 'ebv_cube')) {
+      stop(paste0('The given datacubepath_src is not valid:\n', datacubepath_src))
+    }
+    #close file
+    rhdf5::H5Fclose(hdf)
+  } else if(!is.null(metric)){
+    #3. check metric&scenario
+    datacubepaths <- ebv_datacubepaths(filepath_src, verbose=verbose)
+    datacubepath_src <- ebv_i_datacubepath(scenario, metric,
+                                       datacubepaths, verbose=verbose)
   }
-  hdf <- rhdf5::H5Fopen(filepath_src, flags = "H5F_ACC_RDONLY")
-  if (rhdf5::H5Lexists(hdf, datacubepath_src)==FALSE || !stringr::str_detect(datacubepath_src, 'ebv_cube')){
-    stop(paste0('The given variable is not valid:\n', datacubepath_src))
-  }
-  rhdf5::H5Fclose(hdf)
 
   #get properties source
-  prop_src <- ebv_properties(filepath_src, datacubepath_src, verbose)
+  prop_src <- ebv_properties(filepath_src, datacubepath_src,  verbose=verbose)
   type.long <- prop_src@ebv_cube$type
   entity_names <- prop_src@general$entity_names
   extent_src <- prop_src@spatial$extent
