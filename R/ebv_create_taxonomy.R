@@ -85,7 +85,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
       }
     }
   )
-  dids <- c('crs.id', 'lat.id', 'lon.id', 'time.id', 'did')
+  dids <- c('crs.id', 'lat.id', 'lon.id', 'time.id', 'did', 'entity.id')
   withr::defer(
     for (id in dids){
       if(exists(id)){
@@ -358,7 +358,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     if(t_res=="P0000-00-00"){
       #one timestep only
       #check
-      if(t_start!=t_end){
+      if(t_start!=t_end & verbose){
         warning('Your dataset has one timestep only based on the temporal resolution attribute but your given start and end date are different. Note: the start date will be applied to the dataset.')
       }
       date <- as.numeric(as.Date(t_start))
@@ -1015,75 +1015,6 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
   rhdf5::H5Dclose(entity.id)
 
-  # add values to 'entity_list' var ----
-  level_i <- length(taxon_list)
-
-  for(level in utils::head(taxon_list, -1)){
-    new_values <- stringr::str_split(csv_txt[,level],'')
-    result <- lapply(new_values,function(x){
-      if(length(x)<max_char_entity){
-        for (i in 1:(max_char_entity - length(x))) {
-          x <- c(x, ' ')
-        }
-      }else{
-        x <- x[1:max_char_entity]
-      };x
-
-    })
-
-    #transform values so they fit into the variable
-    data_level <- as.data.frame(result)
-    data_level <- t(data_level)
-    data_level_clean <- enc2utf8(unlist(data_level))
-
-    print(paste0('add ',level,' data to level: ', level_i))
-    rhdf5::h5write(data_level_clean, file=outputpath,
-                   name="entity_list", index=list(level_i,NULL, NULL))
-
-    level_i = level_i-1
-
-  }
-
-  # add values to 'entity_levels' var ----
-  level_data <- data.frame()
-  for (i in 1:length(taxon_list)){
-    new_values <- stringr::str_split(taxon_list[i],'')[[1]]
-    if (length(new_values)<max_char_taxonlevel){
-      for (i in 1:(max_char_taxonlevel - length(new_values))){
-        new_values<- c(new_values, ' ')
-      }
-    }else{
-      new_values <- new_values[1:max_char_taxonlevel] #REMOVE HERE
-    }
-    level_data <-rbind(level_data, new_values)
-  }
-
-  level_data <- level_data[nrow(level_data):1,]
-  level_d <- unlist(c(level_data))
-  rhdf5::h5write(level_d, file=outputpath,
-                 name="entity_levels")
-
-
-  # add values to 'entity_lsid' var ----
-  if(lsid){
-    ls_id_data <- data.frame()
-    for (i in 1:length(lsid_list)){
-      new_values <- stringr::str_split(lsid_list[i],'')[[1]]
-      if (length(new_values)<max_char_lsid){
-        for (i in 1:(max_char_lsid - length(new_values))){
-          new_values<- c(new_values, ' ')
-        }
-      }else{
-        new_values <- new_values[1:max_char_lsid] #REMOVE HERE
-      }
-      ls_id_data <-rbind(ls_id_data, new_values)
-    }
-
-    ls_id_d <- unlist(c(ls_id_data))
-    rhdf5::h5write(ls_id_d, file=outputpath,
-                   name="entity_lsid")
-  }
-
   # add metric and scenario attributes ----
   # 1. metric, no scenario (entities are not relevant)
   if(scenarios_no==0){
@@ -1162,6 +1093,79 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
   # close file  ----
   rhdf5::H5Fclose(hdf)
+
+  # add values to 'entity_list' var ----
+
+  level_i <- length(taxon_list)
+
+  for(level in utils::head(taxon_list, -1)){
+    new_values <- stringr::str_split(csv_txt[,level],'')
+    result <- lapply(new_values,function(x){
+      if(length(x)<max_char_entity){
+        for (i in 1:(max_char_entity - length(x))) {
+          x <- c(x, ' ')
+        }
+      }else{
+        x <- x[1:max_char_entity]
+      };x
+
+    })
+
+    #transform values so they fit into the variable
+    data_level <- as.data.frame(result)
+    data_level <- t(data_level)
+    data_level_clean <- enc2utf8(unlist(data_level))
+
+    if(verbose){
+      print(paste0('add ',level,' data to level: ', level_i))
+    }
+
+    rhdf5::h5write(data_level_clean, file=outputpath,
+                   name="entity_list", index=list(level_i,NULL, NULL))
+
+    level_i = level_i-1
+
+  }
+
+  # add values to 'entity_levels' var ----
+  level_data <- data.frame()
+  for (i in 1:length(taxon_list)){
+    new_values <- stringr::str_split(taxon_list[i],'')[[1]]
+    if (length(new_values)<max_char_taxonlevel){
+      for (i in 1:(max_char_taxonlevel - length(new_values))){
+        new_values<- c(new_values, ' ')
+      }
+    }else{
+      new_values <- new_values[1:max_char_taxonlevel] #REMOVE HERE
+    }
+    level_data <-rbind(level_data, new_values)
+  }
+
+  level_data <- level_data[nrow(level_data):1,]
+  level_d <- unlist(c(level_data))
+  rhdf5::h5write(level_d, file=outputpath,
+                 name="entity_levels")
+
+
+  # add values to 'entity_lsid' var ----
+  if(lsid){
+    ls_id_data <- data.frame()
+    for (i in 1:length(lsid_list)){
+      new_values <- stringr::str_split(lsid_list[i],'')[[1]]
+      if (length(new_values)<max_char_lsid){
+        for (i in 1:(max_char_lsid - length(new_values))){
+          new_values<- c(new_values, ' ')
+        }
+      }else{
+        new_values <- new_values[1:max_char_lsid] #REMOVE HERE
+      }
+      ls_id_data <-rbind(ls_id_data, new_values)
+    }
+
+    ls_id_d <- unlist(c(ls_id_data))
+    rhdf5::h5write(ls_id_d, file=outputpath,
+                   name="entity_lsid")
+  }
 
 
 }
