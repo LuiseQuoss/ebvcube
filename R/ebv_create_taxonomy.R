@@ -1,4 +1,69 @@
-ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=TRUE,
+#'Create an EBV netCDF with taxonomy
+#'
+#'@description Create the core structure of the EBV netCDF based on the json
+#'  from the \href{https://portal.geobon.org}{EBV Data Portal}. Additionally,
+#'  you can add the hierarchy of the taxonomy. This is not provided in the
+#'  [ebvcube::ebv_create()] function. Use the [ebvcube::ebv_create()] function
+#'  if your dataset holds no taxonomic information. Data will be added
+#'  afterwards using [ebvcube::ebv_add_data()].
+#'
+#'@param jsonpath Character. Path to the json file downloaded from the EBV Data
+#'  Portal. Login to the page and click on 'Uploads' and 'New Upload' to start
+#'  the process.
+#'@param outputpath Character. Set path where the netCDF file should be created.
+#'@param taxonomy Character. Path to the csv table holding the taxonomy.
+#'  Default: comma-separated delimiter, else change the `sep` argument
+#'  accordingly. The csv needs to have the following structure: The header
+#'  displays the names of the different taxon levels ordered from the highest
+#'  level to the lowest, e.g. "Order", "Family", "Genus", "Species". The last
+#'  column (if `lsid`=FALSE) is equivalent to the `entity` argument in the
+#'  [ebvcube::ebv_create()] function. Each row of the csv corresponds to a
+#'  unique entity. In case the `lsid` argument (see below) is set to the TRUE,
+#'  this table gets an additional last column which holds the lsid per entity -
+#'  in this case the second last column contains the entity names, e.g. the
+#'  following column order: "Order", "Family", "Genus", "Species", "lsid".
+#'@param lsid Logical. Default: FALSE. Set to TRUE if the last column in your
+#'  taxonomy csv file defines the lsid for each entity. For more info check
+#'   \href{https://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#taxon-names-and-identifiers}{CF
+#'   convention 1.8: Taxon Names and Identifiers}.
+#'@param epsg Integer. Default: 4326 (WGS84). Defines the coordinate reference
+#'  system via the corresponding epsg code.
+#'@param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
+#'  data: c(xmin, xmax, ymin, ymax).
+#'@param resolution Numerical. Vector of two numerical values defining the
+#'  longitudinal and latitudinal resolution of the pixel: c(lon,lat).
+#'@param timesteps Character. Vector of the timesteps in the dataset. Default:
+#'  NULL - in this case the time will be calculated from the start-, endpoint
+#'  and temporal resolution given in the metadata file (json). Else, the dates
+#'  must be given in in ISO format 'YYYY-MM-DD' or shortened 'YYYY' in case of
+#'  yearly timesteps.
+#'@param fillvalue Numeric. Value of the missing data in the array. Not
+#'  mandatory but should be defined!
+#'@param prec Character. Default: 'double'. Precision of the data set. Valid
+#'  options: 'short' 'integer' 'float' 'double' 'char' 'byte'.
+#'@param sep Character. Default: ','. If the delimiter of the csv specifying the
+#'  entity-names differs from the default, indicate here.
+#'@param force_4D Logical. Default is TRUE. If the argument is TRUE, there will
+#'  be 4D cubes (lon, lat, time, entity) per metric. If this argument is changed
+#'  to FALSE, there will be 3D cubes (lon, lat, time) per entity (per metric).
+#'  So the latter yields a higher amount of cubes and does not bundle all
+#'  information per metric. In the future the standard will be restricted to the
+#'  4D version. Recommendation: go with the 4D cubes!
+#'@param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the output
+#'  file defined by 'outputpath'
+#'@param verbose Logical. Default: TRUE. Turn off additional prints by setting
+#'  it to FALSE. #' @note To check out the results take a look at your netCDF
+#'  file with \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided
+#'  by the NASA.
+#'
+#'@return Creates the netCDF file at the 'outputpath' location including the
+#'  taxonomy information.
+#'@export
+#'
+#'@importFrom utils head
+#'
+#' @examples
+ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
                                 epsg = 4326, extent = c(-180,180,-90,90), resolution = c(1,1),
                                 timesteps = NULL, fillvalue = NULL, prec = 'double',
                                 sep=',', force_4D = TRUE, overwrite = FALSE,
@@ -953,7 +1018,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=TRUE,
   # add values to 'entity_list' var ----
   level_i <- length(taxon_list)
 
-  for(level in head(taxon_list, -1)){
+  for(level in utils::head(taxon_list, -1)){
     new_values <- stringr::str_split(csv_txt[,level],'')
     result <- lapply(new_values,function(x){
       if(length(x)<max_char_entity){
@@ -1071,7 +1136,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=TRUE,
       ebv_i_char_att(did, 'grid_mapping', '/crs')
       ebv_i_char_att(did, 'coordinates', '/entity')#HERE
       ebv_i_char_att(did, 'coverage_content_type', paste0(json$coverage_content_type, collapse=', '))
-      ebv_i_char_att(did, 'standard_name', entity_csv[enum,1])
+      ebv_i_char_att(did, 'standard_name', entities[enum])
       #close dh
       rhdf5::H5Dclose(did)
       #enum <- enum +1
