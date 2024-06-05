@@ -270,13 +270,15 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
   # read taxonomy info ----
   dim_csv <- dim(csv_txt)
-  taxon_list <- names(csv_txt)
 
   #get entities and maybe lsid-list
   if(lsid){
     entities <- csv_txt[,(dim_csv[2]-1)]
     lsid_list <- csv_txt[,dim_csv[2]]
+    csv_txt <- csv_txt[,-dim_csv[2]]
+    taxon_list <- names(csv_txt)
   }else{
+    taxon_list <- names(csv_txt)
     entities <- csv_txt[,dim_csv[2]]
     lsid_list <- NA
   }
@@ -1098,7 +1100,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
   level_i <- length(taxon_list)
 
-  for(level in utils::head(taxon_list, -1)){
+  for(level in taxon_list){
     new_values <- stringr::str_split(csv_txt[,level],'')
     result <- lapply(new_values,function(x){
       if(length(x)<max_char_entity){
