@@ -101,7 +101,7 @@ test_that("test ebv_create_taxonomy with lsid", {
   expect_equal(trimws(paste0(entity_list.id[3,2,], collapse = '')), "Primates")
   rhdf5::H5Dclose(entity_list.id)
 
-  #no lsid created
+  #check lsid created
   expect_equal(rhdf5::H5Lexists(hdf, 'entity_lsid'), TRUE)
   entity_lsid.id <- rhdf5::H5Dopen(hdf, 'entity_lsid')
   expect_equal(trimws(paste0(entity_lsid.id[1,], collapse = '')), "10125")

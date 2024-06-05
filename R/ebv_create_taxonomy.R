@@ -694,7 +694,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   }
 
   #add entities variable ----
-  max_char_entity <- max(nchar(entities))
+  max_char_entity <- max(apply(csv_txt, 2, function(x) max(nchar(x))))
   dimchar_entity <- ncdf4::ncdim_def("nchar", "", 1:max_char_entity, create_dimvar=FALSE)
   #entity
   var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='1', #HERE adimensional
@@ -1000,26 +1000,11 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   rhdf5::H5Dclose(time.id)
 
   #add values to entity var----
-  new_values <- stringr::str_split(entities,'')
-  result <- lapply(new_values,function(x){
-    if(length(x)<max_char_entity){
-      for (i in 1:(max_char_entity - length(x))) {
-        x <- c(x, ' ')
-      }
-    }else{
-      x <- x[1:max_char_entity]
-    }
-    x
-
-  })
-  #transform values so they fit into the variable
-  entity_names <- as.data.frame(result)
-  entity_n_1 <- enc2utf8(unlist(entity_names))
-  # entity_names <- t(entity_names)
-  # entity_n <- enc2utf8(entity_names) #t(entity_names)
+  entity_names <- as.data.frame(stringr::str_split(stringr::str_pad(entities, max_char_entity, side = c("right")),''))
+  entity_n <- enc2utf8(unlist(entity_names))
 
   entity.id <- rhdf5::H5Dopen(hdf, 'entity')#HERE
-  rhdf5::H5Dwrite(entity.id, entity_n_1)
+  rhdf5::H5Dwrite(entity.id, entity_n)
 
   # acdd terms
   ebv_i_char_att(entity.id, 'ebv_entity_type', json$ebv_entity$ebv_entity_type)
@@ -1112,25 +1097,11 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   rhdf5::H5Fclose(hdf)
 
   # add values to 'entity_list' var ----
-
   level_i <- length(taxon_list)
 
   for(level in taxon_list){
-    new_values <- stringr::str_split(csv_txt[,level],'')
-    result <- lapply(new_values,function(x){
-      if(length(x)<max_char_entity){
-        for (i in 1:(max_char_entity - length(x))) {
-          x <- c(x, ' ')
-        }
-      }else{
-        x <- x[1:max_char_entity]
-      }
-      x
-
-    })
-
     #transform values so they fit into the variable
-    data_level <- as.data.frame(result)
+    data_level <- as.data.frame(stringr::str_split(stringr::str_pad(csv_txt[,level], max_char_entity, side = c("right")),''))
     data_level <- t(data_level)
     data_level_clean <- enc2utf8(unlist(data_level))
 
@@ -1142,45 +1113,21 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
                    name="entity_list", index=list(level_i,NULL, NULL))
 
     level_i <- level_i-1
-
   }
 
   # add values to 'entity_levels' var ----
-  level_data <- data.frame()
-  for (i in 1:length(taxon_list)){
-    new_values <- stringr::str_split(taxon_list[i],'')[[1]]
-    if (length(new_values)<max_char_taxonlevel){
-      for (i in 1:(max_char_taxonlevel - length(new_values))){
-        new_values<- c(new_values, ' ')
-      }
-    }else{
-      new_values <- new_values[1:max_char_taxonlevel] #REMOVE HERE
-    }
-    level_data <-rbind(level_data, new_values)
-  }
-
+  level_data <- as.data.frame(stringr::str_split(stringr::str_pad(taxon_list, max_char_taxonlevel, side = c("right")),''))
+  level_data <- t(level_data)
   level_data <- level_data[nrow(level_data):1,]
-  level_d <- unlist(c(level_data))
+  level_d <- unlist(level_data)
   rhdf5::h5write(level_d, file=outputpath,
                  name="entity_levels")
 
-
   # add values to 'entity_lsid' var ----
   if(lsid){
-    ls_id_data <- data.frame()
-    for (i in 1:length(lsid_list)){
-      new_values <- stringr::str_split(lsid_list[i],'')[[1]]
-      if (length(new_values)<max_char_lsid){
-        for (i in 1:(max_char_lsid - length(new_values))){
-          new_values<- c(new_values, ' ')
-        }
-      }else{
-        new_values <- new_values[1:max_char_lsid] #REMOVE HERE
-      }
-      ls_id_data <-rbind(ls_id_data, new_values)
-    }
-
-    ls_id_d <- unlist(c(ls_id_data))
+    ls_id_data <- as.data.frame(stringr::str_split(stringr::str_pad(lsid_list, max_char_lsid, side = c("right")),''))
+    ls_id_d <- unlist(ls_id_data)
+    ls_id_d <- t(ls_id_data)
     rhdf5::h5write(ls_id_d, file=outputpath,
                    name="entity_lsid")
   }
