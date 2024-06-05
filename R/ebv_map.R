@@ -332,15 +332,10 @@ ebv_map <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1, coun
                                                breaks =  as.numeric(s),
                                               label = signif(as.numeric(s),3),
                                               direction = direction,
-                                              guide=ggplot2::guide_bins(title=paste(strwrap(
-                                                                          units,
-                                                                          width = 10
-                                                                        ), collapse = "\n"),
-                                                                        #even.steps = FALSE,
-                                                                        #show.limits = TRUE,
-                                                                        reverse=TRUE,
-                                                                        axis=FALSE
-                                                                        )
+                                              name = paste(strwrap(
+                                                units,
+                                                width = 10
+                                              ), collapse = "\n")
                                               )
   }
 
