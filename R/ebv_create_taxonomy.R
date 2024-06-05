@@ -148,15 +148,15 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   }
 
   #turn off local warnings if verbose=TRUE
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('Verbose must be of type logical.')
   }
 
   #check logical arguments
-  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=FALSE) != TRUE){
     stop('overwrite must be of type logical.')
   }
-  if(checkmate::checkLogical(force_4D, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(force_4D, len=1, any.missing=FALSE) != TRUE){
     stop('force_4D must be of type logical.')
   }
 
@@ -167,7 +167,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   if (checkmate::checkFileExists(jsonpath) != TRUE){
     stop(paste0('Json file does not exist.\n', jsonpath))
   }
-  if (!(endsWith(jsonpath, '.json') | endsWith(jsonpath, '.js'))){
+  if (!(endsWith(jsonpath, '.json') || endsWith(jsonpath, '.js'))){
     stop(paste0('Json file ending is wrong. File cannot be processed.'))
   }
 
@@ -215,7 +215,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
       #read csv---
       # check if data inside
       tryCatch({
-        csv_txt <- suppressWarnings(utils::read.csv(taxonomy, sep=sep, header=T, fileEncoding="UTF-8"))
+        csv_txt <- suppressWarnings(utils::read.csv(taxonomy, sep=sep, header=TRUE, fileEncoding="UTF-8"))
       },
       error=function(e){
         if(stringr::str_detect(as.character(e), 'no lines available')){
@@ -233,7 +233,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
   #check fillvalue
   if (! is.null(fillvalue)){
-    if(checkmate::checkNumber(fillvalue) != TRUE & !is.na(fillvalue)){
+    if(checkmate::checkNumber(fillvalue) != TRUE && !is.na(fillvalue)){
       stop('The fillvalue needs to be a single numeric value or NA.')
     }
   }
@@ -254,13 +254,13 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   #check timesteps----
   t_res <- json$time_coverage$time_coverage_resolution
 
-  if(!is.null(timesteps) & t_res != 'Paleo'){
+  if(!is.null(timesteps) && t_res != 'Paleo'){
     if (checkmate::checkCharacter(timesteps) != TRUE){
       stop('timesteps needs to be a list of character values.')
     }else {
       for(ts in timesteps){
         #check ISO format
-        if(!(grepl('^\\d{4}-\\d{2}-\\d{2}$', ts) | grepl('^\\d{4}$',ts))){
+        if(!(grepl('^\\d{4}-\\d{2}-\\d{2}$', ts) || grepl('^\\d{4}$',ts))){
           stop(paste0('Your timestep ', ts, ' is not following the indicated ISO format. Check help page for more information.'))
         }
 
@@ -298,7 +298,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   }
 
   #check lsid list and entities
-  if(lsid & (length(lsid_list)!=length(entities))){
+  if(lsid && (length(lsid_list)!=length(entities))){
     stop(paste0('The length of your lsid-list differs from the length of the entities:\n',
                 'length lsid: ', length(lsid),
                 '\nlength entities: ', length(entities)))
@@ -374,7 +374,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     if(t_res=="P0000-00-00"){
       #one timestep only
       #check
-      if(t_start!=t_end & verbose){
+      if(t_start!=t_end && verbose){
         warning('Your dataset has one timestep only based on the temporal resolution attribute but your given start and end date are different. Note: the start date will be applied to the dataset.')
       }
       date <- as.numeric(as.Date(t_start))
@@ -700,25 +700,25 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='1', #HERE adimensional
                                           dim=list(dimchar_entity,entity_dim),
                                           prec='char', verbose = verbose)
-  enum = enum+1
+  enum <- enum+1
   #add entity_list variable ----
   var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity_list', unit='1', #HERE adimensional
                                           dim=list(taxon_dim, entity_dim, dimchar_entity),
                                           prec='char', verbose = verbose)
-  enum = enum+1
+  enum <- enum+1
 
   # add entity_levels variable ----
   max_char_taxonlevel <- max(nchar(taxon_list))
-  dimchar_taxonlevel <- ncdf4::ncdim_def("nchar_taxonlist", "", 1:max_char_taxonlevel, create_dimvar=FALSE )
+  dimchar_taxonlevel <- ncdf4::ncdim_def("nchar_taxonlist", "", 1:max_char_taxonlevel, create_dimvar=FALSE)
   var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity_levels', unit='1', #HERE adimensional
                                           dim=list(taxon_dim, dimchar_taxonlevel),
                                           prec='char', verbose = verbose)
-  enum = enum+1
+  enum <- enum+1
 
   # add entity_ids variable ----
   if(lsid){
     max_char_lsid <- max(nchar(lsid_list))
-    dimchar_lsid <- ncdf4::ncdim_def("nchar_lsid", "", 1:max_char_lsid, create_dimvar=FALSE )
+    dimchar_lsid <- ncdf4::ncdim_def("nchar_lsid", "", 1:max_char_lsid, create_dimvar=FALSE)
     var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity_lsid', unit='1', #HERE adimensional
                                             dim=list(entity_dim, dimchar_lsid),
                                             prec='char', verbose = verbose)
@@ -1008,7 +1008,8 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
       }
     }else{
       x <- x[1:max_char_entity]
-    };x
+    }
+    x
 
   })
   #transform values so they fit into the variable
@@ -1123,7 +1124,8 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
         }
       }else{
         x <- x[1:max_char_entity]
-      };x
+      }
+      x
 
     })
 
@@ -1139,7 +1141,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     rhdf5::h5write(data_level_clean, file=outputpath,
                    name="entity_list", index=list(level_i,NULL, NULL))
 
-    level_i = level_i-1
+    level_i <- level_i-1
 
   }
 
