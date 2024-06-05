@@ -71,7 +71,7 @@ library(ebvcube)
 file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 
 #read the properties of the file
-prop.file <- ebv_properties(file)
+prop.file <- ebv_properties(file, verbose=F)
 
 #take a look at the general properties of the data set - there are more properties to discover!
 prop.file@general[1:4]
@@ -90,7 +90,7 @@ datacubes
 In the next step we will get the properties of one specific datacube - fyi: the result also holds the general file properties from above.
 
 ```{r}
-prop.dc <- ebv_properties(file, datacubes[1,1])
+prop.dc <- ebv_properties(file, datacubes[1,1], verbose=F)
 prop.dc@metric
 ```
 
@@ -109,7 +109,7 @@ It's nice to see the global distribution, but how is the change of that datacube
 
 ```{r}
 #get the averages and plot
-averages <- ebv_trend(file, dc, entity=1)
+averages <- ebv_trend(file, dc, entity=1, verbose=F)
 averages
 ```
 
@@ -120,7 +120,7 @@ Before you actually load the data it may be nice to get an impression of the val
 
 ```{r}
 #info for whole dataset
-measurements <- ebv_analyse(file, dc, entity=1)
+measurements <- ebv_analyse(file, dc, entity=1, verbose=F)
 #see the included measurements
 names(measurements)
 #check out the mean and the number of pixels
@@ -130,7 +130,7 @@ measurements$n
 #info for a subset defined by a bounding box
 #you can also define the subset by a Shapefile - check it out!
 bb <- c(-26, 64, 30, 38)
-measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb)
+measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb, verbose=F)
 #check out the mean of the subset
 measurements.bb$mean
 measurements.bb$n
@@ -146,7 +146,7 @@ You can also get a spatial subset of the data by providing a Shapefile.
 ```{r}
 #load subset from shapefile (Cameroon)
 shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
-data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3))
+data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3), verbose=F)
 dim(data.shp)
 #very quick plot of the resulting raster plus the shapefile
 borders <- terra::vect(shp)
@@ -178,7 +178,7 @@ ebv_create(jsonpath = json, outputpath = newNc, entities = entities,
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
-print(ebv_properties(newNc)@general$entity_names)
+print(ebv_properties(newNc, verbose=F)@general$entity_names)
 
 #check out the (still empty) datacubes that are available
 dc.new <- ebv_datacubepaths(newNc, verbose=FALSE)
@@ -209,7 +209,7 @@ Ups! So you did a mistake and want to change the attribute?! No problem. Just us
 ```{r}
 ebv_attribute(newNc, attribute_name='units', value='Percentage', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
-print(ebv_properties(newNc, dc.new[1,1])@ebv_cube$units)
+print(ebv_properties(newNc, dc.new[1,1], verbose=F)@ebv_cube$units)
 
 ```
 In this case the levelpath corresponds to the datacube path. But you can also alter attributes at the metric or scenario level. See the manual for more info.
@@ -233,6 +233,7 @@ citation('ebvcube')
 |Data visualization|ebv_map|Plot a map of the specified data slice|
 ||ebv_trend|Plot the temporal trend |
 |Data creation|ebv_create|Create a new EBV netCDF|
+||ebv_create_taxonomy|Create a new EBV netCDF with taxonomy info|
 ||ebv_add_data|Add data to the new netCDF|
 ||ebv_attribute|Change an attribute value|
 

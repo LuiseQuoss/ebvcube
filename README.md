@@ -88,7 +88,7 @@ library(ebvcube)
 file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 
 #read the properties of the file
-prop.file <- ebv_properties(file)
+prop.file <- ebv_properties(file, verbose=F)
 
 #take a look at the general properties of the data set - there are more properties to discover!
 prop.file@general[1:4]
@@ -124,7 +124,7 @@ In the next step we will get the properties of one specific datacube -
 fyi: the result also holds the general file properties from above.
 
 ``` r
-prop.dc <- ebv_properties(file, datacubes[1,1])
+prop.dc <- ebv_properties(file, datacubes[1,1], verbose=F)
 prop.dc@metric
 #> $name
 #> [1] "Relative change in the number of species (%)"
@@ -154,9 +154,7 @@ The function returns the values, catch them!
 
 ``` r
 #get the averages and plot
-averages <- ebv_trend(file, dc, entity=1)
-#> [1] "calculating timesteps..."
-#> ================================================================================
+averages <- ebv_trend(file, dc, entity=1, verbose=F)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
@@ -177,7 +175,7 @@ the value range and other basic measurements.
 
 ``` r
 #info for whole dataset
-measurements <- ebv_analyse(file, dc, entity=1)
+measurements <- ebv_analyse(file, dc, entity=1, verbose=F)
 #see the included measurements
 names(measurements)
 #> [1] "min"  "q25"  "q50"  "mean" "q75"  "max"  "std"  "n"    "NAs"
@@ -190,7 +188,7 @@ measurements$n
 #info for a subset defined by a bounding box
 #you can also define the subset by a Shapefile - check it out!
 bb <- c(-26, 64, 30, 38)
-measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb)
+measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb, verbose=F)
 #check out the mean of the subset
 measurements.bb$mean
 #> [1] 0.3241093
@@ -213,7 +211,7 @@ You can also get a spatial subset of the data by providing a Shapefile.
 ``` r
 #load subset from shapefile (Cameroon)
 shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
-data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3))
+data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3), verbose=F)
 dim(data.shp)
 #> [1] 12  9  3
 #very quick plot of the resulting raster plus the shapefile
@@ -261,7 +259,7 @@ ebv_create(jsonpath = json, outputpath = newNc, entities = entities,
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
-print(ebv_properties(newNc)@general$entity_names)
+print(ebv_properties(newNc, verbose=F)@general$entity_names)
 #> [1] "forest bird species"     "non-forest bird species"
 #> [3] "all bird species"
 
@@ -308,7 +306,7 @@ Just use the upcoming function to change it.
 ``` r
 ebv_attribute(newNc, attribute_name='units', value='Percentage', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
-print(ebv_properties(newNc, dc.new[1,1])@ebv_cube$units)
+print(ebv_properties(newNc, dc.new[1,1], verbose=F)@ebv_cube$units)
 #> [1] "Percentage"
 ```
 
@@ -344,18 +342,19 @@ citation('ebvcube')
 
 ## List of all functions
 
-| Functionality      | Function          | Description                                   |
-|:-------------------|:------------------|:----------------------------------------------|
-| Basic access       | ebv_datacubepaths | Get all available data cubes in the netCDF    |
-|                    | ebv_properties    | Get all the metadata of the netCDF            |
-|                    | ebv_download      | Download EBV netCDFs from the EBV Portal      |
-| Data access        | ebv_read          | Read the data                                 |
-|                    | ebv_read_bb       | Read a spatial subset given by a bounding box |
-|                    | ebv_read_shp      | Read a spatial subset given by a Shapefile    |
-|                    | ebv_analyse       | Get basic measurements of the data            |
-|                    | ebv_write         | Write manipulated data back to disc           |
-| Data visualization | ebv_map           | Plot a map of the specified data slice        |
-|                    | ebv_trend         | Plot the temporal trend                       |
-| Data creation      | ebv_create        | Create a new EBV netCDF                       |
-|                    | ebv_add_data      | Add data to the new netCDF                    |
-|                    | ebv_attribute     | Change an attribute value                     |
+| Functionality      | Function            | Description                                   |
+|:-------------------|:--------------------|:----------------------------------------------|
+| Basic access       | ebv_datacubepaths   | Get all available data cubes in the netCDF    |
+|                    | ebv_properties      | Get all the metadata of the netCDF            |
+|                    | ebv_download        | Download EBV netCDFs from the EBV Portal      |
+| Data access        | ebv_read            | Read the data                                 |
+|                    | ebv_read_bb         | Read a spatial subset given by a bounding box |
+|                    | ebv_read_shp        | Read a spatial subset given by a Shapefile    |
+|                    | ebv_analyse         | Get basic measurements of the data            |
+|                    | ebv_write           | Write manipulated data back to disc           |
+| Data visualization | ebv_map             | Plot a map of the specified data slice        |
+|                    | ebv_trend           | Plot the temporal trend                       |
+| Data creation      | ebv_create          | Create a new EBV netCDF                       |
+|                    | ebv_create_taxonomy | Create a new EBV netCDF with taxonomy info    |
+|                    | ebv_add_data        | Add data to the new netCDF                    |
+|                    | ebv_attribute       | Change an attribute value                     |
