@@ -35,10 +35,7 @@ jobs:
           extra-packages: |
             any::rcmdcheck
             any::covr
-
-      - name: Install lintr
-        run: install.packages("lintr")
-        shell: Rscript {0}
+            any::lintr
 
       - name: Lint root directory
         run: lintr::lint_dir()
@@ -65,7 +62,7 @@ jobs:
         shell: bash
 
       - name: Upload test results
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-test-failures
