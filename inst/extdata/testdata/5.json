@@ -1,0 +1,103 @@
+{
+    "code": 200,
+    "message": "List of dataset(s).",
+    "data": [
+        {
+            "id": "5",
+            "naming_authority": "The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig",
+            "title": "Global habitat availability for mammals from 2015-2055",
+            "date_created": "2020-01-01",
+            "summary": "Global habitat availability for 5,090 mammals in 5 year intervals (subset from 2015 to 2055).",
+            "references": [
+                "10.2139\/ssrn.3451453",
+                "10.1016\/j.oneear.2020.05.015"
+            ],
+            "source": "More info here: https:\/\/doi.org\/10.1016\/j.oneear.2020.05.015",
+            "coverage_content_type": "modelResult",
+            "processing_level": "N\/A",
+            "project": "Global Mammal Assessment (GMA)",
+            "project_url": [
+                "https:\/\/globalmammal.org"
+            ],
+            "creator": {
+                "creator_name": "Daniele Baisero",
+                "creator_email": "daniele.baisero@gmail.com",
+                "creator_institution": "Department of Biology and Biotechnology, Sapienza University of Rome",
+                "creator_country": "Italy"
+            },
+            "contributor_name": "N\/A",
+            "license": "https:\/\/creativecommons.org\/licenses\/by\/4.0",
+            "publisher": {
+                "publisher_name": "Daniele Baisero",
+                "publisher_email": "daniele.baisero@gmail.com",
+                "publisher_institution": "Department of Biology and Biotechnology, Sapienza University of Rome",
+                "publisher_country": "Italy"
+            },
+            "ebv": {
+                "ebv_class": "Species populations",
+                "ebv_name": "Species distributions"
+            },
+            "ebv_entity": {
+                "ebv_entity_type": "Species",
+                "ebv_entity_scope": "Mammals",
+                "ebv_entity_classification_name": "N\/A",
+                "ebv_entity_classification_url": "N\/A"
+            },
+            "ebv_metric": {
+                "ebv_metric_1": {
+                    ":standard_name": "Habitat availability",
+                    ":long_name": "Land-use of 5,090 mammals calculated in km2",
+                    ":units": "km2"
+                }
+            },
+            "ebv_scenario": {
+                "ebv_scenario_classification_name": "Shared Socioeconomic Pathways (SSPs) \/ Representative Concentration Pathway (RCPs)",
+                "ebv_scenario_classification_version": "N\/A",
+                "ebv_scenario_classification_url": "N\/A",
+                "ebv_scenario_1": {
+                    ":standard_name": "Sustainability",
+                    ":long_name": "SSP1-RCP2.6"
+                },
+                "ebv_scenario_2": {
+                    ":standard_name": "Middle of the Road ",
+                    ":long_name": "SSP2-RCP4.5"
+                },
+                "ebv_scenario_3": {
+                    ":standard_name": "Regional Rivalry",
+                    ":long_name": "SSP3-RCP6.0"
+                },
+                "ebv_scenario_4": {
+                    ":standard_name": "Inequality",
+                    ":long_name": "SSP4-RCP6.0"
+                },
+                "ebv_scenario_5": {
+                    ":standard_name": "Fossil-fueled Development",
+                    ":long_name": "SSP5-RCP8.5"
+                }
+            },
+            "ebv_geospatial": {
+                "ebv_geospatial_scope": "Global",
+                "ebv_geospatial_description": "N\/A",
+                "ebv_spatial_resolution": null
+            },
+            "geospatial_lat_units": "degrees_north",
+            "geospatial_lon_units": "degrees_east",
+            "time_coverage": {
+                "time_coverage_resolution": "Every 5 years",
+                "time_coverage_start": "2015-01-01",
+                "time_coverage_end": "2055-01-01"
+            },
+            "ebv_domain": "Terrestrial",
+            "comment": "N\/A",
+            "dataset": {
+                "pathname": "\/5\/public\/v1_rodinini_001.nc",
+                "download": "portal.geobon.org\/data\/upload\/5\/public\/v1_rodinini_001.nc",
+                "metadata_json": "portal.geobon.org\/data\/upload\/5\/public\/v1_metadata.js",
+                "metadata_xml": "portal.geobon.org\/data\/upload\/5\/public\/v1_metadata.xml"
+            },
+            "file": {
+                "download": "portal.geobon.org\/img\/5\/49630_insights.png"
+            }
+        }
+    ]
+}
