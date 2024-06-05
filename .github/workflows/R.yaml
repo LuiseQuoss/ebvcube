@@ -36,6 +36,16 @@ jobs:
             any::rcmdcheck
             any::covr
 
+      - name: Install lintr
+        run: install.packages("lintr")
+        shell: Rscript {0}
+
+      - name: Lint root directory
+        run: lintr::lint_dir()
+        shell: Rscript {0}
+        env:
+          LINTR_ERROR_ON_LINT: true
+
       - uses: r-lib/actions/check-r-package@v2
 
       - name: Test coverage
@@ -55,7 +65,7 @@ jobs:
         shell: bash
 
       - name: Upload test results
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-test-failures
