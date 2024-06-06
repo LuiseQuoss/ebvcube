@@ -6,11 +6,10 @@
 #'   publisher_institution, publisher_email, comment, keywords, id, history,
 #'   licence, conventions, naming_authority, date_created, date_issued,
 #'   entity_names, entity_type, entity_scope, entity_classification_name,
-#'   entity_classification_url
+#'   entity_classification_url, taxonomy, taxonomy_lsid
 #' @slot spatial Named list. Elements: wkt2, epsg, extent, resolution,
 #'   crs_units, dimensions, scope, description
-#' @slot temporal Named list. Elements: resolution, units, timesteps,
-#'   dates
+#' @slot temporal Named list. Elements: resolution, units, timesteps, dates
 #' @slot metric Named list. Elements: name, description
 #' @slot scenario Named list. Elements: name, description
 #' @slot ebv_cube Named list. Elements: units, coverage_content_type, fillvalue,
@@ -22,7 +21,9 @@
 #' @note If the properties class holds e.g. no scenario information this is
 #'   indicated with an element called status in the list. \cr If you read an EBV
 #'   netCDF based on an older standard, the properties will differ from the
-#'   definition above.
+#'   definition above. If the dataset does not encompass taxonomic info, the
+#'   'taxonomy' is NA. Besides, even if a dataset encompasses the taxonomy
+#'   information, the 'taxonomy_lsid' can be NA.
 methods::setClass(
   "EBV netCDF properties",
   slots = list(
@@ -88,6 +89,16 @@ ebv_properties <-
       }
     })
 
+    dids <- c('entity_list', 'did', 'entity_level.id')
+    withr::defer(
+      for (id in dids){
+        if(exists(id)){
+          id <- eval(parse(text = id))
+          if(rhdf5::H5Iis_valid(id)==TRUE){rhdf5::H5Dclose(id)}
+        }
+      }
+    )
+
     #are all arguments given?
     if (missing(filepath)) {
       stop('Filepath argument is missing.')
@@ -144,10 +155,37 @@ ebv_properties <-
       }
     }
 
-
     ####initial tests end ----
 
-    #ACDD STANDARD----
+    #get all taxonomy values----
+    if(rhdf5::H5Lexists(hdf, 'entity_list')){
+      #get levels
+      tax_levels <- suppressWarnings(rhdf5::h5read(hdf, 'entity_levels'))
+      tax_levels <- apply(tax_levels, 1, ebv_i_paste)
+
+      #get values of all levels
+      tax_list <- suppressWarnings(rhdf5::h5read(hdf, 'entity_list'))
+      #create taxon table
+      dims_list <- dim(tax_list)
+      taxon_df <- data.frame(matrix(NA, nrow=dims_list[2], ncol=length(tax_levels)))
+      colnames(taxon_df) <- tax_levels
+      for (d in 1:dims_list[1]){
+        taxon_df[,d] <- apply(tax_list[d,,], 1, ebv_i_paste)
+      }
+
+      #check for lsid
+      if(rhdf5::H5Lexists(hdf, 'entity_lsid')){
+        lsid_list <- suppressWarnings(rhdf5::h5read(hdf, 'entity_lsid'))
+        taxon_lsid <- apply(lsid_list, 1, ebv_i_paste)
+      } else{
+        taxon_lsid <- NA
+      }
+
+    }else{
+      taxon_df <- NA
+      taxon_lsid <- NA
+    }
+
     #get all entity names ----
     entity_data <- suppressWarnings(rhdf5::h5read(hdf, 'entity'))#HERE
     entity_names <- c()
@@ -156,8 +194,6 @@ ebv_properties <-
     } else{
       entity_names <- entity_data
     }
-
-    time_data <- suppressWarnings(rhdf5::h5read(hdf, 'time'))
 
     #general ----
     # add entity names to global properties
@@ -262,6 +298,7 @@ ebv_properties <-
     rhdf5::H5Dclose(did)
 
     # temporal ----
+    time_data <- suppressWarnings(rhdf5::h5read(hdf, 'time'))
     did <- rhdf5::H5Dopen(hdf, 'time')
     t_res <-
       ebv_i_read_att(hdf, 'time_coverage_resolution', verbose)
@@ -271,6 +308,7 @@ ebv_properties <-
 
     rhdf5::H5Dclose(did)
 
+    #create lists of attributes----
     general <-
       list(
         'title' = title,
@@ -302,7 +340,9 @@ ebv_properties <-
         'entity_type' = ebv_entity_type,
         'entity_scope' = ebv_entity_scope,
         'entity_classification_name' = ebv_entity_classification_name,
-        'entity_classification_url' = ebv_entity_classification_url
+        'entity_classification_url' = ebv_entity_classification_url,
+        'taxonomy' = taxon_df,
+        'taxonomy_lsid' = taxon_lsid
       )
     spatial <-
       list(

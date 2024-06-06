@@ -52,6 +52,15 @@ test_that("test ebv_create_taxonomy no lsid", {
 
   rhdf5::H5Fclose(hdf)
 
+  #test ebv_properties taxonomy
+  taxonomy_table <- ebv_properties(file, verbose = FALSE)@general$taxonomy
+  expect_equal(names(taxonomy_table), c("binomial", "family", "order"))
+  expect_equal(unlist(taxonomy_table[1,1]), "Hipposideros curtus")
+  expect_equal(unlist(taxonomy_table[1,2]), "Hipposideridae")
+  expect_equal(unlist(taxonomy_table[1,3]), "Chiroptera")
+  taxonomy_lsid <- ebv_properties(file, verbose = FALSE)@general$taxonomy_lsid
+  expect_equal(taxonomy_lsid, NA)
+
   #remove file
   file.remove(file)
 
@@ -114,6 +123,15 @@ test_that("test ebv_create_taxonomy with lsid", {
   rhdf5::H5Dclose(entity_levels.id)
 
   rhdf5::H5Fclose(hdf)
+
+  #test ebv_properties taxonomy
+  taxonomy_table <- ebv_properties(file, verbose = FALSE)@general$taxonomy
+  expect_equal(names(taxonomy_table), c("binomial", "family", "order"))
+  expect_equal(unlist(taxonomy_table[1,1]), "Hipposideros curtus")
+  expect_equal(unlist(taxonomy_table[1,2]), "Hipposideridae")
+  expect_equal(unlist(taxonomy_table[1,3]), "Chiroptera")
+  taxonomy_lsid <- ebv_properties(file, verbose = FALSE)@general$taxonomy_lsid
+  expect_equal(taxonomy_lsid[1:3], c('10125', '13324', '18296'))
 
   #remove file
   file.remove(file)

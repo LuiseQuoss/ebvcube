@@ -96,6 +96,10 @@ you can add the hierarchy of the taxonomy. This is not provided in the
 if your dataset holds no taxonomic information. Data will be added
 afterwards using \code{\link[=ebv_add_data]{ebv_add_data()}}.
 }
+\note{
+You can check the taxonomy with \code{\link[=ebv_properties]{ebv_properties()}} in the slot
+'general' under the name 'taxonomy'.
+}
 \examples{
 #set path to JSON file
 json <- system.file(file.path("extdata/testdata","5.json"), package="ebvcube")

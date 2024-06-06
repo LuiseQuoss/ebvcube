@@ -56,6 +56,9 @@
 #'  file with \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided
 #'  by the NASA.
 #'
+#'@note You can check the taxonomy info with [ebvcube::ebv_properties()] in the slot
+#'  'general' under the name 'taxonomy' and 'taxonomy_lsid'.
+#'
 #'@return Creates the netCDF file at the 'outputpath' location including the
 #'  taxonomy information.
 #'@export

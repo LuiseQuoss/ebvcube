@@ -19,13 +19,12 @@ creator_institution, creator_email, contributor_name, publisher_name,
 publisher_institution, publisher_email, comment, keywords, id, history,
 licence, conventions, naming_authority, date_created, date_issued,
 entity_names, entity_type, entity_scope, entity_classification_name,
-entity_classification_url}
+entity_classification_url, taxonomy, taxonomy_lsid}
 
 \item{\code{spatial}}{Named list. Elements: wkt2, epsg, extent, resolution,
 crs_units, dimensions, scope, description}
 
-\item{\code{temporal}}{Named list. Elements: resolution, units, timesteps,
-dates}
+\item{\code{temporal}}{Named list. Elements: resolution, units, timesteps, dates}
 
 \item{\code{metric}}{Named list. Elements: name, description}
 
@@ -39,5 +38,7 @@ type}
 If the properties class holds e.g. no scenario information this is
 indicated with an element called status in the list. \cr If you read an EBV
 netCDF based on an older standard, the properties will differ from the
-definition above.
+definition above. If the dataset does not encompass taxonomic info, the
+'taxonomy' is NA. Besides, even if a dataset encompasses the taxonomy
+information, the 'taxonomy_lsid' can be NA.
 }
