@@ -46,6 +46,8 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
 
       - name: Test coverage
+        env:
+            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           covr::codecov(
             quiet = FALSE,
@@ -53,11 +55,6 @@ jobs:
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
           )
         shell: Rscript {0}
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Show testthat output
         if: always()
