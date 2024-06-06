@@ -64,7 +64,7 @@ test_that("test ebv_create_taxonomy with lsid", {
 
   #basic paths
   root <- system.file(file.path("extdata/testdata"), package="ebvcube")
-  json <- file.path(root, '5.json')
+  json <- file.path(root, '5_single_date.json')
   taxonomy <- file.path(root, 'id5_taxid.csv')
   file <- tempfile(fileext='.nc')
 
@@ -83,7 +83,6 @@ test_that("test ebv_create_taxonomy with lsid", {
                                     lsid=TRUE,
                                     epsg = epsg,
                                     extent = extent,
-                                    timesteps = '2020-12-31',
                                     fillvalue = fillvalue,
                                     prec = prec,
                                     sep = sep,

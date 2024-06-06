@@ -371,9 +371,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
       #one timestep only
       #check
       if(t_start!=t_end && verbose){
-        warning('Your dataset has one timestep only based on the temporal resolution attribute but your given start and end date are different. Note: the start date will be applied to the dataset.')
+        warning('Your dataset has one timestep only based on the temporal resolution attribute but your given end and end date are different. Note: the start date will be applied to the dataset.')
       }
-      date <- as.numeric(as.Date(t_start))
+      date <- as.numeric(as.Date(t_end))
       timesteps <- date+add
     }else if(grepl('^P\\d{4}-?\\d{0,2}-?\\d{0,2}$', t_res)){
       #process ISO standard PYYYY-MM-YY or short PYYYY
