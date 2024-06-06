@@ -1101,9 +1101,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
   for(level in taxon_list){
     #transform values so they fit into the variable
-    data_level <- as.data.frame(stringr::str_split(stringr::str_pad(csv_txt[,level], max_char_entity, side = c("right")),''))
-    data_level <- t(data_level)
-    data_level_clean <- enc2utf8(unlist(data_level))
+    data_level_clean <- ebv_i_char_variable(csv_txt[,level], max_char_entity)
 
     if(verbose){
       print(paste0('add ',level,' data to level: ', level_i))
@@ -1116,18 +1114,13 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   }
 
   # add values to 'entity_levels' var ----
-  level_data <- as.data.frame(stringr::str_split(stringr::str_pad(taxon_list, max_char_taxonlevel, side = c("right")),''))
-  level_data <- t(level_data)
-  level_data <- level_data[nrow(level_data):1,]
-  level_d <- unlist(level_data)
+  level_d <- ebv_i_char_variable(taxon_list, max_char_taxonlevel, TRUE)
   rhdf5::h5write(level_d, file=outputpath,
                  name="entity_levels")
 
   # add values to 'entity_lsid' var ----
   if(lsid){
-    ls_id_data <- as.data.frame(stringr::str_split(stringr::str_pad(lsid_list, max_char_lsid, side = c("right")),''))
-    ls_id_d <- unlist(ls_id_data)
-    ls_id_d <- t(ls_id_data)
+    ls_id_d <- ebv_i_char_variable(lsid_list, max_char_lsid)
     rhdf5::h5write(ls_id_d, file=outputpath,
                    name="entity_lsid")
   }

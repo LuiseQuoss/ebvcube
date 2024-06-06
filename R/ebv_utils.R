@@ -869,3 +869,26 @@ ebv_i_datacubepath <- function(scenario=NULL, metric, datacubepaths, verbose){
   return(datacubepath)
 
 }
+
+#' Turn string vector into character array for char-variable in netCDF, e.g.
+#' entity_list
+#'
+#' @param string_vector Vector holding the string-data that will be added to the
+#'   character variable in the netCDF
+#' @param max_char Integer value telling the maximum length of all the strings.
+#'   Strings that are shorter will be extended with whitespaces until they have
+#'   this length
+#' @param reverse Boolean value, default is FALSE. In case the data needs to be
+#'   stored in reverse order (e.g. taxon levels)
+#'
+#' @return Returns a character array
+#' @noRd
+ebv_i_char_variable <- function(string_vector, max_char, reverse=FALSE){
+  data_level <- as.data.frame(stringr::str_split(stringr::str_pad(string_vector, max_char, side = c("right")),''))
+  data_level <- t(data_level)
+  if(reverse){
+    data_level <- data_level[nrow(data_level):1,]
+  }
+  data_level_clean <- enc2utf8(unlist(data_level))
+  return(data_level_clean)
+}
