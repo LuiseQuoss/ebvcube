@@ -1,9 +1,9 @@
-test_that("properties: check S4", {
+test_that("ebv_properties: check S4", {
   file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
   expect_type(ebv_properties(file), 'S4')
 })
 
-test_that("properties: check spatial", {
+test_that("ebv_properties: check spatial", {
   file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   prop <- ebv_properties(file)@spatial
   expect_equal(prop$wkt2, "GEOGCRS[\"WGS 84\", DATUM[\"World Geodetic System 1984\", ELLIPSOID[\"WGS 84\",6378137,298.257223563, LENGTHUNIT[\"metre\",1]]], PRIMEM[\"Greenwich\",0, ANGLEUNIT[\"degree\",0.0174532925199433]], CS[ellipsoidal,2], AXIS[\"geodetic latitude (Lat)\",north, ORDER[1], ANGLEUNIT[\"degree\",0.0174532925199433]], AXIS[\"geodetic longitude (Lon)\",east, ORDER[2], ANGLEUNIT[\"degree\",0.0174532925199433]], USAGE[ SCOPE[\"Horizontal component of 3D system.\"], AREA[\"World.\"], BBOX[-90,-180,90,180]], ID[\"EPSG\",4326]]")
@@ -16,7 +16,7 @@ test_that("properties: check spatial", {
   expect_equal(prop$description,'N/A')
 })
 
-test_that("properties: check general", {
+test_that("ebv_properties: check general", {
   file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   prop <- ebv_properties(file)@general
   expect_equal(prop$title,"BES-SIM cSAR-iDiv")
@@ -52,7 +52,7 @@ test_that("properties: check general", {
 
 })
 
-test_that("properties: check temporal", {
+test_that("ebv_properties: check temporal", {
   file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   prop <- ebv_properties(file)@temporal
   expect_equal(prop$resolution,'N/A')
@@ -64,7 +64,7 @@ test_that("properties: check temporal", {
   expect_equal(dim(prop$dates), 3)
   })
 
-test_that("properties: check metric", {
+test_that("ebv_properties: check metric", {
   file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   prop <- ebv_properties(file, 'scenario_1/metric_1/ebv_cube')@metric
   expect_equal(prop$name,'Species richness (S)')
@@ -72,7 +72,7 @@ test_that("properties: check metric", {
 })
 
 
-test_that("properties: check scenario", {
+test_that("ebv_properties: check scenario", {
   file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   prop <- ebv_properties(file, 'scenario_1/metric_1/ebv_cube')@scenario
   expect_equal(prop$name,'SSP1-RCP1.5 LU')
@@ -82,7 +82,7 @@ test_that("properties: check scenario", {
   expect_equal(prop$scenario_classification_version,'LUH2')
 })
 
-test_that("properties: check ebv_cube", {
+test_that("ebv_properties: check ebv_cube", {
   file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   prop <- ebv_properties(file, 'scenario_1/metric_1/ebv_cube')@ebv_cube
   expect_equal(prop$units,'Number of species')
@@ -91,7 +91,7 @@ test_that("properties: check ebv_cube", {
   expect_equal(prop$type,'H5T_IEEE_F32LE')
 })
 
-test_that("properties: check def of datacubepath by scenario and metric", {
+test_that("ebv_properties: check def of datacubepath by scenario and metric", {
   file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   prop <- ebv_properties(file, scenario = 2, metric=3, verbose=FALSE)
   expect_equal(prop@scenario$name,"SSP3-RCP6.0 LULC")

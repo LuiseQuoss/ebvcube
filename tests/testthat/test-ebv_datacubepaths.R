@@ -1,4 +1,4 @@
-test_that("datacubepaths martins_comcom_id1_20220208_v1.nc", {
+test_that("ebv_datacubepaths martins_comcom_id1_20220208_v1.nc", {
   file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
   result <- data.frame(c('metric_1/ebv_cube', 'metric_2/ebv_cube'))
   result <- cbind(result, c('Relative change in the number of species (%)','Absolute change in the number of species'))
@@ -7,7 +7,7 @@ test_that("datacubepaths martins_comcom_id1_20220208_v1.nc", {
   expect_equal(datacubes, result)
 })
 
-test_that("datacubepaths pereira_csar_bes_sim_20220830_4d.nc", {
+test_that("ebv_datacubepaths pereira_csar_bes_sim_20220830_4d.nc", {
   file <- system.file(file.path("extdata/testdata","pereira_csar_bes_sim_20220830_4d.nc"), package="ebvcube")
   result <- data.frame(c('scenario_1/metric_1/ebv_cube', 'scenario_1/metric_2/ebv_cube',
                          'scenario_1/metric_3/ebv_cube',

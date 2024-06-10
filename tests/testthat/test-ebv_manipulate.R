@@ -1,4 +1,4 @@
-test_that("test ebv_manipulate", {
+test_that("test ebv_create, ebv_add_data and ebv_attribute", {
   #test ebv_create ----
   #basic paths
   root <- system.file(file.path("extdata/testdata"), package="ebvcube")
