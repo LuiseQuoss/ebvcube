@@ -7,3 +7,4 @@
 ^cran-comments\.md$
 ^prep_cran_submit\.R$
 ^.lintr
+^to-dos.md

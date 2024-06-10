@@ -97,8 +97,8 @@ if your dataset holds no taxonomic information. Data will be added
 afterwards using \code{\link[=ebv_add_data]{ebv_add_data()}}.
 }
 \note{
-You can check the taxonomy with \code{\link[=ebv_properties]{ebv_properties()}} in the slot
-'general' under the name 'taxonomy'.
+You can check the taxonomy info with \code{\link[=ebv_properties]{ebv_properties()}} in the slot
+'general' under the name 'taxonomy' and 'taxonomy_lsid'.
 }
 \examples{
 #set path to JSON file

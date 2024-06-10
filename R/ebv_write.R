@@ -150,6 +150,8 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
       t <- file.remove(temp.tif)
     }
 
+    return(outputpath)
+
     # write several DelayedMatrix (list) ----
   } else if(methods::is(data, "DelayedArray")){
 
@@ -158,6 +160,8 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
       print('Note: Writing data from HDF5Array to disc. All delayed operations are now executed. This may take a few minutes.')
     }
 
+    #derive other variables
+    name <- stringr::str_remove(basename(outputpath),'.tif')
     temp.tif <- tempfile(fileext = '.tif')
 
     band <- DelayedArray::aperm(DelayedArray::aperm(data, 3:1), c(2,3,1))
@@ -177,12 +181,15 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     if(verbose){
       print('Delayed operations are finished, writing file to disk.')
     }
+
     terra::writeRaster(temp_raster, outputpath, datatype=type, overwrite = overwrite)
 
     #delete temp file
     if (file.exists(temp.tif)){
       t <- file.remove(temp.tif)
     }
+
+    return(outputpath)
 
   # write array or matrix ----
   }else if (methods::is(data, "array") || methods::is(data, "matrix")){
