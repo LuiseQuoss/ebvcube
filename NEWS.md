@@ -1,3 +1,16 @@
+# ebvcube 0.2.0
+
+## Major changes
+- all (affected) functions: define timestep(s) also as an ISO formatted date
+- add new arguments: define metric and scenario by name & index instead of the datacubepath
+- new function: ebv_create_taxonomy including new utils function ebv_i_char_variable
+- add taxonomy-info the ebv_properties
+- ebv_create(_taxonomy): if one timestep but start and end date differ, apply end date
+
+## Bug fixes
+- ebv_map: remove outdated stuff from guide_bins
+- ebv_write: DelayedArray 'name' variable was not defined
+
 # ebvcube 0.1.7
 
 ## Major changes

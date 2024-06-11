@@ -88,7 +88,7 @@ library(ebvcube)
 file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
 
 #read the properties of the file
-prop.file <- ebv_properties(file, verbose=F)
+prop.file <- ebv_properties(file, verbose=FALSE)
 
 #take a look at the general properties of the data set - there are more properties to discover!
 prop.file@general[1:4]
@@ -124,7 +124,7 @@ In the next step we will get the properties of one specific datacube -
 fyi: the result also holds the general file properties from above.
 
 ``` r
-prop.dc <- ebv_properties(file, datacubes[1,1], verbose=F)
+prop.dc <- ebv_properties(file, datacubes[1,1], verbose=FALSE)
 prop.dc@metric
 #> $name
 #> [1] "Relative change in the number of species (%)"
@@ -154,7 +154,7 @@ The function returns the values, catch them!
 
 ``` r
 #get the averages and plot
-averages <- ebv_trend(file, dc, entity=1, verbose=F)
+averages <- ebv_trend(file, dc, entity=1, verbose=FALSE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
@@ -175,7 +175,7 @@ the value range and other basic measurements.
 
 ``` r
 #info for whole dataset
-measurements <- ebv_analyse(file, dc, entity=1, verbose=F)
+measurements <- ebv_analyse(file, dc, entity=1, verbose=FALSE)
 #see the included measurements
 names(measurements)
 #> [1] "min"  "q25"  "q50"  "mean" "q75"  "max"  "std"  "n"    "NAs"
@@ -188,7 +188,7 @@ measurements$n
 #info for a subset defined by a bounding box
 #you can also define the subset by a Shapefile - check it out!
 bb <- c(-26, 64, 30, 38)
-measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb, verbose=F)
+measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb, verbose=FALSE)
 #check out the mean of the subset
 measurements.bb$mean
 #> [1] 0.3241093
@@ -211,7 +211,7 @@ You can also get a spatial subset of the data by providing a Shapefile.
 ``` r
 #load subset from shapefile (Cameroon)
 shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
-data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3), verbose=F)
+data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3), verbose=FALSE)
 dim(data.shp)
 #> [1] 12  9  3
 #very quick plot of the resulting raster plus the shapefile
@@ -259,7 +259,7 @@ ebv_create(jsonpath = json, outputpath = newNc, entities = entities,
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
-print(ebv_properties(newNc, verbose=F)@general$entity_names)
+print(ebv_properties(newNc, verbose=FALSE)@general$entity_names)
 #> [1] "forest bird species"     "non-forest bird species"
 #> [3] "all bird species"
 
@@ -306,7 +306,7 @@ Just use the upcoming function to change it.
 ``` r
 ebv_attribute(newNc, attribute_name='units', value='Percentage', levelpath=dc.new[1,1])
 #check the properties one more time - perfect!
-print(ebv_properties(newNc, dc.new[1,1], verbose=F)@ebv_cube$units)
+print(ebv_properties(newNc, dc.new[1,1], verbose=FALSE)@ebv_cube$units)
 #> [1] "Percentage"
 ```
 
@@ -324,7 +324,7 @@ citation('ebvcube')
 #>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2023). _ebvcube:
 #>   Working with netCDF for Essential Biodiversity Variables_. German
 #>   Centre for Integrative Biodiversity Research (iDiv)
-#>   Halle-Jena-Leipzig, Germany. R package version 0.1.7,
+#>   Halle-Jena-Leipzig, Germany. R package version 0.2.0,
 #>   <https://github.com/LuiseQuoss/ebvcube>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -333,7 +333,7 @@ citation('ebvcube')
 #>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
 #>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
 #>     year = {2023},
-#>     note = {R package version 0.1.7},
+#>     note = {R package version 0.2.0},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
 #>     address = {Germany},
 #>     url = {https://github.com/LuiseQuoss/ebvcube},

@@ -8,3 +8,10 @@
 ^prep_cran_submit\.R$
 ^.lintr
 ^to-dos.md
+^inst/docs/ebvcube_0.0.1.pdf
+^inst/docs/ebvcube_0.1.1.pdf
+^inst/docs/ebvcube_0.1.2.pdf
+^inst/docs/ebvcube_0.1.3.pdf
+^inst/docs/ebvcube_0.1.4.pdf
+^inst/docs/ebvcube_0.1.5.pdf
+^inst/docs/ebvcube_0.1.7.pdf

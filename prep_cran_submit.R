@@ -1,5 +1,7 @@
 #BEFORE SUBMITTING TO CRAN
 
+#update date and version number in DESCRIPTION file
+
 # Run tests and examples
 devtools::document()
 devtools::test()
@@ -11,6 +13,7 @@ lintr::lint_dir()
 #build readme and manual
 # devtools::build_manual()
 devtools::build_manual(path=system.file(file.path("docs"), package="ebvcube"))
+#update Rbuildignore -> new manual version
 devtools::build_readme()
 
 # Check package as CRAN
@@ -35,7 +38,7 @@ urlchecker::url_check()
 # urlchecker::url_update()
 
 # Upgrade version number
-usethis::use_version(which = c("patch", "minor", "major", "dev")[1])
+# usethis::use_version(which = c("patch", "minor", "major", "dev")[1])
 
 # check on other distributions
 # _rhub
