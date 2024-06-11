@@ -1,3 +1,7 @@
+# ebvcube 0.2.1
+## Bug fixes
+- remove old url of codecov from badge
+
 # ebvcube 0.2.0
 
 ## Major changes
