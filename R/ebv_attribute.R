@@ -157,7 +157,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
   }
 
 
-  # block entirely: crs, entities, lat, lon, time ----
+  # block entirely: crs, entity, lat, lon, time ----
   #check block list
   if(! is.null(levelpath)){
     if(mapply(grepl,'crs',levelpath,ignore.case=TRUE)){
@@ -166,8 +166,8 @@ ebv_attribute <- function(filepath, attribute_name, value,
       stop('Changes for the latitude dataset are blocked! Rebuild netCDF if you want a different latitude definition.')
     }else if(mapply(grepl,'lon',levelpath,ignore.case=TRUE)){
       stop('Changes for the longitude dataset are blocked! Rebuild netCDF if you want a different longitude definition.')
-    }else if(mapply(grepl,'entities',levelpath,ignore.case=TRUE)){
-      stop('Changes for the entities dataset are blocked! Always built automatically.')
+    }else if(mapply(grepl,'entity',levelpath,ignore.case=TRUE)){
+      stop('Changes for the entity dataset are blocked! Always built automatically.')
     }else if(mapply(grepl,'time',levelpath,ignore.case=TRUE)){
       stop('Changes for the time dataset are blocked! Rebuild netCDF if you want a different time definition.')
     }
