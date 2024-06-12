@@ -188,17 +188,17 @@ ebv_read <- function(filepath, datacubepath = NULL,  entity=NULL, timestep=1,
       # 4D structure
       if (length(timestep)>1){
         #select entity cube
-        entity_part <- all[,,timestep,entity_index]
+        entity_part <- all[, , timestep, entity_index]
         #rotate matrix
-        h5array <- DelayedArray::aperm(DelayedArray::aperm(entity_part, 3:1), c(2,3,1))
+        h5array <- DelayedArray::aperm(DelayedArray::aperm(entity_part, 3:1), c(2, 3, 1))
         #replace NA value
         h5array <- replace(h5array, h5array==fillvalue, c(NA))
       }
       else{
         #select slice
-        h5array <- all[,,timestep,entity_index]
+        h5array <- all[, , timestep, entity_index]
         #rotate matrix
-        h5array <- t(h5array[,,drop=FALSE])
+        h5array <- t(h5array[, , drop=FALSE])
         #replace NA value
         h5array <- replace(h5array, h5array==fillvalue, c(NA))
       }
@@ -206,14 +206,14 @@ ebv_read <- function(filepath, datacubepath = NULL,  entity=NULL, timestep=1,
       # 3D strucuture
       if (length(timestep)>1){
         #rotate matrix
-        h5array <- DelayedArray::aperm(DelayedArray::aperm(all, 3:1), c(2,3,1))
+        h5array <- DelayedArray::aperm(DelayedArray::aperm(all, 3:1), c(2, 3, 1))
         #replace NA value
         h5array <- replace(h5array, h5array==fillvalue, c(NA))
       }
       else{
-        h5array <- all[,,timestep]
+        h5array <- all[, , timestep]
         #rotate matrix
-        h5array <- t(h5array[,,drop=FALSE])
+        h5array <- t(h5array[, , drop=FALSE])
         #replace NA value
         h5array <- replace(h5array, h5array==fillvalue, c(NA))
       }
@@ -225,7 +225,7 @@ ebv_read <- function(filepath, datacubepath = NULL,  entity=NULL, timestep=1,
     #check needed RAM
     if (!ignore_RAM){
       type.long <- prop@ebv_cube$type
-      ebv_i_check_ram(prop@spatial$dimensions,timestep,entity,type.long)
+      ebv_i_check_ram(prop@spatial$dimensions, timestep, entity, type.long)
     } else{
       if(verbose){
         print('RAM capacities are ignored.')
@@ -233,23 +233,23 @@ ebv_read <- function(filepath, datacubepath = NULL,  entity=NULL, timestep=1,
     }
 
     #return in memory array ----
-    h5array <- array(dim=c(prop@spatial$dimensions[1],prop@spatial$dimensions[2], length(timestep)))
+    h5array <- array(dim=c(prop@spatial$dimensions[1], prop@spatial$dimensions[2], length(timestep)))
     for (i in 1:length(timestep)){
       if(is_4D){
-        part <- rhdf5::h5read(filepath, datacubepath, start=c(1,1,timestep[i], entity_index),
-                              count=c(prop@spatial$dimensions[2],prop@spatial$dimensions[1],1,1))
+        part <- rhdf5::h5read(filepath, datacubepath, start=c(1, 1, timestep[i], entity_index),
+                              count=c(prop@spatial$dimensions[2], prop@spatial$dimensions[1], 1, 1))
       }else{
-        part <- rhdf5::h5read(filepath, datacubepath, start=c(1,1,timestep[i]),
-                              count=c(prop@spatial$dimensions[2],prop@spatial$dimensions[1],1))
+        part <- rhdf5::h5read(filepath, datacubepath, start=c(1, 1, timestep[i]),
+                              count=c(prop@spatial$dimensions[2], prop@spatial$dimensions[1], 1))
 
       }
 
       #rotate matrix
       mat <- matrix(part, c(prop@spatial$dimensions[2], prop@spatial$dimensions[1]))
-      mat <- t(mat[,,drop=FALSE])
+      mat <- t(mat[, , drop=FALSE])
       mat <- replace(mat, which(base::match(mat, fillvalue)==1), c(NA))
       #fill array
-      h5array[,,i] <- mat
+      h5array[, , i] <- mat
 
     }
 

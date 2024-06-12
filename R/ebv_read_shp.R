@@ -234,7 +234,7 @@ ebv_read_shp <- function(filepath, datacubepath = NULL, entity = NULL,
 
   #return raster or tif
   if(!is.null(outputpath)){
-    terra::writeRaster(subset.raster, outputpath,overwrite = overwrite, filetype = "GTiff")
+    terra::writeRaster(subset.raster, outputpath, overwrite = overwrite, filetype = "GTiff")
     return(outputpath)
   } else {
     return(subset.raster)

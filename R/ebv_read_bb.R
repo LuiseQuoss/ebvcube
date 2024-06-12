@@ -280,36 +280,36 @@ ebv_read_bb <- function(filepath, datacubepath = NULL, entity=NULL, timestep = 1
   #get data ----
   #get multiple timesteps
   if (length(timestep)>1){
-    array3d <- array(dim=c(ncol,nrow, length(timestep)))
+    array3d <- array(dim=c(ncol, nrow, length(timestep)))
 
     if(is_4D){
       #read from 4D structure
       for (i in 1:length(timestep)){
         #get subset
-        part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep[i], entity_index), count = c(length(lon.indices),length(lat.indices),1,length(entity_index)))
+        part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices), min(lat.indices), timestep[i], entity_index), count = c(length(lon.indices), length(lat.indices), 1, length(entity_index)))
         #create and rotate array
-        mat <- matrix(part, c(nrow, ncol,1))
+        mat <- matrix(part, c(nrow, ncol, 1))
         mat <- t(mat)
         #mat <- mat[nrow(mat):1,,drop=FALSE]
-        array3d[,,i] <- array(mat, c(ncol, nrow))
+        array3d[, , i] <- array(mat, c(ncol, nrow))
       }
     } else{
       # read from 3D structure
       for (i in 1:length(timestep)){
         #get subset
-        part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep[i]), count = c(length(lon.indices),length(lat.indices),1))
+        part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices), min(lat.indices), timestep[i]), count = c(length(lon.indices), length(lat.indices), 1))
         #create and rotate array
         mat <- matrix(part, c(nrow, ncol))
-        mat <- t(mat[,,drop=FALSE])
+        mat <- t(mat[, , drop=FALSE])
         #mat <- mat[nrow(mat):1,]
 
-        array3d[,,i] <- array(mat, c(ncol, nrow))
+        array3d[, , i] <- array(mat, c(ncol, nrow))
       }
 
     }
 
     #array to raster
-    extent <- terra::ext(c(xmin, xmax,ymin,ymax))
+    extent <- terra::ext(c(xmin, xmax, ymin, ymax))
     r <- terra::rast(array3d, crs=crs, extent=extent)
 
   }else{
@@ -317,7 +317,7 @@ ebv_read_bb <- function(filepath, datacubepath = NULL, entity=NULL, timestep = 1
 
     if(is_4D){
     #read from 4D structure
-      part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep, entity_index), count = c(length(lon.indices),length(lat.indices),1,length(entity_index)))
+      part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices), min(lat.indices), timestep, entity_index), count = c(length(lon.indices), length(lat.indices), 1, length(entity_index)))
       #create and rotate array
       mat <- matrix(part, c(nrow, ncol))
       mat <- t(mat)
@@ -325,16 +325,16 @@ ebv_read_bb <- function(filepath, datacubepath = NULL, entity=NULL, timestep = 1
 
     }else{
     #read from 3D structure
-      part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices),min(lat.indices),timestep), count = c(length(lon.indices),length(lat.indices),1))
+      part <- rhdf5::h5read(filepath, datacubepath, start=c(min(lon.indices), min(lat.indices), timestep), count = c(length(lon.indices), length(lat.indices), 1))
       #create and rotate array
       mat <- matrix(part, c(nrow, ncol))
-      mat <- t(mat[,,drop=FALSE])
+      mat <- t(mat[, , drop=FALSE])
       #mat <- mat[nrow(mat):1,]
 
     }
 
     #array to raster
-    extent <- terra::ext(c(xmin, xmax,ymin,ymax))
+    extent <- terra::ext(c(xmin, xmax, ymin, ymax))
     r <- terra::rast(mat, crs=crs, extent=extent)
 
   }

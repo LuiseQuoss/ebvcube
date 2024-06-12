@@ -38,8 +38,8 @@ ebv_i_file_opened <- function(filepath, verbose=TRUE){
       }
     } else if (ebv_i_os() == 'Windows') {
       #check whether file can be accessed with writing permission
-      cmd <- paste0("powershell $FileStream = [System.IO.File]::Open('",filepath,"','Open','Write')")
-      out <- suppressWarnings(shell(cmd, intern=TRUE,mustWork=TRUE))
+      cmd <- paste0("powershell $FileStream = [System.IO.File]::Open('", filepath, "','Open','Write')")
+      out <- suppressWarnings(shell(cmd, intern=TRUE, mustWork=TRUE))
       #process out
       if(!ebv_i_empty(out)){
         if(verbose){
@@ -57,10 +57,10 @@ ebv_i_ram <- function(){
   temp <- as.character(memuse::Sys.meminfo())
   #total ram
   total <- stringr::str_split(temp[1], ' ')[[1]][4]
-  total <- round(as.double(stringr::str_remove_all(total, ',')),2)
+  total <- round(as.double(stringr::str_remove_all(total, ',')), 2)
   #free ram
   free <- stringr::str_split(temp[2], ' ')[[1]][4]
-  free <- round(as.double(stringr::str_remove_all(free, ',')),2)
+  free <- round(as.double(stringr::str_remove_all(free, ',')), 2)
   return(c(total, free))
 }
 
@@ -109,29 +109,29 @@ ebv_i_type_ot <- function(type.long){
   ot.list <-c('Byte', 'UInt16', 'Int16', 'UInt32', 'Int32', 'Float32', 'Float64', 'CInt16', 'CInt32', 'CFloat32', 'CFloat64')
 
   ###H5Types sorted
-  types.byte <- c("H5T_STD_B8BE","H5T_STD_B8LE","H5T_NATIVE_B8")
-  types.uint <- c("H5T_STD_U8BE","H5T_STD_U8LE","H5T_STD_U16BE","H5T_STD_U16LE","H5T_STD_U32BE",
+  types.byte <- c("H5T_STD_B8BE", "H5T_STD_B8LE", "H5T_NATIVE_B8")
+  types.uint <- c("H5T_STD_U8BE", "H5T_STD_U8LE", "H5T_STD_U16BE", "H5T_STD_U16LE", "H5T_STD_U32BE",
                   "H5T_STD_U32LE", "H5T_NATIVE_USHORT", "H5T_NATIVE_UINT",
                   "H5T_NATIVE_UINT8", "H5T_NATIVE_UINT_LEAST8", "H5T_NATIVE_UINT_FAST8",
                   "H5T_NATIVE_UINT16", "H5T_NATIVE_UINT_LEAST16", "H5T_NATIVE_UINT_FAST16",
-                  "H5T_NATIVE_UINT32","H5T_NATIVE_UINT_LEAST32","H5T_NATIVE_UINT_FAST32")
-  types.int <- c("H5T_STD_I8BE","H5T_STD_I8LE","H5T_STD_I16BE","H5T_STD_I16LE","H5T_STD_I32BE",
+                  "H5T_NATIVE_UINT32", "H5T_NATIVE_UINT_LEAST32", "H5T_NATIVE_UINT_FAST32")
+  types.int <- c("H5T_STD_I8BE", "H5T_STD_I8LE", "H5T_STD_I16BE", "H5T_STD_I16LE", "H5T_STD_I32BE",
                  "H5T_STD_I32LE", "H5T_NATIVE_SHORT", "H5T_NATIVE_INT",
                  "H5T_NATIVE_INT8", "H5T_NATIVE_INT_LEAST8", "H5T_NATIVE_INT_FAST8", "H5T_NATIVE_INT16",
                  "H5T_NATIVE_INT_LEAST16", "H5T_NATIVE_INT_FAST16", "H5T_NATIVE_INT32",
-                 "H5T_NATIVE_INT_LEAST32","H5T_NATIVE_INT_FAST32")
-  types.float <- c("H5T_IEEE_F32BE","H5T_IEEE_F32LE", "H5T_NATIVE_FLOAT", "H5T_NATIVE_DOUBLE", "H5T_NATIVE_LDOUBLE", "H5T_IEEE_F64BE","H5T_IEEE_F64LE")
-  types.notsupported <- c("H5T_NATIVE_CHAR","H5T_NATIVE_SCHAR","H5T_NATIVE_UCHAR","H5T_NATIVE_HADDR",
-                          "H5T_NATIVE_OPAQUE", "H5T_NATIVE_HSIZE","H5T_NATIVE_HSSIZE","H5T_NATIVE_HERR",
+                 "H5T_NATIVE_INT_LEAST32", "H5T_NATIVE_INT_FAST32")
+  types.float <- c("H5T_IEEE_F32BE", "H5T_IEEE_F32LE", "H5T_NATIVE_FLOAT", "H5T_NATIVE_DOUBLE", "H5T_NATIVE_LDOUBLE", "H5T_IEEE_F64BE", "H5T_IEEE_F64LE")
+  types.notsupported <- c("H5T_NATIVE_CHAR", "H5T_NATIVE_SCHAR", "H5T_NATIVE_UCHAR", "H5T_NATIVE_HADDR",
+                          "H5T_NATIVE_OPAQUE", "H5T_NATIVE_HSIZE", "H5T_NATIVE_HSSIZE", "H5T_NATIVE_HERR",
                           "H5T_NATIVE_HBOOL", "H5T_C_S1", "H5T_FORTRAN_S1",
                           #all types referring to 64 bit and not beeing float: not supported, because not available as ot type
-                          "H5T_NATIVE_B64", "H5T_STD_B64LE", "H5T_STD_B64BE","H5T_STD_U64BE",
-                          "H5T_NATIVE_UINT64","H5T_NATIVE_UINT_LEAST64","H5T_NATIVE_UINT_FAST64",
+                          "H5T_NATIVE_B64", "H5T_STD_B64LE", "H5T_STD_B64BE", "H5T_STD_U64BE",
+                          "H5T_NATIVE_UINT64", "H5T_NATIVE_UINT_LEAST64", "H5T_NATIVE_UINT_FAST64",
                           "H5T_STD_U64LE", "H5T_STD_I64LE", "H5T_NATIVE_INT64",
                           "H5T_NATIVE_INT_LEAST64", "H5T_NATIVE_INT_FAST64", "H5T_STD_I64BE",
-                          "H5T_NATIVE_ULONG", "H5T_NATIVE_ULLONG","H5T_NATIVE_LONG","H5T_NATIVE_LLONG",
+                          "H5T_NATIVE_ULONG", "H5T_NATIVE_ULLONG", "H5T_NATIVE_LONG", "H5T_NATIVE_LLONG",
                           #only byte: 8 bit supportet
-                          "H5T_STD_B16BE","H5T_STD_B16LE","H5T_STD_B32BE","H5T_STD_B32LE","H5T_NATIVE_B16", "H5T_NATIVE_B32")
+                          "H5T_STD_B16BE", "H5T_STD_B16LE", "H5T_STD_B32BE", "H5T_STD_B32LE", "H5T_NATIVE_B16", "H5T_NATIVE_B32")
 
 
   if(type.long %in% types.int){
@@ -222,17 +222,17 @@ ebv_i_type_terra <- function(ot_type){
 
   if (ot_type %in% c('Byte')){
     terra_type <- 'INT1S'
-  }else if (ot_type%in% c('Int16','CInt16')){
+  }else if (ot_type%in% c('Int16', 'CInt16')){
     terra_type <- 'INT2S'
   }else if (ot_type%in% c('UInt16')){
     terra_type <- 'INT2U'
-  }else if (ot_type%in% c('Int32','CInt32')){
+  }else if (ot_type%in% c('Int32', 'CInt32')){
     terra_type <- 'INT4S'
   }else if (ot_type%in% c('UInt32')){
     terra_type <- 'INT4U'
-  }else if (ot_type%in% c('Float32','CFloat32')){
+  }else if (ot_type%in% c('Float32', 'CFloat32')){
     terra_type <- 'FLT4S'
-  }else if (ot_type%in% c('Float64','CFloat64')){
+  }else if (ot_type%in% c('Float64', 'CFloat64')){
     terra_type <- 'FLT8S'
   }
 
@@ -256,7 +256,7 @@ ebv_i_transform_bb <- function(bb, src_epsg, dest_epsg){
 
   bb_mat <- terra::project(matrix(bb, ncol = 2), wkt_src, wkt_dest)
 
-  bb_new <- as.numeric(c(bb_mat[,1],bb_mat[,2]))
+  bb_new <- as.numeric(c(bb_mat[, 1], bb_mat[, 2]))
   return(bb_new)
 }
 
@@ -285,7 +285,7 @@ ebv_i_check_ram <- function(dims, timestep, entity, type){
     # ram.pc.total <- ram.pc[1]
     #check if data too big
     if(ram.pc.free < ram.var.gb){
-      stop(paste0('The space needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb,2)))
+      stop(paste0('The space needed to read the data into memory is larger than the free RAM.\nFree RAM: ', ram.pc.free, '\nNeeded RAM: ', round(ram.var.gb, 2)))
     }
     #at least 1 GB stays free
     if(ram.pc.free - ram.var.gb < 1){
@@ -319,9 +319,9 @@ ebv_i_check_data <- function(hdf, datacubepath, entity_index, is_4D, timestep=NU
     r <- tryCatch(
       {
         if(is_4D){
-          r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t,entity_index), count=c(1,1,1,1))
+          r <- rhdf5::h5read(hdf, datacubepath, start = c(1, 1, t, entity_index), count=c(1, 1, 1, 1))
         }else{
-          r <- rhdf5::h5read(hdf, datacubepath, start = c(1,1,t), count=c(1,1,1))
+          r <- rhdf5::h5read(hdf, datacubepath, start = c(1, 1, t), count=c(1, 1, 1))
         }
 
       },
@@ -363,7 +363,7 @@ ebv_i_uint_att <- function(h5obj, name, data){
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_NATIVE_UINT")
-    aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid, sid)
     rhdf5::H5Sclose(sid)
   } else {
     aid <- rhdf5::H5Aopen(h5obj, name)
@@ -395,7 +395,7 @@ ebv_i_int_att <- function(h5obj, name, data){
   if(!rhdf5::H5Aexists(h5obj, name)){
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_NATIVE_INT")
-    aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid, sid)
     rhdf5::H5Sclose(sid)
   } else {
     aid <- rhdf5::H5Aopen(h5obj, name)
@@ -467,14 +467,14 @@ ebv_i_char_att <- function(h5obj, name, data){
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_C_S1")
     rhdf5::H5Tset_size(tid, count) #nchar(data)+count
-    aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid, sid)
     rhdf5::H5Sclose(sid)
   } else {
     rhdf5::H5Adelete(h5obj, name)
     sid <- rhdf5::H5Screate_simple(c(1))
     tid <- rhdf5::H5Tcopy("H5T_C_S1")
     rhdf5::H5Tset_size(tid, count) #nchar(data)+count
-    aid <- rhdf5::H5Acreate(h5obj, name = name, tid,sid)
+    aid <- rhdf5::H5Acreate(h5obj, name = name, tid, sid)
     rhdf5::H5Sclose(sid)
   }
   #data <- enc2utf8(data)
@@ -509,7 +509,7 @@ ebv_i_read_att <-  function(h5obj, name, verbose=TRUE){
     rhdf5::H5Aclose(aid)
     #ensure utf-8encoding for string attributes
     if(checkmate::check_character(attribute)==TRUE){
-      attribute <- stringr::str_conv(attribute ,"UTF-8")
+      attribute <- stringr::str_conv(attribute, "UTF-8")
     }
     return(attribute)
   }
@@ -525,7 +525,7 @@ ebv_i_4D <- function(filepath){
   dims <- ebv_i_read_att(hdf, 'ebv_cube_dimensions', FALSE)#suppress warning if attribute does not exist
   if (is.null(dims)){
     dim <- 3
-  } else if(stringr::str_detect(dims,'entity')){
+  } else if(stringr::str_detect(dims, 'entity')){
     dim <- 4
   } else{
     dim <- 3
@@ -550,7 +550,7 @@ ebv_i_entity <- function(entity, entity_names){
     #integer inside the range?
     if(checkmate::checkIntegerish(entity, len=1) == TRUE){
       if(entity > length(entity_names)){
-        stop(paste0('Given entity value (', entity,') bigger than available entities (',length(entity_names),').'))
+        stop(paste0('Given entity value (', entity, ') bigger than available entities (', length(entity_names), ').'))
       }
       if(entity < 0){
         stop('You cannot give a negative value for the entity argument.')
@@ -583,7 +583,7 @@ ebv_i_eval_epsg <- function(epsg, proj=FALSE){
     if(stringr::str_detect(epsg, 'ESRI')){
       terra::crs(dummy_raster, warn=FALSE) <- epsg
     }else{
-      terra::crs(dummy_raster, warn=FALSE) <- paste0('EPSG:',epsg)
+      terra::crs(dummy_raster, warn=FALSE) <- paste0('EPSG:', epsg)
     },
 
    warning = function(e){
@@ -716,16 +716,16 @@ ebv_i_date <- function(timestep, dates){
 ebv_i_datacubepath <- function(scenario=NULL, metric, datacubepaths, verbose){
   #initial checks----
   #how many scenarios are there?
-  if(stringr::str_detect(datacubepaths[1,1], 'scenario')){
-    s <- length(unique(stringr::str_split(datacubepaths[,1], '/', simplify = TRUE)[,1]))
+  if(stringr::str_detect(datacubepaths[1, 1], 'scenario')){
+    s <- length(unique(stringr::str_split(datacubepaths[, 1], '/', simplify = TRUE)[, 1]))
   }else{
     s <- 0
   }
   #how many metrics are there?
   if (s >0){
-    m <- length(unique(stringr::str_split(datacubepaths[,1], '/', simplify = TRUE)[,2]))
+    m <- length(unique(stringr::str_split(datacubepaths[, 1], '/', simplify = TRUE)[, 2]))
   }else{
-    m <- length(unique(stringr::str_split(datacubepaths[,1], '/', simplify = TRUE)[,1]))
+    m <- length(unique(stringr::str_split(datacubepaths[, 1], '/', simplify = TRUE)[, 1]))
   }
 
   #check scenario definition----
@@ -742,7 +742,7 @@ ebv_i_datacubepath <- function(scenario=NULL, metric, datacubepaths, verbose){
   }else if(checkmate::checkIntegerish(scenario, len=1) == TRUE){
     #check if integer
     if(scenario > s){
-      stop(paste0('Given scenario integer value (', scenario,') bigger than available scenarios (',s,').'))
+      stop(paste0('Given scenario integer value (', scenario, ') bigger than available scenarios (', s, ').'))
     }
     if(scenario < 0){
       stop('You cannot give a negative value for the scenario argument.')
@@ -769,15 +769,15 @@ ebv_i_datacubepath <- function(scenario=NULL, metric, datacubepaths, verbose){
       #try absolute matching
       s_index <- which(scenario == datacubepaths$scenario_names)[1]
       if(!is.na(s_index)){
-        part_1 <- paste0(stringr::str_split(datacubepaths$datacubepaths[s_index], '/', simplify = TRUE)[1,1], '/')
+        part_1 <- paste0(stringr::str_split(datacubepaths$datacubepaths[s_index], '/', simplify = TRUE)[1, 1], '/')
       }else{
         #try fuzzy matching
-        dist <- utils::adist(scenario , datacubepaths$scenario_names, ignore.case=TRUE, partial=FALSE)
+        dist <- utils::adist(scenario, datacubepaths$scenario_names, ignore.case=TRUE, partial=FALSE)
         s_index <- which(dist == min(dist))
         if(length(s_index) > 1) {
           stop('No match for the scenario you gave. Please correct or use the ebv_datacubepaths function to fill in the datacubepath argument instead.')
         }else{
-          part_1 <- paste0(stringr::str_split(datacubepaths$datacubepaths[s_index], '/', simplify = TRUE)[1,1], '/')
+          part_1 <- paste0(stringr::str_split(datacubepaths$datacubepaths[s_index], '/', simplify = TRUE)[1, 1], '/')
         }
 
         #inform user
@@ -801,7 +801,7 @@ ebv_i_datacubepath <- function(scenario=NULL, metric, datacubepaths, verbose){
   } else if(checkmate::checkIntegerish(metric, len=1) == TRUE){
     #check if integer
     if(metric > m){
-      stop(paste0('Given metric integer value (', metric,') bigger than available metrics (',m,').'))
+      stop(paste0('Given metric integer value (', metric, ') bigger than available metrics (', m, ').'))
 
     }
     if(metric < 0){
@@ -821,19 +821,19 @@ ebv_i_datacubepath <- function(scenario=NULL, metric, datacubepaths, verbose){
         m_index <- which(metric == datacubepaths$metric_names)[1]
         if(!is.na(m_index)){
           if(s>0){
-            part_2 <- paste0(stringr::str_split(datacubepaths$datacubepaths[m_index], '/', simplify = TRUE)[1,2], '/')
+            part_2 <- paste0(stringr::str_split(datacubepaths$datacubepaths[m_index], '/', simplify = TRUE)[1, 2], '/')
           }else{
-            part_2 <- paste0(stringr::str_split(datacubepaths$datacubepaths[m_index], '/', simplify = TRUE)[1,1], '/')
+            part_2 <- paste0(stringr::str_split(datacubepaths$datacubepaths[m_index], '/', simplify = TRUE)[1, 1], '/')
           }
 
         }else{
           #try fuzzy matching
-          dist <- utils::adist(metric , datacubepaths$metric_names, ignore.case=TRUE, partial=FALSE)
+          dist <- utils::adist(metric, datacubepaths$metric_names, ignore.case=TRUE, partial=FALSE)
           m_index <- which(dist == min(dist))
           if(length(m_index) > 1) {
             stop('No match for the metric you gave. Please correct or use the ebv_datacubepaths function to fill in the datacubepath argument instead.')
           }else{
-            part_2 <- paste0(stringr::str_split(datacubepaths$datacubepaths[m_index], '/', simplify = TRUE)[1,2], '/')
+            part_2 <- paste0(stringr::str_split(datacubepaths$datacubepaths[m_index], '/', simplify = TRUE)[1, 2], '/')
           }
 
           #inform user
@@ -884,10 +884,10 @@ ebv_i_datacubepath <- function(scenario=NULL, metric, datacubepaths, verbose){
 #' @return Returns a character array
 #' @noRd
 ebv_i_char_variable <- function(string_vector, max_char, reverse=FALSE){
-  data_level <- as.data.frame(stringr::str_split(stringr::str_pad(string_vector, max_char, side = c("right")),''))
+  data_level <- as.data.frame(stringr::str_split(stringr::str_pad(string_vector, max_char, side = c("right")), ''))
   data_level <- t(data_level)
   if(reverse){
-    data_level <- data_level[nrow(data_level):1,]
+    data_level <- data_level[nrow(data_level):1, ]
   }
   data_level_clean <- enc2utf8(unlist(data_level))
   return(data_level_clean)

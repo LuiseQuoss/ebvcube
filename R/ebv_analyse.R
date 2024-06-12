@@ -178,10 +178,10 @@ ebv_analyse <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1,
     all <- HDF5Array::HDF5Array(filepath = filepath, name =datacubepath, as.sparse = TRUE, type = type.short)
     if(is_4D){
       #process 4D
-      subset.array <- all[,,timestep,entity_index]
+      subset.array <- all[, , timestep, entity_index]
     } else{
       #process 3D
-      subset.array <- all[,,timestep]
+      subset.array <- all[, , timestep]
     }
     #give fillvalue as nodata value
     subset.array <- replace(subset.array, subset.array==prop@ebv_cube$fillvalue[1], c(NA))

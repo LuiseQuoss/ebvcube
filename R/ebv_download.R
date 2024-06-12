@@ -47,9 +47,9 @@ ebv_download <- function(id=NULL,
 
   #check if portal website can be reached
   con <- url('https://portal.geobon.org') #, 'rb'
-  check <- suppressWarnings(try(open.connection(con,open="rt"),silent=TRUE)[1])
-  suppressWarnings(try(close.connection(con),silent=TRUE))
-  website <- ifelse(is.null(check),TRUE,FALSE)
+  check <- suppressWarnings(try(open.connection(con, open="rt"), silent=TRUE)[1])
+  suppressWarnings(try(close.connection(con), silent=TRUE))
+  website <- ifelse(is.null(check), TRUE, FALSE)
 
   if(website!=TRUE){
     stop(paste0('The EBV Data Portal https://portal.geobon.org cannot be reached.\n', check))
@@ -70,7 +70,7 @@ ebv_download <- function(id=NULL,
   datasets_list <- cbind(datasets_list, datasets$data$title) # add id
   colnames(datasets_list) <- c('id', 'title')
   datasets_list <- as.data.frame(datasets_list)
-  datasets_list <- datasets_list[order(as.numeric(datasets_list$id)),] #sort by id
+  datasets_list <- datasets_list[order(as.numeric(datasets_list$id)), ] #sort by id
   datasets_list$id <- as.integer(datasets_list$id)
   datasets_list$doi <- c('coming soon')
 
@@ -106,12 +106,12 @@ ebv_download <- function(id=NULL,
 
         #check if this website is available
         con_doi <- url(url_id)
-        check_doi <- suppressWarnings(try(open.connection(con_doi,open="rt",timeout=t),silent=TRUE)[1])
-        suppressWarnings(try(close.connection(con_doi),silent=TRUE))
-        website_doi <- ifelse(is.null(check_doi),TRUE,FALSE)
+        check_doi <- suppressWarnings(try(open.connection(con_doi, open="rt", timeout=t), silent=TRUE)[1])
+        suppressWarnings(try(close.connection(con_doi), silent=TRUE))
+        website_doi <- ifelse(is.null(check_doi), TRUE, FALSE)
 
         if(website_doi!=TRUE){
-          stop(paste0('The DOI you provided (', url_id ,') cannot be reached.\n', check_doi))
+          stop(paste0('The DOI you provided (', url_id, ') cannot be reached.\n', check_doi))
         }
 
         #get the url of the redirection from the DOI url

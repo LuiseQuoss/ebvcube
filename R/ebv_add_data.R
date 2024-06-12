@@ -153,7 +153,7 @@ ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timest
     data <- t(data)
   } else if(array){
     #rotate array
-    data <- apply(data, c(1,3), t)
+    data <- apply(data, c(1, 3), t)
   }
 
   #datacubepath check
@@ -265,7 +265,7 @@ ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timest
     }
     #check RAM
     if (!ignore_RAM){
-      ebv_i_check_ram(size.int,timestep,entity,type.long)
+      ebv_i_check_ram(size.int, timestep, entity, type.long)
     } else{
       if(verbose){
         print('RAM capacities are ignored.')
@@ -323,7 +323,7 @@ ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timest
   file_space <- rhdf5::H5Dget_space(did)
   if (rhdf5::H5Sget_simple_extent_dims(file_space)$size[3] != dims[3]){
     #set new dimension of dataset
-    rhdf5::H5Dset_extent(did, c(dims[2],dims[1],dims[3:length(dims)]))
+    rhdf5::H5Dset_extent(did, c(dims[2], dims[1], dims[3:length(dims)]))
     rhdf5::H5Dclose(did)
     rhdf5::H5Sclose(file_space)
   }else{
@@ -339,12 +339,12 @@ ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timest
 
   if(is_4D){
     #write data 4D
-    rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep),entity_index),
-                   count=c(lon.len,lat.len,length(timestep),length(entity)))
+    rhdf5::h5write(data, hdf, datacubepath, start=c(1, 1, min(timestep), entity_index),
+                   count=c(lon.len, lat.len, length(timestep), length(entity)))
   } else{
     #write data 3D
-    rhdf5::h5write(data, hdf, datacubepath, start=c(1,1,min(timestep)),
-                   count=c(lon.len,lat.len,length(timestep)))
+    rhdf5::h5write(data, hdf, datacubepath, start=c(1, 1, min(timestep)),
+                   count=c(lon.len, lat.len, length(timestep)))
   }
 
   #open DS
