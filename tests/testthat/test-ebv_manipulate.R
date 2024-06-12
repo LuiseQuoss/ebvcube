@@ -37,7 +37,7 @@ test_that("test ebv_create, ebv_add_data and ebv_attribute", {
     expect_equal(prop$ebv_domain, 'Terrestrial')
     expect_equal(prop$keywords, "ebv_class: Community composition, ebv_name: Taxonomic/phylogenetic diversity, ebv_domain: Terrestrial, ebv_spatial_scope: Global, ebv_entity_type: Communities, ebv_scenario_classification_name: SSP-RCP")
   }else{
-    ebv_attribute(file, 'ebv_domain', 'Marine')
+    ebv_attribute(file, 'ebv_domain', 'Marine', verbose = FALSE)
     prop <- ebv_properties(file, verbose=FALSE)@general
     expect_equal(prop$ebv_domain, 'Marine')
     expect_equal(prop$keywords, "ebv_class: Community composition, ebv_name: Taxonomic/phylogenetic diversity, ebv_domain: Marine, ebv_spatial_scope: Global, ebv_entity_type: Communities, ebv_scenario_classification_name: SSP-RCP")
