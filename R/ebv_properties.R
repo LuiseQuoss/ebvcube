@@ -170,7 +170,7 @@ ebv_properties <-
       taxon_df <- data.frame(matrix(NA, nrow=dims_list[2], ncol=length(tax_levels)))
       colnames(taxon_df) <- tax_levels
       for (d in 1:dims_list[1]){
-        taxon_df[,d] <- apply(tax_list[d,,], 1, ebv_i_paste)
+        taxon_df[, d] <- apply(tax_list[d, , ], 1, ebv_i_paste)
       }
 
       #check for lsid

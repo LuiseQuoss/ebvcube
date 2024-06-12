@@ -81,7 +81,7 @@
 #' file.remove(out)
 #' }
 ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
-                                epsg = 4326, extent = c(-180,180,-90,90), resolution = c(1,1),
+                                epsg = 4326, extent = c(-180, 180, -90, 90), resolution = c(1, 1),
                                 timesteps = NULL, fillvalue = NULL, prec = 'double',
                                 sep=',', force_4D = TRUE, overwrite = FALSE,
                                 verbose = TRUE){
@@ -263,7 +263,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     }else {
       for(ts in timesteps){
         #check ISO format
-        if(!(grepl('^\\d{4}-\\d{2}-\\d{2}$', ts) || grepl('^\\d{4}$',ts))){
+        if(!(grepl('^\\d{4}-\\d{2}-\\d{2}$', ts) || grepl('^\\d{4}$', ts))){
           stop(paste0('Your timestep ', ts, ' is not following the indicated ISO format. Check help page for more information.'))
         }
 
@@ -278,7 +278,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     tryCatch(file.remove(outputpath),
              warning = function(w){
                temp <- stringr::str_remove(as.character(w), '\\\\')
-               if(stringr::str_detect(temp,'cannot remove file')){
+               if(stringr::str_detect(temp, 'cannot remove file')){
                  stop('Outputpath file already exists and you enabled overwrite, but file cannot be overwritten. Most likely the file is opened in another application.')
                }
              })
@@ -290,13 +290,13 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
   #get entities and maybe lsid-list
   if(lsid){
-    entities <- csv_txt[,(dim_csv[2]-1)]
-    lsid_list <- csv_txt[,dim_csv[2]]
-    csv_txt <- csv_txt[,-dim_csv[2]]
+    entities <- csv_txt[, (dim_csv[2]-1)]
+    lsid_list <- csv_txt[, dim_csv[2]]
+    csv_txt <- csv_txt[, -dim_csv[2]]
     taxon_list <- names(csv_txt)
   }else{
     taxon_list <- names(csv_txt)
-    entities <- csv_txt[,dim_csv[2]]
+    entities <- csv_txt[, dim_csv[2]]
     lsid_list <- NA
   }
 
@@ -322,7 +322,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   # get crs information ----
   # :GeoTransform
   res <- resolution
-  geo_trans <- paste0(extent[1], " ",res[1]," 0.0 ", extent[4], " 0.0 -", res[2])
+  geo_trans <- paste0(extent[1], " ", res[1], " 0.0 ", extent[4], " 0.0 -", res[2])
 
   # :spatial_ref
   #remove additional whitespaces
@@ -331,7 +331,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   crs_ref <- stringr::str_replace_all(crs_temp, '     ', ' ')
 
   # unit
-  if(stringr::str_detect(crs_ref,'PROJCRS')){
+  if(stringr::str_detect(crs_ref, 'PROJCRS')){
     crs_unit <- 'meter'
   } else{
     crs_unit <- 'degree'
@@ -411,7 +411,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
     }else{
       #process old standard
-      if (mapply(grepl,'year',t_res,ignore.case=TRUE)){
+      if (mapply(grepl, 'year', t_res, ignore.case=TRUE)){
         start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
         end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
         intervall <- as.numeric(regmatches(t_res, gregexpr("[[:digit:]]+", t_res))[[1]][1])
@@ -421,49 +421,49 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
         sequence <- seq(start, end, intervall)
         timesteps <- c()
         for (s in sequence){
-          date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
+          date <- as.numeric(as.Date(paste0(as.character(s), '-01-01'), format = '%Y-%m-%d'))
           timestep <- date+add
           timesteps <- c(timesteps, timestep)
         }
-      } else if (mapply(grepl,'month',t_res,ignore.case=TRUE)){
+      } else if (mapply(grepl, 'month', t_res, ignore.case=TRUE)){
         start <- as.Date(t_start)
         end   <- as.Date(t_end)
-        sequence <- seq(from=start, to=end,by='month')
+        sequence <- seq(from=start, to=end, by='month')
         timesteps <- c()
         for (s in sequence){
-          date <- as.numeric(as.Date(s,origin=as.Date("1970-01-01")))
+          date <- as.numeric(as.Date(s, origin=as.Date("1970-01-01")))
           timestep <- s+add
           timesteps <- c(timesteps, timestep)
         }
-      }else if (mapply(grepl,'day',t_res,ignore.case=TRUE)){
+      }else if (mapply(grepl, 'day', t_res, ignore.case=TRUE)){
         start <- as.Date(t_start)
         end   <- as.Date(t_end)
-        sequence <- seq(from=start, to=end,by='days')
+        sequence <- seq(from=start, to=end, by='days')
         timesteps <- c()
         for (s in sequence){
-          date <- as.numeric(as.Date(s,origin=as.Date("1970-01-01")))
+          date <- as.numeric(as.Date(s, origin=as.Date("1970-01-01")))
           timestep <- s+add
           timesteps <- c(timesteps, timestep)
         }
-      } else if (mapply(grepl,'decad',t_res,ignore.case=TRUE)){
+      } else if (mapply(grepl, 'decad', t_res, ignore.case=TRUE)){
         start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
         end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
         intervall <- 10
         sequence <- seq(start, end, intervall)
         timesteps <- c()
         for (s in sequence){
-          date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
+          date <- as.numeric(as.Date(paste0(as.character(s), '-01-01'), format = '%Y-%m-%d'))
           timestep <- date+add
           timesteps <- c(timesteps, timestep)
         }
-      } else if (mapply(grepl,'annually',t_res,ignore.case=TRUE)){
+      } else if (mapply(grepl, 'annually', t_res, ignore.case=TRUE)){
         start <- as.integer(stringr::str_split(t_start, '-')[[1]][1])
         end <- as.integer(stringr::str_split(t_end, '-')[[1]][1])
         intervall <- 1
         sequence <- seq(start, end, intervall)
         timesteps <- c()
         for (s in sequence){
-          date <- as.numeric(as.Date(paste0(as.character(s),'-01-01'), format = '%Y-%m-%d'))
+          date <- as.numeric(as.Date(paste0(as.character(s), '-01-01'), format = '%Y-%m-%d'))
           timestep <- date+add
           timesteps <- c(timesteps, timestep)
         }
@@ -503,7 +503,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   # lon ----
   lon.min <- extent[1]
   lon.max <- extent[2]
-  lon_data <- seq((lon.min+(res[1]/2)),(lon.max-(res[1]/2)), res[1])
+  lon_data <- seq((lon.min+(res[1]/2)), (lon.max-(res[1]/2)), res[1])
 
   # entities ----
   if(!entities_no==0){
@@ -518,12 +518,12 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   }
 
   # create dimensions ----
-  lat_dim <- ncdf4::ncdim_def('lat', crs_unit , vals = lat_data)
+  lat_dim <- ncdf4::ncdim_def('lat', crs_unit, vals = lat_data)
   lon_dim <- ncdf4::ncdim_def('lon', crs_unit, vals = lon_data)
   if(t_res=='Paleo'){
-    time_dim <- ncdf4::ncdim_def('time', 'kyrs B.P.' , timesteps, unlim = TRUE)#HERE
+    time_dim <- ncdf4::ncdim_def('time', 'kyrs B.P.', timesteps, unlim = TRUE)#HERE
   }else{
-    time_dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0' , timesteps, unlim = TRUE)#HERE
+    time_dim <- ncdf4::ncdim_def('time', 'days since 1860-01-01 00:00:00.0', timesteps, unlim = TRUE)#HERE
   }
   entity_dim <- ncdf4::ncdim_def('entity', '', vals = 1:entities_no, create_dimvar=FALSE)
   taxon_dim <- ncdf4::ncdim_def('taxonlevel', '', vals = 1:taxon_no, create_dimvar=FALSE)
@@ -545,7 +545,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
         for (j in 1:(metrics_no)){
           #add entities
           for (ent in entity.list){
-            var_list <- c(var_list, paste0('scenario_', as.character(i), '/metric_', as.character(j), '/',ent))
+            var_list <- c(var_list, paste0('scenario_', as.character(i), '/metric_', as.character(j), '/', ent))
           }
         }
       }
@@ -578,7 +578,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   units <- c()
   for (j in 1:(metrics_no)){
     #metric units list
-    units <- c(units,eval(parse(text=paste0('json$ebv_metric$ebv_metric_',j,'$`:units`'))))
+    units <- c(units, eval(parse(text=paste0('json$ebv_metric$ebv_metric_', j, '$`:units`'))))
   }
 
   var_list_nc <- list()
@@ -611,7 +611,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     chunksizes_old <- nc_test$var$test_var$chunksizes
     ncdf4::nc_close(nc_test)
     #define chunksize
-    chunksizes_new <- c(chunksizes_old,1)
+    chunksizes_new <- c(chunksizes_old, 1)
     #remove temp file
     if(file.exists(temp)){
       file.remove(temp)
@@ -687,7 +687,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   #check for special characters
   sz <- c()
   for (u in c('\ufc', '\uf6', '\ue4', '\udf', '\udc', '\uc4', '\ud6')){
-    if(any(stringr::str_detect(entities,u))){
+    if(any(stringr::str_detect(entities, u))){
       sz <- c(sz, u)
     }
   }
@@ -701,7 +701,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   dimchar_entity <- ncdf4::ncdim_def("nchar", "", 1:max_char_entity, create_dimvar=FALSE)
   #entity
   var_list_nc[[enum]] <- ncdf4::ncvar_def(name = 'entity', unit='1', #HERE adimensional
-                                          dim=list(dimchar_entity,entity_dim),
+                                          dim=list(dimchar_entity, entity_dim),
                                           prec='char', verbose = verbose)
   enum <- enum+1
   #add entity_list variable ----
@@ -808,7 +808,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
     att.txt <- paste0(trimws(att.txt), collapse = ', ')
     if(names(global.att[i])=='contributor_name' || names(global.att[i])=='ebv_domain'){
-      att.txt <- paste0(trimws(trimws(stringr::str_split(att.txt,',')[[1]])), collapse = ', ')
+      att.txt <- paste0(trimws(trimws(stringr::str_split(att.txt, ',')[[1]])), collapse = ', ')
     }
     ebv_i_char_att(hdf, names(global.att[i]), att.txt)
   }
@@ -826,9 +826,9 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   xmax <- max(lon_data) + res[1]/2
   ymin <- min(lat_data) - res[2]/2
   ymax <- max(lat_data) + res[2]/2
-  bounds <- paste0('POLYGON((', xmin, ' ' , ymin, ', ', xmin, ' ' , ymax, ', ',
-                   xmax, ' ' , ymax, ', ', xmax, ' ' , ymin, ', ',
-                   xmin, ' ' , ymin,'))')
+  bounds <- paste0('POLYGON((', xmin, ' ', ymin, ', ', xmin, ' ', ymax, ', ',
+                   xmax, ' ', ymax, ', ', xmax, ' ', ymin, ', ',
+                   xmin, ' ', ymin, '))')
   #lat and lon
   if(stringr::str_detect(epsg, 'ESRI')){
     ebv_i_char_att(hdf, 'geospatial_bounds_crs', epsg)
@@ -905,11 +905,11 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
     #add attributes
     ebv_i_char_att(crs.id, 'grid_mapping_name', 'transverse_mercator')
-    ebv_i_num_att(crs.id, 'latitude_of_projection_origin',lat_proj)
-    ebv_i_num_att(crs.id, 'longitude_of_projection_origin',lon_proj)
+    ebv_i_num_att(crs.id, 'latitude_of_projection_origin', lat_proj)
+    ebv_i_num_att(crs.id, 'longitude_of_projection_origin', lon_proj)
     ebv_i_num_att(crs.id, 'scale_factor_at_projection_origin', scale_fac)
-    ebv_i_num_att(crs.id, 'false_easting',f_east)
-    ebv_i_num_att(crs.id, 'false_northing',f_north)
+    ebv_i_num_att(crs.id, 'false_easting', f_east)
+    ebv_i_num_att(crs.id, 'false_northing', f_north)
 
   } else{
     #get grid mapping attributes
@@ -919,7 +919,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
       #add grid mapping name and remove from tibble
       ebv_i_char_att(crs.id, 'grid_mapping_name', grid_mapping$value[grid_mapping$name=='grid_mapping_name'][[1]])
-      grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name',]
+      grid_mapping <- grid_mapping[!grid_mapping$name=='grid_mapping_name', ]
 
       #additional attributes
       for (name in grid_mapping$name){
@@ -1003,7 +1003,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   rhdf5::H5Dclose(time.id)
 
   #add values to entity var----
-  entity_names <- as.data.frame(stringr::str_split(stringr::str_pad(entities, max_char_entity, side = c("right")),''))
+  entity_names <- as.data.frame(stringr::str_split(stringr::str_pad(entities, max_char_entity, side = c("right")), ''))
   entity_n <- enc2utf8(unlist(entity_names))
 
   entity.id <- rhdf5::H5Dopen(hdf, 'entity')#HERE
@@ -1026,9 +1026,9 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     for (i in 1:(metrics_no)){
       mgid <- rhdf5::H5Gopen(hdf, paste0('metric_', i))
       #add metric attributes
-      standard_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:standard_name`')))
-      long_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:long_name`')))
-      unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:units`')))
+      standard_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_', i, '$`:standard_name`')))
+      long_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_', i, '$`:long_name`')))
+      unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_', i, '$`:units`')))
       ebv_i_char_att(mgid, 'standard_name', standard_name)
       ebv_i_char_att(mgid, 'long_name', long_name)
       ebv_i_char_att(mgid, 'units', unit.m)
@@ -1041,8 +1041,8 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
       #scenario path
       sgid <- rhdf5::H5Gopen(hdf, paste0('scenario_', j))
       #add attributes
-      standard_name <- eval(parse(text=paste0('json$ebv_scenario$ebv_scenario_',j,'$`:standard_name`')))
-      long_name <- eval(parse(text=paste0('json$ebv_scenario$ebv_scenario_',j,'$`:long_name`')))
+      standard_name <- eval(parse(text=paste0('json$ebv_scenario$ebv_scenario_', j, '$`:standard_name`')))
+      long_name <- eval(parse(text=paste0('json$ebv_scenario$ebv_scenario_', j, '$`:long_name`')))
       ebv_i_char_att(sgid, 'standard_name', standard_name)
       ebv_i_char_att(sgid, 'long_name', long_name)
       rhdf5::H5Gclose(sgid)
@@ -1050,9 +1050,9 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
         #open metric group
         mgid <- rhdf5::H5Gopen(hdf, paste0('scenario_', j, '/metric_', i))
         #add metric attributes
-        standard_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:standard_name`')))
-        long_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:long_name`')))
-        unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_',i,'$`:units`')))
+        standard_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_', i, '$`:standard_name`')))
+        long_name <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_', i, '$`:long_name`')))
+        unit.m <- eval(parse(text=paste0('json$ebv_metric$ebv_metric_', i, '$`:units`')))
         ebv_i_char_att(mgid, 'standard_name', standard_name)
         ebv_i_char_att(mgid, 'long_name', long_name)
         ebv_i_char_att(mgid, 'units', unit.m)
@@ -1104,14 +1104,14 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
 
   for(level in taxon_list){
     #transform values so they fit into the variable
-    data_level_clean <- ebv_i_char_variable(csv_txt[,level], max_char_entity)
+    data_level_clean <- ebv_i_char_variable(csv_txt[, level], max_char_entity)
 
     if(verbose){
-      print(paste0('add ',level,' data to level: ', level_i))
+      print(paste0('add ', level, ' data to level: ', level_i))
     }
 
     rhdf5::h5write(data_level_clean, file=outputpath,
-                   name="entity_list", index=list(level_i,NULL, NULL))
+                   name="entity_list", index=list(level_i, NULL, NULL))
 
     level_i <- level_i-1
   }

@@ -117,7 +117,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     }
 
     #derive other variables
-    name <- stringr::str_remove(basename(outputpath),'.tif')
+    name <- stringr::str_remove(basename(outputpath), '.tif')
     temp.tif <- tempfile(fileext = '.tif')
 
     #temp.tif must be new file, remove tempfile
@@ -126,8 +126,8 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     }
 
     #turn data back
-    data <- t(data[nrow(data):1,])
-    data <- data[,ncol(data):1]
+    data <- t(data[nrow(data):1, ])
+    data <- data[, ncol(data):1]
 
     out <- HDF5Array::writeHDF5Array(
       data,
@@ -161,10 +161,10 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     }
 
     #derive other variables
-    name <- stringr::str_remove(basename(outputpath),'.tif')
+    name <- stringr::str_remove(basename(outputpath), '.tif')
     temp.tif <- tempfile(fileext = '.tif')
 
-    band <- DelayedArray::aperm(DelayedArray::aperm(data, 3:1), c(2,3,1))
+    band <- DelayedArray::aperm(DelayedArray::aperm(data, 3:1), c(2, 3, 1))
 
     #write temp tif - georeference missing
     out <- HDF5Array::writeHDF5Array(

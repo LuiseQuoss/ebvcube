@@ -243,7 +243,7 @@ ebv_resample <- function(filepath_src, datacubepath_src = NULL, entity_src=NULL,
   if (checkmate::checkCharacter(method) != TRUE){
     stop('Method must be of type character.')
   }
-  methods <- c("near","bilinear","cubic", "cubicspline", "lanczos", "sum", "min","q1", "med", "q3", "max", "average", "mode", "rms")
+  methods <- c("near", "bilinear", "cubic", "cubicspline", "lanczos", "sum", "min", "q1", "med", "q3", "max", "average", "mode", "rms")
   if (! method %in% methods){
     stop('Given method is not valid.\n', method)
   }
@@ -252,7 +252,7 @@ ebv_resample <- function(filepath_src, datacubepath_src = NULL, entity_src=NULL,
   if (return_raster){
     #check needed RAM
     if (!ignore_RAM){
-      ebv_i_check_ram(res,timestep_src,entity_src, type.long)
+      ebv_i_check_ram(res, timestep_src, entity_src, type.long)
     } else{
       if(verbose){
         print('RAM capacities are ignored.')
@@ -284,7 +284,7 @@ ebv_resample <- function(filepath_src, datacubepath_src = NULL, entity_src=NULL,
   #set extent
   if(!is.null(filepath_dest)){
     #BASED ON EBV NETCDF FILE
-    extent <- terra::ext(terra::rast(filepath_dest,2))
+    extent <- terra::ext(terra::rast(filepath_dest, 2))
     terra::ext(dummy) <- extent
   } else{
     #BASED ON RES and CRS

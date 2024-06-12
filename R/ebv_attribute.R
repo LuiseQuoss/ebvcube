@@ -134,9 +134,9 @@ ebv_attribute <- function(filepath, attribute_name, value,
   att.chr <- c(#global
     'history', 'keywords', 'title', 'summary', 'references', 'source',
     'project', 'date_created', 'creator_name', 'creator_institution',
-    'creator_email','license','contributor_name','publisher_name',
-    'publisher_institution','publisher_email','comment',
-    'ebv_class', 'ebv_name','ebv_spatial_scope', 'ebv_spatial_description',
+    'creator_email', 'license', 'contributor_name', 'publisher_name',
+    'publisher_institution', 'publisher_email', 'comment',
+    'ebv_class', 'ebv_name', 'ebv_spatial_scope', 'ebv_spatial_description',
     'ebv_domain', 'ebv_scenario_classification_name', 'processing_level',
     #scenario and metric
     'standard_name', 'long_name',
@@ -150,7 +150,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
     #global
     'id', 'naming_authority', 'Conventions', 'date_issued',
     #ebv_cube
-    '_FillValue', 'grid_mapping','coordinates','_ChunkSizes')
+    '_FillValue', 'grid_mapping', 'coordinates', '_ChunkSizes')
 
   if(attribute_name %in% att.blocked){
     stop(paste0('Changes for the attribute ', attribute_name, ' are blocked! Always built automatically.'))
@@ -160,23 +160,23 @@ ebv_attribute <- function(filepath, attribute_name, value,
   # block entirely: crs, entity, lat, lon, time ----
   #check block list
   if(! is.null(levelpath)){
-    if(mapply(grepl,'crs',levelpath,ignore.case=TRUE)){
+    if(mapply(grepl, 'crs', levelpath, ignore.case=TRUE)){
       stop('Changes for the CRS are blocked! Rebuild netCDF if you want a different CRS definition.')
-    } else if(mapply(grepl,'lat',levelpath,ignore.case=TRUE)){
+    } else if(mapply(grepl, 'lat', levelpath, ignore.case=TRUE)){
       stop('Changes for the latitude dataset are blocked! Rebuild netCDF if you want a different latitude definition.')
-    }else if(mapply(grepl,'lon',levelpath,ignore.case=TRUE)){
+    }else if(mapply(grepl, 'lon', levelpath, ignore.case=TRUE)){
       stop('Changes for the longitude dataset are blocked! Rebuild netCDF if you want a different longitude definition.')
-    }else if(mapply(grepl,'entity',levelpath,ignore.case=TRUE)){
+    }else if(mapply(grepl, 'entity', levelpath, ignore.case=TRUE)){
       stop('Changes for the entity dataset are blocked! Always built automatically.')
-    }else if(mapply(grepl,'time',levelpath,ignore.case=TRUE)){
+    }else if(mapply(grepl, 'time', levelpath, ignore.case=TRUE)){
       stop('Changes for the time dataset are blocked! Rebuild netCDF if you want a different time definition.')
     }
-    if(stringr::str_detect(levelpath,'scenario') && stringr::str_detect(levelpath,'metric')){
+    if(stringr::str_detect(levelpath, 'scenario') && stringr::str_detect(levelpath, 'metric')){
       scenario_exist <- TRUE
     }else{
       scenario_exist <- FALSE
     }
-    if (stringr::str_detect(levelpath,'metric')){
+    if (stringr::str_detect(levelpath, 'metric')){
       metric_exists <- TRUE
     }else{
       metric_exists <- FALSE
@@ -293,7 +293,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
       rhdf5::H5Gclose(h5obj)
     }
     #get all scenarios----
-    parts <- unique(unlist(stringr::str_split(datacubes[,1], '/')))
+    parts <- unique(unlist(stringr::str_split(datacubes[, 1], '/')))
     index <- which(stringr::str_detect(parts, 'scenario'))
     scenarios <- parts[index]
     #if more than 1 scenario, inform user
@@ -315,7 +315,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
       #read att, change if different
       att <- ebv_i_read_att(h5obj, attribute_name, verbose)
       if(att==value){
-        message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
+        message(paste0('Value of ', attribute_name, 'in path ', path, ' already is set to "', value, '".'))
       } else if (attribute_name %in% att.chr){
         ebv_i_char_att(h5obj, attribute_name, value)
       }
@@ -366,7 +366,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
           #change attribute
           att <- ebv_i_read_att(h5obj, attribute_name, verbose)
           if(att==value){
-            message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
+            message(paste0('Value of ', attribute_name, 'in path ', path, ' already is set to "', value, '".'))
           } else if (attribute_name %in% att.chr){
             ebv_i_char_att(h5obj, attribute_name, value)
           }
@@ -379,7 +379,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
           #change corresponding attribute - standard_name
           att <- ebv_i_read_att(h5obj, 'standard_name', verbose)
           if(att==value){
-            message(paste0('Value of standard_name in path ', path ,' already is set to "', value, '".'))
+            message(paste0('Value of standard_name in path ', path, ' already is set to "', value, '".'))
           } else if (attribute_name %in% att.chr){
             ebv_i_char_att(h5obj, 'standard_name', value)
           }
@@ -392,7 +392,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
           #change corresponding attribute - long_name
           att <- ebv_i_read_att(h5obj, 'long_name', verbose)
           if(att==value){
-            message(paste0('Value of long_name in path ', path ,' already is set to "', value, '".'))
+            message(paste0('Value of long_name in path ', path, ' already is set to "', value, '".'))
           } else if (attribute_name %in% att.chr){
             ebv_i_char_att(h5obj, 'long_name', value)
           }
@@ -424,7 +424,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
         #change attribute
         att <- ebv_i_read_att(h5obj, attribute_name, verbose)
         if(att==value){
-          message(paste0('Value of ', attribute_name, 'in path ', path ,' already is set to "', value, '".'))
+          message(paste0('Value of ', attribute_name, 'in path ', path, ' already is set to "', value, '".'))
         } else if (attribute_name %in% att.chr){
           ebv_i_char_att(h5obj, attribute_name, value)
         }
@@ -437,7 +437,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
         #change corresponding attribute - standard_name
         att <- ebv_i_read_att(h5obj, 'standard_name', verbose)
         if(att==value){
-          message(paste0('Value of standard_name in path ', path ,' already is set to "', value, '".'))
+          message(paste0('Value of standard_name in path ', path, ' already is set to "', value, '".'))
         } else if (attribute_name %in% att.chr){
           ebv_i_char_att(h5obj, 'standard_name', value)
         }
@@ -450,7 +450,7 @@ ebv_attribute <- function(filepath, attribute_name, value,
         #change corresponding attribute - long_name
         att <- ebv_i_read_att(h5obj, 'long_name', verbose)
         if(att==value){
-          message(paste0('Value of long_name in path ', path ,' already is set to "', value, '".'))
+          message(paste0('Value of long_name in path ', path, ' already is set to "', value, '".'))
         } else if (attribute_name %in% att.chr){
           ebv_i_char_att(h5obj, 'long_name', value)
         }

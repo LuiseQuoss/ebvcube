@@ -194,7 +194,7 @@ ebv_map <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1, coun
     label <- prop@ebv_cube$standard_name
   }
 
-  subtitle <- paste0(metric_name, ' - ', label, ' (', timestep.nat,')')
+  subtitle <- paste0(metric_name, ' - ', label, ' (', timestep.nat, ')')
 
   #read the data necessary for the quantiles----
   data.all <- HDF5Array::HDF5Array(filepath = filepath, name = datacubepath,
@@ -203,9 +203,9 @@ ebv_map <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1, coun
   #choose data of timestep only if chosen by user
   if(!all_data){
     if(is_4D){
-      data.all <- data.all[,,timestep,entity_index]
+      data.all <- data.all[, , timestep, entity_index]
     }else{
-      data.all <- data.all[,,timestep]
+      data.all <- data.all[, , timestep]
     }
   }
 
@@ -222,19 +222,19 @@ ebv_map <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1, coun
                               verbose=verbose) #if this throws an error the data is going to plotted in lower res
       results <- list(data.raster, NULL)
 
-    },error = function(cond){
+    }, error = function(cond){
       if (!stringr::str_detect(cond, 'memory')){
         stop(cond)
       }
       message(paste0('Data will be displayed in a lower resolution. May take up to a few minutes. Original resolution: ',
-                     prop@spatial$resolution[1] , ', displayed resoultion: 1 degree (WGS84).'))
+                     prop@spatial$resolution[1], ', displayed resoultion: 1 degree (WGS84).'))
       #resample data -> temporary file
       temp.map <- tempfile(fileext = '.tif')
       if (file.exists(temp.map)){
         file.remove(temp.map)
       }
       data.raster <- ebv_resample(filepath_src=filepath, datacubepath_src=datacubepath,
-                                  entity_src=entity, resolution=c(1,1, 4326),
+                                  entity_src=entity, resolution=c(1, 1, 4326),
                                   outputpath=temp.map, timestep_src = timestep,
                                   method='near', return_raster=TRUE, overwrite = TRUE,
                                   ignore_RAM=ignore_RAM, verbose=verbose)
@@ -279,10 +279,10 @@ ebv_map <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1, coun
     }
   } else if (classes==1){
     if(s[1]!=s[2]){
-      s <- signif(max(data.all, na.rm=TRUE),4)
+      s <- signif(max(data.all, na.rm=TRUE), 4)
       data.raster[!is.na(data.raster)] <- 1
-      min_val <- signif(min(data.all, na.rm=TRUE),4)
-      max_val <- signif(max(data.all, na.rm=TRUE),4)
+      min_val <- signif(min(data.all, na.rm=TRUE), 4)
+      max_val <- signif(max(data.all, na.rm=TRUE), 4)
       legend_lab <- paste0(min_val, ' - ', max_val)
       rast_value <- 1
     }else{
@@ -321,7 +321,7 @@ ebv_map <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1, coun
   if(classes==1 || length(s)==1){
     data.raster <- terra::as.factor(data.raster)
     levels(data.raster) <- data.frame(value=rast_value, desc=c('aquamarine4'))
-    color_def <- ggplot2::scale_fill_manual(paste(strwrap(units,width = 10), collapse = "\n"),
+    color_def <- ggplot2::scale_fill_manual(paste(strwrap(units, width = 10), collapse = "\n"),
                                            values = c('aquamarine4'), label= legend_lab,
                                            na.value=NA, na.translate = FALSE
                                            )
@@ -330,7 +330,7 @@ ebv_map <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1, coun
   }else{
     color_def <- ggplot2::scale_fill_fermenter(na.value=NA, palette = palette,
                                                breaks =  as.numeric(s),
-                                              label = signif(as.numeric(s),3),
+                                              label = signif(as.numeric(s), 3),
                                               direction = direction,
                                               name = paste(strwrap(
                                                 units,
