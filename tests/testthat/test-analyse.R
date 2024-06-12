@@ -1,7 +1,7 @@
 # basic tests for ebv_analyse ----
 test_that("test ebv_analyse", {
   file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
-  data <- ebv_analyse(file, 'metric_1/ebv_cube', 1, 1)
+  data <- ebv_analyse(file, 'metric_1/ebv_cube', 1, 1, verbose = FALSE)
   result <- list('min'=-0.13705571,
                  'q25'=0.0154907643,
                  'q50'=0.0907911,
@@ -19,7 +19,7 @@ test_that("test ebv_analyse", {
 
 test_that("test ebv_analyse bb", {
   file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
-  data <- ebv_analyse(file, 'metric_1/ebv_cube', 1, 1, subset = c(0, 20, -40, -30))
+  data <- ebv_analyse(file, 'metric_1/ebv_cube', 1, 1, subset = c(0, 20, -40, -30), verbose = FALSE)
   result <- list('min'=1.271487,
                  'q25'=1.6479932,
                  'q50'=1.70210266,
@@ -38,7 +38,7 @@ test_that("test ebv_analyse bb", {
 test_that("test ebv_analyse shp", {
   file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
   shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
-  data <- ebv_analyse(file, 'metric_1/ebv_cube', 'forest bird species', 1, subset = shp)
+  data <- ebv_analyse(file, 'metric_1/ebv_cube', 'forest bird species', 1, subset = shp, verbose = FALSE)
   result <- list('min'=-0.0031939454,
                  'q25'=0.045318592,
                  'q50'=0.087303236,

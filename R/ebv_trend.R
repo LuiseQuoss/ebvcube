@@ -382,7 +382,7 @@ ebv_trend <- function(filepath, datacubepath = NULL, entity = NULL, method='mean
       #rearrange data into data frame
       df <- reshape2::melt(as.array(data.all), na.rm = TRUE)
 
-      ggp <- ggplot2::ggplot(data = df, ggplot2::aes(x=factor(df$Var3), y=df$value)) +
+      ggp <- ggplot2::ggplot(data = df, ggplot2::aes(x=factor(Var3), y=value)) +
         ggplot2::geom_boxplot(fill=color, outlier.size = 0.7, outlier.shape = 20) +
         ggplot2::scale_x_discrete('Time',  breaks=unique(df$Var3), labels= timevalues)+
         ggplot2::ylab(units) +
