@@ -10,13 +10,8 @@ navbar:
     href: CONTRIBUTING.html
   right:
   - icon: "fa fa-github"
-    href: https://github.com/inbo/ebvcube
+    href: https://github.com/LuiseQuoss/ebvcube
   - icon: "fa fa-twitter"
-    href: https://twitter.com/INBOVlaanderen
+    href: https://twitter.com/
   - icon: "fa fa-facebook"
-    href: https://www.facebook.com/pg/INBOVlaanderen
-
-authors:
-  Research Institute for Nature and Forest (INBO):
-    href: "https://www.vlaanderen.be/inbo/en-gb"
-    html: "<img src='https://inbo.github.io/checklist/reference/figures/logo-en.png' height=24>"
+    href: https://www.facebook.com/
