@@ -2,52 +2,35 @@ Package: ebvcube
 Title: Working with netCDF for Essential Biodiversity Variables
 Version: 0.2.1
 Date: 2024-06-11
-Authors@R: 
-    c(person(given = "Luise",
-           family = "Quoss",
-           role = c("aut", "cre"),
-           email = "luise.quoss@idiv.de",
+Authors@R: c(
+    person("Luise", "Quoss", , "luise.quoss@idiv.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-9910-1252")),
-    person(given = "Nestor",
-           family = "Fernandez",
-           role = c("aut"),
-           email = "nestor.fernandez@idiv.de",
+    person("Nestor", "Fernandez", , "nestor.fernandez@idiv.de", role = "aut",
            comment = c(ORCID = "0000-0002-9645-8571")),
-    person(given = "Christian", 
-           family = "Langer",
-           role = c("aut"),
-           email= "christian.langer@idiv.de",
+    person("Christian", "Langer", , "christian.langer@idiv.de", role = "aut",
            comment = c(ORCID = "0000-0003-1446-3527")),
-    person(given = "Jose", 
-           family = "Valdez",
-           role = c("aut"),
-           email="jose.valdez@idiv.de",
+    person("Jose", "Valdez", , "jose.valdez@idiv.de", role = "aut",
            comment = c(ORCID = "0000-0003-2690-9952")),
-    person(given = "Henrique Miguel",
-           family = "Pereira",
-           role = c("aut"),
-           email = "henrique.pereira@idiv.de",
+    person("Henrique Miguel", "Pereira", , "henrique.pereira@idiv.de", role = "aut",
            comment = c(ORCID = "0000-0003-1043-1675"))
-           )
+  )
 Author: Luise Quoss [aut, cre] (<https://orcid.org/0000-0002-9910-1252>),
-	Nestor Fernandez [aut] (<https://orcid.org/0000-0002-9645-8571>),
-    Christian Langer [aut] (<https://orcid.org/0000-0003-1446-3527>),
-    Jose Valdez [aut] (<https://orcid.org/0000-0003-2690-9952>),
-	Henrique Miguel Pereira [aut] (<https://orcid.org/0000-0003-1043-1675>)
+    Nestor Fernandez [aut] (<https://orcid.org/0000-0002-9645-8571>),
+    Christian Langer [aut] (<https://orcid.org/0000-0003-1446-3527>), Jose
+    Valdez [aut] (<https://orcid.org/0000-0003-2690-9952>), Henrique
+    Miguel Pereira [aut] (<https://orcid.org/0000-0003-1043-1675>)
 Maintainer: Luise Quoss <luise.quoss@idiv.de>
-Description: The concept of Essential Biodiversity Variables (EBV, <https://geobon.org/ebvs/what-are-ebvs/>) 
-    comes with a data structure based on the Network Common Data Form (netCDF). 
-    The 'ebvcube' 'R' package provides functionality to easily create, access and 
-    visualise this data. The EBV netCDFs can be downloaded from the EBV Data 
-    Portal: Christian Langer/ iDiv (2020) <https://portal.geobon.org/>. 
+Description: The concept of Essential Biodiversity Variables (EBV,
+    <https://geobon.org/ebvs/what-are-ebvs/>) comes with a data structure
+    based on the Network Common Data Form (netCDF).  The 'ebvcube' 'R'
+    package provides functionality to easily create, access and visualise
+    this data. The EBV netCDFs can be downloaded from the EBV Data Portal:
+    Christian Langer/ iDiv (2020) <https://portal.geobon.org/>.
+License: GPL (>= 3)
 URL: https://github.com/LuiseQuoss/ebvcube
 BugReports: https://github.com/LuiseQuoss/ebvcube/issues
-License: GPL (>= 3)
-Encoding: UTF-8
-LazyData: true
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
-biocViews:
+Depends: 
+    R (>= 4.2.0)
 Imports: 
     checkmate,
     curl,
@@ -70,7 +53,11 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-SystemRequirements: GDAL binaries
-Depends: 
-    R (>= 4.2.0) 
+biocViews:
 Config/testthat/edition: 3
+Encoding: UTF-8
+Language: en-GB
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+SystemRequirements: GDAL binaries
