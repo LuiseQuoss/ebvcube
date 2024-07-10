@@ -26,10 +26,11 @@
 #' @export
 #'
 #' @examples
-#' #get all available datasets
-#' datasets <- ebv_download()
 #'
 #' \donttest{
+#' #' #get all available datasets
+#' datasets <- ebv_download()
+#'
 #' ebv_download(id = datasets$id[1], outputdir =
 #' tempdir(), overwrite=TRUE,
 #' verbose=FALSE)

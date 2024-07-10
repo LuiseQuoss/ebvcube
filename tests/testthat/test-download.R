@@ -1,13 +1,6 @@
 # basic tests for ebv_download ----
-#check URL
-invalid_url <- function(url_in,t=2){
-  con <- url(url_in)
-  check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=T)[1])
-  suppressWarnings(try(close.connection(con),silent=T))
-  ifelse(is.null(check),FALSE,TRUE)
-}
-
-portal_down <- invalid_url('https://portal.geobon.org/api/v1/datasets')
+#check url
+portal_down <- ebv_i_check_url('https://portal.geobon.org/api/v1/datasets')
 
 if(portal_down){
   #expect an error
