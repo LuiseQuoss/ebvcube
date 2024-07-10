@@ -5,37 +5,67 @@
 #'   [ebvcube::ebv_create()] with the output file of this function to create
 #'   your EBV netCDF. During the actual creation you will be asked for more
 #'   information regarding the spatial resolution, CRS etc.
-#' @details Not yet implemented: different calender (360_Days).
 #'
 #' @param outputpath Character. Outputpath of the text-file (JSON format)
 #'   containing the metadata. File ending: *.json
 #' @param title Character. A short phrase or sentence describing the dataset.
 #' @param summary Character. A paragraph describing the dataset, analogous to an
 #'   abstract for a paper.
-#' @param references Character.
-#' @param source Character.
-#' @param project_name Character.
-#' @param project_url Character.
-#' @param scenario Character.
-#' @param metric List. defined accordingly: list(standard_name='', long_name='',
-#'   units=''). If you have several metrics give a list of lists, e.g. for two:
-#'   list(list(standard_name='', long_name='', units=''),list(standard_name='',
-#'   long_name='', units=''))
-#' @param date_created Character.
-#' @param creator_name Character.
-#' @param creator_email Character.
-#' @param creator_institution Character.
-#' @param contributor_name Character.
+#' @param references Character. DOIs of references that describe the data or
+#'   methods used to produce it. Multiple DOIs can be given in a vector.
+#' @param source Character. The method of production of the original data. If it
+#'   was model-generated, source should name the model and its version. If it is
+#'   observational, source should characterize it. Corresponding term in the EBV
+#'   Data Portal: 'methods'.
+#' @param project_name Character. The name of the project principally
+#'   responsible for originating this data.
+#' @param project_url Character. The URL of the project.
+#' @param scenario List. Scenario attributes defined accordingly:
+#'   list(standard_name='', long_name=''). If you have several scenarios give a
+#'   list of lists, e.g. for two: list(list(standard_name='',
+#'   long_name=''),list(standard_name='', long_name=''))
+#' @param metric List. Metric attributes defined accordingly:
+#'   list(standard_name='', long_name='', units=''). If you have several metrics
+#'   give a list of lists, e.g. for two: list(list(standard_name='',
+#'   long_name='', units=''),list(standard_name='', long_name='', units=''))
+#' @param date_created Character. The date on which this version of the data was
+#'   created in YYYY-MM-DD format.
+#' @param creator_name Character. The name of the person principally responsible
+#'   for creating this data.
+#' @param creator_email Character. The email address of the person principally
+#'   responsible for creating this data.
+#' @param creator_institution Character. The institution of the creator; should
+#'   uniquely identify the creator's institution.
+#' @param contributor_name Character. The name of any individuals, projects, or
+#'   institutions that contributed to the creation of this data. Corresponding
+#'   term in the EBV Data Portal: 'Co-creators'. Multiple contributors can be
+#'   given in a vector.
 #' @param publisher_name Character.
 #' @param publisher_email Character.
 #' @param publisher_institution Character.
-#' @param license Character. One of:
-#' @param comment Character.
-#' @param ebv_name Character.
-#' @param ebv_class Character.
-#' @param ebv_scenario_classification_name Character.
-#' @param ebv_scenario_classification_version Character.
-#' @param ebv_scenario_classification_url Character.
+#' @param license Character. License of the dataset. Will be stored in the
+#'   netCDF as a URL. One of:
+#' @param comment Character. Miscellaneous information about the data, not
+#'   captured elsewhere.
+#' @param ebv_class Character. EBV Class of the data set. One of: 'Genetic
+#'   composition', 'Species populations', 'Species traits', 'Community
+#'   composition', 'Ecosystem functioning', 'Ecosystem structure', 'Ecosystem
+#'   services'. For more info see note.
+#' @param ebv_name Character. EBV Name of the data set. The possible options
+#'   depend on the EBV Class. One of: 'Intraspecific genetic diversity',
+#'   'Genetic differentiation', 'Effective population size', 'Inbreeding',
+#'   'Species distributions', 'Species abundances', 'Morphology', 'Physiology',
+#'   'Phenology', 'Movement', 'Community abundance', 'Taxonomic and phylogenetic
+#'   diversity', 'Trait diversity', 'Interaction diversity', 'Primary
+#'   productivity', 'Ecosystem phenology', 'Ecosystem disturbances', 'Live cover
+#'   fraction', 'Ecosystem distribution', 'Ecosystem Vertical Profile',
+#'   'Pollination' For more info see note.
+#' @param ebv_scenario_classification_name Character. Name of the classification
+#'   system used for the scenarios (optional).
+#' @param ebv_scenario_classification_version Character. Version of the
+#'   classification system used for the scenarios (optional).
+#' @param ebv_scenario_classification_url Character. URL of the classification
+#'   system used for the scenarios (optional).
 #' @param ebv_spatial_scope Character.
 #' @param ebv_spatial_description Character.
 #' @param ebv_domain Character. One of
@@ -59,7 +89,18 @@
 #'    1.3]} Conventions.
 #'   Find more help on
 #'   the\href{How-To}{https://portal.geobon.org/downloads/pdf/how_to-10082023.pdf}
-#'   on the EBV Portal Website.
+#'   on the EBV Portal Website. \strong{EBV Class:} The EBV Class is GEO BON's
+#'   classification system for biodiversity monitoring. It categorizes and
+#'   organizes essential ecological variables across scales and biological
+#'   levels. This standardized framework helps identify and prioritize key
+#'   variables representing biodiversity aspects like species composition,
+#'   population dynamics, ecosystem functioning, and habitat quality.
+#'   \strong{EBV Name:} The EBV Name is a unique identifier for a specific
+#'   variable in the EBV Class, representing a distinct aspect of biodiversity.
+#'   It helps identify and categorize measured or monitored biodiversity
+#'   information. The EBV Name reflects the ecological attribute being assessed,
+#'   such as "Species Richness," "Population Abundance," "Functional Diversity,"
+#'   "Habitat Fragmentation," or "Ecosystem Productivity”.
 #'
 #' @return
 #' @export
@@ -69,7 +110,7 @@ ebv_metadata <- function(outputpath, title, summary,
                          references, source, project_name, project_url,
                          date_created, creator_name, creator_email, creator_institution,
                          contributor_name, publisher_name, publisher_email, publisher_institution,
-                         license, comment, ebv_name='N/A', ebv_class='N/A',
+                         license, comment, ebv_class='N/A', ebv_name='N/A',
                          ebv_scenario_classification_name = 'N/A', ebv_scenario_classification_version = 'N/A',
                          ebv_scenario_classification_url = 'N/A', ebv_spatial_scope,
                          ebv_spatial_description, ebv_domain, coverage_content_type,
