@@ -52,7 +52,9 @@
 #'@param overwrite Logical. Default: FALSE. Set to TRUE to overwrite the output
 #'  file defined by 'outputpath'
 #'@param verbose Logical. Default: TRUE. Turn off additional prints by setting
-#'  it to FALSE. #' @note To check out the results take a look at your netCDF
+#'  it to FALSE.
+#'
+#' @note To check out the results take a look at your netCDF
 #'  file with \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided
 #'  by the NASA.
 #'
