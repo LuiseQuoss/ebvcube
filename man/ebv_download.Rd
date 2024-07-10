@@ -37,10 +37,11 @@ you no arguments are given. If an ID is given, the corresponding file
 output directory.
 }
 \examples{
-#get all available datasets
-datasets <- ebv_download()
 
 \donttest{
+#' #get all available datasets
+datasets <- ebv_download()
+
 ebv_download(id = datasets$id[1], outputdir =
 tempdir(), overwrite=TRUE,
 verbose=FALSE)
