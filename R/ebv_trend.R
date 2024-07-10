@@ -59,6 +59,8 @@
 ebv_trend <- function(filepath, datacubepath = NULL, entity = NULL, method='mean',
                       subset = NULL, color="dodgerblue4", touches = TRUE,
                       scenario = NULL, metric = NULL, verbose = TRUE){
+  # global vars ----
+  Var3 <- value <- NULL
   # start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
