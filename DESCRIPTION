@@ -1,9 +1,12 @@
 Package: ebvcube
 Title: Working with netCDF for Essential Biodiversity Variables
-Version: 0.2.1
-Date: 2024-06-11
-Authors@R: c(
-    person("Luise", "Quoss", , "luise.quoss@idiv.de", role = c("aut", "cre"),
+Version: 0.2.2
+Date: 2024-07-10
+Authors@R: 
+    c(person(given = "Luise",
+           family = "Quoss",
+           role = c("aut", "cre"),
+           email = "luise.quoss@idiv.de",
            comment = c(ORCID = "0000-0002-9910-1252")),
     person("Nestor", "Fernandez", , "nestor.fernandez@idiv.de", role = "aut",
            comment = c(ORCID = "0000-0002-9645-8571")),
