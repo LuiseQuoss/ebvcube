@@ -901,7 +901,7 @@ ebv_i_char_variable <- function(string_vector, max_char, reverse=FALSE){
 #' @noRd
 ebv_i_check_url <- function(url){
   con <- url(url)
-  check <- suppressWarnings(try(open.connection(con,open="rt",timeout=t),silent=T)[1])
-  suppressWarnings(try(close.connection(con),silent=T))
-  ifelse(is.null(check),FALSE,TRUE)
+  check <- suppressWarnings(try(open.connection(con, open="rt", timeout=t), silent=TRUE)[1])
+  suppressWarnings(try(close.connection(con), silent=TRUE))
+  ifelse(is.null(check), FALSE, TRUE)
 }
