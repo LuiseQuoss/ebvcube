@@ -80,9 +80,7 @@ information per metric. In the future the standard will be restricted to the
 file defined by 'outputpath'}
 
 \item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
-it to FALSE. #' @note To check out the results take a look at your netCDF
-file with \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided
-by the NASA.}
+it to FALSE.}
 }
 \value{
 Creates the netCDF file at the 'outputpath' location including the
@@ -97,6 +95,10 @@ if your dataset holds no taxonomic information. Data will be added
 afterwards using \code{\link[=ebv_add_data]{ebv_add_data()}}.
 }
 \note{
+To check out the results take a look at your netCDF
+file with \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided
+by the NASA.
+
 You can check the taxonomy info with \code{\link[=ebv_properties]{ebv_properties()}} in the slot
 'general' under the name 'taxonomy' and 'taxonomy_lsid'.
 }
