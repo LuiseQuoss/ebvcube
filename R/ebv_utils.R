@@ -905,3 +905,29 @@ ebv_i_check_url <- function(url){
   suppressWarnings(try(close.connection(con), silent=TRUE))
   ifelse(is.null(check), FALSE, TRUE)
 }
+
+#' Get the unique elements contained in two lists
+#'
+#' @param v list 1
+#' @param z list 2
+#'
+#' @note Source: https://stackoverflow.com/questions/39338394/check-if-list-contains-another-list-in-r
+#' Renamed from VectorIntersect()
+#'
+#' @return List with unique elements contained in both lists
+#' @noRd
+ebv_i_vector_intersect <- function(v,z) {
+  unlist(lapply(unique(v[v%in%z]), function(x) rep(x,min(sum(v==x),sum(z==x)))))
+}
+
+#' Checks if list 1 is contained in list 2
+#'
+#' @param v list 1
+#' @param z list 2
+#'
+#' @note Source: https://stackoverflow.com/questions/39338394/check-if-list-contains-another-list-in-r
+#' Renamed from is.contained()
+#'
+#' @return Returns TRUE list 1 is contained in list 2, else FALSE
+#' @noRd
+ebv_i_contained <- function(v,z) {length(ebv_i_vector_intersect(v,z))==length(v)}
