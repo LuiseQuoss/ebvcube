@@ -67,11 +67,11 @@
 #' @param ebv_scenario_classification_url Character. Optional. URL of the classification
 #'   system used for the scenarios.
 #' @param ebv_spatial_scope Character. Spatial scope of the data set. One of:
-#'   ‘Continental/Regional’, ‘National’, ‘Sub-national/Local’ or ‘Global’.
+#'   'Continental/Regional', 'National', 'Sub-national/Local' or 'Global'.
 #' @param ebv_spatial_description Character. Specific information about the
 #'   spatial scope. Mandatory if spatial scope is not Global.
 #' @param ebv_domain Character. Environmental domain of the data set. Choose one
-#'   or several of: ‘Terrestrial’, ‘Marine’ or ‘Freshwater’. Multiple domains
+#'   or several of: 'Terrestrial', 'Marine' or 'Freshwater'. Multiple domains
 #'   can be given in a vector.
 #' @param coverage_content_type Character. Describes the source of the data
 #'   based on an ISO 19115-1 code. Choose one or several of: 'image',
@@ -82,7 +82,7 @@
 #'   field. Still, if one of the following terms fits your entity scope please
 #'   use: 'Species', 'Communities', 'Ecosystems' or 'None'.
 #' @param ebv_entity_scope Character. Specifies the entity scope in more detail,
-#'   e.g., ‘African great apes’. If the entity type is 'None' this term is not
+#'   e.g., 'African great apes'. If the entity type is 'None' this term is not
 #'   applied to the metadata.
 #' @param ebv_entity_classification_name Character. Optional. Name of the classification
 #'   system used for the entity types.
@@ -123,7 +123,7 @@
 #'   It helps identify and categorize measured or monitored biodiversity
 #'   information. The EBV Name reflects the ecological attribute being assessed,
 #'   such as "Species Richness," "Population Abundance," "Functional Diversity,"
-#'   "Habitat Fragmentation," or "Ecosystem Productivity”.
+#'   "Habitat Fragmentation," or "Ecosystem Productivity".
 #'   \cr\strong{Authorship:} Besides the creator and the contributors there is a
 #'   third metadata term regarding authorship: the 'publisher'. This is the
 #'   person that logs into the EBV Data Portal and uploads the dataset. This
@@ -285,7 +285,7 @@ ebv_metadata <- function(outputpath, title, summary,
 
   #check spatial scope ----
   if(! ebv_spatial_scope %in% c('Continental/Regional', 'National', 'Sub-national/Local', 'Global')){
-    stop('The ebv_spatial_scope needs to be one of the following: ‘Continental/Regional’, ‘National’, ‘Sub-national/Local’ or ‘Global’.')
+    stop("The ebv_spatial_scope needs to be one of the following: 'Continental/Regional', 'National', 'Sub-national/Local' or 'Global'.")
   }
   if(ebv_spatial_scope != 'Global' && is.null(ebv_spatial_description)){
     stop('You chose an ebv_spatial_scope that requires an ebv_spatial_description. Please add.')

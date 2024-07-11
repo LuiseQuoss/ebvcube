@@ -50,7 +50,7 @@ containing the metadata. File ending: *.json}
 \item{summary}{Character. A paragraph describing the dataset, analogous to an
 abstract for a paper. Maximum character length: 1500.}
 
-\item{references}{Character. DOIs of references that describe the data or
+\item{references}{Character. Optional. DOIs (URLs) that describe the data or
 methods used to produce it. Multiple DOIs can be given in a vector.}
 
 \item{source}{Character. The method of production of the original data. If it
@@ -58,10 +58,10 @@ was model-generated, source should name the model and its version. If it is
 observational, source should characterize it. Corresponding term in the EBV
 Data Portal: 'methods'.}
 
-\item{project_name}{Character. The name of the project principally
+\item{project_name}{Character. Optional. The name of the project principally
 responsible for originating this data.}
 
-\item{project_url}{Character. The URL of the project.}
+\item{project_url}{Character. Optional. The URL of the project.}
 
 \item{date_created}{Character. The date on which this version of the data was
 created in YYYY-MM-DD format.}
@@ -69,13 +69,13 @@ created in YYYY-MM-DD format.}
 \item{creator_name}{Character. The name of the person principally responsible
 for creating this data.}
 
-\item{creator_email}{Character. The email address of the person principally
+\item{creator_email}{Character. Optional. The email address of the person principally
 responsible for creating this data.}
 
 \item{creator_institution}{Character. The institution of the creator; should
 uniquely identify the creator's institution.}
 
-\item{contributor_name}{Character. The name of any individuals, projects, or
+\item{contributor_name}{Character. Optional. The name of any individuals, projects, or
 institutions that contributed to the creation of this data. Corresponding
 term in the EBV Data Portal: 'Co-creators'. Multiple contributors can be
 given in a vector.}
@@ -84,7 +84,7 @@ given in a vector.}
 netCDF as the URL to the CC license. Choose one of: 'CC0', 'CC BY', 'CC
 BY-SA', 'CC BY-NC', 'CC BY-NC-SA', 'CC BY-ND', 'CC BY-NC-ND'.}
 
-\item{comment}{Character. Miscellaneous information about the data, not
+\item{comment}{Character.  Optional. Miscellaneous information about the data, not
 captured elsewhere.}
 
 \item{ebv_class}{Character. EBV Class of the data set. One of: 'Genetic
@@ -102,23 +102,23 @@ productivity', 'Ecosystem phenology', 'Ecosystem disturbances', 'Live cover
 fraction', 'Ecosystem distribution', 'Ecosystem Vertical Profile',
 'Pollination' For more info see note.}
 
-\item{ebv_scenario_classification_name}{Character. Name of the classification
-system used for the scenarios (optional).}
+\item{ebv_scenario_classification_name}{Character. Optional. Name of the classification
+system used for the scenarios.}
 
-\item{ebv_scenario_classification_version}{Character. Version of the
-classification system used for the scenarios (optional).}
+\item{ebv_scenario_classification_version}{Character. Optional. Version of the
+classification system used for the scenarios.}
 
-\item{ebv_scenario_classification_url}{Character. URL of the classification
-system used for the scenarios (optional).}
+\item{ebv_scenario_classification_url}{Character. Optional. URL of the classification
+system used for the scenarios.}
 
 \item{ebv_spatial_scope}{Character. Spatial scope of the data set. One of:
-‘Continental/Regional’, ‘National’, ‘Sub-national/Local’ or ‘Global’.}
+'Continental/Regional', 'National', 'Sub-national/Local' or 'Global'.}
 
 \item{ebv_spatial_description}{Character. Specific information about the
 spatial scope. Mandatory if spatial scope is not Global.}
 
 \item{ebv_domain}{Character. Environmental domain of the data set. Choose one
-or several of: ‘Terrestrial’, ‘Marine’ or ‘Freshwater’. Multiple domains
+or several of: 'Terrestrial', 'Marine' or 'Freshwater'. Multiple domains
 can be given in a vector.}
 
 \item{coverage_content_type}{Character. Describes the source of the data
@@ -127,16 +127,19 @@ based on an ISO 19115-1 code. Choose one or several of: 'image',
 'qualityInformation', 'referenceInformation', 'modelResult', or
 'coordinate'. Multiple types can be given in a vector.}
 
-\item{ebv_entity_type}{Character. EBV entity type, e.g., ‘Species’.}
+\item{ebv_entity_type}{Character. EBV entity type. This is a free entry
+field. Still, if one of the following terms fits your entity scope please
+use: 'Species', 'Communities', 'Ecosystems' or 'None'.}
 
 \item{ebv_entity_scope}{Character. Specifies the entity scope in more detail,
-e.g., ‘African great apes’.}
+e.g., 'African great apes'. If the entity type is 'None' this term is not
+applied to the metadata.}
 
-\item{ebv_entity_classification_name}{Character. Name of the classification
-system used for the entity types (optional).}
+\item{ebv_entity_classification_name}{Character. Optional. Name of the classification
+system used for the entity types.}
 
-\item{ebv_entity_classification_url}{Character. URL of the classification
-system used for the entity types (optional).}
+\item{ebv_entity_classification_url}{Character. Optional. URL of the classification
+system used for the entity types.}
 
 \item{time_coverage_start}{Character. Start date of the time span covered by
 the dataset in YYYY-MM-DD format.}
@@ -158,7 +161,7 @@ give a list of lists, e.g. for two: list(list(standard_name='',
 long_name='', units=''),list(standard_name='', long_name='', units=''))
 At least one metric is mandatory.}
 
-\item{scenario}{List. Scenario attributes defined accordingly:
+\item{scenario}{List. Optional. Scenario attributes defined accordingly:
 list(standard_name='', long_name=''). If you have several scenarios give a
 list of lists, e.g. for two: list(list(standard_name='',
 long_name=''),list(standard_name='', long_name='')). It is not mandatory to
@@ -212,7 +215,7 @@ variable in the EBV Class, representing a distinct aspect of biodiversity.
 It helps identify and categorize measured or monitored biodiversity
 information. The EBV Name reflects the ecological attribute being assessed,
 such as "Species Richness," "Population Abundance," "Functional Diversity,"
-"Habitat Fragmentation," or "Ecosystem Productivity”.
+"Habitat Fragmentation," or "Ecosystem Productivity".
 \cr\strong{Authorship:} Besides the creator and the contributors there is a
 third metadata term regarding authorship: the 'publisher'. This is the
 person that logs into the EBV Data Portal and uploads the dataset. This
