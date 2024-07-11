@@ -170,10 +170,10 @@ ebv_metadata <- function(outputpath, title, summary,
   }
 
     #check logical arguments
-  if(checkmate::checkLogical(overwrite, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(overwrite, len=1, any.missing=FALSE) != TRUE){
     stop('overwrite must be of type logical.')
   }
-  if(checkmate::checkLogical(verbose, len=1, any.missing=F) != TRUE){
+  if(checkmate::checkLogical(verbose, len=1, any.missing=FALSE) != TRUE){
     stop('verbose must be of type logical.')
   }
 
@@ -213,13 +213,13 @@ ebv_metadata <- function(outputpath, title, summary,
     }
   }
 
-  if(scenario_no>0 & is.null(ebv_scenario_classification_name)){
+  if(scenario_no>0 && is.null(ebv_scenario_classification_name)){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_name. Are you sure you do not want to give that information?')
   }
-  if(scenario_no>0 & is.null(ebv_scenario_classification_version)){
+  if(scenario_no>0 && is.null(ebv_scenario_classification_version)){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_version. Are you sure you do not want to give that information?')
   }
-  if(scenario_no>0 & is.null(ebv_scenario_classification_url)){
+  if(scenario_no>0 && is.null(ebv_scenario_classification_url)){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_url. Are you sure you do not want to give that information?')
   }
 
@@ -287,10 +287,10 @@ ebv_metadata <- function(outputpath, title, summary,
   if(! ebv_spatial_scope %in% c('Continental/Regional', 'National', 'Sub-national/Local', 'Global')){
     stop('The ebv_spatial_scope needs to be one of the following: ‘Continental/Regional’, ‘National’, ‘Sub-national/Local’ or ‘Global’.')
   }
-  if(ebv_spatial_scope != 'Global' & is.null(ebv_spatial_description)){
+  if(ebv_spatial_scope != 'Global' && is.null(ebv_spatial_description)){
     stop('You chose an ebv_spatial_scope that requires an ebv_spatial_description. Please add.')
   }
-  if(ebv_spatial_scope == 'Global' & !is.null(ebv_spatial_description)){
+  if(ebv_spatial_scope == 'Global' && !is.null(ebv_spatial_description)){
     if(verbose){
       warning('You set the ebv_spatial_scope to Global and added some spatial description. The latter is set to NA as this is the rule in the EBV Data Portal.')
     }
@@ -307,7 +307,7 @@ ebv_metadata <- function(outputpath, title, summary,
   }
 
   #check content coverage type----
-  if(! ebv_i_contained(coverage_content_type, c('image','thematicClassification',
+  if(! ebv_i_contained(coverage_content_type, c('image', 'thematicClassification',
                                                 'physicalMeasurement', 'auxiliaryInformation',
                                                 'qualityInformation', 'referenceInformation',
                                                 'modelResult', 'coordinate'))){
@@ -362,16 +362,16 @@ ebv_metadata <- function(outputpath, title, summary,
     stop('You need to define at least one metric.')
   }else if(metric_no>1){
     ebv_metric <- paste0('"ebv_metric_1": {
-                    ":standard_name": "',metric[[1]]$standard_name,'",
-                    ":long_name": "',metric[[1]]$long_name,'",
-                    ":units": "',metric[[1]]$units,'"\n\t\t\t\t}')
+                    ":standard_name": "', metric[[1]]$standard_name, '",
+                    ":long_name": "', metric[[1]]$long_name, '",
+                    ":units": "', metric[[1]]$units, '"\n\t\t\t\t}')
     if(metric_no>1){
       ebv_metric <- paste0(ebv_metric, ',')
       for(i in 2:metric_no){
-        ebv_metric <- paste0(ebv_metric, '\n\t\t\t\t"ebv_metric_',i,'": {
-                    ":standard_name": "',metric[[i]]$standard_name,'",
-                    ":long_name": "',metric[[i]]$standard_name,'",
-                    ":units": "',metric[[i]]$standard_name,'"\n\t\t\t\t}')
+        ebv_metric <- paste0(ebv_metric, '\n\t\t\t\t"ebv_metric_', i, '": {
+                    ":standard_name": "', metric[[i]]$standard_name, '",
+                    ":long_name": "', metric[[i]]$standard_name, '",
+                    ":units": "', metric[[i]]$standard_name, '"\n\t\t\t\t}')
         if(i != metric_no){
           ebv_metric <- paste0(ebv_metric, ',')
         }
@@ -379,21 +379,21 @@ ebv_metadata <- function(outputpath, title, summary,
     }
   }else{
     ebv_metric <- paste0('"ebv_metric_1": {
-                    ":standard_name": "',metric$standard_name,'",
-                    ":long_name": "',metric$long_name,'",
-                    ":units": "',metric$units,'"\n\t\t\t\t}')
+                    ":standard_name": "', metric$standard_name, '",
+                    ":long_name": "', metric$long_name, '",
+                    ":units": "', metric$units, '"\n\t\t\t\t}')
   }
 
   #create scenarios ----
   if (scenario_no > 1){
     ebv_scenario <- paste0('"ebv_scenario": {
-                "ebv_scenario_classification_name": "',ebv_scenario_classification_name,'",
-                "ebv_scenario_classification_version": "',ebv_scenario_classification_version,'",
-                "ebv_scenario_classification_url": "',ebv_scenario_classification_url,'",')
+                "ebv_scenario_classification_name": "', ebv_scenario_classification_name, '",
+                "ebv_scenario_classification_version": "', ebv_scenario_classification_version, '",
+                "ebv_scenario_classification_url": "', ebv_scenario_classification_url, '",')
     for(i in 1:scenario_no){
-      ebv_scenario <- paste0(ebv_scenario, '\n\t\t\t\t"ebv_scenario_',i,'": {
-                    ":standard_name": "',scenario[[i]]$standard_name,'",
-                    ":long_name": "',scenario[[i]]$long_name,'"
+      ebv_scenario <- paste0(ebv_scenario, '\n\t\t\t\t"ebv_scenario_', i, '": {
+                    ":standard_name": "', scenario[[i]]$standard_name, '",
+                    ":long_name": "', scenario[[i]]$long_name, '"
                 }')
       if(i != scenario_no){
         ebv_scenario <- paste0(ebv_scenario, ',')
@@ -402,12 +402,12 @@ ebv_metadata <- function(outputpath, title, summary,
     ebv_scenario <- paste0(ebv_scenario, '\n\t\t\t},')
   } else if (scenario_no==1){
     ebv_scenario <- paste0('"ebv_scenario": {
-                "ebv_scenario_classification_name": "',ebv_scenario_classification_name,'",
-                "ebv_scenario_classification_version": "',ebv_scenario_classification_version,'",
-                "ebv_scenario_classification_url": "',ebv_scenario_classification_url,'",')
+                "ebv_scenario_classification_name": "', ebv_scenario_classification_name, '",
+                "ebv_scenario_classification_version": "', ebv_scenario_classification_version, '",
+                "ebv_scenario_classification_url": "', ebv_scenario_classification_url, '",')
     ebv_scenario <- paste0(ebv_scenario, '\n\t\t\t\t"ebv_scenario_1": {
-                    ":standard_name": "',scenario$standard_name,'",
-                    ":long_name": "',scenario$long_name,'"
+                    ":standard_name": "', scenario$standard_name, '",
+                    ":long_name": "', scenario$long_name, '"
                 }')
   }else{
     ebv_scenario <- '"ebv_scenario": "N/A",'
@@ -419,53 +419,53 @@ ebv_metadata <- function(outputpath, title, summary,
         {
             "id": "pending",
             "naming_authority": "The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig",
-            "title": "', title ,'",
-            "date_created": "',date_created,'",
-            "summary": "',summary,'",
-            "references": [\n\t\t\t\t"',paste0(unlist(references), collapse='",\n\t\t\t\t"'),'"\n\t\t\t],
-            "source": "',source,'",
-            "coverage_content_type": [\n\t\t\t\t"',paste0(unlist(coverage_content_type), collapse='",\n\t\t\t\t"'),'"\n\t\t\t],
-            "project": "',project_name,'",
-            "project_url": "',project_url,'",
+            "title": "', title, '",
+            "date_created": "', date_created, '",
+            "summary": "', summary, '",
+            "references": [\n\t\t\t\t"', paste0(unlist(references), collapse='",\n\t\t\t\t"'), '"\n\t\t\t],
+            "source": "', source, '",
+            "coverage_content_type": [\n\t\t\t\t"', paste0(unlist(coverage_content_type), collapse='",\n\t\t\t\t"'), '"\n\t\t\t],
+            "project": "', project_name, '",
+            "project_url": "', project_url, '",
             "creator": {
-                "creator_name": "',creator_name,'",
-                "creator_email": "',creator_email,'",
-                "creator_institution": "',creator_institution,'"
+                "creator_name": "', creator_name, '",
+                "creator_email": "', creator_email, '",
+                "creator_institution": "', creator_institution, '"
             },
-            "contributor_name": [\n\t\t\t\t"',paste0(unlist(contributor_name), collapse='",\n\t\t\t\t"'),'"\n\t\t\t],
-            "license": "',license,'",
+            "contributor_name": [\n\t\t\t\t"', paste0(unlist(contributor_name), collapse='",\n\t\t\t\t"'), '"\n\t\t\t],
+            "license": "', license, '",
             "publisher": {
                 "publisher_name": "N/A",
                 "publisher_email": "N/A",
                 "publisher_institution": "N/A"
             },
             "ebv": {
-                "ebv_class": "',ebv_class,'",
-                "ebv_name": "',ebv_name,'"
+                "ebv_class": "', ebv_class, '",
+                "ebv_name": "', ebv_name, '"
             },
             "ebv_entity": {
-                "ebv_entity_type": "',ebv_entity_type,'",
-                "ebv_entity_scope": "',ebv_entity_scope,'",
-                "ebv_entity_classification_name": "',ebv_entity_classification_name,'",
-                "ebv_entity_classification_url": "',ebv_entity_classification_url,'"
+                "ebv_entity_type": "', ebv_entity_type, '",
+                "ebv_entity_scope": "', ebv_entity_scope, '",
+                "ebv_entity_classification_name": "', ebv_entity_classification_name, '",
+                "ebv_entity_classification_url": "', ebv_entity_classification_url, '"
             },
             "ebv_metric": {\n\t\t\t\t',
                  ebv_metric,
                  '\n\t\t\t},\n\t\t\t',
                  ebv_scenario,
                  '\n\t\t\t"ebv_spatial": {
-                "ebv_spatial_scope": "',ebv_spatial_scope,'",
-                "ebv_spatial_description": "',ebv_spatial_description,'"
+                "ebv_spatial_scope": "', ebv_spatial_scope, '",
+                "ebv_spatial_description": "', ebv_spatial_description, '"
             },
             "geospatial_lat_units": "N/A",
             "geospatial_lon_units": "N/A",
             "time_coverage": {
-                "time_coverage_resolution": "',time_coverage_resolution,'",
-                "time_coverage_start": "',time_coverage_start,'",
-                "time_coverage_end": "',time_coverage_end,'"
+                "time_coverage_resolution": "', time_coverage_resolution, '",
+                "time_coverage_start": "', time_coverage_start, '",
+                "time_coverage_end": "', time_coverage_end, '"
             },
-            "ebv_domain": [\n\t\t\t\t"',paste0(unlist(ebv_domain), collapse='",\n\t\t\t\t"'),'"\n\t\t\t],
-            "comment": "',comment,'"
+            "ebv_domain": [\n\t\t\t\t"', paste0(unlist(ebv_domain), collapse='",\n\t\t\t\t"'), '"\n\t\t\t],
+            "comment": "', comment, '"
         }
     ]
 }')

@@ -916,8 +916,8 @@ ebv_i_check_url <- function(url){
 #'
 #' @return List with unique elements contained in both lists
 #' @noRd
-ebv_i_vector_intersect <- function(v,z) {
-  unlist(lapply(unique(v[v%in%z]), function(x) rep(x,min(sum(v==x),sum(z==x)))))
+ebv_i_vector_intersect <- function(v, z) {
+  unlist(lapply(unique(v[v%in%z]), function(x) rep(x, min(sum(v==x), sum(z==x)))))
 }
 
 #' Checks if list 1 is contained in list 2
@@ -930,4 +930,4 @@ ebv_i_vector_intersect <- function(v,z) {
 #'
 #' @return Returns TRUE list 1 is contained in list 2, else FALSE
 #' @noRd
-ebv_i_contained <- function(v,z) {length(ebv_i_vector_intersect(v,z))==length(v)}
+ebv_i_contained <- function(v, z) {length(ebv_i_vector_intersect(v, z))==length(v)}
