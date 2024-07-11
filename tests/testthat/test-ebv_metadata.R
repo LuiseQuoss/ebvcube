@@ -31,7 +31,8 @@ test_that("test ebv_metadata scenario&metric", {
                              list(standard_name='absolute change habitat', long_name='absolute change since year 1800', units='square kilometers')),
                # scenario = list(standard_name='SSP1', long_name='description of SSP1')
                scenario = list(list(standard_name='SSP1', long_name='description of SSP1'),
-                               list(standard_name='SSP2', long_name='description of SSP2'))
+                               list(standard_name='SSP2', long_name='description of SSP2')),
+               verbose = FALSE
 
                )
 
@@ -86,11 +87,12 @@ test_that("test ebv_metadata metric only", {
                creator_institution = 'lame name',
                contributor_name = c('me', 'you', 'her'),
                license = 'CC BY',
+               ebv_entity_type = 'Species',
+               ebv_entity_scope = '50 mammal species',
                comment = 'anything else you have to say',
-               ebv_class = 'None',
-               ebv_name = 'None',
-               ebv_spatial_scope = 'Continental',
-               ebv_spatial_description = 'Finland',
+               ebv_class = 'Genetic composition',
+               ebv_name = 'Intraspecific genetic diversity',
+               ebv_spatial_scope = 'Global',
                ebv_domain = c('Terrestrial','Marine'),
                coverage_content_type = c('modelResult'),
                time_coverage_start = as.Date('1900-01-01'), time_coverage_end =as.Date('1950-01-01'), time_coverage_resolution = 'Irregular',

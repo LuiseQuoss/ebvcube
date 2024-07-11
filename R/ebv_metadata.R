@@ -213,13 +213,13 @@ ebv_metadata <- function(outputpath, title, summary,
     }
   }
 
-  if(scenario_no>0 && is.null(ebv_scenario_classification_name)){
+  if(scenario_no>0 && is.null(ebv_scenario_classification_name) && verbose){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_name. Are you sure you do not want to give that information?')
   }
-  if(scenario_no>0 && is.null(ebv_scenario_classification_version)){
+  if(scenario_no>0 && is.null(ebv_scenario_classification_version & verbose)){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_version. Are you sure you do not want to give that information?')
   }
-  if(scenario_no>0 && is.null(ebv_scenario_classification_url)){
+  if(scenario_no>0 && is.null(ebv_scenario_classification_url & verbose)){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_url. Are you sure you do not want to give that information?')
   }
 
