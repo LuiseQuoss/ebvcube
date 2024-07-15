@@ -85,7 +85,7 @@ The properties encompass much more information!
 library(ebvcube)
 
 #set the path to the file
-file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
+file <- system.file(file.path("extdata", "martins_comcom_subset.nc"), package="ebvcube")
 
 #read the properties of the file
 prop.file <- ebv_properties(file, verbose=FALSE)
@@ -124,7 +124,7 @@ In the next step we will get the properties of one specific datacube -
 fyi: the result also holds the general file properties from above.
 
 ``` r
-prop.dc <- ebv_properties(file, datacubes[1,1], verbose=FALSE)
+prop.dc <- ebv_properties(file, datacubes[1, 1], verbose=FALSE)
 prop.dc@metric
 #> $name
 #> [1] "Relative change in the number of species (%)"
@@ -141,7 +141,7 @@ at the first one.
 
 ``` r
 #plot the global map
-dc <- datacubes[2,1]
+dc <- datacubes[2, 1]
 ebv_map(file, dc, entity=1, timestep = 1, classes = 9,
         verbose=FALSE, col_rev = TRUE)
 ```
@@ -188,7 +188,7 @@ measurements$n
 #info for a subset defined by a bounding box
 #you can also define the subset by a Shapefile - check it out!
 bb <- c(-26, 64, 30, 38)
-measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb, verbose=FALSE)
+measurements.bb <- ebv_analyse(file, dc, entity = 1, subset = bb, verbose=FALSE)
 #check out the mean of the subset
 measurements.bb$mean
 #> [1] 0.3241093
@@ -210,8 +210,8 @@ You can also get a spatial subset of the data by providing a Shapefile.
 
 ``` r
 #load subset from shapefile (Cameroon)
-shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
-data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3), verbose=FALSE)
+shp <- system.file(file.path('extdata', 'cameroon.shp'), package="ebvcube")
+data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1, 2, 3), verbose=FALSE)
 dim(data.shp)
 #> [1] 12  9  3
 #very quick plot of the resulting raster plus the shapefile
@@ -247,9 +247,9 @@ The example is based on the [Local bird diversity
 
 ``` r
 #paths
-json <- system.file(file.path('extdata','metadata.json'), package="ebvcube")
-newNc <- file.path(system.file(package="ebvcube"),'extdata','test.nc')
-entities <- c('forest bird species','non-forest bird species','all bird species')
+json <- system.file(file.path('extdata', 'metadata.json'), package="ebvcube")
+newNc <- file.path(system.file(package="ebvcube"), 'extdata', 'test.nc')
+entities <- c('forest bird species', 'non-forest bird species', 'all bird species')
 #defining the fillvalue - optional
 fv <- -3.4e+38
 #create the netCDF
@@ -292,7 +292,7 @@ tif_paths <- file.path(root, tifs)
 #adding the data
 entity <- 1
 for (tif in tif_paths){
-  ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1,1], entity = entity,
+  ebv_add_data(filepath_nc = newNc, datacubepath=dc.new[1, 1], entity = entity,
               timestep=1:3, data = tif, band=1:3)
   entity <- entity + 1
 }
@@ -304,9 +304,9 @@ Ups! So you did a mistake and want to change the attribute?! No problem.
 Just use the upcoming function to change it.
 
 ``` r
-ebv_attribute(newNc, attribute_name='units', value='Percentage', levelpath=dc.new[1,1])
+ebv_attribute(newNc, attribute_name='units', value='Percentage', levelpath=dc.new[1, 1])
 #check the properties one more time - perfect!
-print(ebv_properties(newNc, dc.new[1,1], verbose=FALSE)@ebv_cube$units)
+print(ebv_properties(newNc, dc.new[1, 1], verbose=FALSE)@ebv_cube$units)
 #> [1] "Percentage"
 ```
 
@@ -324,7 +324,7 @@ citation('ebvcube')
 #>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2023). _ebvcube:
 #>   Working with netCDF for Essential Biodiversity Variables_. German
 #>   Centre for Integrative Biodiversity Research (iDiv)
-#>   Halle-Jena-Leipzig, Germany. R package version 0.2.1,
+#>   Halle-Jena-Leipzig, Germany. R package version 0.2.3,
 #>   <https://github.com/LuiseQuoss/ebvcube>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -333,7 +333,7 @@ citation('ebvcube')
 #>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
 #>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
 #>     year = {2023},
-#>     note = {R package version 0.2.1},
+#>     note = {R package version 0.2.3},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
 #>     address = {Germany},
 #>     url = {https://github.com/LuiseQuoss/ebvcube},
@@ -356,5 +356,6 @@ citation('ebvcube')
 |                    | ebv_trend           | Plot the temporal trend                       |
 | Data creation      | ebv_create          | Create a new EBV netCDF                       |
 |                    | ebv_create_taxonomy | Create a new EBV netCDF with taxonomy info    |
+|                    | ebv_metadata        | Create the EBV metadata text file (JSON)      |
 |                    | ebv_add_data        | Add data to the new netCDF                    |
 |                    | ebv_attribute       | Change an attribute value                     |

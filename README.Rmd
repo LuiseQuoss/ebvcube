@@ -234,6 +234,7 @@ citation('ebvcube')
 ||ebv_trend|Plot the temporal trend |
 |Data creation|ebv_create|Create a new EBV netCDF|
 ||ebv_create_taxonomy|Create a new EBV netCDF with taxonomy info|
+||ebv_metadata|Create the EBV metadata text file (JSON)|
 ||ebv_add_data|Add data to the new netCDF|
 ||ebv_attribute|Change an attribute value|
 

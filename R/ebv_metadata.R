@@ -149,6 +149,42 @@
 #' @export
 #'
 #' @examples
+#' #create minimal metadata
+#' \dontrun{
+#' ebv_metadata(outputpath=out,
+#'   overwrite = TRUE,
+#'   title = 'Not a real title',
+#'   summary = 'Summary summary summary',
+#'   source = 'this was created by doing...',
+#'   date_created = as.Date('2024-07-10'),
+#'   creator_name = 'Name Name',
+#'   creator_institution = 'lame name',
+#'   license = 'CC0',
+#'   ebv_class = 'Genetic composition',
+#'   ebv_name = 'Intraspecific genetic diversity',
+#'   ebv_spatial_scope = 'National',
+#'   ebv_spatial_description = 'Finland',
+#'   ebv_domain = 'Terrestrial',
+#'   ebv_entity_type = 'Species',
+#'   ebv_entity_scope = '50 mammal species',
+#'   coverage_content_type = c('modelResult'),
+#'   time_coverage_start = as.Date('1900-01-01'),
+#'   time_coverage_end =as.Date('1950-01-01'),
+#'   time_coverage_resolution = 'P0010-00-00',
+#'   metric = list(list(standard_name='relative change of habitat',
+#'   long_name='relative change to year 1800', units='percentage'),
+#'               list(standard_name='absolute change habitat',
+#'               long_name='absolute change since year 1800',
+#'               units='square kilometers')),
+#'   scenario = list(list(standard_name='SSP1',
+#'                 long_name='description of SSP1'),
+#'                 list(standard_name='SSP2',
+#'                 long_name='description of SSP2')),
+#'   verbose = TRUE
+#' )
+
+
+#' }
 ebv_metadata <- function(outputpath, title, summary,
                          references = NULL, source, project_name = NULL, project_url = NULL,
                          date_created, creator_name, creator_email = NULL, creator_institution,
@@ -177,12 +213,16 @@ ebv_metadata <- function(outputpath, title, summary,
     stop('verbose must be of type logical.')
   }
 
-  # #check character arguments ----
-  # for (att in c(title, summary, references, source, project_name, project_url)){
-  #   if (checkmate::checkCharacter(att) != TRUE){
-  #     stop(paste0(deparse(substitute(att)),' must be of type character.'))
-  #   }
-  # }
+  # check mandatory character arguments ----
+  # not using missing-function as this throws error
+  for (att in c(title, summary, source, date_created, creator_name, creator_institution, license,
+                ebv_class, ebv_name, ebv_spatial_scope, ebv_domain, coverage_content_type,
+                ebv_entity_type, ebv_entity_scope, time_coverage_start, time_coverage_end,
+                time_coverage_resolution)){
+    if (checkmate::checkCharacter(att) != TRUE){
+      stop(paste0(deparse(substitute(att)), ' must be of type character.'))
+    }
+  }
 
   #outputpath check
   if (checkmate::checkCharacter(outputpath) != TRUE){
@@ -216,10 +256,10 @@ ebv_metadata <- function(outputpath, title, summary,
   if(scenario_no>0 && is.null(ebv_scenario_classification_name) && verbose){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_name. Are you sure you do not want to give that information?')
   }
-  if(scenario_no>0 && is.null(ebv_scenario_classification_version & verbose)){
+  if(scenario_no>0 && is.null(ebv_scenario_classification_version) && verbose){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_version. Are you sure you do not want to give that information?')
   }
-  if(scenario_no>0 && is.null(ebv_scenario_classification_url & verbose)){
+  if(scenario_no>0 && is.null(ebv_scenario_classification_url) && verbose){
     warning('You defined at least one scenario but did not define the ebv_scenario_classification_url. Are you sure you do not want to give that information?')
   }
 
@@ -251,7 +291,7 @@ ebv_metadata <- function(outputpath, title, summary,
                  'Phenology', 'Movement', 'Community abundance', 'Taxonomic and phylogenetic diversity',
                  'Trait diversity', 'Interaction diversity', 'Primary productivity', 'Ecosystem phenology',
                  'Ecosystem disturbances', 'Live cover fraction', 'Ecosystem distribution', 'Ecosystem Vertical Profile',
-                 'Pollination')
+                 'Pollination', 'other')
 
   #ebv_class correct?
   if(! ebv_class %in% ebv_classes){
@@ -277,7 +317,7 @@ ebv_metadata <- function(outputpath, title, summary,
   }else if(ebv_class == ebv_classes[6]){
     ebv_names <- c('Live cover fraction', 'Ecosystem distribution', 'Ecosystem Vertical Profile')
   }else if(ebv_class == ebv_classes[7]){
-    ebv_names <- c('Pollination')
+    ebv_names <- c('Pollination', 'other')
   }
   if(! ebv_name %in% ebv_names){
     stop(paste0('The  ebv_name ', ebv_name, ' does not is not available for the ebv_class ', ebv_class,  '. Possible ebv_name values: ', paste(ebv_names, collapse = ', '), '. Change ebv_name or ebv_class.'))
@@ -313,6 +353,17 @@ ebv_metadata <- function(outputpath, title, summary,
                                                 'modelResult', 'coordinate'))){
     stop("The coverage content type must be one or several of the following: 'image','thematicClassification', 'physicalMeasurement', 'auxiliaryInformation', 'qualityInformation', 'referenceInformation', 'modelResult' or 'coordinate'.")
   }
+
+  #check temporal args----
+  #check start date
+  ebv_i_check_iso_date(time_coverage_start, 'start date')
+
+  #check end date
+  ebv_i_check_iso_date(time_coverage_end, 'end date')
+
+  #check resolution
+  ebv_i_check_iso_res(time_coverage_resolution)
+
 
   # #OUTCOMMENTED check URLs ----
   # urls <- c(ebv_scenario_classification_url, project_url, ebv_entity_classification_url, references)
@@ -413,6 +464,23 @@ ebv_metadata <- function(outputpath, title, summary,
     ebv_scenario <- '"ebv_scenario": "N/A",'
   }
 
+  #set optional args to N/A if NULL----
+  arg_opt <- list(references = references, project_name = project_name,
+                  project_url = project_url, creator_email = creator_email,
+                  contributor_name = contributor_name, comment = comment,
+                  ebv_scenario_classification_name = ebv_scenario_classification_name,
+                  ebv_scenario_classification_version = ebv_scenario_classification_version,
+                  ebv_scenario_classification_url = ebv_scenario_classification_url,
+                  ebv_spatial_description = ebv_spatial_description,
+                  ebv_entity_classification_name = ebv_entity_classification_name,
+                  ebv_entity_classification_url = ebv_entity_classification_url)
+
+  for (i_opt in 1:length(arg_opt)){
+    if(is.null(arg_opt[[i_opt]])){
+      assign(names(arg_opt[i_opt]), 'N/A')
+    }
+  }
+
   #create json with values ----
   json <- paste0('{
     "data": [
@@ -472,4 +540,6 @@ ebv_metadata <- function(outputpath, title, summary,
 
   #write json to file ----
   write(json, outputpath)
+
+  return(outputpath)
 }

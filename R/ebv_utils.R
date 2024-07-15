@@ -931,3 +931,45 @@ ebv_i_vector_intersect <- function(v, z) {
 #' @return Returns TRUE list 1 is contained in list 2, else FALSE
 #' @noRd
 ebv_i_contained <- function(v, z) {length(ebv_i_vector_intersect(v, z))==length(v)}
+
+#' Checks if the date is given in the YYYY-MM-DD format
+#'
+#' @param date string. Date as a string
+#'
+#' @note also check that month value is in the range 1-12 and the day in the
+#'   range 1-31 and year is bigger than 0
+#'
+#' @return throws error if one of four conditions is not met
+#' @noRd
+ebv_i_check_iso_date <- function(date, name) {
+  if (! grepl('^\\d{4}-\\d{2}-\\d{2}$', date)){
+    stop('Your ', name, ' is not in YYYY-MM-DD ISO format.')
+  }
+  month <- as.numeric(stringr::str_split(date, '-', simplify=TRUE)[2])
+  if(month <=0 || month > 12){
+    stop('The value of the month of your ', name, ' must be between 1 and 12. Current value: ', month)
+  }
+  day <- as.numeric(stringr::str_split(date, '-', simplify=TRUE)[3])
+  if(day <=0 || day > 31){
+    stop('The value of the day of your ', name, ' must be between 1 and 31. Current value: ', day)
+  }
+  year <- as.numeric(stringr::str_split(date, '-', simplify=TRUE)[1])
+  if(year <=0){
+    stop('The value of the year of your ', name, ' must be bigger than 0. Current value: ', year)
+  }
+  return(TRUE)
+  }
+
+#' Checks if the date resolution is given in the PYYYY-MM-DD format
+#'
+#' @param date_res string. Date resolution as a string
+#'
+#' @return returns false if the format is not met
+#' @noRd
+ebv_i_check_iso_res <- function(date_res) {
+  if(date_res!='Irregular'){
+      if(!grepl('^P{1}\\d{4}-\\d{2}-\\d{2}$', date_res)){
+        stop('Your temporal resolution does not match the ISO duration format (PYYYY-MM-DD) or "Irregular". Current value: ', date_res)
+      }
+  }
+}

@@ -222,3 +222,39 @@ person that logs into the EBV Data Portal and uploads the dataset. This
 person's personal data is automatically added to the metadata from the
 account information.
 }
+\examples{
+#create minimal metadata
+\dontrun{
+ebv_metadata(outputpath=out,
+  overwrite = TRUE,
+  title = 'Not a real title',
+  summary = 'Summary summary summary',
+  source = 'this was created by doing...',
+  date_created = as.Date('2024-07-10'),
+  creator_name = 'Name Name',
+  creator_institution = 'lame name',
+  license = 'CC0',
+  ebv_class = 'Genetic composition',
+  ebv_name = 'Intraspecific genetic diversity',
+  ebv_spatial_scope = 'National',
+  ebv_spatial_description = 'Finland',
+  ebv_domain = 'Terrestrial',
+  ebv_entity_type = 'Species',
+  ebv_entity_scope = '50 mammal species',
+  coverage_content_type = c('modelResult'),
+  time_coverage_start = as.Date('1900-01-01'),
+  time_coverage_end =as.Date('1950-01-01'),
+  time_coverage_resolution = 'P0010-00-00',
+  metric = list(list(standard_name='relative change of habitat',
+  long_name='relative change to year 1800', units='percentage'),
+              list(standard_name='absolute change habitat',
+              long_name='absolute change since year 1800',
+              units='square kilometers')),
+  scenario = list(list(standard_name='SSP1',
+                long_name='description of SSP1'),
+                list(standard_name='SSP2',
+                long_name='description of SSP2')),
+  verbose = TRUE
+)
+}
+}

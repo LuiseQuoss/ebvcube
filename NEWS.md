@@ -1,3 +1,11 @@
+# ebvcube 0.3.0
+## Major changes
+- new function: ebv_metadata
+- new helper functions: ebv_i_vector_intersect, ebv_i_contained, 
+  ebv_i_check_iso_res, ebv_i_check_iso_date
+
+## Bug fixes
+
 # ebvcube 0.2.3
 ## Bug fixes
 - edit test file for ebv_download: make sure the portal website is up
