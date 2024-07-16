@@ -8,6 +8,7 @@
 ^prep_cran_submit\.R$
 ^.lintr
 ^to-dos.md
+^\shiny
 ^inst/docs/ebvcube_0.0.1.pdf
 ^inst/docs/ebvcube_0.1.1.pdf
 ^inst/docs/ebvcube_0.1.2.pdf
@@ -16,4 +17,6 @@
 ^inst/docs/ebvcube_0.1.5.pdf
 ^inst/docs/ebvcube_0.1.7.pdf
 ^inst/docs/ebvcube_0.2.0.pdf
-^inst/docs/ebvcube_0.2.1.pd
+^inst/docs/ebvcube_0.2.1.pdf
+^inst/docs/ebvcube_0.2.3.pdf
+
