@@ -1,39 +1,26 @@
 #install all packages if not yet installed
-t <- tryCatch(
-  {find.package("shiny")},
-  error = function(e){
-    install.packages('shiny')
-  }
-)
-t <- tryCatch(
-  {find.package("stringr")},
-  error = function(e){
-    install.packages('stringr')
-  }
-)
-t <- tryCatch(
-  {find.package("checkmate")},
-  error = function(e){
-    install.packages('checkmate')
-  }
-)
-t <- tryCatch(
-  {find.package("withr")},
-  error = function(e){
-    install.packages('withr')
-  }
-)
+packages_needed <- c('stringr', 'shiny', 'shinyFiles', 'checkmate', 'withr')
+
+for (pack in packages_needed){
+  t <- tryCatch(
+    {find.package(pack)},
+    error = function(e){
+        install.packages(pack)
+    }
+  )
+}
 
 #load libraries
 library(shiny)
 library(stringr)
 library(checkmate)
 library(withr)
+library(shinyFiles)
 
 #get volumes----
 
 getVols <- function(){
-  exclude=''
+  exclude <- ''
   osSystem <- Sys.info()["sysname"]
   if (osSystem == "Darwin") {
     volumes <- dir_ls("/Volumes")
@@ -52,7 +39,7 @@ getVols <- function(){
     if (!file.exists(wmic)) {
       volumes_info <- system2("powershell", "$dvr=[System.IO.DriveInfo]::GetDrives();Write-Output $dvr.length $dvr.name $dvr.VolumeLabel;",
                               stdout = TRUE)
-      num = as.integer(volumes_info[1])
+      num <- as.integer(volumes_info[1])
       if (num == 0)
         return(NULL)
       mat <- matrix(volumes_info[-1], nrow = num, ncol = 2)
@@ -144,7 +131,7 @@ ui <- fluidPage(
                   "Reference Information" = "referenceInformation",
                   "Model Result" = "modelResult",
                   "Coordinate" = "coordinate"),
-                multiple = T
+                multiple = TRUE
     ),
     span(textOutput("cct_desc"), style="font-size:14px"),
 
@@ -263,7 +250,7 @@ ui <- fluidPage(
                                     "Other" = "Other",
                                     "None" = "N/A"),
                                   #selected = 'N/A',
-                                  multiple = T
+                                  multiple = TRUE
                       ),
                       #define other for environmental domain
                       uiOutput('ebv_domain_other'),
@@ -280,7 +267,7 @@ ui <- fluidPage(
                #Biological entity
                column(6,
                       selectInput("biological_entity", tags$span(style="font-size: 18px; font-weight: bold", "Entity type"),
-                                  c( "None"="N/A",
+                                  c("None"="N/A",
                                     "Species" = "Species",
                                     "Communities" = "Communities",
                                     "Ecosystems" = "Ecosystems",
@@ -300,11 +287,11 @@ ui <- fluidPage(
                column(6,
                       span(textOutput("metric_header"), style="font-size:21px; font-weight: bold"),
                       numericInput('metric_no', 'Please inicate the amount of Metrics. Minimum 1.', value = 1,
-                                   width = '80%',min = 1, max = 10),
+                                   width = '80%', min = 1, max = 10),
                       column(10,
                              span("Note: First choose the correct number of metrics and then start typing.\n
                              Whenever you adjust the number of metrics, all the fields below will be cleaned up."
-                                  ),#the aditional column makes the width 80%
+                                  ), #the aditional column makes the width 80%
                              ),
                       #span(textOutput("metric_desc"), style="font-size:16px"),
                       uiOutput('metric_container')
@@ -367,7 +354,7 @@ ui <- fluidPage(
                                   width='80%'),
 
                       #other temporal resolution
-                      column(10,uiOutput('temporal_resoultion_other')), #the additional column makes the width 80%
+                      column(10, uiOutput('temporal_resoultion_other')), #the additional column makes the width 80%
 
                       #irregular temporal resolution
                       uiOutput('temporal_resoultion_irregular'),
@@ -387,7 +374,9 @@ ui <- fluidPage(
 
              verbatimTextOutput("value"),
 
-             shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success"),
+             #create save button when all checks are done
+             uiOutput('save_btn'),
+             # shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success"),
 
              # textInput('outputpath', tags$span(style="font-size: 18px; font-weight: bold", 'Outputpath*')), #value='C:\\Users\\lq39quba\\Desktop\\ebv_terranova\\bla.json'
              # actionButton('create_json', label = "Create JSON file.", class = "btn-lg btn-success"),
@@ -398,9 +387,11 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  outputpapth <- reactiveValues()
-  outputpapth <- ''
+  #reactive values----
+  react_values <- reactiveValues()
+  #constant value
   nodata <- 'N/A'
+
   # #show summary example
   # observeEvent(input$summary_example, {
   #   output$summary_error <- renderText({'jey'})
@@ -532,16 +523,16 @@ server <- function(input, output, session) {
         h <- tags$b(tags$span(style="font-size: 17px", paste0('Metric ', i)))
 
         #standard_name
-        sn <- textInput(paste0('metric_standard_name_',i), 'Name*', width='80%',
+        sn <- textInput(paste0('metric_standard_name_', i), 'Name*', width='80%',
                   placeholder = paste0('Name of Metric ', i))
 
 
         #description/long_name
-        ln <- textAreaInput(paste0('metric_long_name_',i), 'Description*', width='80%',
+        ln <- textAreaInput(paste0('metric_long_name_', i), 'Description*', width='80%',
                       placeholder = paste0('Description of Metric ', i))
 
         #units
-        u <- textInput(paste0('metric_units_',i), 'Units*', width='80%',
+        u <- textInput(paste0('metric_units_', i), 'Units*', width='80%',
                   placeholder = paste0('Units of Metric ', i))
 
         return(list(b, h, sn, ln, u))
@@ -580,12 +571,12 @@ server <- function(input, output, session) {
           h <- tags$b(tags$span(style="font-size: 17px", paste0('Scenario ', i)))
 
           #standard_name
-          sn <- textInput(paste0('scenario_standard_name_',i), 'Name*', width='90.5%',
+          sn <- textInput(paste0('scenario_standard_name_', i), 'Name*', width='90.5%',
                           placeholder = paste0('Name of Scenario ', i))
 
 
           #description/long_name
-          ln <- textAreaInput(paste0('scenario_long_name_',i), 'Description', width='90.5%',
+          ln <- textAreaInput(paste0('scenario_long_name_', i), 'Description', width='90.5%',
                               placeholder = paste0('Description of Scenario ', i))
 
           if(i==1){
@@ -613,7 +604,7 @@ server <- function(input, output, session) {
         t <- renderText('Provide a license for you dataset as a URL.')
 
         s <- textInput('license_other_txt', '', width='80%', placeholder='https://www.gnu.org/licenses/gpl-3.0.html')
-        return(list(t,s))
+        return(list(t, s))
       }
     })
 
@@ -625,7 +616,7 @@ server <- function(input, output, session) {
                     Examples: decadal: P0010-00-00 and daily: P0000-00-01')
 
         s <- textInput('temp_res_txt', '', width='80%', placeholder='P0000-00-00')
-        return(list(t,s))
+        return(list(t, s))
       }
     })
     output$temporal_resoultion_irregular <- renderUI({
@@ -633,11 +624,11 @@ server <- function(input, output, session) {
         if(input$temporal_resolution=='Irregular'){
           t <- renderText('Provide the definition of your timesteps as a comma-separated list in the format YYYY-MM-DD or short YYYY.')
           s <- textInput('temp_res_irr', '', width='80%', placeholder='YYYY, YYYY, ...')
-          return(list(t,s))
+          return(list(t, s))
         }else{
           t <- renderText('Provide the definition of your timesteps as a comma-separated list. The values will represent "kyr B.P.".')
           s <- textInput('temp_res_irr', '', width='80%', placeholder='126, 125, ...')
-          return(list(t,s))
+          return(list(t, s))
         }
       }
     })
@@ -693,33 +684,123 @@ server <- function(input, output, session) {
     })
 
     #observe outputpath----
-    observeEvent(input$save_json,{
+    observeEvent(input$save_json, {
       volumes <- c("Current Folder"=".", getVols())
       shinyFileSave(input, "save_json", roots=volumes, session=session)
       fileinfo <- parseSavePath(volumes, input$save_json)
       if (nrow(fileinfo) > 0) {
         outputpath <- as.character(parseSavePath(volumes, input$save_json)$datapath)
+        print(outputpath)
+
+        #create json----
+        #create metric
+        if(input$metric_no>0){
+          ebv_metric <- ''
+          for(i in 1:input$metric_no){
+            ebv_metric <- paste0(ebv_metric, '\n\t\t\t\t"ebv_metric_', i, '": {
+                    ":standard_name": "', eval(parse(text = paste0('input$metric_standard_name_', i))), '",
+                    ":long_name": "', eval(parse(text = paste0('input$metric_long_name_', i))), '",
+                    ":units": "', eval(parse(text = paste0('input$metric_units_', i))), '"\n\t\t\t\t}')
+            if(i != input$metric_no){
+              ebv_metric <- paste0(ebv_metric, ',')
+            }
+          }
+        }
+
+        #create scenario
+        if (input$scenario_no > 0){
+          ebv_scenario <- paste0('"ebv_scenario": {
+                "ebv_scenario_classification_name": "', react_values$scenario_classification_name, '",
+                "ebv_scenario_classification_version": "', react_values$scenario_classification_version, '",
+                "ebv_scenario_classification_url": "', react_values$scenario_classification_url, '",')
+          for(i in 1:input$scenario_no){
+            if(!is.null(need(eval(parse(text = paste0('input$scenario_long_name_', i))) != '', TRUE))){
+              long_name <- nodata
+            } else{
+              long_name <- eval(parse(text = paste0('input$scenario_long_name_', i)))
+            }
+            ebv_scenario <- paste0(ebv_scenario, '\n\t\t\t\t"ebv_scenario_', i, '": {
+                    ":standard_name": "', eval(parse(text = paste0('input$scenario_standard_name_', i))), '",
+                    ":long_name": "', long_name, '"
+                }')
+            if(i != input$scenario_no){
+              ebv_scenario <- paste0(ebv_scenario, ',')
+            }
+          }
+          ebv_scenario <- paste0(ebv_scenario, '\n\t\t\t},')
+        } else {
+          ebv_scenario <- '"ebv_scenario": "N/A",'
+        }
+
+
+        #create json
+        json <- paste0('{
+    "data": [
+        {
+            "id": "pending",
+            "naming_authority": "The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig",
+            "title": "', input$title, '",
+            "date_created": "', input$date_created, '",
+            "summary": "', input$summary, '",
+            "references": [\n\t\t\t\t"', paste0(unlist(react_values$references), collapse='",\n\t\t\t\t"'), '"\n\t\t\t],
+            "source": "', input$methods, '",
+            "coverage_content_type": [\n\t\t\t\t"', paste0(input$coverage_content_type, collapse='",\n\t\t\t\t"'), '"\n\t\t\t],
+            "project": "', react_values$project_name, '",
+            "project_url": "', react_values$project_url, '",
+            "creator": {
+                "creator_name": "', input$creator_name, '",
+                "creator_email": "', react_values$creator_email, '",
+                "creator_institution": "', input$creator_institution, '"
+            },
+            "contributor_name": [\n\t\t\t\t"', paste0(stringr::str_remove_all(stringr::str_split(react_values$contributors_names, ',')[[1]], ' '), collapse='",\n\t\t\t\t"'), '"\n\t\t\t],
+            "license": "', input$license, '",
+            "publisher": {
+                "publisher_name": "', input$publisher_name, '",
+                "publisher_email": "', input$publisher_email, '",
+                "publisher_institution": "', input$publisher_institution, '"
+            },
+            "ebv": {
+                "ebv_class": "', react_values$ebv_class, '",
+                "ebv_name": "', react_values$ebv_name, '"
+            },
+            "ebv_entity": {
+                "ebv_entity_type": "', react_values$biological_entity, '",
+                "ebv_entity_scope": "', react_values$entity_scope_txt, '",
+                "ebv_entity_classification_name": "', react_values$entity_classification_name_txt, '",
+                "ebv_entity_classification_url": "', react_values$entity_classification_ref_txt, '"
+            },
+            "ebv_metric": {',
+                       ebv_metric,
+                       '\n\t\t\t},\n\t\t\t',
+                       ebv_scenario,
+                       '\n\t\t\t"ebv_geospatial": {
+                "ebv_geospatial_scope": "', input$spatial_scope, '",
+                "ebv_geospatial_description": "', react_values$spatial_desc_txt, '"
+            },
+            "geospatial_lat_units": "', input$spatial_units, '",
+            "geospatial_lon_units": "', input$spatial_units, '",
+            "time_coverage": {
+                "time_coverage_resolution": "', react_values$t_res, '",
+                "time_coverage_start": "', react_values$t_start, '",
+                "time_coverage_end": "', react_values$t_end, '"
+            },
+            "ebv_domain": [\n\t\t\t\t"', paste0(react_values$ebv_domain_value, collapse = '",\n\t\t\t\t"'), '"\n\t\t\t],
+            "comment": "', react_values$comment, '",
+            "terranova_type": "', input$terranova_type, '",
+            "timesteps": [\n\t\t\t\t', react_values$timesteps_irr, '\n\t\t\t]
+        }
+    ]
+}')
+        print(outputpath)
+        #write to file and set encoding
+        withr::with_options(list(encoding = "UTF-8"), write(json, outputpath))
       }
-      # outputpath <- as.character(parseSavePath(volumes, input$save_json)$datapath)
+
     })
 
     #submit button clicked -----
     observeEvent(input$check_metadata, {
       #start checks----
-
-      #check if outputpath is empty
-      # if(outputpath==''){
-      #   output$value <- renderPrint({'You need to give an outputpath.'})
-      # }else{#HERE
-
-        # #check filepath
-        # if (checkmate::checkCharacter(outputpath) != TRUE){
-        #   output$value <- renderPrint({'Outputpath must be of type character.'})
-        # } else if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
-        #   output$value <- renderPrint({paste0('Output directory does not exist.\n', dirname(outputpath))})
-        # } else if(!endsWith(outputpath, '.json')){
-        #   output$value <- renderPrint({'Outputpath needs to end with *.json'})
-        # } else {#HERE 2
 
           #check title
           if(nchar(input$title)==0){
@@ -727,7 +808,7 @@ server <- function(input, output, session) {
             create <- FALSE
 
           } else if(!is.na(suppressWarnings(as.numeric(input$title)))){
-            to_do_list <- c('You title must contain characters.', to_do_list)
+            to_do_list <- c('Your title must contain characters.', to_do_list)
             create <- FALSE
           }
 
@@ -737,7 +818,7 @@ server <- function(input, output, session) {
             create <- FALSE
 
           } else if(!is.na(suppressWarnings(as.numeric(input$summary)))){
-            to_do_list <- c('You summary must contain characters.', to_do_list)
+            to_do_list <- c('Your summary must contain characters.', to_do_list)
             create <- FALSE
           }
           if (nchar(input$summary)!=0 & nchar(input$summary)>1500){
@@ -747,10 +828,10 @@ server <- function(input, output, session) {
 
           #check references - not mandatory
           if(nchar(input$references)==0){
-            references <- nodata
+            react_values$references <- nodata
           }else{
-            references <- stringr::str_split(input$references, ',')[[1]]
-            references <- stringr::str_remove_all(references, ' ')
+            react_values$references <- stringr::str_split(input$references, ',')[[1]]
+            react_values$references <- stringr::str_remove_all(react_values$references, ' ')
           }
 
           #check methods
@@ -771,16 +852,16 @@ server <- function(input, output, session) {
 
           #check project_name
           if(!is.null(need(input$project_name != '', TRUE))){
-            project_name <- 'TERRANOVA - The European Landscape Learning Initiative'
+            react_values$project_name <- nodata
           }else{
-            project_name <- 'TERRANOVA - The European Landscape Learning Initiative'
+            react_values$project_name <- input$project_name
           }
 
           #check project_url
           if(!is.null(need(input$project_url != '', TRUE))){
-            project_url <- 'https://www.terranova-itn.eu'
+            react_values$project_url <- nodata
           }else{
-            project_url <- 'https://www.terranova-itn.eu'
+            react_values$project_url <- input$project_url
           }
 
           #check creator_name
@@ -791,9 +872,9 @@ server <- function(input, output, session) {
 
           #check creator_email
           if(!is.null(need(input$creator_email != '', TRUE))){
-            creator_email <- nodata
+            react_values$creator_email <- nodata
           }else{
-            creator_email <- input$creator_email
+            react_values$creator_email <- input$creator_email
           }
 
           #check creator_institution
@@ -822,9 +903,11 @@ server <- function(input, output, session) {
 
           #check contributors_names
           if(!is.null(need(input$contributor_names != '', TRUE))){
-            contributors_names <- nodata
+            react_values$contributors_names <- nodata
+          }else if(length(contributors_names)==0){
+            react_values$contributors_names <- nodata
           }else{
-            contributors_names <- input$contributor_names
+            react_values$contributors_names <- input$contributor_names
           }
 
           #check license
@@ -844,23 +927,23 @@ server <- function(input, output, session) {
 
           #check comment
           if(!is.null(need(input$comment != '', TRUE))){
-            comment <- nodata
+            react_values$comment <- nodata
           }else{
-            comment <- input$comment
+            react_values$comment <- input$comment
           }
 
           #check ebv_class
           if(!is.null(need(input$ebv_class != '', TRUE))){
-            ebv_class <- nodata
+            react_values$ebv_class <- nodata
           }else{
-            ebv_class <- input$ebv_class
+            react_values$ebv_class <- input$ebv_class
           }
 
           #check ebv_name
           if(!is.null(need(input$ebv_name != '', TRUE))){
-            ebv_name <- nodata
+            react_values$ebv_name <- nodata
           }else{
-            ebv_name <- input$ebv_name
+            react_values$ebv_name <- input$ebv_name
           }
 
           #check ebv_domain
@@ -874,23 +957,23 @@ server <- function(input, output, session) {
                 create <- FALSE
               }
               #create ebv_domain value
-              ebv_domain_value <- c(input$ebv_domain[! input$ebv_domain %in% c('Other')], input$ebv_domain_other_txt)
+              react_values$ebv_domain_value <- c(input$ebv_domain[! input$ebv_domain %in% c('Other')], input$ebv_domain_other_txt)
 
             }else{
               #create ebv_domain value
-              ebv_domain_value <- c(input$ebv_domain)
+              react_values$ebv_domain_value <- c(input$ebv_domain)
               }
             }
 
           #check biological_entity
           if(!is.null(need(input$biological_entity != '', TRUE))){
-            biological_entity <- nodata
+            react_values$biological_entity <- nodata
           }else{
-            biological_entity <- input$biological_entity
+            react_values$biological_entity <- input$biological_entity
           }
 
           #check entity_scope
-          if(biological_entity=='Other'){
+          if(react_values$biological_entity=='Other'){
             if(!is.null(need(input$entity_other_txt != '', TRUE))){
               to_do_list <- c(to_do_list, 'You need to provide a description of the entity type as you chose Other.')
               create <- FALSE
@@ -898,31 +981,31 @@ server <- function(input, output, session) {
             } else{
               #entity_other_txt
               if(!is.null(need(input$entity_other_txt != '', TRUE))){
-                entity_other_txt <- nodata
+                react_values$entity_other_txt <- nodata
               }else{
-                entity_other_txt <- input$entity_other_txt
+                react_values$entity_other_txt <- input$entity_other_txt
               }
             }
 
               #entity_class_name
               if(!is.null(need(input$entity_scope_txt != '', TRUE))){#HERE
-                entity_scope_txt <- nodata
+                react_values$entity_scope_txt <- nodata
               }else{
-                entity_scope_txt <- input$entity_scope_txt
+                react_values$entity_scope_txt <- input$entity_scope_txt
               }
 
               #entity_class_name
               if(!is.null(need(input$entity_classification_name_txt != '', TRUE))){
-                entity_classification_name_txt <- nodata
+                react_values$entity_classification_name_txt <- nodata
               }else{
-                entity_classification_name_txt <- input$entity_classification_name_txt
+                react_values$entity_classification_name_txt <- input$entity_classification_name_txt
               }
 
               #entity_class_url
               if(!is.null(need(input$entity_classification_ref_txt != '', TRUE))){
-                entity_classification_ref_txt <- nodata
+                react_values$entity_classification_ref_txt <- nodata
               }else{
-                entity_classification_ref_txt <- input$entity_classification_ref_txt
+                react_values$entity_classification_ref_txt <- input$entity_classification_ref_txt
               }
 
 
@@ -930,15 +1013,15 @@ server <- function(input, output, session) {
           if(input$metric_no>0){
             for(i in 1:input$metric_no){
               if(!is.null(need(eval(parse(text = paste0('input$metric_standard_name_', i))) != '', TRUE))){
-                to_do_list <- c(to_do_list, paste0('The name for metric ',i,' is missing.'))
+                to_do_list <- c(to_do_list, paste0('The name for metric ', i, ' is missing.'))
                 create <- FALSE
               }
               if(!is.null(need(eval(parse(text = paste0('input$metric_long_name_', i))) != '', TRUE))){
-                to_do_list <- c(to_do_list, paste0('The description for metric ',i,' is missing.'))
+                to_do_list <- c(to_do_list, paste0('The description for metric ', i, ' is missing.'))
                 create <- FALSE
               }
               if(!is.null(need(eval(parse(text = paste0('input$metric_units_', i))) != '', TRUE))){
-                to_do_list <- c(to_do_list, paste0('The units for metric ',i,' are missing.'))
+                to_do_list <- c(to_do_list, paste0('The units for metric ', i, ' are missing.'))
                 create <- FALSE
               }
 
@@ -949,7 +1032,7 @@ server <- function(input, output, session) {
           if(input$scenario_no>0){
             for(i in 1:input$scenario_no){
               if(!is.null(need(eval(parse(text = paste0('input$scenario_standard_name_', i))) != '', TRUE))){
-                to_do_list <- c(to_do_list, paste0('The name for scenario ',i,' is missing.'))
+                to_do_list <- c(to_do_list, paste0('The name for scenario ', i, ' is missing.'))
                 create <- FALSE
               }
               # if(!is.null(need(eval(parse(text = paste0('input$scenario_long_name_', i))) != '', TRUE))){
@@ -960,23 +1043,23 @@ server <- function(input, output, session) {
 
             #scenario_classification_name
             if(!is.null(need(input$scenario_classification_name != '', TRUE))){
-              scenario_classification_name <- nodata
+              react_values$scenario_classification_name <- nodata
             }else{
-              scenario_classification_name <- input$scenario_classification_name
+              react_values$scenario_classification_name <- input$scenario_classification_name
             }
 
             #scenario_classification_version
             if(!is.null(need(input$scenario_classification_version != '', TRUE))){
-              scenario_classification_version <- nodata
+              react_values$scenario_classification_version <- nodata
             }else{
-              scenario_classification_version <- input$scenario_classification_version
+              react_values$scenario_classification_version <- input$scenario_classification_version
             }
 
             #scenario_classification_url
             if(!is.null(need(input$scenario_classification_url != '', TRUE))){
-              scenario_classification_url <- nodata
+              react_values$scenario_classification_url <- nodata
             }else{
-              scenario_classification_url <- input$scenario_classification_url
+              react_values$scenario_classification_url <- input$scenario_classification_url
             }
           }
 
@@ -992,15 +1075,15 @@ server <- function(input, output, session) {
               to_do_list <- c(to_do_list, 'You need to provide a description of the spatial scope.')
               create <- FALSE
             }else{
-              spatial_desc_txt <- input$spatial_desc_txt
+              react_values$spatial_desc_txt <- input$spatial_desc_txt
             }
           } else{
-            spatial_desc_txt <- nodata
+            react_values$spatial_desc_txt <- nodata
           }
 
           #temporal resolution
           if(input$temporal_resolution =='other'){
-            t_res <- input$temp_res_txt
+            react_values$t_res <- input$temp_res_txt
             if(!is.null(need(input$temp_res_txt != '', TRUE))){
               to_do_list <- c(to_do_list, 'You need to define the temporal resolution.')
               create <- FALSE
@@ -1011,16 +1094,16 @@ server <- function(input, output, session) {
               }
             }
           }else{
-            t_res <- input$temporal_resolution
+            react_values$t_res <- input$temporal_resolution
           }
 
           #check the input of the irregulare timesteps
           if(input$temporal_resolution=='Irregular'){
-            timestep_list <- stringr::str_split(input$temp_res_irr, ',')[[1]]
-            timestep_list <- gsub(' ', '', timestep_list) #remove whitespaces
-            print(timestep_list)
+            react_values$timestep_list <- stringr::str_split(input$temp_res_irr, ',')[[1]]
+            react_values$timestep_list <- gsub(' ', '', react_values$timestep_list) #remove whitespaces
+            print(react_values$timestep_list)
             ts_irr_wrong <- FALSE
-            for(ts in timestep_list){
+            for(ts in react_values$timestep_list){
               if(grepl('^\\d{4}-\\d{2}-\\d{2}$', ts) | grepl('^\\d{4}$', ts)){
                 #pass
               }else{
@@ -1033,8 +1116,8 @@ server <- function(input, output, session) {
             }
           }
           if(input$temporal_resolution=='Paleo'){
-            timestep_list <- stringr::str_split(input$temp_res_irr, ',')[[1]]
-            for(ts in timestep_list){
+            react_values$timestep_list <- stringr::str_split(input$temp_res_irr, ',')[[1]]
+            for(ts in react_values$timestep_list){
               if(is.na(suppressWarnings(as.numeric(ts)))){
                 to_do_list <- c(to_do_list, paste0('You chose "paleo" temporal resolution. The value "', ts, '" does not seem to be a numeric value. Please check.'))
                 create <- FALSE
@@ -1044,24 +1127,24 @@ server <- function(input, output, session) {
 
           #temporal extent
           if(input$temporal_resolution=='Irregular'){
-            timestep_list <- stringr::str_split(input$temp_res_irr, ',')[[1]]
-            t_start <- min(timestep_list)
-            t_end <- max(timestep_list)
-            timesteps_irr <- paste0('"', paste0(timestep_list, collapse = '", "'), '"')
+            react_values$timestep_list <- stringr::str_split(input$temp_res_irr, ',')[[1]]
+            react_values$t_start <- min(react_values$timestep_list)
+            react_values$t_end <- max(react_values$timestep_list)
+            react_values$timesteps_irr <- paste0('"', paste0(react_values$timestep_list, collapse = '", "'), '"')
           }else if(input$temporal_resolution=='Paleo'){
-            timestep_list <- as.numeric(stringr::str_split(input$temp_res_irr, ',')[[1]])
-            t_start <- max(timestep_list)
-            t_end <- min(timestep_list)
-            timesteps_irr <- paste0('"', paste0(timestep_list, collapse = '", "'), '"')
+            react_values$timestep_list <- as.numeric(stringr::str_split(input$temp_res_irr, ',')[[1]])
+            react_values$t_start <- max(react_values$timestep_list)
+            react_values$t_end <- min(react_values$timestep_list)
+            react_values$timesteps_irr <- paste0('"', paste0(react_values$timestep_list, collapse = '", "'), '"')
           }else if(input$temporal_resolution=='P0000-00-00'){
-            t_start <-input$temporal_extent_input
-            t_end <- input$temporal_extent_input
+            react_values$t_start <-input$temporal_extent_input
+            react_values$t_end <- input$temporal_extent_input
           }else{
-            t_start <- input$temporal_extent_input[1]
-            t_end <- input$temporal_extent_input[2]
+            react_values$t_start <- input$temporal_extent_input[1]
+            react_values$t_end <- input$temporal_extent_input[2]
           }
           if(input$temporal_resolution!='Irregular' & input$temporal_resolution!='Paleo'){
-            timesteps_irr <- '"N/A"'
+            react_values$timesteps_irr <- '"N/A"'
           }
 
 
@@ -1079,117 +1162,16 @@ server <- function(input, output, session) {
 
           #create json----
           if(create){
+            #maybe here?
+            output$save_btn <- renderUI({
+              shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success")
+            })
+
             #inform user
-            output$value <- renderPrint({'Creating Metadata file'})
+            output$value <- renderPrint({'All metadata terms were entered successfully.'})
 
-            #create metric
-            if(input$metric_no>0){
-              ebv_metric <- ''
-              for(i in 1:input$metric_no){
-                ebv_metric <- paste0(ebv_metric, '\n\t\t\t\t"ebv_metric_',i,'": {
-                    ":standard_name": "',eval(parse(text = paste0('input$metric_standard_name_', i))),'",
-                    ":long_name": "',eval(parse(text = paste0('input$metric_long_name_', i))),'",
-                    ":units": "',eval(parse(text = paste0('input$metric_units_', i))),'"\n\t\t\t\t}')
-                if(i != input$metric_no){
-                  ebv_metric <- paste0(ebv_metric, ',')
-                }
-              }
-            }
+          } #if create==TRUE
 
-            #create scenario
-            if (input$scenario_no > 0){
-              ebv_scenario <- paste0('"ebv_scenario": {
-                "ebv_scenario_classification_name": "',scenario_classification_name,'",
-                "ebv_scenario_classification_version": "',scenario_classification_version,'",
-                "ebv_scenario_classification_url": "',scenario_classification_url,'",')
-              for(i in 1:input$scenario_no){
-                if(!is.null(need(eval(parse(text = paste0('input$scenario_long_name_', i))) != '', TRUE))){
-                  long_name <- nodata
-                } else{
-                  long_name <- eval(parse(text = paste0('input$scenario_long_name_', i)))
-                }
-                ebv_scenario <- paste0(ebv_scenario, '\n\t\t\t\t"ebv_scenario_',i,'": {
-                    ":standard_name": "',eval(parse(text = paste0('input$scenario_standard_name_', i))),'",
-                    ":long_name": "',long_name,'"
-                }')
-                if(i != input$scenario_no){
-                  ebv_scenario <- paste0(ebv_scenario, ',')
-                }
-              }
-              ebv_scenario <- paste0(ebv_scenario, '\n\t\t\t},')
-            } else {
-              ebv_scenario <- '"ebv_scenario": "N/A",'
-            }
-
-
-
-            #create json
-            json <- paste0('{
-    "data": [
-        {
-            "id": "pending",
-            "naming_authority": "The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig",
-            "title": "', input$title ,'",
-            "date_created": "',input$date_created,'",
-            "summary": "',input$summary,'",
-            "references": [\n\t\t\t\t"',paste0(unlist(references), collapse='",\n\t\t\t\t"'),'"\n\t\t\t],
-            "source": "',input$methods,'",
-            "coverage_content_type": [\n\t\t\t\t"',paste0(input$coverage_content_type, collapse='",\n\t\t\t\t"'),'"\n\t\t\t],
-            "project": "',project_name,'",
-            "project_url": "',project_url,'",
-            "creator": {
-                "creator_name": "',input$creator_name,'",
-                "creator_email": "', creator_email,'",
-                "creator_institution": "',input$creator_institution,'"
-            },
-            "contributor_name": [\n\t\t\t\t"',paste0(stringr::str_remove_all(stringr::str_split(contributors_names, ',')[[1]], ' '), collapse='",\n\t\t\t\t"'),'"\n\t\t\t],
-            "license": "',input$license,'",
-            "publisher": {
-                "publisher_name": "',input$publisher_name,'",
-                "publisher_email": "',input$publisher_email,'",
-                "publisher_institution": "',input$publisher_institution,'"
-            },
-            "ebv": {
-                "ebv_class": "',ebv_class,'",
-                "ebv_name": "',ebv_name,'"
-            },
-            "ebv_entity": {
-                "ebv_entity_type": "',biological_entity,'",
-                "ebv_entity_scope": "', entity_scope_txt,'",
-                "ebv_entity_classification_name": "',entity_classification_name_txt,'",
-                "ebv_entity_classification_url": "',entity_classification_ref_txt,'"
-            },
-            "ebv_metric": {',
-                           ebv_metric,
-                           '\n\t\t\t},\n\t\t\t',
-                           ebv_scenario,
-                           '\n\t\t\t"ebv_geospatial": {
-                "ebv_geospatial_scope": "',input$spatial_scope,'",
-                "ebv_geospatial_description": "',spatial_desc_txt,'"
-            },
-            "geospatial_lat_units": "',input$spatial_units,'",
-            "geospatial_lon_units": "',input$spatial_units,'",
-            "time_coverage": {
-                "time_coverage_resolution": "',t_res,'",
-                "time_coverage_start": "',t_start,'",
-                "time_coverage_end": "',t_end,'"
-            },
-            "ebv_domain": [\n\t\t\t\t"', paste0(ebv_domain_value, collapse = '",\n\t\t\t\t"'),'"\n\t\t\t],
-            "comment": "',comment,'",
-            "terranova_type": "', input$terranova_type,'",
-            "timesteps": [\n\t\t\t\t', timesteps_irr, '\n\t\t\t]
-        }
-    ]
-}')
-
-
-            #write to file and set encoding
-            # withr::with_options(list(encoding = "UTF-8"), write(json, input$outputpath))
-          }
-
-
-        # } #HERE2
-      # }#HERE
     })
 
 
@@ -1200,4 +1182,3 @@ shinyApp(ui, server)
 
 #To Do
 #pre-filled values for keywords: keywords:
-#Anthropogenic activity / biodiversity / climate /
