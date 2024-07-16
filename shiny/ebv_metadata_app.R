@@ -30,18 +30,75 @@ library(stringr)
 library(checkmate)
 library(withr)
 
+#get volumes----
+
+getVols <- function(){
+  exclude=''
+  osSystem <- Sys.info()["sysname"]
+  if (osSystem == "Darwin") {
+    volumes <- dir_ls("/Volumes")
+    names(volumes) <- basename(volumes)
+  }
+  else if (osSystem == "Linux") {
+    volumes <- c(Computer = "/")
+    if (isTRUE(dir_exists("/media"))) {
+      media <- dir_ls("/media")
+      names(media) <- basename(media)
+      volumes <- c(volumes, media)
+    }
+  }
+  else if (osSystem == "Windows") {
+    wmic <- paste0(Sys.getenv("SystemRoot"), "\\System32\\Wbem\\WMIC.exe")
+    if (!file.exists(wmic)) {
+      volumes_info <- system2("powershell", "$dvr=[System.IO.DriveInfo]::GetDrives();Write-Output $dvr.length $dvr.name $dvr.VolumeLabel;",
+                              stdout = TRUE)
+      num = as.integer(volumes_info[1])
+      if (num == 0)
+        return(NULL)
+      mat <- matrix(volumes_info[-1], nrow = num, ncol = 2)
+      mat[, 1] <- gsub(":\\\\$", ":/", mat[, 1])
+      sel <- mat[, 2] == ""
+      mat[sel, 2] <- mat[sel, 1]
+      volumes <- mat[, 1]
+      volNames <- mat[, 2]
+      volNames <- paste0(volNames, " (", gsub(":/$", ":",
+                                              volumes), ")")
+    }
+    else {
+      volumes <- system(paste(wmic, "logicaldisk get Caption"),
+                        intern = TRUE, ignore.stderr = TRUE)
+      volumes <- sub(" *\\r$", "", volumes)
+      keep <- !tolower(volumes) %in% c("caption", "")
+      volumes <- volumes[keep]
+      volNames <- system(paste(wmic, "/FAILFAST:1000 logicaldisk get VolumeName"),
+                         intern = TRUE, ignore.stderr = TRUE)
+      volNames <- sub(" *\\r$", "", volNames)
+      volNames <- volNames[keep]
+      volNames <- paste0(volNames, ifelse(volNames == "",
+                                          "", " "))
+      volNames <- paste0(volNames, "(", volumes, ")")
+    }
+    names(volumes) <- volNames
+    volumes <- gsub(":$", ":/", volumes)
+  }
+  else {
+    stop("unsupported OS")
+  }
+  if (!is.null(exclude)) {
+    volumes <- volumes[!names(volumes) %in% exclude]
+  }
+  return(volumes)
+}
 
 ui <- fluidPage(
   #set style
-  #tags$style(type='text/css', '.selectize-label { font-size: 60px;}'),
-  #".selectize-input { font-size: 32px; line-height: 32px;} .selectize-dropdown { font-size: 28px; line-height: 28px; }"),
-  #tags$span(style="color:red", 'Summary*')
+  # tags$style('.tags { width: 80%;}'),
 
   #set theme
   theme = bslib::bs_theme(bootswatch = "flatly"),
 
   #title
-  titlePanel("EBV netCDF Metadata - Terranova Atlas"),
+  titlePanel("EBV netCDF Metadata"),
 
   #create several tabs
   tabsetPanel(
@@ -97,14 +154,14 @@ ui <- fluidPage(
       #project name
       column(6,
              textInput('project_name', tags$span(style="font-size: 18px; font-weight: bold", 'Project Name'), width='80%',
-                       value = 'TERRANOVA - The European Landscape Learning Initiative',
+                       value = '',
                        placeholder='The name(s) of the Project principally responsible for originating this data. Several values should be separated by comma.'),
              #span(textOutput("title_desc"), style="font-size:14px")
       ),
       #project url
       column(6,
              textInput('project_url', tags$span(style="font-size: 18px; font-weight: bold", 'Project URL'), width='80%',
-                       value = "https://www.terranova-itn.eu",
+                       value = "",
                        placeholder='The URL from the project(s) website. Several values should be separated by comma.')
       )
     ),
@@ -154,11 +211,19 @@ ui <- fluidPage(
                   placeholder = 'The names of the co-creators responsible for creating this data. Seperate several by comma.'),
 
     #license
-    textAreaInput('license', tags$span(style="font-size: 18px; font-weight: bold", 'License*'), width='90.5%',
-                  value =  "https://creativecommons.org/licenses/by/4.0",
-                  placeholder = 'Give the URL of a licence. Prefereble CC-License, e.g. https://creativecommons.org/licenses/by/4.0/'),
-    #add a text: link to CC licenses
-    tags$a(href="https://creativecommons.org/licenses/", "Link to CC licenses."),
+    selectInput("license", tags$span(style="font-size: 18px; font-weight: bold", "License*"),
+                c('CC0'= 'https://creativecommons.org/publicdomain/zero/1.0/',
+                  'CC BY'= 'https://creativecommons.org/licenses/by/4.0/',
+                  'CC BY-SA'= 'https://creativecommons.org/licenses/by-sa/4.0/',
+                  'CC BY-NC'= 'https://creativecommons.org/licenses/by-nc/4.0/',
+                  'CC BY-NC-SA'= 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+                  'CC BY-ND'= 'https://creativecommons.org/licenses/by-nd/4.0/',
+                  'CC BY-NC-ND'= 'https://creativecommons.org/licenses/by-nc-nd/4.0/',
+                  'other' = 'other'),
+                width='80%'),
+
+    #other licesense
+    uiOutput('license_other'),
 
     #comment
     textAreaInput('comment', tags$span(style="font-size: 18px; font-weight: bold", 'Comment'), width='90.5%',
@@ -236,7 +301,12 @@ ui <- fluidPage(
                       span(textOutput("metric_header"), style="font-size:21px; font-weight: bold"),
                       numericInput('metric_no', 'Please inicate the amount of Metrics. Minimum 1.', value = 1,
                                    width = '80%',min = 1, max = 10),
-                      span(textOutput("metric_desc"), style="font-size:14px"),
+                      column(10,
+                             span("Note: First choose the correct number of metrics and then start typing.\n
+                             Whenever you adjust the number of metrics, all the fields below will be cleaned up."
+                                  ),#the aditional column makes the width 80%
+                             ),
+                      #span(textOutput("metric_desc"), style="font-size:16px"),
                       uiOutput('metric_container')
                       ),
                #scenario
@@ -273,8 +343,8 @@ ui <- fluidPage(
 
                       #spatial units
                       selectInput("spatial_units", tags$span(style="font-size: 18px; font-weight: bold", "Spatial Units*"),
-                                  c("degrees" = "degrees",
-                                    "meters" = "meters"),
+                                  c("degree" = "degree",
+                                    "meter" = "meter"),
                                   width='80%'),
 
 
@@ -297,23 +367,13 @@ ui <- fluidPage(
                                   width='80%'),
 
                       #other temporal resolution
-                      uiOutput('temporal_resoultion_other'),
+                      column(10,uiOutput('temporal_resoultion_other')), #the additional column makes the width 80%
 
                       #irregular temporal resolution
                       uiOutput('temporal_resoultion_irregular'),
 
                       #temporal extent
                       uiOutput('temporal_extent'),
-
-                      #tags$b('Temporal Extent'),
-                      # dateInput('temp_start', tags$span(style="font-size: 18px; font-weight: bold",
-                      #                                   'Start date of the dataset*'), width='80%',
-                      #           startview ='year'),
-                      # dateInput('temp_end', tags$span(style="font-size: 18px; font-weight: bold",
-                      #                                 'End date of the dataset*'), width='80%',
-                      #           startview ='year')
-
-
 
                       )
              )
@@ -323,17 +383,23 @@ ui <- fluidPage(
     #4. tab: check and output generation----
     tabPanel('Save metadata to file',
 
-             textInput('outputpath', tags$span(style="font-size: 18px; font-weight: bold", 'Outputpath*')), #value='C:\\Users\\lq39quba\\Desktop\\ebv_terranova\\bla.json'
+             actionButton('check_metadata', label = "Check your metadata.", class = "btn-lg btn-success"),
 
-             actionButton('create_json', label = "Create JSON file.", class = "btn-lg btn-success"),
+             verbatimTextOutput("value"),
 
-             verbatimTextOutput("value")
+             shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success"),
+
+             # textInput('outputpath', tags$span(style="font-size: 18px; font-weight: bold", 'Outputpath*')), #value='C:\\Users\\lq39quba\\Desktop\\ebv_terranova\\bla.json'
+             # actionButton('create_json', label = "Create JSON file.", class = "btn-lg btn-success"),
+
+
              )
   )
 )
 
-server <- function(input, output) {
-
+server <- function(input, output, session) {
+  outputpapth <- reactiveValues()
+  outputpapth <- ''
   nodata <- 'N/A'
   # #show summary example
   # observeEvent(input$summary_example, {
@@ -455,7 +521,7 @@ server <- function(input, output) {
 
     #metric definition
     output$metric_header <- renderText({'Metric*'})
-    output$metric_desc <- renderText({'Provide the name, description and units of the metric(s).'})
+    #output$metric_desc <- renderText({'Provide the name, description and units of the metric(s).'})
 
     #create input fields for all metrics
     output$metric_container <- renderUI({
@@ -466,16 +532,16 @@ server <- function(input, output) {
         h <- tags$b(tags$span(style="font-size: 17px", paste0('Metric ', i)))
 
         #standard_name
-        sn <- textInput(paste0('metric_standard_name_',i), 'Name*', width='90.5%',
+        sn <- textInput(paste0('metric_standard_name_',i), 'Name*', width='80%',
                   placeholder = paste0('Name of Metric ', i))
 
 
         #description/long_name
-        ln <- textAreaInput(paste0('metric_long_name_',i), 'Description*', width='90.5%',
+        ln <- textAreaInput(paste0('metric_long_name_',i), 'Description*', width='80%',
                       placeholder = paste0('Description of Metric ', i))
 
         #units
-        u <- textInput(paste0('metric_units_',i), 'Units*', width='90.5%',
+        u <- textInput(paste0('metric_units_',i), 'Units*', width='80%',
                   placeholder = paste0('Units of Metric ', i))
 
         return(list(b, h, sn, ln, u))
@@ -541,11 +607,22 @@ server <- function(input, output) {
       }
     })
 
+    #other license url
+    output$license_other <- renderUI({
+      if(input$license=='other'){
+        t <- renderText('Provide a license for you dataset as a URL.')
+
+        s <- textInput('license_other_txt', '', width='80%', placeholder='https://www.gnu.org/licenses/gpl-3.0.html')
+        return(list(t,s))
+      }
+    })
+
+
     #other temporal resoultion
     output$temporal_resoultion_other <- renderUI({
       if(input$temporal_resolution=='other'){
         t <- renderText('Provide the definition of your temporal resolution in the ISO 8601:2004 duration format P(YYYY)-(MM)-(DD).
-                   Examples: decadal: P0010-00-00 and daily: P0000-00-01')
+                    Examples: decadal: P0010-00-00 and daily: P0000-00-01')
 
         s <- textInput('temp_res_txt', '', width='80%', placeholder='P0000-00-00')
         return(list(t,s))
@@ -615,23 +692,34 @@ server <- function(input, output) {
 
     })
 
+    #observe outputpath----
+    observeEvent(input$save_json,{
+      volumes <- c("Current Folder"=".", getVols())
+      shinyFileSave(input, "save_json", roots=volumes, session=session)
+      fileinfo <- parseSavePath(volumes, input$save_json)
+      if (nrow(fileinfo) > 0) {
+        outputpath <- as.character(parseSavePath(volumes, input$save_json)$datapath)
+      }
+      # outputpath <- as.character(parseSavePath(volumes, input$save_json)$datapath)
+    })
 
     #submit button clicked -----
-    observeEvent(input$create_json,{
+    observeEvent(input$check_metadata, {
       #start checks----
 
       #check if outputpath is empty
-      if(input$outputpath==''){
-        output$value <- renderPrint({'You need to give an outputpath.'})
-      }else{
-        #check filepath
-        if (checkmate::checkCharacter(input$outputpath) != TRUE){
-          output$value <- renderPrint({'Outputpath must be of type character.'})
-        } else if(checkmate::checkDirectoryExists(dirname(input$outputpath)) != TRUE){
-          output$value <- renderPrint({paste0('Output directory does not exist.\n', dirname(input$outputpath))})
-        } else if(!endsWith(input$outputpath, '.json')){
-          output$value <- renderPrint({'Outputpath needs to end with *.json'})
-        } else {
+      # if(outputpath==''){
+      #   output$value <- renderPrint({'You need to give an outputpath.'})
+      # }else{#HERE
+
+        # #check filepath
+        # if (checkmate::checkCharacter(outputpath) != TRUE){
+        #   output$value <- renderPrint({'Outputpath must be of type character.'})
+        # } else if(checkmate::checkDirectoryExists(dirname(outputpath)) != TRUE){
+        #   output$value <- renderPrint({paste0('Output directory does not exist.\n', dirname(outputpath))})
+        # } else if(!endsWith(outputpath, '.json')){
+        #   output$value <- renderPrint({'Outputpath needs to end with *.json'})
+        # } else {#HERE 2
 
           #check title
           if(nchar(input$title)==0){
@@ -740,9 +828,18 @@ server <- function(input, output) {
           }
 
           #check license
-          if(!is.null(need(input$license != '', TRUE))){
-            to_do_list <- c(to_do_list, 'You need to provide a license URL.')
-            create <- FALSE
+          if(input$license =='other'){
+            t_res <- input$license_other_txt
+            if(!is.null(need(input$license_other_txt != '', TRUE))){
+              to_do_list <- c(to_do_list, 'You need to define the license URL.')
+              create <- FALSE
+            }
+          }else{
+            t_res <-input$license
+            if(!is.null(need(input$license != '', TRUE))){
+              to_do_list <- c(to_do_list, 'You need to select a license.')
+              create <- FALSE
+            }
           }
 
           #check comment
@@ -931,7 +1028,7 @@ server <- function(input, output) {
               }
             }
             if(ts_irr_wrong){
-              to_do_list <- c(to_do_list, 'You chose "Irregular" temporal resolution and the input you provided does not match the required form: comma-separated YYYY-MM-DD or comma-separated YYYY. Please check.')
+              to_do_list <- c(to_do_list, 'You chose >>Irregular<< temporal resolution and the input you provided does not match the required form: comma-separated YYYY-MM-DD or comma-separated YYYY. Please check.')
               create <- FALSE
             }
           }
@@ -1087,12 +1184,12 @@ server <- function(input, output) {
 
 
             #write to file and set encoding
-            withr::with_options(list(encoding = "UTF-8"), write(json, input$outputpath))
+            # withr::with_options(list(encoding = "UTF-8"), write(json, input$outputpath))
           }
 
 
-        }
-      }
+        # } #HERE2
+      # }#HERE
     })
 
 
