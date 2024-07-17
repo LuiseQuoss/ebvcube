@@ -375,6 +375,7 @@ ui <- fluidPage(
              verbatimTextOutput("value"),
 
              #create save button when all checks are done
+             uiOutput('field_name'),
              uiOutput('save_btn'),
              # shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success"),
 
@@ -391,18 +392,6 @@ server <- function(input, output, session) {
   react_values <- reactiveValues()
   #constant value
   nodata <- 'N/A'
-
-  # #show summary example
-  # observeEvent(input$summary_example, {
-  #   output$summary_error <- renderText({'jey'})
-  #   showModal(modalDialog(
-  #     title= "Summary Example",
-  #     text = "Add a summary Example",
-  #     type = 'info',
-  #     closeOnClickOutside = T,
-  #     easyClose = T
-  #   ))
-  # })
 
   #check summary length
   summary_text <- reactive({input$summary})
@@ -685,12 +674,20 @@ server <- function(input, output, session) {
 
     #observe outputpath----
     observeEvent(input$save_json, {
-      volumes <- c("Current Folder"=".", getVols())
-      shinyFileSave(input, "save_json", roots=volumes, session=session)
-      fileinfo <- parseSavePath(volumes, input$save_json)
-      if (nrow(fileinfo) > 0) {
-        outputpath <- as.character(parseSavePath(volumes, input$save_json)$datapath)
-        print(outputpath)
+      # volumes <- c("Current Folder"=".", getVols())
+      # shinyFileSave(input, "save_json", roots=volumes, session=session)
+      # fileinfo <- parseSavePath(volumes, input$save_json)
+
+      # print(input$save_json)
+      if (nchar(input$save_json)>0 && endsWith(input$save_json, '.json')) {
+        root <- './json-data/'
+        react_values$outputpath <- file.path(root, as.character(input$save_json))
+        # print(react_values$outputpath)
+
+        output$save_btn <- renderUI({
+          downloadButton("download", label = "Download")
+          # actionButton('download', label = "Download File now", class = "btn-lg btn-success")
+        })
 
         #create json----
         #create metric
@@ -734,7 +731,7 @@ server <- function(input, output, session) {
 
 
         #create json
-        json <- paste0('{
+        react_values$json <- paste0('{
     "data": [
         {
             "id": "pending",
@@ -791,14 +788,22 @@ server <- function(input, output, session) {
         }
     ]
 }')
-        print(outputpath)
-        #write to file and set encoding
-        withr::with_options(list(encoding = "UTF-8"), write(json, outputpath))
+        # print(react_values$outputpath)
+        #write to file and set encoding ----
+        # withr::with_options(list(encoding = "UTF-8"), write(react_values$json, react_values$outputpath))
+        # print('done')
+        # print(react_values$json)
       }
 
     })
 
-    #submit button clicked -----
+    #download data ----
+    output$download <- downloadHandler(filename = function() {basename(react_values$outputpath)},
+                    content = function(file){
+                      withr::with_options(list(encoding = "UTF-8"), write(react_values$json, file))
+                    })
+
+    #metadata check button clicked -----
     observeEvent(input$check_metadata, {
       #start checks----
 
@@ -1163,12 +1168,16 @@ server <- function(input, output, session) {
           #create json----
           if(create){
             #maybe here?
-            output$save_btn <- renderUI({
-              shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success")
+            output$field_name <- renderUI({
+              textInput('save_json', 'The name of your json file (fileending should be *.json!).')
+              # shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success")
             })
 
             #inform user
             output$value <- renderPrint({'All metadata terms were entered successfully.'})
+
+
+
 
           } #if create==TRUE
 
