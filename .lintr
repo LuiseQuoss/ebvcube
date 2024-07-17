@@ -16,5 +16,6 @@ linters: linters_with_defaults(
 encoding: "UTF-8"
 exclusions: list(
     "data-raw/",
-    "tests/"
+    "tests/",
+    "shiny/"
   )
