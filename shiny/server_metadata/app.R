@@ -370,13 +370,36 @@ ui <- fluidPage(
     #4. tab: check and output generation----
     tabPanel('Save metadata to file',
 
-             actionButton('check_metadata', label = "Check your metadata.", class = "btn-lg btn-success"),
+             column(10,
+                    #some space
+                    tags$div(
+                      style="margin-bottom:10px;"
+                    ),
+                    span("First, check if you entered all metadata successfully.", style='font-size: 18px'
+                    ),
+                    #some space
+                    tags$div(
+                      style="margin-bottom:10px;"
+                    ),
+                    #button for metadata check
+                    actionButton('check_metadata', label = "Check your metadata.", class = "btn-lg btn-success"),
 
-             verbatimTextOutput("value"),
+                    #some space
+                    tags$div(
+                      style="margin-bottom:7px;"
+                    ),
 
-             #create save button when all checks are done
-             uiOutput('field_name'),
-             uiOutput('save_btn'),
+                    #shows missing input/successful filled metadata message
+                    verbatimTextOutput("value"),
+
+                    #create save button when all checks are done
+                    uiOutput('field_name'),
+                    uiOutput('save_btn'),
+             ),
+
+
+
+
              # shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success"),
 
              # textInput('outputpath', tags$span(style="font-size: 18px; font-weight: bold", 'Outputpath*')), #value='C:\\Users\\lq39quba\\Desktop\\ebv_terranova\\bla.json'
@@ -1169,7 +1192,7 @@ server <- function(input, output, session) {
           if(create){
             #maybe here?
             output$field_name <- renderUI({
-              textInput('save_json', 'The name of your json file (fileending should be *.json!).')
+              textInput('save_json', span('Please enter the name of your json file (fileending should be *.json)', style='font-size: 18px'))
               # shinySaveButton("save_json", "Save JSON file", "Save file as ...", filetype=list(json="json"), class = "btn-lg btn-success")
             })
 
