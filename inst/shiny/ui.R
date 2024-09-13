@@ -11,7 +11,7 @@ fluidPage(
 
   #get netCDF
   shinyFiles::shinyFilesButton("load_netcdf", "Load netCDF",
-                               'Select the EBV netCDF you want to look at.',
+                               'Select the EBV netCDF.',
                                multiple=FALSE, filetype=list(netCDF = '*.nc')),
 
   #some space
@@ -52,23 +52,49 @@ fluidPage(
     style="margin-bottom:20px;"
   ),
 
+  # #describe elements in plot
+  # shiny::uiOutput('ui_title2'),
+  # shiny::uiOutput('ui_scenario'),
+  # shiny::uiOutput('ui_metric'),
+  # shiny::uiOutput('ui_entity'),
+
   #describe elements in plot
-  shiny::uiOutput('ui_title2'),
-  shiny::uiOutput('ui_scenario'),
-  shiny::uiOutput('ui_metric'),
-  shiny::uiOutput('ui_entity'),
+  fluidRow(
+    #empty column
+    column(1, ),
+    #description column
+    column(6,
+           #description
+           uiOutput('ui_title2'),
+           uiOutput('ui_scenario'),
+           uiOutput('ui_metric'),
+           uiOutput('ui_entity'),
+           #some space
+           tags$div(
+             style="margin-bottom:15px;"
+           ),
+           fluidRow(#text time slider & quantiles
+             column(6, uiOutput("txt_date")),
+             column(4, uiOutput('txt_quantiles'))
+           ),
+           fluidRow(#time slider & quantile selection
+             column(6, uiOutput("timeslider")),
+             column(2, uiOutput('classes_quantiles'))
+           ),
+
+    ),
+  ),
 
   shiny::fluidRow(
     #map
-    shiny::column(8, plotOutput("plot_map",# width='900px',
-                         #height = '500px',
+    shiny::column(8, plotOutput("plot_map",
                          click="plot_click",
                          dblclick = "plot1_dblclick",
                          brush = shiny::brushOpts(id = "plot1_brush", resetOnNew = TRUE))
     ),
-    #help text for map
-    shiny::column(1, shiny::uiOutput('ui_map_help')
-    )
+    # #help text for map
+    # shiny::column(1, shiny::uiOutput('ui_map_help')
+    # )
 
   ),
 
@@ -76,5 +102,19 @@ fluidPage(
                               Shiny.onInputChange('lastSelectId',this.id);
                               // to report changes on the same selectInput
                               Shiny.onInputChange('lastSelect', Math.random());
-                             });")
+                             });"),
+
+  fluidRow(
+    #empty column
+    column(1, ),
+    column(8,
+           #zoom explanation
+           uiOutput('ui_map_help')
+    )
+  ),
+
+  #some space
+  tags$div(
+    style="margin-bottom:25px;"
+  )
   )

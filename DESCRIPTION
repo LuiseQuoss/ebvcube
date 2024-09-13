@@ -65,6 +65,7 @@ Imports:
     rhdf5,
     shiny,
     shinyFiles,
+    shinyWidgets,
     stringr,
     terra,
     tidyterra,

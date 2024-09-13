@@ -262,7 +262,10 @@ ebv_read <- function(filepath, datacubepath = NULL,  entity=NULL, timestep=1,
 
 
       #set nodata value
-        h5array <- terra::classify(h5array, cbind(fillvalue, NA))
+        # print(fillvalue)
+        if(!is.na(fillvalue)){
+          h5array <- terra::classify(h5array, cbind(fillvalue, NA))
+        }
     }
 
   } else {

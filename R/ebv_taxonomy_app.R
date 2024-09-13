@@ -5,6 +5,10 @@
 #'
 #' @note Works with all EBV netCDFs created with
 #'   [ebvcube::ebv_create_taxonomy()].
+#'
+#' @importFrom shinyWidgets sliderTextInput
+#' @importFrom shinyFiles shinyFilesButton
+#' @importFrom bslib bs_theme
 #' @export
 ebv_taxonomy_app <- function() {
   shiny::runApp(appDir = system.file('shiny', package='ebvcube'))

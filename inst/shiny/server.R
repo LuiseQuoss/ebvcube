@@ -1,6 +1,6 @@
 #' Builds the server for ebv_taxonomy_app
 #' @noRd
-verbose = TRUE
+verbose <- TRUE
 
 function(input, output, session) {
   #on stop----
@@ -20,7 +20,7 @@ function(input, output, session) {
   })
 
   #load netCDF data----
-  shiny::observeEvent(input$load_netcdf,{
+  shiny::observeEvent(input$load_netcdf, {
     if(!is.null(input$load_netcdf)){
       #clean output UI
       output$ui_title2 <- renderUI(NULL)
@@ -32,6 +32,11 @@ function(input, output, session) {
       output$ui_title <- renderUI(NULL)
       output$select_pane <- renderUI(NULL)
       output$plot_map <- renderPlot(NULL)
+      output$txt_date <- renderUI(NULL)
+      output$txt_quantiles <- renderUI(NULL)
+      output$classes_quantiles <- renderUI(NULL)
+      output$classes <- renderUI(NULL)
+      output$daterange <- renderUI(NULL)
 
       #set reactive values ----
       filepath <- shiny::reactiveValues()
@@ -40,11 +45,14 @@ function(input, output, session) {
       taxonlevels_data <- c()
       entity_data <- shiny::reactiveValues()
       entity_data <- data.frame()
-      map_index <- shiny::reactiveValues()
-      map_index <- c(1)
+      map_index <- reactiveVal(1)
       ranges <- shiny::reactiveValues(x = NULL, y = NULL)
       title <- shiny::reactiveValues()
       datacubes <- shiny::reactiveValues()
+      current_date <- shiny::reactiveValues()
+      current_date <- 1
+      timesteps <- shiny::reactiveValues()
+      s <- reactiveVal(c())
 
       #close 'old' rhdf5 handles - just in case
       rhdf5::h5closeAll()
@@ -52,21 +60,27 @@ function(input, output, session) {
       #get filepath
       shinyFiles::shinyFileChoose(input, "load_netcdf", roots = shinyFiles::getVolumes(), session = session)
       fileinfo <- shinyFiles::parseFilePaths(shinyFiles::getVolumes(), input$load_netcdf)
+      # print(fileinfo)
 
       if (nrow(fileinfo) > 0) {
+        print('new filepath')
         #open file
         filepath <- fileinfo$datapath
         hdf <- rhdf5::H5Fopen(as.character(filepath))
-        if(verbose){message(filepath, 'filepath when loading')}
+        if(verbose){message(filepath, ' - filepath when loading')}
+
+        #get timesteps ----
+        timesteps <- ebv_i_get_dates(hdf)
 
         #add title to pane ----
-        title <- ebv_i_read_att(hdf, 'title', verbose=F)
+        title <- ebv_i_read_att(hdf, 'title', verbose=FALSE)
         output$ui_title <- shiny::renderUI({
           shiny::span(shiny::renderText({paste0('Dataset: ', title)}), style="font-size:20px; font-weight: bold")
         })
 
-        #add ebvcube selection ----
-        datacubes <- ebv_datacubepaths(filepath, verbose=F)
+        #add datacube selection ----
+        datacubes <- ebv_datacubepaths(fileinfo$datapath, verbose=FALSE)
+        print(datacubes)
 
         output$ui_datacube_txt <-shiny::renderUI({
           shiny::span(shiny::renderText({paste0('Choose a datacube: ')}), style="font-size:20px; font-weight: bold")
@@ -76,7 +90,7 @@ function(input, output, session) {
           cubes <- list()
           cubes[1:dim(datacubes)[1]] <- datacubes$datacubepaths
           if('scenario_names' %in% names(datacubes)){
-            names(cubes) <- paste0(datacubes$scenario_names,': ', datacubes$metric_names)
+            names(cubes) <- paste0(datacubes$scenario_names, ': ', datacubes$metric_names)
           }else{
             names(cubes) <- datacubes$metric_names
           }
@@ -87,12 +101,11 @@ function(input, output, session) {
             '',
             width = '90.5%',
             choices = cubes,
-            multiple = F
+            selected = cubes[1],
+            multiple = FALSE
           )
 
         })
-
-
 
         #get taxoninfo
         if(verbose){message('-----------------------new netCDF-----------------------')}
@@ -128,7 +141,7 @@ function(input, output, session) {
             values <- c()
 
 
-            values <-apply(did_list_data[level,,], 1, ebv_i_p)
+            values <-apply(did_list_data[level, , ], 1, ebv_i_p)
             taxon_level <- rep.int(level, dims[2])
             species_id <- 1:dims[2]
 
@@ -139,7 +152,7 @@ function(input, output, session) {
 
         }
         if(verbose){message('done')}
-        entity_data <- entity_data[-1,] #remove first empty line (NA)
+        entity_data <- entity_data[-1, ] #remove first empty line (NA)
 
         rhdf5::H5Dclose(did_list)
 
@@ -162,19 +175,19 @@ function(input, output, session) {
           taxon_levels <- rev(taxon_levels)
 
           #add empty selectizeInput
-          output = tagList()
+          output <- tagList()
 
           for (tax_lev in names(taxon_levels)){
 
             id <- paste0(tax_lev, '_level')
-            output[[tax_lev]] <- shiny::selectizeInput(id, paste0('Choose a(n) ',tax_lev),
+            output[[tax_lev]] <- shiny::selectizeInput(id, paste0('Choose a(n) ', tax_lev),
                                                 width='90.5%',
                                                 choices = NULL,
-                                                multiple = F)
+                                                multiple = FALSE)
 
           }
 
-          shiny::div( class = "dynamicSI", #additional div to track changes
+          shiny::div(class = "dynamicSI", #additional div to track changes
                output
           )
 
@@ -187,15 +200,15 @@ function(input, output, session) {
         taxon_levels[taxonlevels_data] <- 1:length(taxonlevels_data)
         taxon_levels <- rev(taxon_levels)
 
-        for ( tax_lev in names(taxon_levels)){
+        for (tax_lev in names(taxon_levels)){
           input_levs <- list()
 
-          levs <- unique(entity_data[entity_data$taxon_level==taxon_levels[[tax_lev]],'values'])
+          levs <- unique(entity_data[entity_data$taxon_level==taxon_levels[[tax_lev]], 'values'])
           #put into named list for select input
           input_levs[levs] <- levs
 
           id <- paste0(tax_lev, '_level')
-          if(id != paste0(taxonlevels_data[1],'_level')){
+          if(id != paste0(taxonlevels_data[1], '_level')){
             input_levs[['All']] <- 'all'
           }
           id <- paste0(tax_lev, '_level')
@@ -216,8 +229,8 @@ function(input, output, session) {
     #update SelectizeInput----
     #https://stackoverflow.com/questions/40631788/shiny-observe-triggered-by-dynamicaly-generated-inputs
     shiny::observe({
-      if (!is.null(input$lastSelectId) ) {
-        if(input$lastSelectId != paste0(taxonlevels_data[1],'_level')){
+      if (!is.null(input$lastSelectId)) {
+        if(input$lastSelectId != paste0(taxonlevels_data[1], '_level')){
 
           #get the ID of the select input that was changed
           select_id <- input$lastSelectId
@@ -226,7 +239,7 @@ function(input, output, session) {
           if (length(entity_data) > 0) {
             if(verbose){message('----update selectInput')}
 
-            if(any(taxonlevels_data==stringr::str_remove(select_id, '_level') )){
+            if(any(taxonlevels_data==stringr::str_remove(select_id, '_level'))){
 
               #get taxon levels values:
               taxon_levels <- list()
@@ -239,29 +252,29 @@ function(input, output, session) {
               selected_value <- input[[select_id]]
               if(verbose){message('selected value: ', selected_value)}
 
-              k = as.numeric(taxon_levels[tax_id])
+              k <- as.numeric(taxon_levels[tax_id])
               subset <- entity_data
 
               if(selected_value!='all'){
-                subset_species <- subset[which(subset$taxon_level==as.character(k) & subset$values == selected_value),]$species_id
-                subset <- subset[subset$species_id%in%subset_species,]
+                subset_species <- subset[which(subset$taxon_level==as.character(k) & subset$values == selected_value), ]$species_id
+                subset <- subset[subset$species_id%in%subset_species, ]
               }else{
                 k_all <- k + 1
                 #make sure that k+1 never goes higher than the actual highest level
                 if(k_all <= max(unlist(taxon_levels))){
-                  print('subset based on selection')
+                  if(verbose){message('subset based on selection')}
                   select_id_all <- paste0(names(taxon_levels[taxon_levels==k_all]), '_level')
                   #get selected value of the level that is one higher, use that selection as basis for the next selection
                   selected_value_all <- input[[select_id_all]]
 
                   if(selected_value_all=='all'){
-                    print('not changing the subset')
+                    if(verbose){message('not changing the subset')}
                   }else{
-                    subset_species <- subset[which(subset$taxon_level==as.character(k+1) & subset$values == selected_value_all),]$species_id
-                    subset <- subset[subset$species_id%in%subset_species,]
+                    subset_species <- subset[which(subset$taxon_level==as.character(k+1) & subset$values == selected_value_all), ]$species_id
+                    subset <- subset[subset$species_id%in%subset_species, ]
                   }
                 }else{
-                  print('include all')
+                  if(verbose){message('include all')}
                 }
               }
 
@@ -271,13 +284,13 @@ function(input, output, session) {
 
                 #get data for selectInput below
                 input_levs <- list()
-                levs <- unique(subset[subset$taxon_level==k,'values'])
+                levs <- unique(subset[subset$taxon_level==k, 'values'])
 
                 #put into named list for select input
                 input_levs[levs] <- levs
 
                 update_id <- paste0(names(rev(taxon_levels))[k], '_level')
-                if(update_id != paste0(taxonlevels_data[1],'_level')){
+                if(update_id != paste0(taxonlevels_data[1], '_level')){
                   input_levs[['All']] <- 'all'
                 }
 
@@ -300,52 +313,106 @@ function(input, output, session) {
 
     })
 
+    #action plot map button----
+    shiny::observeEvent(input$button_map, {
+      #create quantile slider----
+      output$txt_quantiles <- shiny::renderUI({
+        shiny::span('Set amount of quantiles (max=20):', style="font-size:16px")
+      })
+      output$classes_quantiles<- shiny::renderUI({
+        shiny::numericInput('classes', '',
+                            value=10, min=1, max=20)
+      })
 
-
-    #plot map button----
-    shiny::observeEvent(input$button_map,{
       if(verbose){message('----plot map')}
 
       #else there is an error when you load another netcdf - old value sticks there
-      if((any(taxonlevels_data==stringr::str_remove(input$lastSelectId, '_level') ) | is.null(input$lastSelectId)) &
-         file.exists(filepath) & stringr::str_ends(file.path(getwd(),filepath), '.nc')){
+      if((any(taxonlevels_data==stringr::str_remove(input$lastSelectId, '_level')) | is.null(input$lastSelectId)) &
+         file.exists(filepath) & stringr::str_ends(file.path(getwd(), filepath), '.nc')){
 
         if(verbose){message('current filepath: ', filepath)}
 
         #get map index for plotting
-        map_index <- which(entity_data[entity_data$taxon_level==1,'values']== input[[paste0(taxonlevels_data[1],'_level')]])
-        if(verbose){message('mapindex: ', map_index)}
+        map_index(which(entity_data[entity_data$taxon_level==1, 'values']== input[[paste0(taxonlevels_data[1], '_level')]]))
 
-        if(length(map_index)>0){
+        #create date slider ----
+        if(length(timesteps)>1){
+          output$txt_date <- shiny::renderUI({
+            shiny::span('Choose the date:', style="font-size:16px")
+          })
+          output$timeslider<-renderUI({
+            shinyWidgets::sliderTextInput(inputId = 'daterange',
+                                          label = "",
+                                          choices = timesteps,
+                                          selected = timesteps[1],
+                                          grid = TRUE)
+          })
+        }else{
+          #just print date if only one date
+          output$txt_date <- shiny::renderUI({
+            shiny::span(shiny::HTML(paste0('<b>Single date:</b> ', timesteps[1])), style="font-size:16px")
+          })
+          current_date <- as.character(timesteps[1])
+        }
 
 
-          #create plot
+        if(verbose){message('mapindex: ', map_index())}
+
+        if(length(map_index())>0){
+
+          #create plot ----
           output$plot_map <- shiny::renderPlot({
 
-                        #get boundary data (ebvcube package)
-            data("world_boundaries")
-            borders <- terra::vect(world_boundaries, geom='geometry',crs='EPSG:4326')
+            borders <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
+            if(length(timesteps)>1){
+              req(input$daterange)
+              current_date <- input$daterange
+            }
 
             datacubepath <- input$select_datacube
             if(verbose){message('read data for cube: ', datacubepath)}
-            data.raster <- ebv_read(filepath, datacubepath, entity=map_index, timestep = 1,
+            data.raster <- ebv_read(filepath, datacubepath, entity=map_index(), timestep = current_date,
                                     type='r', ignore_RAM=TRUE,
                                     verbose=FALSE)
 
-            #check color
-            mini <- suppressWarnings(min(terra::as.array(data.raster), na.rm=T))
-            maxi <- suppressWarnings(max(terra::as.array(data.raster), na.rm=T))
+            #calculate quantiles ----
+            observeEvent(c(input$classes, input$select_datacube), {
+              datacubepath <- input$select_datacube
+              if(length(map_index())>0 & !is.null(input$classes)){
+                print('calculating quantiles 1')
+                data.all <- rhdf5::h5read(file = as.character(fileinfo$datapath),
+                                          name = datacubepath,
+                                          index = list(NULL, NULL, NULL, map_index()))
+                s(as.numeric(stats::quantile(data.all, probs = seq(0, 1, (1/input$classes)), na.rm=TRUE)))
+                # print(s)
+              }
+
+            })
+
+            #define color 1----
+            mini <- suppressWarnings(min(terra::as.array(data.raster), na.rm=TRUE))
+            maxi <- suppressWarnings(max(terra::as.array(data.raster), na.rm=TRUE))
             if(mini==-Inf|mini== Inf|maxi== Inf|maxi==-Inf){
-              plot <- terra::plot(data.raster, fun=function()lines(borders))
+              plot <- terra::plot(data.raster, fun=function()terra::lines(borders))
             }else{
               if(mini==maxi){
+                #single value----
+                output$txt_quantiles <- shiny::renderUI({
+                  shiny::span(shiny::HTML(paste0('<b>Single value:</b> ', mini)), style="font-size:16px")
+                })
                 col_def <- 'aquamarine4'
+                output$classes_quantiles <- NULL
+                s(NULL)
               }else{
-                col_def <- grDevices::colorRampPalette(c("cornflowerblue",'lemonchiffon1', "brown2"))(10)
+                if (mini<0 && maxi>0){
+                  col_def <- colorRampPalette(c("cornflowerblue", 'lemonchiffon1', "brown2"))(input$classes)
+                } else {
+                  col_def <- colorRampPalette(c("#ffffcc", "#c2e699", '#78c679', "#238443"))(input$classes)
+                }
               }
               if(verbose){message('generate plot')}
-              plot <- terra::plot(data.raster,col=col_def,
-                                  #breaks = seq(0,1,0.125),
+              plot <- terra::plot(data.raster, col=col_def,
+                                  breaks = s(),
                                   fun=function()terra::lines(borders))
             }
 
@@ -354,9 +421,11 @@ function(input, output, session) {
           })
 
           #create description text----
+          print('here')
+          print(filepath)
           f <- filepath
 
-          if(file.exists(f) & stringr::str_ends(file.path(getwd(),f), '.nc')){
+          if(file.exists(f) & stringr::str_ends(file.path(getwd(), f), '.nc')){
             if(verbose){message('create description')}
             prop <- ebv_properties(f, input$select_datacube, verbose=FALSE)
 
@@ -373,11 +442,11 @@ function(input, output, session) {
 
             output$ui_metric <-shiny::renderUI({
               metric_name <- datacubes$metric_names[datacubes$datacubepaths==input$select_datacube]
-              shiny::span(shiny::HTML(paste0('<b>Metric:</b> ', metric_name, ' (', prop@ebv_cube$units,')')), style="font-size:16px")
+              shiny::span(shiny::HTML(paste0('<b>Metric:</b> ', metric_name, ' (', prop@ebv_cube$units, ')')), style="font-size:16px")
             })
 
             output$ui_entity <- shiny::renderUI({
-              shiny::span(shiny::HTML(paste0('<b>Entity:</b> ', prop@general$entity_names[map_index])), style="font-size:16px")
+              shiny::span(shiny::HTML(paste0('<b>Entity:</b> ', prop@general$entity_names[map_index()])), style="font-size:16px")
             })
           }
 
@@ -390,20 +459,19 @@ function(input, output, session) {
       #add help description text
       output$ui_map_help <- shiny::renderUI({
         shiny::span(shiny::HTML("<b>How-To Zoom:</b></br>
-                  Draw a rectangle over the area you want to zoom in on. Then double
-                -click on that area. If you want to zoom out to the global extent,
-                  simply double-click on the map."
-        ), style="font-size:16px;" )
+                  Draw a rectangle over the area you want to zoom in on. Then double-click on that area.
+                                If you want to zoom out to the global extent, simply double-click on the map."
+        ), style="font-size:16px;")
       })
 
       #end observe plot button
     })
 
     #https://stackoverflow.com/questions/44131861/shiny-ggplot2-plotoutput-zoom-floating-geom-text-position
+    #action when zoom----
     shiny::observeEvent(input$plot1_dblclick, {
       if(verbose){message('zoom')}
       brush <- input$plot1_brush
-      #print(brush)
       if (!is.null(brush)) {
         ranges$x <- c(brush$xmin, brush$xmax)
         ranges$y <- c(brush$ymin, brush$ymax)
@@ -413,31 +481,46 @@ function(input, output, session) {
       }
 
       #get map index for plotting
-      map_index <- which(entity_data[entity_data$taxon_level==1,'values']== input[[paste0(taxonlevels_data[1],'_level')]])
+      map_index(which(entity_data[entity_data$taxon_level==1, 'values']== input[[paste0(taxonlevels_data[1], '_level')]]))
 
       output$plot_map <- shiny::renderPlot({
-        data("world_boundaries")
-        borders <- terra::vect(world_boundaries, geom='geometry',crs='EPSG:4326')
+        # data("world_boundaries")
+        borders <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
+        # if(verbose){message(timesteps)}
+        if(length(timesteps)>1){
+          req(input$daterange)
+          current_date <- input$daterange
+        }
 
         datacubepath <- input$select_datacube
-        data.raster <- ebv_read(filepath, datacubepath, entity=map_index, timestep = 1,
+        data.raster <- ebv_read(filepath, datacubepath, entity=map_index(), timestep = current_date,
                                 type='r', ignore_RAM=TRUE,
                                 verbose=FALSE)
-        #check color
-        mini <- suppressWarnings(min(terra::as.array(data.raster), na.rm=T))
-        maxi <- suppressWarnings(max(terra::as.array(data.raster), na.rm=T))
+        #define color 2----
+        mini <- suppressWarnings(min(terra::as.array(data.raster), na.rm=TRUE))
+        maxi <- suppressWarnings(max(terra::as.array(data.raster), na.rm=TRUE))
         if(mini==-Inf|mini== Inf|maxi== Inf|maxi==-Inf){
           plot <- terra::plot(data.raster, fun=function()terra::lines(borders))
         }else{
           if(mini==maxi){
+            #single value----
+            output$txt_quantiles <- shiny::renderUI({
+              shiny::span(shiny::HTML(paste0('<b>Single value:</b> ', mini)), style="font-size:16px")
+            })
             col_def <- 'aquamarine4'
+            output$classes_quantiles <- NULL
+            s(NULL)
           }else{
-            col_def <- grDevices::colorRampPalette(c("cornflowerblue",'lemonchiffon1', "brown2"))(10)
+            if (mini<0 && maxi>0){
+              col_def <- colorRampPalette(c("cornflowerblue", 'lemonchiffon1', "brown2"))(input$classes)
+            } else {
+              col_def <- colorRampPalette(c("#ffffcc", "#c2e699", '#78c679', "#238443"))(input$classes)
+            }
           }
           if(verbose){message('generate plot')}
-          plot <- terra::plot(data.raster,col=col_def,
-                              #breaks = seq(0,1,0.125),
+          plot <- terra::plot(data.raster, col=col_def,
                               fun=function()terra::lines(borders),
+                              breaks = s(),
                               xlim = ranges$x, ylim = ranges$y)
         }
         plot
