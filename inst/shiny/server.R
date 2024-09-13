@@ -188,7 +188,6 @@ function(input, output, session) {
         taxon_levels <- rev(taxon_levels)
 
         for ( tax_lev in names(taxon_levels)){
-          #print(tax_lev)
           input_levs <- list()
 
           levs <- unique(entity_data[entity_data$taxon_level==taxon_levels[[tax_lev]],'values'])
@@ -227,7 +226,6 @@ function(input, output, session) {
           if (length(entity_data) > 0) {
             if(verbose){message('----update selectInput')}
 
-            #print(taxonlevels_data)
             if(any(taxonlevels_data==stringr::str_remove(select_id, '_level') )){
 
               #get taxon levels values:
@@ -335,12 +333,9 @@ function(input, output, session) {
                                     verbose=FALSE)
 
             #check color
-            mini <- suppressWarnings(min(as.array(data.raster), na.rm=T))
-            maxi <- suppressWarnings(max(as.array(data.raster), na.rm=T))
-            # print(mini)
-            # print(maxi)
+            mini <- suppressWarnings(min(terra::as.array(data.raster), na.rm=T))
+            maxi <- suppressWarnings(max(terra::as.array(data.raster), na.rm=T))
             if(mini==-Inf|mini== Inf|maxi== Inf|maxi==-Inf){
-              #print('plot with standard col')
               plot <- terra::plot(data.raster, fun=function()lines(borders))
             }else{
               if(mini==maxi){
@@ -351,7 +346,7 @@ function(input, output, session) {
               if(verbose){message('generate plot')}
               plot <- terra::plot(data.raster,col=col_def,
                                   #breaks = seq(0,1,0.125),
-                                  fun=function()lines(borders))
+                                  fun=function()terra::lines(borders))
             }
 
             plot
@@ -429,10 +424,10 @@ function(input, output, session) {
                                 type='r', ignore_RAM=TRUE,
                                 verbose=FALSE)
         #check color
-        mini <- suppressWarnings(min(as.array(data.raster), na.rm=T))
-        maxi <- suppressWarnings(max(as.array(data.raster), na.rm=T))
+        mini <- suppressWarnings(min(terra::as.array(data.raster), na.rm=T))
+        maxi <- suppressWarnings(max(terra::as.array(data.raster), na.rm=T))
         if(mini==-Inf|mini== Inf|maxi== Inf|maxi==-Inf){
-          plot <- terra::plot(data.raster, fun=function()lines(borders))
+          plot <- terra::plot(data.raster, fun=function()terra::lines(borders))
         }else{
           if(mini==maxi){
             col_def <- 'aquamarine4'
@@ -442,7 +437,7 @@ function(input, output, session) {
           if(verbose){message('generate plot')}
           plot <- terra::plot(data.raster,col=col_def,
                               #breaks = seq(0,1,0.125),
-                              fun=function()lines(borders),
+                              fun=function()terra::lines(borders),
                               xlim = ranges$x, ylim = ranges$y)
         }
         plot
