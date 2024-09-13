@@ -49,6 +49,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 biocViews:
 Imports: 
+    bslib,
     checkmate,
     curl,
     DelayedArray,
@@ -62,6 +63,8 @@ Imports:
     ncmeta,
     reshape2,
     rhdf5,
+    shiny,
+    shinyFiles,
     stringr,
     terra,
     tidyterra,

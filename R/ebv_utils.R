@@ -973,3 +973,14 @@ ebv_i_check_iso_res <- function(date_res) {
       }
   }
 }
+
+#' Transforms the character arrays from netCDF into vector of strings used for
+#' shiny app
+#'
+#' @return Vector of strings
+#' @noRd
+ebv_i_p <- function(row){
+  return(gsub(pattern = "(^ +| +$)",
+              replacement = "",
+              x = paste0(row, collapse='')))
+}
