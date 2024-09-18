@@ -24,5 +24,4 @@ ebv_taxonomy_app <- function(verbose =  TRUE) {
     server = ebv_taxonomy_server
   )
   shiny::runApp(app)
-  # shiny::runApp(appDir = system.file('shiny', package='ebvcube'))
 }

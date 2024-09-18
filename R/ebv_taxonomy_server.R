@@ -3,23 +3,18 @@
 #' @param output output set by Shiny.
 #' @param session session set by Shiny.
 #' @noRd
-ebv_taxonomy_server <- function(verbose, input, output, session) {
+ebv_taxonomy_server <- function(input, output, session) {
+
+  #make sure verbose is defined
+  if(!exists('verbose')){
+    verbose = TRUE
+  }
 
   #on stop----
   shiny::onStop(function(hdf, did) {
     message("Doing application cleanup\n")
     rhdf5::h5closeAll()
   })
-
-  #how to
-  # output$ui_howto <- shiny::renderUI({
-  #   shiny::span(shiny::HTML("<b>How-To:</b>
-  #             Click on the 'Load netCDF' button to select an EBV netCDF file with taxonomy information.</br>
-  #             Then have a little bit of patience while the data is loading...
-  #             Afterwards you can browse throgh the levels to find a specific entity (lowest level).</br>
-  #             You can also type into the drop-down menus to search. Often there are more options that you can see - so start typing!
-  #             </br></br>"), style="font-size:16px")
-  # })
 
   #load netCDF data----
   shiny::observeEvent(input$load_netcdf, {
@@ -362,7 +357,7 @@ ebv_taxonomy_server <- function(verbose, input, output, session) {
           #create plot ----
           output$plot_map <- shiny::renderPlot({
 
-            borders <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
+            world_boundaries <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
             if(length(timesteps)>1){
               shiny::req(input$daterange)
               current_date <- input$daterange
@@ -390,7 +385,7 @@ ebv_taxonomy_server <- function(verbose, input, output, session) {
             mini <- suppressWarnings(min(terra::as.array(data.raster), na.rm=TRUE))
             maxi <- suppressWarnings(max(terra::as.array(data.raster), na.rm=TRUE))
             if(mini==-Inf|mini== Inf|maxi== Inf|maxi==-Inf){
-              plot <- terra::plot(data.raster, fun=function()terra::lines(borders))
+              plot <- terra::plot(data.raster, fun=function()terra::lines(world_boundaries))
             }else{
               if(mini==maxi){
                 #single value----
@@ -410,7 +405,7 @@ ebv_taxonomy_server <- function(verbose, input, output, session) {
               if(verbose){message('generate plot')}
               plot <- terra::plot(data.raster, col=col_def,
                                   breaks = s(),
-                                  fun=function()terra::lines(borders)
+                                  fun=function()terra::lines(world_boundaries)
                                   )
 
               # s <- round(as.numeric(s()), 2)
@@ -490,7 +485,7 @@ ebv_taxonomy_server <- function(verbose, input, output, session) {
       output$plot_map <- shiny::renderPlot({
 
         #get country bordes
-        borders <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
+        world_boundaries <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
 
         if(length(timesteps)>1){
           shiny::req(input$daterange)
@@ -505,7 +500,7 @@ ebv_taxonomy_server <- function(verbose, input, output, session) {
         mini <- suppressWarnings(min(terra::as.array(data.raster), na.rm=TRUE))
         maxi <- suppressWarnings(max(terra::as.array(data.raster), na.rm=TRUE))
         if(mini==-Inf|mini== Inf|maxi== Inf|maxi==-Inf){
-          plot <- terra::plot(data.raster, fun=function()terra::lines(borders))
+          plot <- terra::plot(data.raster, fun=function()terra::lines(world_boundaries))
         }else{
           if(mini==maxi){
             #single value----
@@ -524,7 +519,7 @@ ebv_taxonomy_server <- function(verbose, input, output, session) {
           }
           if(verbose){message('generate plot')}
           plot <- terra::plot(data.raster, col=col_def,
-                              fun=function()terra::lines(borders),
+                              fun=function()terra::lines(world_boundaries),
                               breaks = s(),
                               xlim = ranges$x, ylim = ranges$y)
         }
