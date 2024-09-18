@@ -3,7 +3,7 @@
 #' @param output output set by Shiny.
 #' @param session session set by Shiny.
 #' @noRd
-ebv_taxonomy_server <- function(input, output, session) {
+ebv_taxonomy_server <- function(verbose, input, output, session) {
 
   #on stop----
   shiny::onStop(function(hdf, did) {
@@ -12,33 +12,33 @@ ebv_taxonomy_server <- function(input, output, session) {
   })
 
   #how to
-  output$ui_howto <- shiny::renderUI({
-    shiny::span(shiny::HTML("<b>How-To:</b>
-              Click on the 'Load netCDF' button to select an EBV netCDF file with taxonomy information.</br>
-              Then have a little bit of patience while the data is loading...
-              Afterwards you can browse throgh the levels to find a specific entity (lowest level).</br>
-              You can also type into the drop-down menus to search. Often there are more options that you can see - so start typing!
-              </br></br>"), style="font-size:16px")
-  })
+  # output$ui_howto <- shiny::renderUI({
+  #   shiny::span(shiny::HTML("<b>How-To:</b>
+  #             Click on the 'Load netCDF' button to select an EBV netCDF file with taxonomy information.</br>
+  #             Then have a little bit of patience while the data is loading...
+  #             Afterwards you can browse throgh the levels to find a specific entity (lowest level).</br>
+  #             You can also type into the drop-down menus to search. Often there are more options that you can see - so start typing!
+  #             </br></br>"), style="font-size:16px")
+  # })
 
   #load netCDF data----
   shiny::observeEvent(input$load_netcdf, {
     if(!is.null(input$load_netcdf)){
       #clean output UI
-      output$ui_title2 <- renderUI(NULL)
-      output$ui_scenario <- renderUI(NULL)
-      output$ui_metric <- renderUI(NULL)
-      output$ui_entity <- renderUI(NULL)
-      output$ui_datacube <- renderUI(NULL)
-      output$ui_datacube_txt <- renderUI(NULL)
-      output$ui_title <- renderUI(NULL)
-      output$select_pane <- renderUI(NULL)
-      output$plot_map <- renderPlot(NULL)
-      output$txt_date <- renderUI(NULL)
-      output$txt_quantiles <- renderUI(NULL)
-      output$classes_quantiles <- renderUI(NULL)
-      output$classes <- renderUI(NULL)
-      output$daterange <- renderUI(NULL)
+      output$ui_title2 <- shiny::renderUI(NULL)
+      output$ui_scenario <- shiny::renderUI(NULL)
+      output$ui_metric <- shiny::renderUI(NULL)
+      output$ui_entity <- shiny::renderUI(NULL)
+      output$ui_datacube <- shiny::renderUI(NULL)
+      output$ui_datacube_txt <- shiny::renderUI(NULL)
+      output$ui_title <- shiny::renderUI(NULL)
+      output$select_pane <- shiny::renderUI(NULL)
+      output$plot_map <- shiny::renderPlot(NULL)
+      output$txt_date <- shiny::renderUI(NULL)
+      output$txt_quantiles <- shiny::renderUI(NULL)
+      output$classes_quantiles <- shiny::renderUI(NULL)
+      output$classes <- shiny::renderUI(NULL)
+      output$daterange <- shiny::renderUI(NULL)
 
       #set reactive values ----
       filepath <- shiny::reactiveValues()
@@ -47,14 +47,14 @@ ebv_taxonomy_server <- function(input, output, session) {
       taxonlevels_data <- c()
       entity_data <- shiny::reactiveValues()
       entity_data <- data.frame()
-      map_index <- reactiveVal(1)
+      map_index <- shiny::reactiveVal(1)
       ranges <- shiny::reactiveValues(x = NULL, y = NULL)
       title <- shiny::reactiveValues()
       datacubes <- shiny::reactiveValues()
       current_date <- shiny::reactiveValues()
       current_date <- 1
       timesteps <- shiny::reactiveValues()
-      s <- reactiveVal(c())
+      s <- shiny::reactiveVal(c())
 
       #close 'old' rhdf5 handles - just in case
       rhdf5::h5closeAll()
@@ -174,7 +174,7 @@ ebv_taxonomy_server <- function(input, output, session) {
           taxon_levels <- rev(taxon_levels)
 
           #add empty selectizeInput
-          output <- tagList()
+          output <- shiny::tagList()
 
           for (tax_lev in names(taxon_levels)){
 
@@ -339,7 +339,7 @@ ebv_taxonomy_server <- function(input, output, session) {
           output$txt_date <- shiny::renderUI({
             shiny::span('Choose the date:', style="font-size:16px")
           })
-          output$timeslider<-renderUI({
+          output$timeslider <- shiny::renderUI({
             shinyWidgets::sliderTextInput(inputId = 'daterange',
                                           label = "",
                                           choices = timesteps,
@@ -364,7 +364,7 @@ ebv_taxonomy_server <- function(input, output, session) {
 
             borders <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
             if(length(timesteps)>1){
-              req(input$daterange)
+              shiny::req(input$daterange)
               current_date <- input$daterange
             }
 
@@ -375,7 +375,7 @@ ebv_taxonomy_server <- function(input, output, session) {
                                     verbose=FALSE)
 
             #calculate quantiles ----
-            observeEvent(c(input$classes, input$select_datacube), {
+            shiny::observeEvent(c(input$classes, input$select_datacube), {
               datacubepath <- input$select_datacube
               if(length(map_index())>0 & !is.null(input$classes)){
                 data.all <- rhdf5::h5read(file = as.character(fileinfo$datapath),
@@ -488,11 +488,12 @@ ebv_taxonomy_server <- function(input, output, session) {
       map_index(which(entity_data[entity_data$taxon_level==1, 'values']== input[[paste0(taxonlevels_data[1], '_level')]]))
 
       output$plot_map <- shiny::renderPlot({
-        # data("world_boundaries")
+
+        #get country bordes
         borders <- terra::vect(world_boundaries, geom='geometry', crs='EPSG:4326')
-        # if(verbose){message(timesteps)}
+
         if(length(timesteps)>1){
-          req(input$daterange)
+          shiny::req(input$daterange)
           current_date <- input$daterange
         }
 

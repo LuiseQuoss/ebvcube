@@ -4,7 +4,11 @@
 \alias{ebv_taxonomy_app}
 \title{EBV taxonomy Shiny App}
 \usage{
-ebv_taxonomy_app()
+ebv_taxonomy_app(verbose = TRUE)
+}
+\arguments{
+\item{verbose}{Logical. Default: TRUE. Turn off additional messages by
+setting it to FALSE.}
 }
 \description{
 Load an EBV netCDF that holds taxonomic information to browse
