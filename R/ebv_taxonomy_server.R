@@ -7,7 +7,7 @@ ebv_taxonomy_server <- function(input, output, session) {
 
   #make sure verbose is defined
   if(!exists('verbose')){
-    verbose = TRUE
+    verbose <- TRUE
   }
 
   #on stop----
