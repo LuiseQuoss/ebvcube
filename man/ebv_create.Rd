@@ -12,7 +12,7 @@ ebv_create(
   extent = c(-180, 180, -90, 90),
   resolution = c(1, 1),
   timesteps = NULL,
-  fillvalue = NULL,
+  fillvalue,
   prec = "double",
   sep = ",",
   force_4D = TRUE,
@@ -50,8 +50,8 @@ and temporal resolution given in the metadata file (json). Else, the dates
 must be given in in ISO format 'YYYY-MM-DD' or shortened 'YYYY' in case of
 yearly timesteps.}
 
-\item{fillvalue}{Numeric. Value of the missing data in the array. Not
-mandatory but should be defined!}
+\item{fillvalue}{Numeric. Value of the missing data (NoData value) in the
+array. Has to be a single numeric value or NA.}
 
 \item{prec}{Character. Default: 'double'. Precision of the data set. Valid
 options: 'short' 'integer' 'float' 'double' 'char' 'byte'.}

@@ -37,8 +37,8 @@
 #'  and temporal resolution given in the metadata file (json). Else, the dates
 #'  must be given in in ISO format 'YYYY-MM-DD' or shortened 'YYYY' in case of
 #'  yearly timesteps.
-#'@param fillvalue Numeric. Value of the missing data in the array. Not
-#'  mandatory but should be defined!
+#'@param fillvalue Numeric. Value of the missing data (NoData value) in the
+#'  array. Has to be a single numeric value or NA.
 #'@param prec Character. Default: 'double'. Precision of the data set. Valid
 #'  options: 'short' 'integer' 'float' 'double' 'char' 'byte'.
 #'@param sep Character. Default: ','. If the delimiter of the csv specifying the
@@ -54,12 +54,12 @@
 #'@param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'  it to FALSE.
 #'
-#' @note To check out the results take a look at your netCDF
-#'  file with \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided
-#'  by the NASA.
+#'@note To check out the results take a look at your netCDF file with
+#'  \href{https://www.giss.nasa.gov/tools/panoply/}{Panoply} provided by the
+#'  NASA.
 #'
-#'@note You can check the taxonomy info with [ebvcube::ebv_properties()] in the slot
-#'  'general' under the name 'taxonomy' and 'taxonomy_lsid'.
+#'@note You can check the taxonomy info with [ebvcube::ebv_properties()] in the
+#'  slot 'general' under the name 'taxonomy' and 'taxonomy_lsid'.
 #'
 #'@return Creates the netCDF file at the 'outputpath' location including the
 #'  taxonomy information.
@@ -84,7 +84,7 @@
 #' }
 ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
                                 epsg = 4326, extent = c(-180, 180, -90, 90), resolution = c(1, 1),
-                                timesteps = NULL, fillvalue = NULL, prec = 'double',
+                                timesteps = NULL, fillvalue, prec = 'double',
                                 sep=',', force_4D = TRUE, overwrite = FALSE,
                                 verbose = TRUE){
 
@@ -150,6 +150,9 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   }
   if(missing(taxonomy)){
     stop('Taxonomy argument is missing.')
+  }
+  if(missing(fillvalue)){
+    stop('Fillvalue argument is missing.')
   }
 
   #turn off local warnings if verbose=TRUE
@@ -237,11 +240,10 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   }
 
   #check fillvalue
-  if (! is.null(fillvalue)){
-    if(checkmate::checkNumber(fillvalue) != TRUE && !is.na(fillvalue)){
-      stop('The fillvalue needs to be a single numeric value or NA.')
-    }
+  if(checkmate::checkNumber(fillvalue) != TRUE && !is.na(fillvalue)){
+    stop('The fillvalue needs to be a single numeric value or NA.')
   }
+
 
   #check resolution
   if (checkmate::checkNumeric(resolution, len = 2) != TRUE){
@@ -1098,7 +1100,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     }
   }
 
-  # close file  ----
+  # close file 1 ----
   rhdf5::H5Fclose(hdf)
 
   # add values to 'entity_list' var ----
@@ -1118,10 +1120,13 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     level_i <- level_i-1
   }
 
+
+
   # add values to 'entity_levels' var ----
   level_d <- ebv_i_char_variable(taxon_list, max_char_taxonlevel, TRUE)
   rhdf5::h5write(level_d, file=outputpath,
                  name="entity_levels")
+
 
   # add values to 'entity_lsid' var ----
   if(lsid){
@@ -1129,6 +1134,27 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
     rhdf5::h5write(ls_id_d, file=outputpath,
                    name="entity_lsid")
   }
+
+  #delete automatically created attribute: :rhdf5-NA.OK ----
+  hdf <- rhdf5::H5Fopen(outputpath)
+  #entity_levels
+  ent_level_did <- rhdf5::H5Dopen(hdf, 'entity_levels')
+  if(rhdf5::H5Aexists(ent_level_did, 'rhdf5-NA.OK')){
+    rhdf5::H5Adelete(ent_level_did, 'rhdf5-NA.OK')
+  }
+  rhdf5::H5Dclose(ent_level_did)
+  #lsid
+  if(lsid){
+    lsid_did <- rhdf5::H5Dopen(hdf, 'entity_lsid')
+    if(rhdf5::H5Aexists(lsid_did, 'rhdf5-NA.OK')){
+      rhdf5::H5Adelete(lsid_did, 'rhdf5-NA.OK')
+    }
+    rhdf5::H5Dclose(lsid_did)
+  }
+
+  # close file 2 ----
+  rhdf5::H5Fclose(hdf)
+
 
 
 }

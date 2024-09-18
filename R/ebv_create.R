@@ -19,8 +19,8 @@
 #'   system via the corresponding epsg code.
 #' @param extent Numeric. Default: c(-180,180,-90,90). Defines the extent of the
 #'   data: c(xmin, xmax, ymin, ymax).
-#' @param fillvalue Numeric. Value of the missing data in the array. Not
-#'   mandatory but should be defined!
+#' @param fillvalue Numeric. Value of the missing data (NoData value) in the
+#'   array. Has to be a single numeric value or NA.
 #' @param prec Character. Default: 'double'. Precision of the data set. Valid
 #'   options: 'short' 'integer' 'float' 'double' 'char' 'byte'.
 #' @param sep Character. Default: ','. If the delimiter of the csv specifying
@@ -66,7 +66,7 @@
 #' }
 ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
                        extent = c(-180, 180, -90, 90), resolution = c(1, 1),
-                       timesteps = NULL, fillvalue = NULL, prec = 'double',
+                       timesteps = NULL, fillvalue, prec = 'double',
                        sep=',', force_4D = TRUE, overwrite = FALSE,
                        verbose = TRUE){
   # start initial tests ----
@@ -131,6 +131,9 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   }
   if(missing(entities)){
     stop('Entities argument is missing.')
+  }
+  if(missing(fillvalue)){
+    stop('Fillvalue argument is missing.')
   }
 
   #turn off local warnings if verbose=TRUE
@@ -242,10 +245,8 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   }
 
   #check fillvalue
-  if (! is.null(fillvalue)){
-    if(checkmate::checkNumber(fillvalue) != TRUE && !is.na(fillvalue)){
+  if(checkmate::checkNumber(fillvalue) != TRUE && !is.na(fillvalue)){
       stop('The fillvalue needs to be a single numeric value or NA.')
-    }
   }
 
   #check resolution
