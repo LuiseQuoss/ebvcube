@@ -3,6 +3,9 @@
 #' @description Load an EBV netCDF that holds taxonomic information to browse
 #'   the data and visualize it.
 #'
+#' @param verbose Logical. Default: TRUE. Turn off additional messages by
+#'   setting it to FALSE.
+#'
 #' @note Works with all EBV netCDFs created with
 #'   [ebvcube::ebv_create_taxonomy()].
 #'
@@ -10,6 +13,14 @@
 #' @importFrom shinyFiles shinyFilesButton
 #' @importFrom bslib bs_theme
 #' @export
-ebv_taxonomy_app <- function() {
-  shiny::runApp(appDir = system.file('shiny', package='ebvcube'))
+ebv_taxonomy_app <- function(verbose =  TRUE) {
+  shiny_env <- new.env()
+  environment(ebv_taxonomy_ui) <- shiny_env
+  environment(ebv_taxonomy_server) <- shiny_env
+  app <- shiny::shinyApp(
+    ui = ebv_taxonomy_ui(),
+    server = ebv_taxonomy_server
+  )
+  shiny::runApp(app)
+  # shiny::runApp(appDir = system.file('shiny', package='ebvcube'))
 }

@@ -1,8 +1,10 @@
-#' Builds the server for ebv_taxonomy_app
+#' The Shiny App Server for ebv_taxonomy_app
+#' @param input input set by Shiny.
+#' @param output output set by Shiny.
+#' @param session session set by Shiny.
 #' @noRd
-verbose <- TRUE
+ebv_taxonomy_server <- function(input, output, session) {
 
-function(input, output, session) {
   #on stop----
   shiny::onStop(function(hdf, did) {
     message("Doing application cleanup\n")
@@ -60,10 +62,8 @@ function(input, output, session) {
       #get filepath
       shinyFiles::shinyFileChoose(input, "load_netcdf", roots = shinyFiles::getVolumes(), session = session)
       fileinfo <- shinyFiles::parseFilePaths(shinyFiles::getVolumes(), input$load_netcdf)
-      # print(fileinfo)
 
       if (nrow(fileinfo) > 0) {
-        print('new filepath')
         #open file
         filepath <- fileinfo$datapath
         hdf <- rhdf5::H5Fopen(as.character(filepath))
@@ -80,7 +80,6 @@ function(input, output, session) {
 
         #add datacube selection ----
         datacubes <- ebv_datacubepaths(fileinfo$datapath, verbose=FALSE)
-        print(datacubes)
 
         output$ui_datacube_txt <-shiny::renderUI({
           shiny::span(shiny::renderText({paste0('Choose a datacube: ')}), style="font-size:20px; font-weight: bold")
@@ -379,12 +378,10 @@ function(input, output, session) {
             observeEvent(c(input$classes, input$select_datacube), {
               datacubepath <- input$select_datacube
               if(length(map_index())>0 & !is.null(input$classes)){
-                print('calculating quantiles 1')
                 data.all <- rhdf5::h5read(file = as.character(fileinfo$datapath),
                                           name = datacubepath,
                                           index = list(NULL, NULL, NULL, map_index()))
                 s(as.numeric(stats::quantile(data.all, probs = seq(0, 1, (1/input$classes)), na.rm=TRUE)))
-                # print(s)
               }
 
             })
@@ -413,7 +410,16 @@ function(input, output, session) {
               if(verbose){message('generate plot')}
               plot <- terra::plot(data.raster, col=col_def,
                                   breaks = s(),
-                                  fun=function()terra::lines(borders))
+                                  fun=function()terra::lines(borders)
+                                  )
+
+              # s <- round(as.numeric(s()), 2)
+              # legend_s <- rev(paste0(s[1:length(s)-1], ' - ',s[2:length(s)]))
+              # terra::add_legend("topright",
+              #        legend = legend_s,
+              #        fill = col_def,
+              #        border = "black",
+              #        cex=0.5)
             }
 
             plot
@@ -421,8 +427,6 @@ function(input, output, session) {
           })
 
           #create description text----
-          print('here')
-          print(filepath)
           f <- filepath
 
           if(file.exists(f) & stringr::str_ends(file.path(getwd(), f), '.nc')){
@@ -529,9 +533,5 @@ function(input, output, session) {
 
     #end check input netCDF
   })
-
-
-
-
 
 }

@@ -232,6 +232,7 @@ citation('ebvcube')
 ||ebv_write|Write manipulated data back to disc|
 |Data visualization|ebv_map|Plot a map of the specified data slice|
 ||ebv_trend|Plot the temporal trend |
+||ebv_taxonomy_app|Shiny App to browse and plot your taxonomic netCDFs|
 |Data creation|ebv_create|Create a new EBV netCDF|
 ||ebv_create_taxonomy|Create a new EBV netCDF with taxonomy info|
 ||ebv_metadata|Create the EBV metadata text file (JSON)|

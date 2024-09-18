@@ -324,7 +324,7 @@ citation('ebvcube')
 #>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2023). _ebvcube:
 #>   Working with netCDF for Essential Biodiversity Variables_. German
 #>   Centre for Integrative Biodiversity Research (iDiv)
-#>   Halle-Jena-Leipzig, Germany. R package version 0.2.3,
+#>   Halle-Jena-Leipzig, Germany. R package version 0.3.0,
 #>   <https://github.com/LuiseQuoss/ebvcube>.
 #> 
 #> A BibTeX entry for LaTeX users is
@@ -333,7 +333,7 @@ citation('ebvcube')
 #>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
 #>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
 #>     year = {2023},
-#>     note = {R package version 0.2.3},
+#>     note = {R package version 0.3.0},
 #>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
 #>     address = {Germany},
 #>     url = {https://github.com/LuiseQuoss/ebvcube},
@@ -342,20 +342,21 @@ citation('ebvcube')
 
 ## List of all functions
 
-| Functionality      | Function            | Description                                   |
-|:-------------------|:--------------------|:----------------------------------------------|
-| Basic access       | ebv_datacubepaths   | Get all available data cubes in the netCDF    |
-|                    | ebv_properties      | Get all the metadata of the netCDF            |
-|                    | ebv_download        | Download EBV netCDFs from the EBV Portal      |
-| Data access        | ebv_read            | Read the data                                 |
-|                    | ebv_read_bb         | Read a spatial subset given by a bounding box |
-|                    | ebv_read_shp        | Read a spatial subset given by a Shapefile    |
-|                    | ebv_analyse         | Get basic measurements of the data            |
-|                    | ebv_write           | Write manipulated data back to disc           |
-| Data visualization | ebv_map             | Plot a map of the specified data slice        |
-|                    | ebv_trend           | Plot the temporal trend                       |
-| Data creation      | ebv_create          | Create a new EBV netCDF                       |
-|                    | ebv_create_taxonomy | Create a new EBV netCDF with taxonomy info    |
-|                    | ebv_metadata        | Create the EBV metadata text file (JSON)      |
-|                    | ebv_add_data        | Add data to the new netCDF                    |
-|                    | ebv_attribute       | Change an attribute value                     |
+| Functionality      | Function            | Description                                         |
+|:-------------------|:--------------------|:----------------------------------------------------|
+| Basic access       | ebv_datacubepaths   | Get all available data cubes in the netCDF          |
+|                    | ebv_properties      | Get all the metadata of the netCDF                  |
+|                    | ebv_download        | Download EBV netCDFs from the EBV Portal            |
+| Data access        | ebv_read            | Read the data                                       |
+|                    | ebv_read_bb         | Read a spatial subset given by a bounding box       |
+|                    | ebv_read_shp        | Read a spatial subset given by a Shapefile          |
+|                    | ebv_analyse         | Get basic measurements of the data                  |
+|                    | ebv_write           | Write manipulated data back to disc                 |
+| Data visualization | ebv_map             | Plot a map of the specified data slice              |
+|                    | ebv_trend           | Plot the temporal trend                             |
+|                    | ebv_taxonomy_app    | Shiny App to browse and plot your taxonomic netCDFs |
+| Data creation      | ebv_create          | Create a new EBV netCDF                             |
+|                    | ebv_create_taxonomy | Create a new EBV netCDF with taxonomy info          |
+|                    | ebv_metadata        | Create the EBV metadata text file (JSON)            |
+|                    | ebv_add_data        | Add data to the new netCDF                          |
+|                    | ebv_attribute       | Change an attribute value                           |
