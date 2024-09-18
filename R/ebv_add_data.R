@@ -320,6 +320,7 @@ ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timest
 
   #set dim of dataset ----
   did <- rhdf5::H5Dopen(hdf, datacubepath)
+  fillvalue <- ebv_i_read_att(did, '_FillValue', FALSE)
   file_space <- rhdf5::H5Dget_space(did)
   if (rhdf5::H5Sget_simple_extent_dims(file_space)$size[3] != dims[3]){
     #set new dimension of dataset
@@ -332,8 +333,13 @@ ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timest
   }
 
 
-  #think about replacing NaN with NA -> weird errors -> check again if this bug is real!
-  data[is.nan(data)] <- NA
+  #assure the FillValue
+  if(any(is.na(data))){
+    data[is.na(data)] <- fillvalue
+  }
+  if(any(is.nan(data))){
+    data[is.nan(data)] <- fillvalue
+  }
 
   #write data ----
 
