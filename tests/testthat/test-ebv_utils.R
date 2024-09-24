@@ -32,6 +32,10 @@ test_that("test ebv_i_eval_epsg ESRI:54009 return proj", {
   expect_equal(crs_proj, '+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs')
 })
 
+test_that("test ebv_i_eval_epsg wrong EPSG code", {
+  expect_error(ebv_i_eval_epsg(1234), 'The EPSG you provided cannot be found.')
+})
+
 #test eval_wkt----
 test_that("test ebv_i_eval_wkt for ESRI:54009 - old WKT", {
   wkt <- 'PROJCS["World_Mollweide",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],PROJECTION["Mollweide"],PARAMETER["central_meridian",0],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["ESRI","54009"]]'
@@ -144,6 +148,10 @@ test_that("test ebv_i_date single iso-string error", {
   expect_error(ebv_i_date("1960-01-01", dates_all))
 })
 
+test_that("test ebv_i_date wrong input type error", {
+  expect_error(ebv_i_date(TRUE, '1900-01-01'), 'The argument timestep must be of type integer or character.')
+})
+
 # test scenario and metric definition ----
 #ebv_i_datacubepath(scenario, metric, datacubepaths, verbose)
 
@@ -216,7 +224,12 @@ test_that("test ebv_i_datacubepath no string values error", {
   colnames(datacubepaths) <- c('datacubepaths', 'scenario_names', 'metric_names')
 
   expect_error(ebv_i_datacubepath(1, 5, datacubepaths, FALSE))
+
+  # expect_error(ebv_i_datacubepath(scenario=NA, metric=NA, datacubepaths),
+  #              'The scenario argument must either be of type character, a simple integer or  NULL (if the dataset has no scenario).')
+
 })
+
 
 #test ebv_i_get_dates function for shiny----
 test_that("test ebv_i_get_dates ", {
