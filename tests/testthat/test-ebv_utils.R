@@ -226,7 +226,3 @@ test_that("test ebv_i_get_dates ", {
   expect_equal(as.character(ebv_i_get_dates(hdf)),dates_all)
   rhdf5::H5Fclose(hdf)
 })
-
-
-
-
