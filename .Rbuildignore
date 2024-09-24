@@ -8,6 +8,7 @@
 ^prep_cran_submit\.R$
 ^.lintr
 ^to-dos.md
+^CODE_OF_CONDUCT.md
 ^inst/docs/ebvcube_0.0.1.pdf
 ^inst/docs/ebvcube_0.1.1.pdf
 ^inst/docs/ebvcube_0.1.2.pdf
