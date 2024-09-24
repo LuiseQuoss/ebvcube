@@ -125,6 +125,17 @@ test_that("test ebv_create_taxonomy with lsid", {
   expect_equal(rhdf5::H5Aexists(entity_levels.id, 'rhdf5-NA.OK'), FALSE)
   rhdf5::H5Dclose(entity_levels.id)
 
+  #test ebv_i_p
+  did_list <- rhdf5::H5Dopen(hdf, 'entity_list')
+  did_list_data <- rhdf5::H5Dread(did_list)
+  rhdf5::H5Dclose(did_list)
+  values <- c("Hipposideridae", "Cheirogaleidae", "Echimyidae", "Procyonidae", "Rhinolophidae", "Phyllostomidae",
+              "Vespertilionidae","Rhinolophidae",   "Phyllostomidae",  "Muridae",
+              "Pteropodidae",     "Echimyidae",      "Phalangeridae",   "Soricidae",       "Cricetidae",
+              "Soricidae", "Ctenomyidae",     "Phyllostomidae",  "Emballonuridae",  "Callitrichidae",
+              "Cricetidae",      "Geomyidae",       "Molossidae",      "Dipodidae",       "Bovidae",
+              "Molossidae",      "Tarsiidae",       "Macropodidae",    "Cercopithecidae", "Muridae")
+  expect_equal(apply(did_list_data[2, , ], 1, ebv_i_p),values)
   rhdf5::H5Fclose(hdf)
 
   #test ebv_properties taxonomy

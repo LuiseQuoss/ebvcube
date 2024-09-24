@@ -995,20 +995,5 @@ ebv_i_get_dates <- function(hdf){
   add <- 40177
   time_data <- suppressWarnings(rhdf5::h5read(hdf, 'time'))
   dates <- as.Date(time_data - add, origin = '1970-01-01')
-  #get time resolution
-  res <-ebv_i_read_att(hdf, 'time_coverage_resolution', FALSE)
-  #modify date
-  if(res!='Irregular'){
-    y <- stringr::str_split(stringr::str_remove(res, 'P')[[1]], '-')[[1]][1]
-    m <- stringr::str_split(stringr::str_remove(res, 'P')[[1]], '-')[[1]][2]
-    d <- stringr::str_split(stringr::str_remove(res, 'P')[[1]], '-')[[1]][3]
-    if(d == '00' && m == '00'){
-      time_natural <- strtrim(dates, 4)
-      # time_natural <- gsub("-.*", "", time_natural)
-    } else if(d == '00'){
-      time_natural <- strtrim(dates, 7)
-    }
-  }
-  names(dates) <- time_natural
   return(dates)
 }
