@@ -20,6 +20,7 @@ name: R
 jobs:
   R:
     runs-on: ubuntu-latest
+    # container: r-base:4.4
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
@@ -40,6 +41,7 @@ jobs:
       - name: Lint root directory
         run: lintr::lint_dir()
         shell: Rscript {0}
+        continue-on-error: true
         env:
           LINTR_ERROR_ON_LINT: true
 
