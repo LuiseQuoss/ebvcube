@@ -20,7 +20,7 @@ name: R
 jobs:
   R:
     runs-on: ubuntu-latest
-    # container: r-base:4.4
+    container: r-base:4.4
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
