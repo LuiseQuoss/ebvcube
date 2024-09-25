@@ -808,7 +808,7 @@ ebv_create_taxonomy <- function(jsonpath, outputpath, taxonomy, lsid=FALSE,
   ebv_i_char_att(hdf, 'keywords', keywords)
 
   #add global.att to netcdf
-  for (i in 1:length(global.att)){
+  for (i in seq_along(global.att)){
     att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
     att.txt <- paste0(trimws(att.txt), collapse = ', ')
     if(names(global.att[i])=='contributor_name' || names(global.att[i])=='ebv_domain'){

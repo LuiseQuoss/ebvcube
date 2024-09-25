@@ -73,7 +73,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   # ensure file and all datahandles are closed on exit
   withr::defer(
     if(exists('hdf')){
-      if(rhdf5::H5Iis_valid(hdf )==TRUE){rhdf5::H5Fclose(hdf)}
+      if(rhdf5::H5Iis_valid(hdf)==TRUE){rhdf5::H5Fclose(hdf)}
     }
   )
   gids <- c('mgid', 'sgid', 'mid')
@@ -773,7 +773,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   ebv_i_char_att(hdf, 'keywords', keywords)
 
   #add global.att to netcdf
-  for (i in 1:length(global.att)){
+  for (i in seq_along(global.att)){
     att.txt <- eval(parse(text = paste0('json$', global.att[i][[1]])))
     att.txt <- paste0(trimws(att.txt), collapse = ', ')
     if(names(global.att[i])=='contributor_name' || names(global.att[i])=='ebv_domain'){
@@ -974,7 +974,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
   # add values to 'entity' var ----
   # string-valued auxiliary coordinate variable
   entity.values <- c()
-  for (i in 1:length(entity_csv[, 1])){
+  for (i in seq_along(entity_csv[, 1])){
     new_values <- stringr::str_split(entity_csv[i, 1], '')[[1]]
     if (length(new_values)<max_char){
       for (i in 1:(max_char - length(new_values))){

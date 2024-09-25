@@ -82,7 +82,7 @@ ebv_taxonomy_server <- function(input, output, session) {
 
         output$ui_datacube <- shiny::renderUI({
           cubes <- list()
-          cubes[1:dim(datacubes)[1]] <- datacubes$datacubepaths
+          cubes[seq_along(datacubes[1])] <- datacubes$datacubepaths
           if('scenario_names' %in% names(datacubes)){
             names(cubes) <- paste0(datacubes$scenario_names, ': ', datacubes$metric_names)
           }else{
@@ -108,7 +108,7 @@ ebv_taxonomy_server <- function(input, output, session) {
         did_data <- rhdf5::H5Dread(did)
         taxon_levels <- c()
         if (!is.na(nrow(did_data))) {
-          for (row in 1:nrow(did_data)) {
+          for (row in seq_along(nrow(did_data))) {
             name <- paste0(did_data[row, ], collapse = '')
             taxon_levels <- c(taxon_levels, name)
           }

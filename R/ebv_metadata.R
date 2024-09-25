@@ -475,7 +475,7 @@ ebv_metadata <- function(outputpath, title, summary,
                   ebv_entity_classification_name = ebv_entity_classification_name,
                   ebv_entity_classification_url = ebv_entity_classification_url)
 
-  for (i_opt in 1:length(arg_opt)){
+  for (i_opt in seq_along(arg_opt)){
     if(is.null(arg_opt[[i_opt]])){
       assign(names(arg_opt[i_opt]), 'N/A')
     }
