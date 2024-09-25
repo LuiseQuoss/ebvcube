@@ -71,10 +71,8 @@ Imports:
     tidyterra,
     withr
 Suggests:
-    covr,
     knitr,
     lintr,
-    rcmdcheck,
     rmarkdown,
     testthat (>= 3.0.0)
 SystemRequirements: GDAL binaries
