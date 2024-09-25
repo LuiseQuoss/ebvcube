@@ -173,7 +173,7 @@ ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timest
         !stringr::str_detect(datacubepath, 'ebv_cube')) {
       stop(paste0('The given datacubepath is not valid:\n', datacubepath))
     }
-    #close file
+    #close the file
     rhdf5::H5Fclose(hdf)
   } else if(!is.null(metric)){
     #3. check metric&scenario
