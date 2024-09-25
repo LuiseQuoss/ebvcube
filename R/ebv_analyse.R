@@ -171,7 +171,7 @@ ebv_analyse <- function(filepath, datacubepath = NULL, entity=NULL, timestep=1,
 
   ####initial tests end ----
 
-    #process global scale ----
+  #process global scale ----
   if (is.null(subset)){
     #process whole file + variable+ timestep
     type.short <- ebv_i_type_r(prop@ebv_cube$type)

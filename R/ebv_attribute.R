@@ -131,7 +131,8 @@ ebv_attribute <- function(filepath, attribute_name, value,
   #end initial tests ----
 
   #set white list ----
-  att.chr <- c(#global
+  att.chr <- c(
+    #global
     'history', 'keywords', 'title', 'summary', 'references', 'source',
     'project', 'date_created', 'creator_name', 'creator_institution',
     'creator_email', 'license', 'contributor_name', 'publisher_name',
