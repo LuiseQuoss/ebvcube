@@ -1,57 +1,80 @@
-# This CITATION.cff file was generated with cffinit.
-# Visit https://bit.ly/cffinit to generate yours today!
-
+# --------------------------------------------
+# CITATION file created with {cffr} R package
+# See also: https://docs.ropensci.org/cffr/
+# --------------------------------------------
+ 
 cff-version: 1.2.0
-title: >-
-  ebvcube: Working with netCDF for Essential Biodiversity
-  Variables
-message: >-
-  If you use this software, please cite it using the
-  metadata from this file.
+message: 'To cite package "ebvcube" in publications use:'
 type: software
-authors:
-  - given-names: Luise
-    family-names: Quoß
-    email: luise.quoss@idiv.de
-    affiliation: >-
-      German Centre for Integrative Biodiversity Research
-      (iDiv) Halle-Jena-Leipzig
-    orcid: 'https://orcid.org/0000-0002-9910-1252'
-  - orcid: 'https://orcid.org/0000-0002-9645-8571'
-    given-names: Néstor
-    family-names: Fernández
-    affiliation: >-
-      German Centre for Integrative Biodiversity Research
-      (iDiv) Halle-Jena-Leipzig
-  - given-names: Christian
-    family-names: Langer
-    orcid: 'https://orcid.org/0000-0003-1446-3527'
-    affiliation: >-
-      German Centre for Integrative Biodiversity Research
-      (iDiv) Halle-Jena-Leipzig
-  - orcid: 'https://orcid.org/0000-0003-2690-9952'
-    given-names: Jose
-    family-names: Valdez
-    affiliation: >-
-      German Centre for Integrative Biodiversity Research
-      (iDiv) Halle-Jena-Leipzig
-  - orcid: 'https://orcid.org/0000-0003-1043-1675'
-    affiliation: >-
-      German Centre for Integrative Biodiversity Research
-      (iDiv) Halle-Jena-Leipzig
-    given-names: Henrique Miguel
-    family-names: Pereira
-identifiers:
-  - type: doi
-    value: 10.32614/CRAN.package.ebvcube
-abstract: >-
-  The concept of Essential Biodiversity Variables (EBV,
-  https://geobon.org/ebvs/what-are-ebvs) comes with a data
-  structure based on the Network Common Data Form (netCDF).
-  The 'ebvcube' 'R' package provides functionality to easily
-  create, access and visualise this data. The EBV netCDFs
-  can be downloaded from the EBV Data Portal: Christian
-  Langer/ iDiv (2020) https://portal.geobon.org. 
 license: GPL-3.0-or-later
-version: 0.30.0
-date-released: '2024-10-02'
+title: 'ebvcube: Working with netCDF for Essential Biodiversity Variables'
+version: 0.3.0
+identifiers:
+- type: doi
+  value: 10.32614/CRAN.package.ebvcube
+abstract: 'The concept of Essential Biodiversity Variables (EBV, <https://geobon.org/ebvs/what-are-ebvs/>)
+  comes with a data structure based on the Network Common Data Form (netCDF). The
+  ''ebvcube'' ''R'' package provides functionality to easily create, access and visualise
+  this data. The EBV netCDFs can be downloaded from the EBV Data Portal: Christian
+  Langer/ iDiv (2020) <https://portal.geobon.org/>.'
+authors:
+- family-names: Quoss
+  given-names: Luise
+  email: luise.quoss@idiv.de
+  orcid: https://orcid.org/0000-0002-9910-1252
+- family-names: Fernandez
+  given-names: Nestor
+  email: nestor.fernandez@idiv.de
+  orcid: https://orcid.org/0000-0002-9645-8571
+- family-names: Langer
+  given-names: Christian
+  email: christian.langer@idiv.de
+  orcid: https://orcid.org/0000-0003-1446-3527
+- family-names: Valdez
+  given-names: Jose
+  email: jose.valdez@idiv.de
+  orcid: https://orcid.org/0000-0003-2690-9952
+- family-names: Pereira
+  given-names: Henrique Miguel
+  email: henrique.pereira@idiv.de
+  orcid: https://orcid.org/0000-0003-1043-1675
+preferred-citation:
+  type: manual
+  title: 'ebvcube: Working with netCDF for Essential Biodiversity Variables'
+  authors:
+  - family-names: Quoss
+    given-names: Luise
+    email: luise.quoss@idiv.de
+    orcid: https://orcid.org/0000-0002-9910-1252
+  - family-names: Fernandez
+    given-names: Nestor
+    email: nestor.fernandez@idiv.de
+    orcid: https://orcid.org/0000-0002-9645-8571
+  - family-names: Langer
+    given-names: Christian
+    email: christian.langer@idiv.de
+    orcid: https://orcid.org/0000-0003-1446-3527
+  - family-names: Valdez
+    given-names: Jose
+    email: jose.valdez@idiv.de
+    orcid: https://orcid.org/0000-0003-2690-9952
+  - family-names: Pereira
+    given-names: Henrique Miguel
+    email: henrique.pereira@idiv.de
+    orcid: https://orcid.org/0000-0003-1043-1675
+  year: '2024'
+  notes: R package version 0.3.0
+  institution:
+    name: German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig
+    address: Germany
+  url: https://github.com/LuiseQuoss/ebvcube
+repository: https://CRAN.R-project.org/package=ebvcube
+repository-code: https://github.com/LuiseQuoss/ebvcube
+url: https://github.com/LuiseQuoss/ebvcube
+date-released: '2024-07-10'
+contact:
+- family-names: Quoss
+  given-names: Luise
+  email: luise.quoss@idiv.de
+  orcid: https://orcid.org/0000-0002-9910-1252
+

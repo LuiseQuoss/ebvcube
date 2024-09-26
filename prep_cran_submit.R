@@ -2,10 +2,14 @@
 
 #update date and version number in DESCRIPTION file
 
+#update the CITATION.cff
+cff_write(dependencies=FALSE)
+
 # Run tests and examples
 devtools::document()
 devtools::test()
 devtools::run_examples()
+
 
 #run lintr
 lintr::lint_dir()
