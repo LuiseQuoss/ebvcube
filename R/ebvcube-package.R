@@ -11,6 +11,5 @@
 #' standard.
 #'
 #'
-#' @docType package
 #' @name ebvcube
-NULL
+"_PACKAGE"
