@@ -103,6 +103,9 @@ prop.file@general[1:4]
 #> 
 #> $ebv_name
 #> [1] "Taxonomic and phylogenetic diversity"
+```
+
+``` r
 slotNames(prop.file)
 #> [1] "general"  "spatial"  "temporal" "metric"   "scenario" "ebv_cube"
 ```
@@ -179,11 +182,20 @@ measurements <- ebv_analyse(file, dc, entity=1, verbose=FALSE)
 #see the included measurements
 names(measurements)
 #> [1] "min"  "q25"  "q50"  "mean" "q75"  "max"  "std"  "n"    "NAs"
+```
+
+``` r
 #check out the mean and the number of pixels
 measurements$mean
 #> [1] 0.6140731
+```
+
+``` r
 measurements$n
 #> [1] 7650
+```
+
+``` r
 
 #info for a subset defined by a bounding box
 #you can also define the subset by a Shapefile - check it out!
@@ -192,6 +204,9 @@ measurements.bb <- ebv_analyse(file,dc, entity = 1, subset = bb, verbose=FALSE)
 #check out the mean of the subset
 measurements.bb$mean
 #> [1] 0.3241093
+```
+
+``` r
 measurements.bb$n
 #> [1] 720
 ```
@@ -214,6 +229,9 @@ shp <- system.file(file.path('extdata','cameroon.shp'), package="ebvcube")
 data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1,2,3), verbose=FALSE)
 dim(data.shp)
 #> [1] 12  9  3
+```
+
+``` r
 #very quick plot of the resulting raster plus the shapefile
 borders <- terra::vect(shp)
 ggplot2::ggplot() +
@@ -262,6 +280,9 @@ ebv_create(jsonpath = json, outputpath = newNc, entities = entities,
 print(ebv_properties(newNc, verbose=FALSE)@general$entity_names)
 #> [1] "forest bird species"     "non-forest bird species"
 #> [3] "all bird species"
+```
+
+``` r
 
 #check out the (still empty) datacubes that are available
 dc.new <- ebv_datacubepaths(newNc, verbose=FALSE)
@@ -318,7 +339,6 @@ for more info.
 
 ``` r
 citation('ebvcube')
-#> 
 #> To cite ebvcube in publications use:
 #> 
 #>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2023). _ebvcube:

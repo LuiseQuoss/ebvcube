@@ -2,6 +2,7 @@
 % Please edit documentation in R/ebvcube-package.R
 \docType{package}
 \name{ebvcube}
+\alias{ebvcube-package}
 \alias{ebvcube}
 \title{Working with netCDF for Essential Biodiversity Variables}
 \description{
@@ -14,4 +15,24 @@ their own netCDFs with the EBV standard using this package.
 This package contains three main usecases: accessing the data, visualising
 it and creating your own data in the EBV netCDF
 standard.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/LuiseQuoss/ebvcube}
+  \item Report bugs at \url{https://github.com/LuiseQuoss/ebvcube/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Luise Quoss \email{luise.quoss@idiv.de} (\href{https://orcid.org/0000-0002-9910-1252}{ORCID})
+
+Authors:
+\itemize{
+  \item Nestor Fernandez \email{nestor.fernandez@idiv.de} (\href{https://orcid.org/0000-0002-9645-8571}{ORCID})
+  \item Christian Langer \email{christian.langer@idiv.de} (\href{https://orcid.org/0000-0003-1446-3527}{ORCID})
+  \item Jose Valdez \email{jose.valdez@idiv.de} (\href{https://orcid.org/0000-0003-2690-9952}{ORCID})
+  \item Henrique Miguel Pereira \email{henrique.pereira@idiv.de} (\href{https://orcid.org/0000-0003-1043-1675}{ORCID})
+}
+
 }
