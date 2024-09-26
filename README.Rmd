@@ -55,6 +55,13 @@ install.packages('ebvcube')
 #install the latest version from GitHub
 devtools::install_github('https://github.com/LuiseQuoss/ebvcube/tree/dev')
 
+#troubleshooting for BioConductor packages
+#if one of the following packages is not loaded: rhdf5, DelayedArray, HDF5Array
+install.packages("BiocManager")
+BiocManager::install('rhdf5')
+BiocManager::install('DelayedArray')
+BiocManager::install('HDF5Array')
+
 ```
 
 ## 3. Working with the package - a quick intro

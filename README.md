@@ -66,6 +66,13 @@ install.packages('ebvcube')
 
 #install the latest version from GitHub
 devtools::install_github('https://github.com/LuiseQuoss/ebvcube/tree/dev')
+
+#troubleshooting for BioConductor packages
+#if one of the following packages is not loaded: rhdf5, DelayedArray, HDF5Array
+install.packages("BiocManager")
+BiocManager::install('rhdf5')
+BiocManager::install('DelayedArray')
+BiocManager::install('HDF5Array')
 ```
 
 ## 3. Working with the package - a quick intro
@@ -83,28 +90,20 @@ The properties encompass much more information!
 
 ``` r
 library(ebvcube)
+#> Error in library(ebvcube): there is no package called 'ebvcube'
 
 #set the path to the file
 file <- system.file(file.path("extdata", "martins_comcom_subset.nc"), package="ebvcube")
 
 #read the properties of the file
 prop.file <- ebv_properties(file, verbose=FALSE)
+#> Error in ebv_properties(file, verbose = FALSE): could not find function "ebv_properties"
 
 #take a look at the general properties of the data set - there are more properties to discover!
 prop.file@general[1:4]
-#> $title
-#> [1] "Local bird diversity (cSAR/BES-SIM)"
-#> 
-#> $description
-#> [1] "Changes in bird diversity at 1-degree resolution caused by land use, estimated by the cSAR model for 1900-2015 using LUH2.0 historical reconstruction of land-use."
-#> 
-#> $ebv_class
-#> [1] "Community composition"
-#> 
-#> $ebv_name
-#> [1] "Taxonomic and phylogenetic diversity"
+#> Error: object 'prop.file' not found
 slotNames(prop.file)
-#> [1] "general"  "spatial"  "temporal" "metric"   "scenario" "ebv_cube"
+#> Error: object 'prop.file' not found
 ```
 
 Now let’s get the paths to all possible datacubes. The resulting
@@ -114,10 +113,9 @@ structure of scenario, metric and the datacube.
 
 ``` r
 datacubes <- ebv_datacubepaths(file, verbose=FALSE)
+#> Error in ebv_datacubepaths(file, verbose = FALSE): could not find function "ebv_datacubepaths"
 datacubes
-#>       datacubepaths                                 metric_names
-#> 1 metric_1/ebv_cube Relative change in the number of species (%)
-#> 2 metric_2/ebv_cube     Absolute change in the number of species
+#> Error: object 'datacubes' not found
 ```
 
 In the next step we will get the properties of one specific datacube -
@@ -125,12 +123,9 @@ fyi: the result also holds the general file properties from above.
 
 ``` r
 prop.dc <- ebv_properties(file, datacubes[1, 1], verbose=FALSE)
+#> Error in ebv_properties(file, datacubes[1, 1], verbose = FALSE): could not find function "ebv_properties"
 prop.dc@metric
-#> $name
-#> [1] "Relative change in the number of species (%)"
-#> 
-#> $description
-#> [1] "Relative change in the number of species (S) using the year 1900 as reference (e.g. -50 corresponds to a decrease in 50% of the number of species in the cell since 1900, (S_year-S_1900)/S_1900*100)"
+#> Error: object 'prop.dc' not found
 ```
 
 ### 3.2 Plot the data to get a better impression
@@ -142,11 +137,11 @@ at the first one.
 ``` r
 #plot the global map
 dc <- datacubes[2, 1]
+#> Error: object 'datacubes' not found
 ebv_map(file, dc, entity=1, timestep = 1, classes = 9,
         verbose=FALSE, col_rev = TRUE)
+#> Error in ebv_map(file, dc, entity = 1, timestep = 1, classes = 9, verbose = FALSE, : could not find function "ebv_map"
 ```
-
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 
 It’s nice to see the global distribution, but how is the change of that
 datacube (non forest birds) over time? Let’s take a look at the average.
@@ -155,14 +150,9 @@ The function returns the values, catch them!
 ``` r
 #get the averages and plot
 averages <- ebv_trend(file, dc, entity=1, verbose=FALSE)
-```
-
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
-
-``` r
+#> Error in ebv_trend(file, dc, entity = 1, verbose = FALSE): could not find function "ebv_trend"
 averages
-#>  [1]  0.6140731  1.2972444  2.2045310  3.6016083  6.4691830  8.8957375
-#>  [7]  9.7711291 10.3299345 10.9822654 11.5685090 11.9421034 12.3869482
+#> Error: object 'averages' not found
 ```
 
 It would be cool to have that for other indicators as well? Check out
@@ -176,24 +166,26 @@ the value range and other basic measurements.
 ``` r
 #info for whole dataset
 measurements <- ebv_analyse(file, dc, entity=1, verbose=FALSE)
+#> Error in ebv_analyse(file, dc, entity = 1, verbose = FALSE): could not find function "ebv_analyse"
 #see the included measurements
 names(measurements)
-#> [1] "min"  "q25"  "q50"  "mean" "q75"  "max"  "std"  "n"    "NAs"
+#> Error: object 'measurements' not found
 #check out the mean and the number of pixels
 measurements$mean
-#> [1] 0.6140731
+#> Error: object 'measurements' not found
 measurements$n
-#> [1] 7650
+#> Error: object 'measurements' not found
 
 #info for a subset defined by a bounding box
 #you can also define the subset by a Shapefile - check it out!
 bb <- c(-26, 64, 30, 38)
 measurements.bb <- ebv_analyse(file, dc, entity = 1, subset = bb, verbose=FALSE)
+#> Error in ebv_analyse(file, dc, entity = 1, subset = bb, verbose = FALSE): could not find function "ebv_analyse"
 #check out the mean of the subset
 measurements.bb$mean
-#> [1] 0.3241093
+#> Error: object 'measurements.bb' not found
 measurements.bb$n
-#> [1] 720
+#> Error: object 'measurements.bb' not found
 ```
 
 To access the first three timesteps of the data you can use the
@@ -202,8 +194,9 @@ following:
 ``` r
 #load whole data as array for two timesteps
 data <- ebv_read(file, dc, entity = 1, timestep = 1:3, type = 'a')
+#> Error in ebv_read(file, dc, entity = 1, timestep = 1:3, type = "a"): could not find function "ebv_read"
 dim(data)
-#> [1] 85 90  3
+#> NULL
 ```
 
 You can also get a spatial subset of the data by providing a Shapefile.
@@ -212,18 +205,20 @@ You can also get a spatial subset of the data by providing a Shapefile.
 #load subset from shapefile (Cameroon)
 shp <- system.file(file.path('extdata', 'cameroon.shp'), package="ebvcube")
 data.shp <- ebv_read_shp(file, dc, entity=1, shp = shp, timestep = c(1, 2, 3), verbose=FALSE)
+#> Error in ebv_read_shp(file, dc, entity = 1, shp = shp, timestep = c(1, : could not find function "ebv_read_shp"
 dim(data.shp)
-#> [1] 12  9  3
+#> Error: object 'data.shp' not found
 #very quick plot of the resulting raster plus the shapefile
 borders <- terra::vect(shp)
+#> Error: [vect] file does not exist:
 ggplot2::ggplot() +
   tidyterra::geom_spatraster(data = data.shp[[1]]) +
   tidyterra::geom_spatvector(data = borders, fill = NA) +
   ggplot2::scale_fill_fermenter(na.value=NA, palette = 'YlGn', direction = 1) +
   ggplot2::theme_classic()
+#> Error: object 'data.shp' not found
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 Imagine you have a very large dataset but only limited memory. The
 package provides the possibility to load the data as a DelayedArray. The
 ebv_write() function helps you to write that data back on disk properly.
@@ -256,19 +251,18 @@ fv <- -3.4e+38
 ebv_create(jsonpath = json, outputpath = newNc, entities = entities,
            epsg = 4326, extent = c(-180, 180, -90, 90), resolution = c(1, 1),
            fillvalue = fv, overwrite=TRUE, verbose=FALSE)
+#> Error in ebv_create(jsonpath = json, outputpath = newNc, entities = entities, : could not find function "ebv_create"
 
 #needless to say: check the properties of your newly created file to see if you get what you want
 #especially the entity_names from the slot general should be checked to see if your csv was formatted the right way
 print(ebv_properties(newNc, verbose=FALSE)@general$entity_names)
-#> [1] "forest bird species"     "non-forest bird species"
-#> [3] "all bird species"
+#> Error in ebv_properties(newNc, verbose = FALSE): could not find function "ebv_properties"
 
 #check out the (still empty) datacubes that are available
 dc.new <- ebv_datacubepaths(newNc, verbose=FALSE)
+#> Error in ebv_datacubepaths(newNc, verbose = FALSE): could not find function "ebv_datacubepaths"
 print(dc.new)
-#>       datacubepaths                                 metric_names
-#> 1 metric_1/ebv_cube Relative change in the number of species (%)
-#> 2 metric_2/ebv_cube     Absolute change in the number of species
+#> Error: object 'dc.new' not found
 ```
 
 Hint: You can always take a look at your netCDF in
@@ -296,6 +290,7 @@ for (tif in tif_paths){
               timestep=1:3, data = tif, band=1:3)
   entity <- entity + 1
 }
+#> Error in ebv_add_data(filepath_nc = newNc, datacubepath = dc.new[1, 1], : could not find function "ebv_add_data"
 ```
 
 #### c. Add missing attributes to datacube
@@ -305,9 +300,10 @@ Just use the upcoming function to change it.
 
 ``` r
 ebv_attribute(newNc, attribute_name='units', value='Percentage', levelpath=dc.new[1, 1])
+#> Error in ebv_attribute(newNc, attribute_name = "units", value = "Percentage", : could not find function "ebv_attribute"
 #check the properties one more time - perfect!
 print(ebv_properties(newNc, dc.new[1, 1], verbose=FALSE)@ebv_cube$units)
-#> [1] "Percentage"
+#> Error in ebv_properties(newNc, dc.new[1, 1], verbose = FALSE): could not find function "ebv_properties"
 ```
 
 In this case the levelpath corresponds to the datacube path. But you can
@@ -318,26 +314,7 @@ for more info.
 
 ``` r
 citation('ebvcube')
-#> 
-#> To cite ebvcube in publications use:
-#> 
-#>   Quoss L, Fernandez N, Langer C, Valdez J, Pereira H (2023). _ebvcube:
-#>   Working with netCDF for Essential Biodiversity Variables_. German
-#>   Centre for Integrative Biodiversity Research (iDiv)
-#>   Halle-Jena-Leipzig, Germany. R package version 0.3.0,
-#>   <https://github.com/LuiseQuoss/ebvcube>.
-#> 
-#> A BibTeX entry for LaTeX users is
-#> 
-#>   @Manual{,
-#>     title = {ebvcube: Working with netCDF for Essential Biodiversity Variables},
-#>     author = {Luise Quoss and Nestor Fernandez and Christian Langer and Jose Valdez and Henrique Miguel Pereira},
-#>     year = {2023},
-#>     note = {R package version 0.3.0},
-#>     organization = {German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig},
-#>     address = {Germany},
-#>     url = {https://github.com/LuiseQuoss/ebvcube},
-#>   }
+#> Error in citation("ebvcube"): there is no package called 'ebvcube'
 ```
 
 ## List of all functions
