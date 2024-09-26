@@ -1,0 +1,57 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  ebvcube: Working with netCDF for Essential Biodiversity
+  Variables
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Luise
+    family-names: Quoß
+    email: luise.quoss@idiv.de
+    affiliation: >-
+      German Centre for Integrative Biodiversity Research
+      (iDiv) Halle-Jena-Leipzig
+    orcid: 'https://orcid.org/0000-0002-9910-1252'
+  - orcid: 'https://orcid.org/0000-0002-9645-8571'
+    given-names: Néstor
+    family-names: Fernández
+    affiliation: >-
+      German Centre for Integrative Biodiversity Research
+      (iDiv) Halle-Jena-Leipzig
+  - given-names: Christian
+    family-names: Langer
+    orcid: 'https://orcid.org/0000-0003-1446-3527'
+    affiliation: >-
+      German Centre for Integrative Biodiversity Research
+      (iDiv) Halle-Jena-Leipzig
+  - orcid: 'https://orcid.org/0000-0003-2690-9952'
+    given-names: Jose
+    family-names: Valdez
+    affiliation: >-
+      German Centre for Integrative Biodiversity Research
+      (iDiv) Halle-Jena-Leipzig
+  - orcid: 'https://orcid.org/0000-0003-1043-1675'
+    affiliation: >-
+      German Centre for Integrative Biodiversity Research
+      (iDiv) Halle-Jena-Leipzig
+    given-names: Henrique Miguel
+    family-names: Pereira
+identifiers:
+  - type: doi
+    value: 10.32614/CRAN.package.ebvcube
+abstract: >-
+  The concept of Essential Biodiversity Variables (EBV,
+  https://geobon.org/ebvs/what-are-ebvs) comes with a data
+  structure based on the Network Common Data Form (netCDF).
+  The 'ebvcube' 'R' package provides functionality to easily
+  create, access and visualise this data. The EBV netCDFs
+  can be downloaded from the EBV Data Portal: Christian
+  Langer/ iDiv (2020) https://portal.geobon.org. 
+license: GPL-3.0-or-later
+version: 0.30.0
+date-released: '2024-10-02'
