@@ -176,10 +176,12 @@
 #'               list(standard_name='absolute change habitat',
 #'               long_name='absolute change since year 1800',
 #'               units='square kilometers')),
-#'   scenario = list(list(standard_name='SSP1',
-#'                 long_name='description of SSP1'),
-#'                 list(standard_name='SSP2',
-#'                 long_name='description of SSP2')),
+#'   scenario = list(list(standard_name='SSP1xRCP2.6 LU',
+#'                 long_name='Global Sustainability (SSP1xRCP2.6), with only effects of land-use.'),
+#'                 list(standard_name='SSP3xRCP6.0 LU',
+#'                 long_name='Regional Rivalry (SSP3xRCP6.0), with only effects of land-use')),
+#'   scenario_classification_name = 'SSP-RCP',
+#'   ebv_scenario_classification_version = 'LUH2, CMIP5/ISIMIP2a',
 #'   verbose = TRUE
 #' )
 
