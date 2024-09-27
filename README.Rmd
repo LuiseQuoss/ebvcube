@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/ebvcube)](https://CRAN.R-project.org/package=ebvcube)
 [![R-CMD-check](https://github.com/LuiseQuoss/ebvcube/actions/workflows/R.yaml/badge.svg?branch=dev)](https://github.com/LuiseQuoss/ebvcube/actions/workflows/R.yaml)
 [![codecov](https://codecov.io/gh/LuiseQuoss/ebvcube/graph/badge.svg?token=2TVFHRKBNJ)](https://app.codecov.io/gh/LuiseQuoss/ebvcube)
+![Static Badge](https://img.shields.io/badge/DOI-10.32614%2FCRAN.package.ebvcube-blue?link=https%3A%2F%2Fcran.r-project.org%2Fweb%2Fpackages%2Febvcube%2Findex.html)
 <!-- badges: end -->
 
 This package can be used to easily access the data of the EBV netCDFs which can be downloaded from the
@@ -35,10 +36,17 @@ The first level (netCDF group) are scenarios, e.g., the modelling for different 
 
 ```bash
 ├── scenario_1
+│   ├── metric_1
+│   │   └── ebv_cube [lon, lat, time, entity]
+│   │
 │   └── metric_1
 │       └── ebv_cube [lon, lat, time, entity]
+│
 └── scenario_2
-    └── metric_2
+    ├── metric_1
+    │   └── ebv_cube [lon, lat, time, entity]
+    │
+    └── metric_1
         └── ebv_cube [lon, lat, time, entity]
 ```
 
