@@ -26,7 +26,7 @@ crs_units, dimensions, scope, description}
 
 \item{\code{temporal}}{Named list. Elements: resolution, units, timesteps, dates}
 
-\item{\code{metric}}{Named list. Elements: name, description}
+\item{\code{metric}}{Named list. Elements: name, description, units}
 
 \item{\code{scenario}}{Named list. Elements: name, description}
 
