@@ -1,7 +1,7 @@
 Package: ebvcube
 Title: Working with netCDF for Essential Biodiversity Variables
 Version: 0.3.0
-Date: 2024-07-10
+Date: 2024-10-09
 Authors@R: 
     c(person(given = "Luise",
            family = "Quoss",
@@ -49,7 +49,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 biocViews:
 Imports: 
-    bslib,
     checkmate,
     curl,
     DelayedArray,
@@ -63,9 +62,6 @@ Imports:
     ncmeta,
     reshape2,
     rhdf5,
-    shiny,
-    shinyFiles,
-    shinyWidgets,
     stringr,
     terra,
     tidyterra,

@@ -10,7 +10,6 @@ devtools::document()
 devtools::test()
 devtools::run_examples()
 
-
 #run lintr
 lintr::lint_dir()
 
@@ -74,7 +73,7 @@ cran_prep$cran_summary()
 
 
 # Add comments for CRAN
-usethis::use_cran_comments(open = rlang::is_interactive())
+# usethis::use_cran_comments(open = rlang::is_interactive())
 
 
 #MANUALLY
@@ -84,3 +83,10 @@ usethis::use_cran_comments(open = rlang::is_interactive())
 
 # Verify you're ready for release, and release
 # devtools::release()
+
+# shiny app
+shiny,
+shinyFiles,
+shinyWidgets,
+bslib,
+remove stuff from Rbuildignore

@@ -82,7 +82,7 @@ ebv_taxonomy_server <- function(input, output, session) {
 
         output$ui_datacube <- shiny::renderUI({
           cubes <- list()
-          cubes[seq_along(datacubes[1])] <- datacubes$datacubepaths
+          cubes[1:dim(datacubes)[1]] <- datacubes$datacubepaths
           if('scenario_names' %in% names(datacubes)){
             names(cubes) <- paste0(datacubes$scenario_names, ': ', datacubes$metric_names)
           }else{
