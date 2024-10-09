@@ -8,6 +8,8 @@
 
 ## Bug fixes
 
+- ebv_download: corrected ID-missmatch when giving ID by title
+
 # ebvcube 0.2.3
 
 ## Bug fixes

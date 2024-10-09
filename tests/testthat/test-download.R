@@ -11,19 +11,34 @@ if(portal_down){
     dir <- tempdir()
     data <- ebv_download(27, dir, verbose = FALSE)
     expect_true(basename(data) %in% list.files(dir))
+    #clean
+    unlink(dir, recursive=TRUE)
   })
 
   test_that("test ebv_download ID=doi", {
     dir <- tempdir()
     data <- ebv_download('10.25829/f2rdp4', dir, verbose = FALSE)
     expect_true(basename(data) %in% list.files(dir))
+    #clean
+    unlink(dir, recursive=TRUE)
   })
 
-  test_that("test ebv_download ID=title", {
+  test_that("test ebv_download ID=title 1", {
     dir <- tempdir()
     data <- ebv_download('Local bird diversity (cSAR/BES-SIM)', dir, verbose = FALSE)
     expect_true(basename(data) %in% list.files(dir))
+    #clean
+    unlink(dir, recursive=TRUE)
   })
+
+  test_that("test ebv_download ID=title 2", {
+    dir <- tempdir()
+    data <- ebv_download("Global trends in biodiversity (BES-SIM PREDICTS)", dir, verbose = FALSE)
+    expect_true(basename(data) %in% list.files(dir))
+    #clean
+    unlink(dir, recursive=TRUE)
+  })
+
 }
 
 

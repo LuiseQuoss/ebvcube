@@ -134,7 +134,7 @@ ebv_download <- function(id=NULL,
     }else{
         #check if it is the title of a data set
         #id is title -> turn into integer
-        id <- which(datasets_list$title==id)
+        id <- datasets_list$id[which(datasets_list$title==id)]
         if(ebv_i_empty(id)){
           stop('Yout title does not match any of the titles available. Run this function without any arguments to get the list of available datasets, choose one and download it.')
         }
