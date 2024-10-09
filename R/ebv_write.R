@@ -51,9 +51,9 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
 
   #ensure that all tempfiles are deleted on exit
   withr::defer(
-    if(exists('temp.tif')){
-      if(file.exists(temp.tif)){
-        file.remove(temp.tif)
+    if(exists('temp_tif')){
+      if(file.exists(temp_tif)){
+        file.remove(temp_tif)
       }
     }
   )
@@ -118,11 +118,11 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
 
     #derive other variables
     name <- stringr::str_remove(basename(outputpath), '.tif')
-    temp.tif <- tempfile(fileext = '.tif')
+    temp_tif <- tempfile(fileext = '.tif')
 
-    #temp.tif must be new file, remove tempfile
-    if (file.exists(temp.tif)){
-      file.remove(temp.tif)
+    #temp_tif must be new file, remove tempfile
+    if (file.exists(temp_tif)){
+      file.remove(temp_tif)
     }
 
     #turn data back
@@ -131,12 +131,13 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
 
     out <- HDF5Array::writeHDF5Array(
       data,
-      filepath = temp.tif,
-      name = name
+      filepath = temp_tif,
+      name = name,
+      verbose=T
     )
 
     #read with terra and add missing georefence data ----
-    temp_raster <- suppressWarnings(terra::rast(temp.tif)) #warning about missing extent
+    temp_raster <- suppressWarnings(terra::rast(temp_tif)) #warning about missing extent
     terra::ext(temp_raster) <- extent
     terra::crs(temp_raster) <- crs
 
@@ -146,8 +147,8 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     terra::writeRaster(temp_raster, outputpath, datatype=type, overwrite = overwrite)
 
     #delete temp file
-    if (file.exists(temp.tif)){
-      t <- file.remove(temp.tif)
+    if (file.exists(temp_tif)){
+      t <- file.remove(temp_tif)
     }
 
     return(outputpath)
@@ -162,19 +163,19 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
 
     #derive other variables
     name <- stringr::str_remove(basename(outputpath), '.tif')
-    temp.tif <- tempfile(fileext = '.tif')
+    temp_tif <- tempfile(fileext = '.tif')
 
     band <- DelayedArray::aperm(DelayedArray::aperm(data, 3:1), c(2, 3, 1))
 
     #write temp tif - georeference missing
     out <- HDF5Array::writeHDF5Array(
       band,
-      filepath = temp.tif,
+      filepath = temp_tif,
       name = name
     )
 
     #read with terra and add missing georefence data ----
-    temp_raster <- suppressWarnings(terra::rast(temp.tif)) #warning about missing extent
+    temp_raster <- suppressWarnings(terra::rast(temp_tif)) #warning about missing extent
     terra::ext(temp_raster) <- extent
     terra::crs(temp_raster) <- crs
 
@@ -185,8 +186,8 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
     terra::writeRaster(temp_raster, outputpath, datatype=type, overwrite = overwrite)
 
     #delete temp file
-    if (file.exists(temp.tif)){
-      t <- file.remove(temp.tif)
+    if (file.exists(temp_tif)){
+      t <- file.remove(temp_tif)
     }
 
     return(outputpath)
