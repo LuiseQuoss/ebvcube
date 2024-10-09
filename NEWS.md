@@ -5,6 +5,7 @@
 -   new function: ebv_metadata
 -   new helper functions: ebv_i\_vector_intersect, ebv_i\_contained, ebv_i\_check_iso_res, ebv_i\_check_iso_date
 -   new Shiny App: ebv_taxonomy_app
+-   add DOI to ebv_create(_taxonomy) and ebv_properties
 
 ## Bug fixes
 
