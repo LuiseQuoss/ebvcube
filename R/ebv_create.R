@@ -712,6 +712,7 @@ ebv_create <- function(jsonpath, outputpath, entities, epsg = 4326,
 
   # global attributes ----
   #static attributes
+  ebv_i_char_att(hdf, 'doi', 'pending')
   ebv_i_char_att(hdf, 'Conventions', 'CF-1.8, ACDD-1.3, EBV-1.0')
   ebv_i_char_att(hdf, 'naming_authority', 'The German Centre for Integrative Biodiversity Research (iDiv) Halle-Jena-Leipzig')
   ebv_i_char_att(hdf, 'date_issued', 'pending')
