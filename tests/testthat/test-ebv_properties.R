@@ -69,6 +69,12 @@ test_that("ebv_properties: check metric", {
   prop <- ebv_properties(file, 'scenario_1/metric_1/ebv_cube', verbose = FALSE)@metric
   expect_equal(prop$name,'Species richness (S)')
   expect_equal(prop$description,'Species richness per cell')
+  expect_equal(prop$units,'Number of species')
+  file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="ebvcube")
+  prop <- ebv_properties(file, 'metric_1/ebv_cube', verbose = FALSE)@metric
+  expect_equal(prop$name,'Relative change in the number of species (%)')
+  expect_equal(prop$description,'Relative change in the number of species (S) using the year 1900 as reference (e.g. -50 corresponds to a decrease in 50% of the number of species in the cell since 1900, (S_year-S_1900)/S_1900*100)')
+  expect_equal(prop$units,'Percentage points')
 })
 
 

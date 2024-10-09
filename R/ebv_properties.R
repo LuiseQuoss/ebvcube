@@ -10,7 +10,7 @@
 #' @slot spatial Named list. Elements: wkt2, epsg, extent, resolution,
 #'   crs_units, dimensions, scope, description
 #' @slot temporal Named list. Elements: resolution, units, timesteps, dates
-#' @slot metric Named list. Elements: name, description
+#' @slot metric Named list. Elements: name, description, units
 #' @slot scenario Named list. Elements: name, description
 #' @slot ebv_cube Named list. Elements: units, coverage_content_type, fillvalue,
 #'   type
@@ -400,8 +400,9 @@ ebv_properties <-
         gid <- rhdf5::H5Gopen(hdf, path_m)
         name_m <- ebv_i_read_att(gid, 'standard_name', verbose)
         description_m <- ebv_i_read_att(gid, 'long_name', verbose)
+        units_m <- ebv_i_read_att(gid, 'units', verbose)
         rhdf5::H5Gclose(gid)
-        metric <- list('name' = name_m, 'description' = description_m)
+        metric <- list('name' = name_m, 'description' = description_m, 'units' = units_m)
 
       } else{
         # 2. metric only----
@@ -411,8 +412,9 @@ ebv_properties <-
         gid <- rhdf5::H5Gopen(hdf, path_m)
         name_m <- ebv_i_read_att(gid, 'standard_name', verbose)
         description_m <- ebv_i_read_att(gid, 'long_name', verbose)
+        units_m <- ebv_i_read_att(gid, 'units', verbose)
         rhdf5::H5Gclose(gid)
-        metric <- list('name' = name_m, 'description' = description_m)
+        metric <- list('name' = name_m, 'description' = description_m, 'units' = units_m)
       }
 
       #cube info ----
