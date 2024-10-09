@@ -13,13 +13,14 @@ EBV netCDF properties class (S4)
 \section{Slots}{
 
 \describe{
-\item{\code{general}}{Named list. Elements: title, description, ebv_class, ebv_name,
-ebv_domain, references, source, project_name, project_url, creator_name,
-creator_institution, creator_email, contributor_name, publisher_name,
-publisher_institution, publisher_email, comment, keywords, id, history,
-licence, conventions, naming_authority, date_created, date_issued,
-entity_names, entity_type, entity_scope, entity_classification_name,
-entity_classification_url, taxonomy, taxonomy_lsid}
+\item{\code{general}}{Named list. Elements: title, description, doi, ebv_class,
+ebv_name, ebv_domain, references, source, project_name, project_url,
+creator_name, creator_institution, creator_email, contributor_name,
+publisher_name, publisher_institution, publisher_email, comment, keywords,
+id, history, licence, conventions, naming_authority, date_created,
+date_issued, entity_names, entity_type, entity_scope,
+entity_classification_name, entity_classification_url, taxonomy,
+taxonomy_lsid}
 
 \item{\code{spatial}}{Named list. Elements: wkt2, epsg, extent, resolution,
 crs_units, dimensions, scope, description}

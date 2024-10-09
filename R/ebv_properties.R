@@ -1,12 +1,13 @@
 #' EBV netCDF properties class (S4)
 #'
-#' @slot general Named list. Elements: title, description, ebv_class, ebv_name,
-#'   ebv_domain, references, source, project_name, project_url, creator_name,
-#'   creator_institution, creator_email, contributor_name, publisher_name,
-#'   publisher_institution, publisher_email, comment, keywords, id, history,
-#'   licence, conventions, naming_authority, date_created, date_issued,
-#'   entity_names, entity_type, entity_scope, entity_classification_name,
-#'   entity_classification_url, taxonomy, taxonomy_lsid
+#' @slot general Named list. Elements: title, description, doi, ebv_class,
+#'   ebv_name, ebv_domain, references, source, project_name, project_url,
+#'   creator_name, creator_institution, creator_email, contributor_name,
+#'   publisher_name, publisher_institution, publisher_email, comment, keywords,
+#'   id, history, licence, conventions, naming_authority, date_created,
+#'   date_issued, entity_names, entity_type, entity_scope,
+#'   entity_classification_name, entity_classification_url, taxonomy,
+#'   taxonomy_lsid
 #' @slot spatial Named list. Elements: wkt2, epsg, extent, resolution,
 #'   crs_units, dimensions, scope, description
 #' @slot temporal Named list. Elements: resolution, units, timesteps, dates
@@ -197,6 +198,7 @@ ebv_properties <-
 
     #general ----
     # add entity names to global properties
+    doi <- ebv_i_read_att(hdf, 'doi', verbose)
     title <- ebv_i_read_att(hdf, 'title', verbose)
     description <- ebv_i_read_att(hdf, 'summary', verbose)
     references <- ebv_i_read_att(hdf, 'references', verbose)
@@ -313,6 +315,7 @@ ebv_properties <-
       list(
         'title' = title,
         'description' = description,
+        'doi' = doi,
         'ebv_class' = ebv_class,
         'ebv_name' = ebv_name,
         'ebv_domain' = ebv_domain,
