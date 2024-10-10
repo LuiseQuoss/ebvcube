@@ -36,7 +36,6 @@ jobs:
             any::rcmdcheck
             any::covr
             any::lintr
-      # - uses: r-lib/actions/setup-renv@v2
 
       - name: Lint root directory
         run: lintr::lint_dir()
