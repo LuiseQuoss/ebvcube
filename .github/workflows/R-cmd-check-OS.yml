@@ -7,7 +7,7 @@ on:
       - '**.R'
       - 'DESCRIPTION'
       - 'NAMESPACE'
-      - '.github/workflows/R-cmd-check-OS.yaml'
+      - '.github/workflows/R-cmd-check-OS.yml'
 
 name: R-CMD-check-OS
 
