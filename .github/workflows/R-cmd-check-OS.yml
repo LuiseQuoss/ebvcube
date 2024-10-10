@@ -3,6 +3,11 @@ on:
     branches:
       - main
       - dev
+    paths:
+      - '**.R'
+      - 'DESCRIPTION'
+      - 'NAMESPACE'
+      - '.github/workflows/R-cmd-check-OS.yaml'
 
 name: R-CMD-check-OS
 

@@ -15,7 +15,7 @@ on:
       - 'NAMESPACE'
       - '.github/workflows/R.yaml'
 
-name: R
+name: R-cmd-check
 
 jobs:
   R:
