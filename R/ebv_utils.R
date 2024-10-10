@@ -591,7 +591,7 @@ ebv_i_eval_epsg <- function(epsg, proj=FALSE){
      if(stringr::str_detect(warning, 'crs not found')){
        stop('The EPSG you provided cannot be found. Is the EPSG code correct? Or are you not properly connected to GDAL and the PROJ LIB?')
      } else{
-       stop(paste0('Could not process EPSG. See error from terra:\n', warning))
+       warning(paste0('Could not process EPSG. See warning from terra:\n', warning))
      }
    })
   if(proj){
