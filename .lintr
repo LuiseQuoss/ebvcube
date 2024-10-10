@@ -17,5 +17,6 @@ encoding: "UTF-8"
 exclusions: list(
     "data-raw/",
     "tests/",
-    "shiny/"
+    "shiny/",
+    "prep_cran_submit.R"
   )

@@ -1,14 +1,16 @@
 #BEFORE SUBMITTING TO CRAN
 
 #update date and version number in DESCRIPTION file
+setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 
 #update the CITATION.cff
-cff_write(dependencies=FALSE)
+cffr::cff_write(dependencies=FALSE)
 
 # Run tests and examples
 devtools::document()
 devtools::test()
 devtools::run_examples()
+devtools::check()
 
 #run lintr
 lintr::lint_dir()

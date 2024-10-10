@@ -133,7 +133,7 @@ ebv_write <- function(data, outputpath, epsg=4326, extent=c(-180, 180, -90, 90),
       data,
       filepath = temp_tif,
       name = name,
-      verbose=T
+      verbose = TRUE
     )
 
     #read with terra and add missing georefence data ----
