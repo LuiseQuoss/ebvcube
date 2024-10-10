@@ -41,10 +41,10 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
-          run: |
-            install.packages("BiocManager")
-            BiocManager::install(c("rhdf5", "HDF5Array", "DelayedArray"))
-          shell: Rscript {0}
+        run: |
+          install.packages("BiocManager")
+          BiocManager::install(c("rhdf5", "HDF5Array", "DelayedArray"))
+        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
