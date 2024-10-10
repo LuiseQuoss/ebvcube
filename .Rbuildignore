@@ -26,4 +26,3 @@
 ebv_taxonomy_app.R
 ebv_taxonomy_server.R
 ebv_taxonomy_ui.R
-renv.lock

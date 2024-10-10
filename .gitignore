@@ -6,4 +6,5 @@
 data-raw/
 tests/testdata/
 to-dos.md
-renv.lock
+^renv$
+^renv\.lock$
