@@ -48,10 +48,10 @@ file <- system.file(file.path("extdata","martins_comcom_subset.nc"), package="eb
 datacubes <- ebv_datacubepaths(file, verbose=FALSE)
 
 #get properties only for the file
-prop_file <- ebv_properties(file)
+prop_file <- ebv_properties(file, verbose=FALSE)
 #get properties for the file and a specific datacube - use datacubepath
-prop_dc <- ebv_properties(file, datacubepath = datacubes[1,1])
+prop_dc <- ebv_properties(file, datacubepath = datacubes[1,1], verbose=FALSE)
 #get properties for the file and a specific datacube - use scenario & metric
 #note: this dataset has no scenario -> only metric is defined
-prop_dc <- ebv_properties(file, metric = 2)
+prop_dc <- ebv_properties(file, metric = 2, verbose=FALSE)
 }
