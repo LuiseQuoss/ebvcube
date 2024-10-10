@@ -68,10 +68,9 @@ Imports:
     withr
 Suggests:
     knitr,
-    lintr,
     rmarkdown,
     testthat (>= 3.0.0)
 SystemRequirements: GDAL binaries
 Depends: 
-    R (>= 4.2.0) 
+    R (>= 4.4.0) 
 Config/testthat/edition: 3
