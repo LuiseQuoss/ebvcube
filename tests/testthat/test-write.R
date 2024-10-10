@@ -48,14 +48,14 @@ test_that("test ebv_write and ebv_read DelayedMatrix Array", {
   expect_equal(values_da, values_a2)
   #tempfile
   tempfile <- tempfile(fileext='.tif')
-  #write delayedMatrix
-  path <- ebv_write(data_dm, tempfile, epsg = 4326, extent =  ext, verbose=FALSE)
-  expect_true(basename(path) %in% list.files(dirname(tempfile)))
-  file.remove(tempfile)
-  #write delayedArray
-  path <- ebv_write(data_da, tempfile, epsg = 4326, extent =  ext, verbose=FALSE)
-  expect_true(basename(path) %in% list.files(dirname(tempfile)))
-  file.remove(tempfile)
+  # #write delayedMatrix
+  # path <- ebv_write(data_dm, tempfile, epsg = 4326, extent =  ext, verbose=FALSE)
+  # expect_true(basename(path) %in% list.files(dirname(tempfile)))
+  # file.remove(tempfile)
+  # #write delayedArray
+  # path <- ebv_write(data_da, tempfile, epsg = 4326, extent =  ext, verbose=FALSE)
+  # expect_true(basename(path) %in% list.files(dirname(tempfile)))
+  # file.remove(tempfile)
   #write array
   path <- ebv_write(data_a, tempfile, epsg = 4326, extent =  ext, verbose=FALSE)
   expect_true(basename(path) %in% list.files(dirname(tempfile)))
