@@ -38,6 +38,9 @@
 #'   your memory to read the data. Can be switched off (set to TRUE). Ignore
 #'   this argument when you give an array or a matrix for 'data' (it will do
 #'   nothing).
+#' @param raw Logical. Default: FALSE. If you set it to TRUE the offset and
+#'   scale value in the GeoTiff are ignored. Only relevant if you give a path to
+#'   a GeoTiff.
 #' @param verbose Logical. Default: TRUE. Turn off additional prints by setting
 #'   it to FALSE.
 #'
@@ -72,7 +75,7 @@
 #' }
 ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timestep = 1,
                          data, band = 1, scenario = NULL, metric = NULL,
-                         ignore_RAM = FALSE, verbose = TRUE){
+                         ignore_RAM = FALSE, raw = FALSE, verbose = TRUE){
   ### start initial tests ----
   # ensure file and all datahandles are closed on exit
   withr::defer(
@@ -305,7 +308,7 @@ ebv_add_data <- function(filepath_nc, datacubepath = NULL, entity = NULL, timest
   if(character){
 
     #open tif file, get raster data
-    raster <- terra::rast(data)[[band]]
+    raster <- terra::rast(data, raw = raw)[[band]]
 
     #transform into array/matrix----
     if (length(timestep) > 1){

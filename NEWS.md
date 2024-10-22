@@ -7,9 +7,14 @@
 -   new Shiny App: ebv_taxonomy_app
 -   add DOI to ebv_create(_taxonomy) and ebv_properties
 
+## Minor changes
+
+- ebv_add_data: add argument 'raw' to ignore scale and offset values
+
 ## Bug fixes
 
 - ebv_download: corrected ID-missmatch when giving ID by title
+
 
 # ebvcube 0.2.3
 

@@ -14,6 +14,7 @@ ebv_add_data(
   scenario = NULL,
   metric = NULL,
   ignore_RAM = FALSE,
+  raw = FALSE,
   verbose = TRUE
 )
 }
@@ -61,6 +62,10 @@ their name or number (integer), use \code{\link[=ebv_datacubepaths]{ebv_datacube
 your memory to read the data. Can be switched off (set to TRUE). Ignore
 this argument when you give an array or a matrix for 'data' (it will do
 nothing).}
+
+\item{raw}{Logical. Default: FALSE. If you set it to TRUE the offset and
+scale value in the GeoTiff are ignored. Only relevant if you give a path to
+a GeoTiff.}
 
 \item{verbose}{Logical. Default: TRUE. Turn off additional prints by setting
 it to FALSE.}
